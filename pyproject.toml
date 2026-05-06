@@ -35,7 +35,8 @@ dependencies = [
     "plotly>=6.0.0",
     "tqdm>=4.67.1",
     "loguru>=0.7.3",
-    "nbformat>=5.10.4"
+    "nbformat>=5.10.4",
+    "futu-api>=9.0.0"
 ]
 keywords = ["quant", "quantitative", "investment", "trading", "algotrading"]
 
@@ -71,7 +72,7 @@ path = "vnpy/__init__.py"
 pattern = "__version__ = ['\"](?P<version>[^'\"]+)['\"]"
 
 [tool.hatch.build.targets.wheel]
-packages = ["vnpy"]
+packages = ["vnpy", "vnpy_futu", "vnpy_llm"]
 include-package-data = true
 
 [tool.hatch.build.targets.sdist]

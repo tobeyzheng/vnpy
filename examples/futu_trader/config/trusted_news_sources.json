@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-06T10:50:10.194838+00:00",
+  "sources": [
+    {
+      "source_id": "fed_monetary_policy",
+      "name": "Federal Reserve Board - Monetary Policy Press Releases",
+      "kind": "rss",
+      "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
+      "trust_score": 0.99,
+      "tags": [
+        "official",
+        "fed",
+        "fomc",
+        "monetary_policy",
+        "macro"
+      ],
+      "symbols": [],
+      "enabled": true,
+      "required_domain": "federalreserve.gov",
+      "max_age_days": 45
+    },
+    {
+      "source_id": "fed_speeches",
+      "name": "Federal Reserve Board - Speeches",
+      "kind": "rss",
+      "url": "https://www.federalreserve.gov/feeds/speeches.xml",
+      "trust_score": 0.96,
+      "tags": [
+        "official",
+        "fed",
+        "speech",
+        "macro"
+      ],
+      "symbols": [],
+      "enabled": true,
+      "required_domain": "federalreserve.gov",
+      "max_age_days": 14
+    },
+    {
+      "source_id": "fed_testimony",
+      "name": "Federal Reserve Board - Testimony",
+      "kind": "rss",
+      "url": "https://www.federalreserve.gov/feeds/testimony.xml",
+      "trust_score": 0.95,
+      "tags": [
+        "official",
+        "fed",
+        "testimony",
+        "macro"
+      ],
+      "symbols": [],
+      "enabled": true,
+      "required_domain": "federalreserve.gov",
+      "max_age_days": 21
+    },
+    {
+      "source_id": "bls_latest_releases",
+      "name": "U.S. Bureau of Labor Statistics - Latest Economic Releases",
+      "kind": "web_page",
+      "url": "https://blsmon1.bls.gov/newsroom/",
+      "trust_score": 0.96,
+      "tags": [
+        "official",
+        "bls",
+        "jobs",
+        "payroll",
+        "cpi",
+        "inflation",
+        "us_economy"
+      ],
+      "symbols": [],
+      "enabled": false,
+      "required_domain": "blsmon1.bls.gov",
+      "max_age_days": 3
+    },
+    {
+      "source_id": "bea_current_releases",
+      "name": "U.S. Bureau of Economic Analysis - Current Releases",
+      "kind": "web_page",
+      "url": "https://www.bea.gov/news/current-releases",
+      "trust_score": 0.96,
+      "tags": [
+        "official",
+        "bea",
+        "gdp",
+        "pce",
+        "income",
+        "us_economy"
+      ],
+      "symbols": [],
+      "enabled": true,
+      "required_domain": "bea.gov",
+      "max_age_days": 3
+    },
+    {
+      "source_id": "census_economic_indicators",
+      "name": "U.S. Census Bureau - Economic Indicators",
+      "kind": "web_page",
+      "url": "https://www.census.gov/economic-indicators/",
+      "trust_score": 0.94,
+      "tags": [
+        "official",
+        "census",
+        "retail_sales",
+        "durable_goods",
+        "housing",
+        "us_economy"
+      ],
+      "symbols": [],
+      "enabled": false,
+      "required_domain": "census.gov",
+      "max_age_days": 3
+    },
+    {
+      "source_id": "treasury_interest_rates",
+      "name": "U.S. Treasury - Interest Rates",
+      "kind": "web_page",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve",
+      "trust_score": 0.94,
+      "tags": [
+        "official",
+        "treasury",
+        "yield",
+        "rates",
+        "macro"
+      ],
+      "symbols": [],
+      "enabled": false,
+      "required_domain": "home.treasury.gov",
+      "max_age_days": 3
+    },
+    {
+      "source_id": "boj_latest",
+      "name": "Bank of Japan - Announcements",
+      "kind": "web_page",
+      "url": "https://www.boj.or.jp/en/",
+      "trust_score": 0.93,
+      "tags": [
+        "official",
+        "boj",
+        "jpy",
+        "yen",
+        "carry_trade",
+        "fx"
+      ],
+      "symbols": [],
+      "enabled": true,
+      "required_domain": "boj.or.jp",
+      "max_age_days": 5
+    },
+    {
+      "source_id": "ism_report_on_business",
+      "name": "ISM Report On Business",
+      "kind": "web_page",
+      "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/",
+      "trust_score": 0.86,
+      "tags": [
+        "pmi",
+        "ism",
+        "manufacturing",
+        "services",
+        "us_economy"
+      ],
+      "symbols": [],
+      "enabled": false,
+      "required_domain": "ismworld.org",
+      "max_age_days": 5
+    },
+    {
+      "source_id": "yahoo_soxl_semis_headlines",
+      "name": "Yahoo Finance - SOXL/Semiconductor Headlines",
+      "kind": "rss",
+      "url": "https://feeds.finance.yahoo.com/rss/2.0/headline?s=SOXL,NVDA,AMD,AVGO,TSM,ASML,AMAT,LRCX,MU,INTC,SOXX,SMH&region=US&lang=en-US",
+      "trust_score": 0.72,
+      "tags": [
+        "market_news",
+        "semiconductor",
+        "soxl",
+        "stocks"
+      ],
+      "symbols": [
+        "SOXL",
+        "NVDA",
+        "AMD",
+        "AVGO",
+        "TSM",
+        "ASML",
+        "AMAT",
+        "LRCX",
+        "MU",
+        "INTC",
+        "SOXX",
+        "SMH"
+      ],
+      "enabled": true,
+      "required_domain": "feeds.finance.yahoo.com",
+      "max_age_days": 7
+    }
+  ]
+}

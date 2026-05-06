@@ -1,0 +1,26 @@
+{
+  "symbol": "SOXL.SMART",
+  "model": "deepseek-v3.1",
+  "base_url": "https://knot.woa.com/apigw/api/v1/agents/agui/66b19c6487ea48a89a0a361f5abb37f6",
+  "api_key_env": "KNOT_API_TOKEN",
+  "api_user_env": "KNOT_API_USER",
+  "llm_api_type": "knot_agui",
+  "enable_web_search": false,
+  "temperature": 0.0,
+  "conversation_id": "",
+  "signal_dir": "examples/futu_trader/output/llm_signals",
+  "report_dir": "examples/futu_trader/output/llm_reports",
+  "news_paths": [
+    "examples/futu_trader/output/trusted_news/trusted_news.jsonl"
+  ],
+  "trusted_news_sources_path": "examples/futu_trader/config/trusted_news_sources.json",
+  "trusted_news_output_path": "examples/futu_trader/output/trusted_news/trusted_news.jsonl",
+  "timeout_seconds": 30,
+  "max_retries": 2,
+  "min_confidence": 0.55,
+  "stale_after_hours": 30,
+  "high_risk_threshold": 0.75,
+  "block_risk_threshold": 0.85,
+  "default_position_multiplier": 0.0,
+  "real_trading_allowed": false
+}

@@ -1,0 +1,26 @@
+{
+  "symbol": "SOXL.SMART",
+  "capital": 10000.0,
+  "params": {
+    "fast_window": 10,
+    "slow_window": 120,
+    "atr_window": 10,
+    "risk_pct": 0.03,
+    "max_pos_pct": 0.5,
+    "stop_atr": 1.5,
+    "trail_atr": 2.5,
+    "max_drawdown_pct": 0.15
+  },
+  "stats": {
+    "final_equity": 21250.28,
+    "total_return_pct": 112.5028,
+    "annual_return_pct": 35.2552,
+    "max_drawdown_pct": 13.8966,
+    "sharpe_ratio": 1.4984,
+    "calmar_ratio": 2.537,
+    "trade_count": 24,
+    "win_rate_pct": 63.6364,
+    "score": 2.69769
+  },
+  "updated_at": "2026-05-06T16:38:18.369292"
+}
