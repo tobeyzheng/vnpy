@@ -1,0 +1,22 @@
+{
+  "market": "CN",
+  "description": "A股量化候选池：沪深大盘、AI算力、半导体、机器人、新能源、医药和高流动性ETF。",
+  "candidates": [
+    {"symbol": "600519", "vt_symbol": "600519.SSE", "name": "贵州茅台", "asset_type": "Stock", "sector": "Consumer Staples"},
+    {"symbol": "601318", "vt_symbol": "601318.SSE", "name": "中国平安", "asset_type": "Stock", "sector": "Insurance"},
+    {"symbol": "600036", "vt_symbol": "600036.SSE", "name": "招商银行", "asset_type": "Stock", "sector": "Banking"},
+    {"symbol": "601899", "vt_symbol": "601899.SSE", "name": "紫金矿业", "asset_type": "Stock", "sector": "Materials/Gold"},
+    {"symbol": "600276", "vt_symbol": "600276.SSE", "name": "恒瑞医药", "asset_type": "Stock", "sector": "Healthcare"},
+    {"symbol": "688981", "vt_symbol": "688981.SSE", "name": "中芯国际", "asset_type": "Stock", "sector": "Semiconductor Foundry"},
+    {"symbol": "688256", "vt_symbol": "688256.SSE", "name": "寒武纪", "asset_type": "Stock", "sector": "AI Chip"},
+    {"symbol": "603986", "vt_symbol": "603986.SSE", "name": "兆易创新", "asset_type": "Stock", "sector": "Memory/MCU"},
+    {"symbol": "002371", "vt_symbol": "002371.SZSE", "name": "北方华创", "asset_type": "Stock", "sector": "Semiconductor Equipment"},
+    {"symbol": "300308", "vt_symbol": "300308.SZSE", "name": "中际旭创", "asset_type": "Stock", "sector": "Optical/AI Infrastructure"},
+    {"symbol": "300502", "vt_symbol": "300502.SZSE", "name": "新易盛", "asset_type": "Stock", "sector": "Optical/AI Infrastructure"},
+    {"symbol": "300750", "vt_symbol": "300750.SZSE", "name": "宁德时代", "asset_type": "Stock", "sector": "Battery/EV"},
+    {"symbol": "002594", "vt_symbol": "002594.SZSE", "name": "比亚迪", "asset_type": "Stock", "sector": "EV/Battery"},
+    {"symbol": "002230", "vt_symbol": "002230.SZSE", "name": "科大讯飞", "asset_type": "Stock", "sector": "AI Application"},
+    {"symbol": "159915", "vt_symbol": "159915.SZSE", "name": "创业板ETF", "asset_type": "ETF", "sector": "ChiNext"},
+    {"symbol": "510300", "vt_symbol": "510300.SSE", "name": "沪深300ETF", "asset_type": "ETF", "sector": "CSI 300"}
+  ]
+}

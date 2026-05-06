@@ -1,0 +1,251 @@
+{
+  "agent": "MarketResearchScreenerAgent",
+  "as_of": "2026-05-06T22:40:50+08:00",
+  "decision_time": "2026-05-06T14:40:49.340575+00:00",
+  "market": "US",
+  "selected_targets": [
+    {
+      "rank": 1,
+      "symbol": "SOXL",
+      "vt_symbol": "SOXL.SMART",
+      "name": "Direxion Daily Semiconductor Bull 3X",
+      "asset_type": "ETF",
+      "sector": "Semiconductor",
+      "liquidity_score": 0.85,
+      "trend_score": 0.92,
+      "volatility_score": 0.75,
+      "news_sentiment": 0.85,
+      "event_score": 0.9,
+      "macro_sensitivity": 0.8,
+      "risk_score": 0.65,
+      "final_score": 0.82,
+      "confidence": 0.75,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.6,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "event_candidate/market_beta_candidate",
+      "reasons": [
+        "AMD强劲业绩带动半导体板块上涨",
+        "AI需求持续增长推动半导体行业",
+        "技术指标显示强劲多头趋势",
+        "高流动性适合量化交易"
+      ],
+      "risks": [
+        "3倍杠杆放大波动风险",
+        "板块集中度风险较高"
+      ],
+      "sources": [
+        "yahoo_soxl_semis_headlines",
+        "technical_analysis"
+      ]
+    },
+    {
+      "rank": 2,
+      "symbol": "AMD",
+      "vt_symbol": "AMD.SMART",
+      "name": "Advanced Micro Devices",
+      "asset_type": "Stock",
+      "sector": "Semiconductor",
+      "liquidity_score": 0.88,
+      "trend_score": 0.95,
+      "volatility_score": 0.7,
+      "news_sentiment": 0.9,
+      "event_score": 0.95,
+      "macro_sensitivity": 0.75,
+      "risk_score": 0.6,
+      "final_score": 0.8,
+      "confidence": 0.8,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.5,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "event_candidate/momentum_candidate",
+      "reasons": [
+        "业绩超预期带动股价大涨",
+        "AI数据中心需求强劲增长",
+        "技术面突破关键阻力位",
+        "机构评级上调"
+      ],
+      "risks": [
+        "估值偏高存在回调风险",
+        "竞争加剧可能影响市场份额"
+      ],
+      "sources": [
+        "yahoo_soxl_semis_headlines",
+        "quote_data",
+        "technical_analysis"
+      ]
+    },
+    {
+      "rank": 3,
+      "symbol": "NVDA",
+      "vt_symbol": "NVDA.SMART",
+      "name": "NVIDIA",
+      "asset_type": "Stock",
+      "sector": "Semiconductor",
+      "liquidity_score": 0.92,
+      "trend_score": 0.85,
+      "volatility_score": 0.65,
+      "news_sentiment": 0.8,
+      "event_score": 0.8,
+      "macro_sensitivity": 0.7,
+      "risk_score": 0.55,
+      "final_score": 0.78,
+      "confidence": 0.85,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.4,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "market_beta_candidate/value_candidate",
+      "reasons": [
+        "AI行业龙头地位稳固",
+        "技术指标显示稳定上升趋势",
+        "高流动性适合机构配置",
+        "估值相对合理"
+      ],
+      "risks": [
+        "市场竞争加剧",
+        "监管政策不确定性"
+      ],
+      "sources": [
+        "yahoo_soxl_semis_headlines",
+        "quote_data",
+        "technical_analysis"
+      ]
+    },
+    {
+      "rank": 4,
+      "symbol": "SMH",
+      "vt_symbol": "SMH.SMART",
+      "name": "VanEck Semiconductor ETF",
+      "asset_type": "ETF",
+      "sector": "Semiconductor",
+      "liquidity_score": 0.8,
+      "trend_score": 0.88,
+      "volatility_score": 0.6,
+      "news_sentiment": 0.75,
+      "event_score": 0.85,
+      "macro_sensitivity": 0.75,
+      "risk_score": 0.5,
+      "final_score": 0.75,
+      "confidence": 0.8,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.4,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "market_beta_candidate/sector_rotation",
+      "reasons": [
+        "分散投资半导体全产业链",
+        "技术面显示稳健上升趋势",
+        "适合中长期配置",
+        "风险收益比较均衡"
+      ],
+      "risks": [
+        "板块系统性风险",
+        "行业周期波动"
+      ],
+      "sources": [
+        "yahoo_soxl_semis_headlines",
+        "quote_data",
+        "technical_analysis"
+      ]
+    },
+    {
+      "rank": 5,
+      "symbol": "ASML",
+      "vt_symbol": "ASML.SMART",
+      "name": "ASML Holding ADR",
+      "asset_type": "Stock",
+      "sector": "Semiconductor",
+      "liquidity_score": 0.75,
+      "trend_score": 0.8,
+      "volatility_score": 0.55,
+      "news_sentiment": 0.7,
+      "event_score": 0.7,
+      "macro_sensitivity": 0.65,
+      "risk_score": 0.45,
+      "final_score": 0.7,
+      "confidence": 0.75,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.3,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "value_candidate/defensive_play",
+      "reasons": [
+        "半导体设备龙头地位",
+        "技术壁垒较高",
+        "估值相对合理",
+        "长期增长前景稳定"
+      ],
+      "risks": [
+        "地缘政治风险",
+        "客户集中度较高"
+      ],
+      "sources": [
+        "quote_data",
+        "technical_analysis"
+      ]
+    },
+    {
+      "rank": 6,
+      "symbol": "AVGO",
+      "vt_symbol": "AVGO.SMART",
+      "name": "Broadcom",
+      "asset_type": "Stock",
+      "sector": "Semiconductor",
+      "liquidity_score": 0.78,
+      "trend_score": 0.75,
+      "volatility_score": 0.5,
+      "news_sentiment": 0.65,
+      "event_score": 0.6,
+      "macro_sensitivity": 0.6,
+      "risk_score": 0.4,
+      "final_score": 0.65,
+      "confidence": 0.7,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.2,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "value_candidate/income_candidate",
+      "reasons": [
+        "多元化业务结构",
+        "稳定的现金流",
+        "股息收益率可观",
+        "防御性较强"
+      ],
+      "risks": [
+        "增长动力相对平缓",
+        "并购整合风险"
+      ],
+      "sources": [
+        "quote_data",
+        "technical_analysis"
+      ]
+    }
+  ],
+  "rejected_candidates": [
+    "SOXX",
+    "TQQQ",
+    "TSM",
+    "AMAT",
+    "LRCX",
+    "MU",
+    "INTC",
+    "SPY",
+    "QQQ"
+  ],
+  "portfolio_guidance": {
+    "allow_new_long_candidates": 4,
+    "max_total_position_pct": 0.3,
+    "notes": [
+      "重点关注半导体板块机会",
+      "建议分批建仓控制风险",
+      "密切关注AMD业绩持续性",
+      "注意杠杆ETF的波动风险"
+    ]
+  },
+  "data_quality": {
+    "evidence_count": 16,
+    "candidate_count": 15,
+    "confidence": 0.75,
+    "warnings": [
+      "部分技术指标数据存在缺失",
+      "新闻情绪分析基于有限样本"
+    ]
+  }
+}

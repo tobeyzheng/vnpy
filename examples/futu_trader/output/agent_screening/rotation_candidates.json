@@ -1,0 +1,296 @@
+{
+  "agent": "MarketResearchScreenerAgent",
+  "as_of": "2026-05-06T14:56:30.587626+00:00",
+  "decision_time": "2026-05-06T14:56:30.587626+00:00",
+  "market": "US",
+  "selected_targets": [
+    {
+      "rank": 1,
+      "symbol": "GOOGL",
+      "vt_symbol": "GOOGL.SMART",
+      "name": "谷歌-A",
+      "asset_type": "Stock",
+      "sector": "互联网信息服务",
+      "liquidity_score": 0.85,
+      "trend_score": 0.92,
+      "volatility_score": 0.65,
+      "news_sentiment": 0.8,
+      "event_score": 0.7,
+      "macro_sensitivity": 0.75,
+      "risk_score": 0.3,
+      "final_score": 0.78,
+      "confidence": 0.75,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.7,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "event_candidate/market_beta_candidate",
+      "reasons": [
+        "强劲的AI业务增长，20日涨幅达25.12%",
+        "受益于AMD业绩带动的科技板块上涨",
+        "估值相对合理，PE 30.28"
+      ],
+      "risks": [
+        "估值偏高，存在回调风险",
+        "宏观政策不确定性"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105713Z"
+      ]
+    },
+    {
+      "rank": 2,
+      "symbol": "MSFT",
+      "vt_symbol": "MSFT.SMART",
+      "name": "微软",
+      "asset_type": "Stock",
+      "sector": "软件服务",
+      "liquidity_score": 0.9,
+      "trend_score": 0.85,
+      "volatility_score": 0.7,
+      "news_sentiment": 0.75,
+      "event_score": 0.65,
+      "macro_sensitivity": 0.7,
+      "risk_score": 0.25,
+      "final_score": 0.76,
+      "confidence": 0.8,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.65,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "market_beta_candidate/cta_candidate",
+      "reasons": [
+        "AI基础设施需求强劲，估值合理(PE 24.71)",
+        "20日涨幅10.85%，趋势稳定",
+        "高流动性，适合量化策略"
+      ],
+      "risks": [
+        "科技板块整体估值偏高",
+        "竞争加剧风险"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105704Z"
+      ]
+    },
+    {
+      "rank": 3,
+      "symbol": "AMZN",
+      "vt_symbol": "AMZN.SMART",
+      "name": "亚马逊",
+      "asset_type": "Stock",
+      "sector": "互联网零售",
+      "liquidity_score": 0.88,
+      "trend_score": 0.88,
+      "volatility_score": 0.6,
+      "news_sentiment": 0.7,
+      "event_score": 0.6,
+      "macro_sensitivity": 0.65,
+      "risk_score": 0.35,
+      "final_score": 0.72,
+      "confidence": 0.7,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.6,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "market_beta_candidate",
+      "reasons": [
+        "电商和云业务双轮驱动，20日涨幅24.20%",
+        "受益于消费复苏预期",
+        "年初至今涨幅19.05%"
+      ],
+      "risks": [
+        "估值偏高(PE 32.87)",
+        "零售业务面临竞争压力"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105719Z"
+      ]
+    },
+    {
+      "rank": 4,
+      "symbol": "META",
+      "vt_symbol": "META.SMART",
+      "name": "Meta Platforms",
+      "asset_type": "Stock",
+      "sector": "互联网信息服务",
+      "liquidity_score": 0.82,
+      "trend_score": 0.6,
+      "volatility_score": 0.55,
+      "news_sentiment": 0.65,
+      "event_score": 0.55,
+      "macro_sensitivity": 0.7,
+      "risk_score": 0.4,
+      "final_score": 0.68,
+      "confidence": 0.65,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.4,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "AI业务布局积极，当日涨幅2.01%",
+        "估值相对合理(PE 22.44)"
+      ],
+      "risks": [
+        "5日跌幅-7.77%，短期趋势偏弱",
+        "年初至今跌幅-6.43%"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105728Z"
+      ]
+    },
+    {
+      "rank": 5,
+      "symbol": "ORCL",
+      "vt_symbol": "ORCL.SMART",
+      "name": "甲骨文",
+      "asset_type": "Stock",
+      "sector": "软件服务",
+      "liquidity_score": 0.75,
+      "trend_score": 0.95,
+      "volatility_score": 0.7,
+      "news_sentiment": 0.6,
+      "event_score": 0.5,
+      "macro_sensitivity": 0.6,
+      "risk_score": 0.45,
+      "final_score": 0.65,
+      "confidence": 0.6,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.3,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "20日涨幅31.45%，表现强劲",
+        "云业务增长预期"
+      ],
+      "risks": [
+        "估值偏高(PE 33.78)",
+        "年初至今跌幅-2.86%"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105802Z"
+      ]
+    },
+    {
+      "rank": 6,
+      "symbol": "LLY",
+      "vt_symbol": "LLY.SMART",
+      "name": "礼来制药",
+      "asset_type": "Stock",
+      "sector": "制药",
+      "liquidity_score": 0.7,
+      "trend_score": 0.55,
+      "volatility_score": 0.5,
+      "news_sentiment": 0.5,
+      "event_score": 0.4,
+      "macro_sensitivity": 0.4,
+      "risk_score": 0.35,
+      "final_score": 0.58,
+      "confidence": 0.55,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.2,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "医药板块防御性较强",
+        "5日涨幅16.78%表现良好"
+      ],
+      "risks": [
+        "估值极高(PE 35.31, PB 28.41)",
+        "年初至今跌幅-7.34%"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105732Z"
+      ]
+    },
+    {
+      "rank": 7,
+      "symbol": "CRM",
+      "vt_symbol": "CRM.SMART",
+      "name": "赛富时",
+      "asset_type": "Stock",
+      "sector": "软件服务",
+      "liquidity_score": 0.65,
+      "trend_score": 0.5,
+      "volatility_score": 0.6,
+      "news_sentiment": 0.4,
+      "event_score": 0.3,
+      "macro_sensitivity": 0.5,
+      "risk_score": 0.5,
+      "final_score": 0.52,
+      "confidence": 0.5,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.15,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "估值相对合理(PE 23.58)"
+      ],
+      "risks": [
+        "当日跌幅-1.64%，年初至今跌幅-30.39%",
+        "趋势偏弱"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105824Z"
+      ]
+    },
+    {
+      "rank": 8,
+      "symbol": "PLTR",
+      "vt_symbol": "PLTR.SMART",
+      "name": "Palantir",
+      "asset_type": "Stock",
+      "sector": "软件服务",
+      "liquidity_score": 0.6,
+      "trend_score": 0.3,
+      "volatility_score": 0.7,
+      "news_sentiment": 0.3,
+      "event_score": 0.2,
+      "macro_sensitivity": 0.6,
+      "risk_score": 0.6,
+      "final_score": 0.45,
+      "confidence": 0.4,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.1,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "AI相关概念股"
+      ],
+      "risks": [
+        "估值极高(PE 150.91)",
+        "当日跌幅-1.18%，年初至今跌幅-24.44%",
+        "趋势明显偏弱"
+      ],
+      "sources": [
+        "neodata-stock:20260506T105816Z"
+      ]
+    }
+  ],
+  "rejected_candidates": [
+    "NOW",
+    "PANW",
+    "CRWD",
+    "CEG",
+    "VST",
+    "ETN",
+    "GEV",
+    "XLU",
+    "XLV",
+    "XLF",
+    "GLD"
+  ],
+  "portfolio_guidance": {
+    "allow_new_long_candidates": 3,
+    "max_total_position_pct": 0.6,
+    "notes": [
+      "优先关注AI和科技板块，受益于AMD业绩带动的半导体板块上涨",
+      "注意控制仓位，当前宏观风险中等(0.5)"
+    ]
+  },
+  "data_quality": {
+    "evidence_count": 8,
+    "candidate_count": 19,
+    "confidence": 0.7,
+    "warnings": [
+      "ETF数据获取失败，仅基于股票数据进行分析",
+      "部分候选股票缺乏详细数据"
+    ]
+  }
+}

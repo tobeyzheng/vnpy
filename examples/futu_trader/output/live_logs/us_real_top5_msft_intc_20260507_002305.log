@@ -1,0 +1,48 @@
+启动 US 独立观察池交易器，trade=True symbols=['SOXL.SMART', 'MPWR.SMART', 'AMD.SMART', 'NVDA.SMART', 'GOOGL.SMART', 'MSFT.SMART', 'INTC.SMART']
+2026-05-07 00:23:06.177 | INFO | MainEngine | 连接登录 -> FUTU
+LOG MainEngine: 连接登录 -> FUTU
+2026-05-07 00:23:06,212 | 62178 | 8308150080 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7457827292289585401(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x111f78050>
+2026-05-07 00:23:06.212 | INFO | FUTU | 行情接口连接成功
+LOG FUTU: 行情接口连接成功
+2026-05-07 00:23:06,229 | 62178 | 8308150080 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7457827292355461271(2) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x111f79550>
+2026-05-07 00:23:06.232 | INFO | FUTU | 交易接口连接成功
+LOG FUTU: 交易接口连接成功
+2026-05-07 00:23:10.547 | INFO | FUTU | 合约信息查询成功
+LOG FUTU: 合约信息查询成功
+2026-05-07 00:23:14.238 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='SOXL', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='SOXL', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.289 | INFO | FUTU | 订阅行情成功：SOXL.SMART
+LOG FUTU: 订阅行情成功：SOXL.SMART
+2026-05-07 00:23:14.290 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='MPWR', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='MPWR', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.343 | INFO | FUTU | 订阅行情成功：MPWR.SMART
+LOG FUTU: 订阅行情成功：MPWR.SMART
+2026-05-07 00:23:14.344 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='AMD', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='AMD', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.395 | INFO | FUTU | 订阅行情成功：AMD.SMART
+LOG FUTU: 订阅行情成功：AMD.SMART
+2026-05-07 00:23:14.395 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='NVDA', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='NVDA', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.451 | INFO | FUTU | 订阅行情成功：NVDA.SMART
+LOG FUTU: 订阅行情成功：NVDA.SMART
+2026-05-07 00:23:14.451 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='GOOGL', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='GOOGL', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.512 | INFO | FUTU | 订阅行情成功：GOOGL.SMART
+LOG FUTU: 订阅行情成功：GOOGL.SMART
+2026-05-07 00:23:14.513 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='MSFT', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='MSFT', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.563 | INFO | FUTU | 订阅行情成功：MSFT.SMART
+LOG FUTU: 订阅行情成功：MSFT.SMART
+2026-05-07 00:23:14.563 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='INTC', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='INTC', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:23:14.702 | INFO | FUTU | 订阅行情成功：INTC.SMART
+LOG FUTU: 订阅行情成功：INTC.SMART
+INITIAL_RISK_CHECK {'budget_base': 500.0, 'max_total_budget': 500.0, 'used_budget': 0.0, 'remaining_budget': 500.0, 'daily_loss_with_fees': 0.0, 'daily_loss_limit': 50.0, 'order_count': 0, 'max_trades': 10, 'budget_ok': True, 'loss_ok': True, 'trade_count_ok': True}
+RISK_CHECK {'budget_base': 500.0, 'max_total_budget': 500.0, 'used_budget': 0.0, 'remaining_budget': 500.0, 'daily_loss_with_fees': 0.0, 'daily_loss_limit': 50.0, 'order_count': 0, 'max_trades': 10, 'budget_ok': True, 'loss_ok': True, 'trade_count_ok': True}
+SIGNAL SOXL.SMART price=160.340 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL MPWR.SMART price=1649.850 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL AMD.SMART price=411.580 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL NVDA.SMART price=205.140 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL GOOGL.SMART price=398.940 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL MSFT.SMART price=414.420 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL INTC.SMART price=111.060 pos=0 target=0 diff=0 reason=trend_entry

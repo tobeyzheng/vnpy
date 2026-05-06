@@ -1,0 +1,320 @@
+{
+  "agent": "MarketResearchScreenerAgent",
+  "as_of": "2026-05-06T14:46:22.745992+00:00",
+  "decision_time": "2026-05-06T14:46:22.745992+00:00",
+  "market": "US",
+  "selected_targets": [
+    {
+      "rank": 1,
+      "symbol": "MPWR",
+      "vt_symbol": "MPWR.SMART",
+      "name": "美国芯源",
+      "asset_type": "Stock",
+      "sector": "半导体",
+      "liquidity_score": 0.85,
+      "trend_score": 0.92,
+      "volatility_score": 0.65,
+      "news_sentiment": 0.8,
+      "event_score": 0.85,
+      "macro_sensitivity": 0.9,
+      "risk_score": 0.25,
+      "final_score": 0.82,
+      "confidence": 0.75,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.7,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "cta_candidate/event_candidate",
+      "reasons": [
+        "高成长性AI芯片公司，PE合理",
+        "技术面强势，均线多头排列",
+        "受益于AMD业绩带动板块上涨"
+      ],
+      "risks": [
+        "估值较高",
+        "行业周期性风险"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 2,
+      "symbol": "MRVL",
+      "vt_symbol": "MRVL.SMART",
+      "name": "迈威尔科技",
+      "asset_type": "Stock",
+      "sector": "半导体",
+      "liquidity_score": 0.88,
+      "trend_score": 0.78,
+      "volatility_score": 0.7,
+      "news_sentiment": 0.75,
+      "event_score": 0.8,
+      "macro_sensitivity": 0.85,
+      "risk_score": 0.3,
+      "final_score": 0.78,
+      "confidence": 0.72,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.6,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "market_beta_candidate/cta_candidate",
+      "reasons": [
+        "数据中心芯片需求强劲",
+        "技术面稳定，MACD金叉",
+        "估值相对合理"
+      ],
+      "risks": [
+        "竞争激烈",
+        "毛利率压力"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 3,
+      "symbol": "TER",
+      "vt_symbol": "TER.SMART",
+      "name": "泰瑞达",
+      "asset_type": "Stock",
+      "sector": "半导体设备",
+      "liquidity_score": 0.75,
+      "trend_score": 0.82,
+      "volatility_score": 0.6,
+      "news_sentiment": 0.7,
+      "event_score": 0.75,
+      "macro_sensitivity": 0.8,
+      "risk_score": 0.35,
+      "final_score": 0.75,
+      "confidence": 0.68,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.5,
+      "eligible_for_quant_trade": true,
+      "strategy_hint": "event_candidate/market_beta_candidate",
+      "reasons": [
+        "半导体测试设备龙头",
+        "技术面突破前期高点",
+        "受益于芯片产能扩张"
+      ],
+      "risks": [
+        "设备订单周期性",
+        "客户集中度风险"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 4,
+      "symbol": "COHR",
+      "vt_symbol": "COHR.SMART",
+      "name": "Coherent Corp.",
+      "asset_type": "Stock",
+      "sector": "半导体材料",
+      "liquidity_score": 0.72,
+      "trend_score": 0.75,
+      "volatility_score": 0.65,
+      "news_sentiment": 0.65,
+      "event_score": 0.7,
+      "macro_sensitivity": 0.75,
+      "risk_score": 0.4,
+      "final_score": 0.72,
+      "confidence": 0.65,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.4,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only/market_beta_candidate",
+      "reasons": [
+        "激光技术领先",
+        "技术面企稳反弹",
+        "AI基础设施需求增长"
+      ],
+      "risks": [
+        "盈利能力波动",
+        "整合风险"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 5,
+      "symbol": "MCHP",
+      "vt_symbol": "MCHP.SMART",
+      "name": "微芯科技",
+      "asset_type": "Stock",
+      "sector": "半导体",
+      "liquidity_score": 0.7,
+      "trend_score": 0.68,
+      "volatility_score": 0.55,
+      "news_sentiment": 0.6,
+      "event_score": 0.65,
+      "macro_sensitivity": 0.7,
+      "risk_score": 0.45,
+      "final_score": 0.68,
+      "confidence": 0.62,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.3,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "微控制器龙头",
+        "估值相对较低",
+        "技术面震荡整理"
+      ],
+      "risks": [
+        "增长放缓",
+        "竞争加剧"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 6,
+      "symbol": "ON",
+      "vt_symbol": "ON.SMART",
+      "name": "安森美半导体",
+      "asset_type": "Stock",
+      "sector": "功率半导体",
+      "liquidity_score": 0.68,
+      "trend_score": 0.65,
+      "volatility_score": 0.6,
+      "news_sentiment": 0.55,
+      "event_score": 0.6,
+      "macro_sensitivity": 0.65,
+      "risk_score": 0.5,
+      "final_score": 0.65,
+      "confidence": 0.6,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.25,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "汽车电子需求增长",
+        "技术面弱势反弹",
+        "估值合理"
+      ],
+      "risks": [
+        "汽车行业周期性",
+        "毛利率压力"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 7,
+      "symbol": "STM",
+      "vt_symbol": "STM.SMART",
+      "name": "意法半导体",
+      "asset_type": "Stock",
+      "sector": "半导体",
+      "liquidity_score": 0.65,
+      "trend_score": 0.62,
+      "volatility_score": 0.58,
+      "news_sentiment": 0.5,
+      "event_score": 0.55,
+      "macro_sensitivity": 0.6,
+      "risk_score": 0.55,
+      "final_score": 0.62,
+      "confidence": 0.58,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.2,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "汽车和工业半导体",
+        "技术面弱势",
+        "欧洲半导体代表"
+      ],
+      "risks": [
+        "欧洲经济疲软",
+        "增长放缓"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    },
+    {
+      "rank": 8,
+      "symbol": "GFS",
+      "vt_symbol": "GFS.SMART",
+      "name": "格芯",
+      "asset_type": "Stock",
+      "sector": "晶圆代工",
+      "liquidity_score": 0.62,
+      "trend_score": 0.58,
+      "volatility_score": 0.65,
+      "news_sentiment": 0.45,
+      "event_score": 0.5,
+      "macro_sensitivity": 0.55,
+      "risk_score": 0.6,
+      "final_score": 0.58,
+      "confidence": 0.55,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.15,
+      "eligible_for_quant_trade": false,
+      "strategy_hint": "watch_only",
+      "reasons": [
+        "晶圆代工第二梯队",
+        "技术面弱势",
+        "行业产能过剩风险"
+      ],
+      "risks": [
+        "竞争激烈",
+        "资本开支压力"
+      ],
+      "sources": [
+        "实时行情数据",
+        "技术指标分析",
+        "财务数据"
+      ]
+    }
+  ],
+  "rejected_candidates": [
+    "UMC",
+    "ALAB",
+    "CRDO",
+    "ENTG",
+    "AMKR",
+    "LSCC",
+    "RMBS",
+    "FORM",
+    "SLAB",
+    "DIOD",
+    "ACLS",
+    "VECO"
+  ],
+  "portfolio_guidance": {
+    "allow_new_long_candidates": 3,
+    "max_total_position_pct": 0.3,
+    "notes": [
+      "半导体板块受AMD业绩提振情绪积极",
+      "重点关注AI相关芯片公司",
+      "注意估值风险和行业周期性"
+    ]
+  },
+  "data_quality": {
+    "evidence_count": 16,
+    "candidate_count": 20,
+    "confidence": 0.7,
+    "warnings": [
+      "部分小市值股票流动性较差",
+      "财务数据为2025年年报，需关注最新季报"
+    ]
+  }
+}

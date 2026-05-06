@@ -1,0 +1,25 @@
+{
+  "symbol": "MSFT",
+  "futu_code": "US.MSFT",
+  "environment": "模拟",
+  "quantity": 1,
+  "buy_order": {
+    "status": "submitted",
+    "order_id": "7932153",
+    "type": "limit",
+    "side": "buy",
+    "price": 414.0,
+    "remark": "CB_MSFT_BUY_1"
+  },
+  "stop_loss": {
+    "status": "broker_order_rejected_in_simulate",
+    "type_attempted": ["STOP_LIMIT", "STOP"],
+    "side": "sell",
+    "trigger_price": 393.06,
+    "limit_price": 393.06,
+    "reason": "Futu 模拟交易不支持止损限价单/止损市价单",
+    "fallback": "本地条件止损：买入成交后，如 MSFT <= 393.06，手动或由监控程序提交卖出限价/市价单"
+  },
+  "take_profit_reference": 433.7,
+  "created_by": "CodeBuddy"
+}

@@ -1,0 +1,380 @@
+{
+  "agent": "MarketWatchlistAgent",
+  "market": "HK",
+  "as_of": "2026-05-06T15:24:39.373650+00:00",
+  "universe": "examples/futu_trader/config/hk_universe.json",
+  "selected_targets": [
+    {
+      "symbol": "00883",
+      "vt_symbol": "00883.SEHK",
+      "name": "中国海洋石油",
+      "asset_type": "Stock",
+      "sector": "Energy",
+      "futu_code": "HK.00883",
+      "market_cap": 1332739909711.36,
+      "turnover": 3364745213.0,
+      "liquidity_score": 0.866087,
+      "valuation_score": 0.75,
+      "technical": {
+        "last_price": 28.04,
+        "volume_ratio": 1.608,
+        "sma20": 27.46,
+        "sma60": 27.080667,
+        "return_20d": 0.03775,
+        "rsi14": 65.635739,
+        "atr_pct": 0.026951,
+        "max_drawdown_120d": 0.143607,
+        "trend_score": 1.0,
+        "risk_score": 0.501412
+      },
+      "capital": {
+        "net_inflow": 29623700.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:58"
+      },
+      "final_score": 0.797201,
+      "confidence": 0.85,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.797201,
+      "strategy_hint": "market_watchlist_cta"
+    },
+    {
+      "symbol": "00388",
+      "vt_symbol": "00388.SEHK",
+      "name": "香港交易所",
+      "asset_type": "Stock",
+      "sector": "Financial Exchange",
+      "futu_code": "HK.00388",
+      "market_cap": 534012900174.0,
+      "turnover": 1567103829.0,
+      "liquidity_score": 0.835918,
+      "valuation_score": 0.65,
+      "technical": {
+        "last_price": 421.2,
+        "volume_ratio": 0.877,
+        "sma20": 412.56,
+        "sma60": 405.867333,
+        "return_20d": 0.063636,
+        "rsi14": 56.818182,
+        "atr_pct": 0.018145,
+        "max_drawdown_120d": 0.126302,
+        "trend_score": 0.75,
+        "risk_score": 0.448884
+      },
+      "capital": {
+        "net_inflow": 34180220.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:58"
+      },
+      "final_score": 0.698055,
+      "confidence": 0.85,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.698055,
+      "strategy_hint": "market_watchlist_cta"
+    },
+    {
+      "symbol": "02318",
+      "vt_symbol": "02318.SEHK",
+      "name": "中国平安",
+      "asset_type": "Stock",
+      "sector": "Insurance",
+      "futu_code": "HK.02318",
+      "market_cap": 1162510616079.0,
+      "turnover": 1640470647.0,
+      "liquidity_score": 0.837724,
+      "valuation_score": 0.75,
+      "technical": {
+        "last_price": 64.2,
+        "volume_ratio": 0.663,
+        "sma20": 62.13,
+        "sma60": 64.420833,
+        "return_20d": 0.066445,
+        "rsi14": 57.819905,
+        "atr_pct": 0.021584,
+        "max_drawdown_120d": 0.217155,
+        "trend_score": 0.75,
+        "risk_score": 0.553492
+      },
+      "capital": {
+        "net_inflow": 101784650.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:57"
+      },
+      "final_score": 0.697635,
+      "confidence": 0.85,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.697635,
+      "strategy_hint": "market_watchlist_cta"
+    },
+    {
+      "symbol": "02800",
+      "vt_symbol": "02800.SEHK",
+      "name": "盈富基金",
+      "asset_type": "ETF",
+      "sector": "Hang Seng Index",
+      "futu_code": "HK.02800",
+      "market_cap": null,
+      "turnover": 15982384355.0,
+      "liquidity_score": 0.927604,
+      "valuation_score": 0.55,
+      "technical": {
+        "last_price": 26.3,
+        "volume_ratio": 1.028,
+        "sma20": 26.1165,
+        "sma60": 26.046167,
+        "return_20d": 0.043237,
+        "rsi14": 53.501401,
+        "atr_pct": 0.014367,
+        "max_drawdown_120d": 0.12433,
+        "trend_score": 0.75,
+        "risk_score": 0.431799
+      },
+      "capital": {
+        "net_inflow": -2507576070.0,
+        "capital_score": 0.35,
+        "update_time": "2026-05-06 15:59:58"
+      },
+      "final_score": 0.639371,
+      "confidence": 0.85,
+      "trade_filter": "allow_long",
+      "position_multiplier": 0.639371,
+      "strategy_hint": "market_watchlist_cta"
+    },
+    {
+      "symbol": "01347",
+      "vt_symbol": "01347.SEHK",
+      "name": "华虹半导体",
+      "asset_type": "Stock",
+      "sector": "Semiconductor Foundry",
+      "futu_code": "HK.01347",
+      "market_cap": 226065948309.3,
+      "turnover": 5926047187.0,
+      "liquidity_score": 0.888433,
+      "valuation_score": 0.25,
+      "technical": {
+        "last_price": 130.1,
+        "volume_ratio": 1.435,
+        "sma20": 101.8675,
+        "sma60": 95.66,
+        "return_20d": 0.639572,
+        "rsi14": 78.116147,
+        "atr_pct": 0.067036,
+        "max_drawdown_120d": 0.367156,
+        "trend_score": 1.0,
+        "risk_score": 0.918145
+      },
+      "capital": {
+        "net_inflow": 393778800.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:58"
+      },
+      "final_score": 0.663043,
+      "confidence": 0.85,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.331522,
+      "strategy_hint": "watch_only"
+    },
+    {
+      "symbol": "01211",
+      "vt_symbol": "01211.SEHK",
+      "name": "比亚迪股份",
+      "asset_type": "Stock",
+      "sector": "EV/Battery",
+      "futu_code": "HK.01211",
+      "market_cap": 901690839178.5,
+      "turnover": 3510556760.0,
+      "liquidity_score": 0.867761,
+      "valuation_score": 0.65,
+      "technical": {
+        "last_price": 98.9,
+        "volume_ratio": 1.256,
+        "sma20": 105.975,
+        "sma60": 101.3025,
+        "return_20d": -0.048123,
+        "rsi14": 39.5,
+        "atr_pct": 0.042287,
+        "max_drawdown_120d": 0.126325,
+        "trend_score": 0.5,
+        "risk_score": 0.545471
+      },
+      "capital": {
+        "net_inflow": 50548875.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:59"
+      },
+      "final_score": 0.600844,
+      "confidence": 0.85,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.300422,
+      "strategy_hint": "watch_only"
+    },
+    {
+      "symbol": "01024",
+      "vt_symbol": "01024.SEHK",
+      "name": "快手-W",
+      "asset_type": "Stock",
+      "sector": "Internet Media",
+      "futu_code": "HK.01024",
+      "market_cap": 195625829295.0,
+      "turnover": 2643831688.0,
+      "liquidity_score": 0.856567,
+      "valuation_score": 0.75,
+      "technical": {
+        "last_price": 45.0,
+        "volume_ratio": 1.946,
+        "sma20": 44.887,
+        "sma60": 55.371833,
+        "return_20d": 0.002227,
+        "rsi14": 47.189097,
+        "atr_pct": 0.031397,
+        "max_drawdown_120d": 0.490295,
+        "trend_score": 0.5,
+        "risk_score": 0.675587
+      },
+      "capital": {
+        "net_inflow": 206306468.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:58"
+      },
+      "final_score": 0.594647,
+      "confidence": 0.85,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.297323,
+      "strategy_hint": "watch_only"
+    },
+    {
+      "symbol": "09988",
+      "vt_symbol": "09988.SEHK",
+      "name": "阿里巴巴-W",
+      "asset_type": "Stock",
+      "sector": "Internet/Cloud",
+      "futu_code": "HK.09988",
+      "market_cap": 2575620611163.6,
+      "turnover": 15604618769.0,
+      "liquidity_score": 0.926659,
+      "valuation_score": 0.65,
+      "technical": {
+        "last_price": 134.2,
+        "volume_ratio": 1.846,
+        "sma20": 130.04,
+        "sma60": 135.705,
+        "return_20d": 0.132489,
+        "rsi14": 57.070707,
+        "atr_pct": 0.035448,
+        "max_drawdown_120d": 0.317003,
+        "trend_score": 0.5,
+        "risk_score": 0.691793
+      },
+      "capital": {
+        "net_inflow": 2262025240.0,
+        "capital_score": 0.65,
+        "update_time": "2026-05-06 15:59:59"
+      },
+      "final_score": 0.58773,
+      "confidence": 0.85,
+      "trade_filter": "watch_only",
+      "position_multiplier": 0.293865,
+      "strategy_hint": "watch_only"
+    }
+  ],
+  "agent_result": {
+    "market": "HK",
+    "sorted_watchlist": [
+      {
+        "symbol": "00883",
+        "name": "中国海洋石油",
+        "final_rank": 1,
+        "trend_strength": 1.0,
+        "liquidity_score": 0.866,
+        "valuation_quality": 0.75,
+        "risk_level": "medium",
+        "trade_filter": "allow_long",
+        "position_weight": 0.8
+      },
+      {
+        "symbol": "00388",
+        "name": "香港交易所",
+        "final_rank": 2,
+        "trend_strength": 0.75,
+        "liquidity_score": 0.836,
+        "valuation_quality": 0.65,
+        "risk_level": "low",
+        "trade_filter": "allow_long",
+        "position_weight": 0.7
+      },
+      {
+        "symbol": "02318",
+        "name": "中国平安",
+        "final_rank": 3,
+        "trend_strength": 0.75,
+        "liquidity_score": 0.838,
+        "valuation_quality": 0.75,
+        "risk_level": "medium",
+        "trade_filter": "allow_long",
+        "position_weight": 0.7
+      },
+      {
+        "symbol": "02800",
+        "name": "盈富基金",
+        "final_rank": 4,
+        "trend_strength": 0.75,
+        "liquidity_score": 0.928,
+        "valuation_quality": 0.55,
+        "risk_level": "low",
+        "trade_filter": "reduce_only",
+        "position_weight": 0.6
+      },
+      {
+        "symbol": "01347",
+        "name": "华虹半导体",
+        "final_rank": 5,
+        "trend_strength": 1.0,
+        "liquidity_score": 0.888,
+        "valuation_quality": 0.25,
+        "risk_level": "high",
+        "trade_filter": "watch_only",
+        "position_weight": 0.3
+      },
+      {
+        "symbol": "09988",
+        "name": "阿里巴巴-W",
+        "final_rank": 6,
+        "trend_strength": 0.5,
+        "liquidity_score": 0.927,
+        "valuation_quality": 0.65,
+        "risk_level": "high",
+        "trade_filter": "watch_only",
+        "position_weight": 0.3
+      },
+      {
+        "symbol": "01211",
+        "name": "比亚迪股份",
+        "final_rank": 7,
+        "trend_strength": 0.5,
+        "liquidity_score": 0.868,
+        "valuation_quality": 0.65,
+        "risk_level": "medium",
+        "trade_filter": "watch_only",
+        "position_weight": 0.3
+      },
+      {
+        "symbol": "01024",
+        "name": "快手-W",
+        "final_rank": 8,
+        "trend_strength": 0.5,
+        "liquidity_score": 0.857,
+        "valuation_quality": 0.75,
+        "risk_level": "high",
+        "trade_filter": "watch_only",
+        "position_weight": 0.3
+      }
+    ],
+    "analysis_timestamp": "2026-05-06T23:24:23+08:00",
+    "market_theme": "能源和金融板块相对稳健，科技股风险较高"
+  },
+  "data_quality": {
+    "candidate_count": 16,
+    "selected_count": 8,
+    "agent_used": true
+  }
+}

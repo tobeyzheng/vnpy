@@ -1,0 +1,40 @@
+启动 US 独立观察池交易器，trade=True symbols=['SOXL.SMART', 'MPWR.SMART', 'AMD.SMART', 'NVDA.SMART', 'GOOGL.SMART']
+2026-05-07 00:05:48.076 | INFO | MainEngine | 连接登录 -> FUTU
+LOG MainEngine: 连接登录 -> FUTU
+2026-05-07 00:05:48,110 | 51822 | 8308150080 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7457822938172349576(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x107c4be00>
+2026-05-07 00:05:48.110 | INFO | FUTU | 行情接口连接成功
+LOG FUTU: 行情接口连接成功
+2026-05-07 00:05:48,125 | 51822 | 8308150080 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7457822938238138160(2) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x110079400>
+2026-05-07 00:05:48.128 | INFO | FUTU | 交易接口连接成功
+LOG FUTU: 交易接口连接成功
+2026-05-07 00:05:52.461 | INFO | FUTU | 合约信息查询成功
+LOG FUTU: 合约信息查询成功
+2026-05-07 00:05:52.465 | INFO | FUTU | 查询成交失败：模拟交易不支持成交数据
+LOG FUTU: 查询成交失败：模拟交易不支持成交数据
+2026-05-07 00:05:56.133 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='SOXL', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='SOXL', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:05:56.182 | INFO | FUTU | 订阅行情成功：SOXL.SMART
+LOG FUTU: 订阅行情成功：SOXL.SMART
+2026-05-07 00:05:56.182 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='MPWR', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='MPWR', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:05:56.233 | INFO | FUTU | 订阅行情成功：MPWR.SMART
+LOG FUTU: 订阅行情成功：MPWR.SMART
+2026-05-07 00:05:56.234 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='AMD', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='AMD', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:05:56.282 | INFO | FUTU | 订阅行情成功：AMD.SMART
+LOG FUTU: 订阅行情成功：AMD.SMART
+2026-05-07 00:05:56.282 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='NVDA', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='NVDA', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:05:56.328 | INFO | FUTU | 订阅行情成功：NVDA.SMART
+LOG FUTU: 订阅行情成功：NVDA.SMART
+2026-05-07 00:05:56.328 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='GOOGL', exchange=<Exchange.SMART: 'SMART'>)
+LOG MainEngine: 订阅行情 -> FUTU：SubscribeRequest(symbol='GOOGL', exchange=<Exchange.SMART: 'SMART'>)
+2026-05-07 00:05:56.374 | INFO | FUTU | 订阅行情成功：GOOGL.SMART
+LOG FUTU: 订阅行情成功：GOOGL.SMART
+INITIAL_RISK_CHECK {'budget_base': 500.0, 'max_total_budget': 500.0, 'used_budget': 416.0, 'remaining_budget': 84.0, 'daily_loss_with_fees': 2.0, 'daily_loss_limit': 50.0, 'order_count': 2, 'max_trades': 10, 'budget_ok': True, 'loss_ok': True, 'trade_count_ok': True}
+RISK_CHECK {'budget_base': 500.0, 'max_total_budget': 500.0, 'used_budget': 416.0, 'remaining_budget': 84.0, 'daily_loss_with_fees': 2.0, 'daily_loss_limit': 50.0, 'order_count': 2, 'max_trades': 10, 'budget_ok': True, 'loss_ok': True, 'trade_count_ok': True}
+SIGNAL SOXL.SMART price=161.100 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL MPWR.SMART price=1650.520 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL AMD.SMART price=415.260 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL NVDA.SMART price=205.310 pos=0 target=0 diff=0 reason=trend_entry
+SIGNAL GOOGL.SMART price=397.530 pos=0 target=0 diff=0 reason=trend_entry

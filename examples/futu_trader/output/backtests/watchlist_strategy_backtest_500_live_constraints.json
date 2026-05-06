@@ -1,0 +1,87 @@
+{
+  "strategy": "llm_strategy_selector_heuristic_backtest",
+  "note": "回测使用无未来函数的本地启发式策略选择器；实盘可启用LLM做当前时点策略选择。",
+  "symbols": [
+    {
+      "symbol": "SOXL",
+      "vt_symbol": "SOXL.SMART",
+      "futu_code": "US.SOXL",
+      "name": "三倍做多半导体ETF-Direxion",
+      "asset_type": "Leveraged ETF",
+      "max_position_pct": 0.15,
+      "min_volume": 1
+    },
+    {
+      "symbol": "MPWR",
+      "vt_symbol": "MPWR.SMART",
+      "futu_code": "US.MPWR",
+      "name": "Monolithic Power Systems",
+      "asset_type": "Stock",
+      "max_position_pct": 0.7,
+      "min_volume": 1
+    },
+    {
+      "symbol": "AMD",
+      "vt_symbol": "AMD.SMART",
+      "futu_code": "US.AMD",
+      "name": "美国超微公司",
+      "asset_type": "Stock",
+      "max_position_pct": 0.5,
+      "min_volume": 1
+    },
+    {
+      "symbol": "NVDA",
+      "vt_symbol": "NVDA.SMART",
+      "futu_code": "US.NVDA",
+      "name": "英伟达",
+      "asset_type": "Stock",
+      "max_position_pct": 0.4,
+      "min_volume": 1
+    },
+    {
+      "symbol": "GOOGL",
+      "vt_symbol": "GOOGL.SMART",
+      "futu_code": "US.GOOGL",
+      "name": "谷歌-A",
+      "asset_type": "Stock",
+      "max_position_pct": 0.7,
+      "min_volume": 1
+    },
+    {
+      "symbol": "MSFT",
+      "vt_symbol": "MSFT.SMART",
+      "futu_code": "US.MSFT",
+      "name": "微软",
+      "asset_type": "Stock",
+      "max_position_pct": 0.65,
+      "min_volume": 1
+    },
+    {
+      "symbol": "INTC",
+      "vt_symbol": "INTC.SMART",
+      "futu_code": "US.INTC",
+      "name": "INTC.SMART",
+      "asset_type": "Stock",
+      "max_position_pct": 1.0,
+      "min_volume": 1
+    }
+  ],
+  "period": {
+    "start": "2025-05-07",
+    "end": "2026-05-06"
+  },
+  "stats": {
+    "initial_capital": 500.0,
+    "final_equity": 500.0,
+    "total_return_pct": 0.0,
+    "annual_return_pct": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_ratio": 0.0,
+    "trade_count": 0,
+    "days": 251
+  },
+  "outputs": {
+    "trades": "/Users/zheng/work/vnpy/examples/futu_trader/output/backtests/watchlist_strategy_backtest_500_live_constraints.trades.csv",
+    "equity": "/Users/zheng/work/vnpy/examples/futu_trader/output/backtests/watchlist_strategy_backtest_500_live_constraints.equity.csv"
+  }
+}
