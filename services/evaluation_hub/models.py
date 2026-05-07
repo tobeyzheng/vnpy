@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -15,6 +15,7 @@ class EvaluationSignal:
     summary: str
     risks: List[str] = field(default_factory=list)
     action_bias: str = "neutral"
+    meta: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
