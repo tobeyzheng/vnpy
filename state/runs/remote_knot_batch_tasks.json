@@ -6,7 +6,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.81,
-        "rsi": 62.612,
+        "rsi": 62.44,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": false,
@@ -14,7 +14,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00700.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.81, \"rsi\": 62.612, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00700.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.81, \"rsi\": 62.44, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     },
     {
       "symbol": "00981.HK",
@@ -22,7 +22,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.8,
-        "rsi": 62.56,
+        "rsi": 60.152,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": false,
@@ -30,7 +30,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00981.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.8, \"rsi\": 62.56, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00981.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.8, \"rsi\": 60.152, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     },
     {
       "symbol": "01810.HK",
@@ -38,7 +38,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.76,
-        "rsi": 55.192,
+        "rsi": 53.892,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": true,
@@ -46,7 +46,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=01810.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.76, \"rsi\": 55.192, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=01810.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.76, \"rsi\": 53.892, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     },
     {
       "symbol": "09988.HK",
@@ -54,7 +54,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.74,
-        "rsi": 67.884,
+        "rsi": 69.97200000000001,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": false,
@@ -62,7 +62,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09988.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.74, \"rsi\": 67.884, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09988.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.74, \"rsi\": 69.97200000000001, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     },
     {
       "symbol": "02432.HK",
@@ -102,7 +102,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.71,
-        "rsi": 83.82,
+        "rsi": 84.744,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": false,
@@ -110,7 +110,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=01347.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.71, \"rsi\": 83.82, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=01347.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.71, \"rsi\": 84.744, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     },
     {
       "symbol": "09868.HK",
@@ -118,7 +118,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.69,
-        "rsi": 62.948,
+        "rsi": 63.28,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": true,
@@ -126,7 +126,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09868.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.69, \"rsi\": 62.948, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09868.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.69, \"rsi\": 63.28, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     },
     {
       "symbol": "09626.HK",
@@ -150,7 +150,7 @@
       "task_type": "evaluation",
       "payload": {
         "trend_score": 0.68,
-        "rsi": 59.78,
+        "rsi": 60.696,
         "risk_score": 0.45,
         "capital_score": 0.75,
         "has_event_catalyst": false,
@@ -158,23 +158,7 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=02382.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.68, \"rsi\": 59.78, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
-    },
-    {
-      "symbol": "09992.HK",
-      "market": "hong_kong",
-      "task_type": "evaluation",
-      "payload": {
-        "trend_score": 0.72,
-        "rsi": 65.868,
-        "risk_score": 0.45,
-        "capital_score": 0.75,
-        "has_event_catalyst": false,
-        "near_resistance": false,
-        "moving_average_bullish": true,
-        "missing_fields": 0
-      },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09992.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.72, \"rsi\": 65.868, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=02382.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.68, \"rsi\": 60.696, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     }
   ],
   "intraday_tasks": [
@@ -183,40 +167,8 @@
       "market": "hong_kong",
       "task_type": "strategy_select",
       "payload": {
-        "trend_score": 0.55,
-        "rsi": 73.413,
-        "risk_score": 0.4,
-        "capital_score": 0.7,
-        "has_event_catalyst": false,
-        "near_resistance": false,
-        "moving_average_bullish": false,
-        "missing_fields": 0
-      },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n任务规划约束：\n- 对于单次策略选择、规则匹配、JSON 分类任务，禁止使用 task_planning\n- 仅当任务涉及多标的、多来源搜集、分步骤汇总时，才允许 task_planning\n\n策略选择优先级（从上到下匹配）：\n1. risk_score > 0.7 或 capital_score < 0.3 -> block_trade\n2. 缺少3个以上关键字段 -> watch_only\n3. RSI > 80 且 trend_score >= 0.8 -> pullback_buy\n4. RSI > 80 且 trend_score < 0.8 -> watch_only\n5. 接近阻力位 + 有明确事件催化 -> breakout_momentum\n6. 趋势健康 + RSI < 70 + 均线多头 -> trend_following\n7. 其他 -> watch_only\n\n请基于以下输入输出严格 JSON。\nsymbol=09988.HK\nmarket=hong_kong\ntask_type=strategy_select\ninput_json={\"trend_score\": 0.55, \"rsi\": 73.413, \"risk_score\": 0.4, \"capital_score\": 0.7, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": false, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
-    },
-    {
-      "symbol": "01810.HK",
-      "market": "hong_kong",
-      "task_type": "strategy_select",
-      "payload": {
-        "trend_score": 0.55,
-        "rsi": 63.894,
-        "risk_score": 0.4,
-        "capital_score": 0.7,
-        "has_event_catalyst": false,
-        "near_resistance": false,
-        "moving_average_bullish": false,
-        "missing_fields": 0
-      },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n任务规划约束：\n- 对于单次策略选择、规则匹配、JSON 分类任务，禁止使用 task_planning\n- 仅当任务涉及多标的、多来源搜集、分步骤汇总时，才允许 task_planning\n\n策略选择优先级（从上到下匹配）：\n1. risk_score > 0.7 或 capital_score < 0.3 -> block_trade\n2. 缺少3个以上关键字段 -> watch_only\n3. RSI > 80 且 trend_score >= 0.8 -> pullback_buy\n4. RSI > 80 且 trend_score < 0.8 -> watch_only\n5. 接近阻力位 + 有明确事件催化 -> breakout_momentum\n6. 趋势健康 + RSI < 70 + 均线多头 -> trend_following\n7. 其他 -> watch_only\n\n请基于以下输入输出严格 JSON。\nsymbol=01810.HK\nmarket=hong_kong\ntask_type=strategy_select\ninput_json={\"trend_score\": 0.55, \"rsi\": 63.894, \"risk_score\": 0.4, \"capital_score\": 0.7, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": false, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
-    },
-    {
-      "symbol": "09868.HK",
-      "market": "hong_kong",
-      "task_type": "strategy_select",
-      "payload": {
         "trend_score": 0.7,
-        "rsi": 69.711,
+        "rsi": 74.979,
         "risk_score": 0.4,
         "capital_score": 0.7,
         "has_event_catalyst": false,
@@ -224,19 +176,53 @@
         "moving_average_bullish": true,
         "missing_fields": 0
       },
-      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n任务规划约束：\n- 对于单次策略选择、规则匹配、JSON 分类任务，禁止使用 task_planning\n- 仅当任务涉及多标的、多来源搜集、分步骤汇总时，才允许 task_planning\n\n策略选择优先级（从上到下匹配）：\n1. risk_score > 0.7 或 capital_score < 0.3 -> block_trade\n2. 缺少3个以上关键字段 -> watch_only\n3. RSI > 80 且 trend_score >= 0.8 -> pullback_buy\n4. RSI > 80 且 trend_score < 0.8 -> watch_only\n5. 接近阻力位 + 有明确事件催化 -> breakout_momentum\n6. 趋势健康 + RSI < 70 + 均线多头 -> trend_following\n7. 其他 -> watch_only\n\n请基于以下输入输出严格 JSON。\nsymbol=09868.HK\nmarket=hong_kong\ntask_type=strategy_select\ninput_json={\"trend_score\": 0.7, \"rsi\": 69.711, \"risk_score\": 0.4, \"capital_score\": 0.7, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n任务规划约束：\n- 对于单次策略选择、规则匹配、JSON 分类任务，禁止使用 task_planning\n- 仅当任务涉及多标的、多来源搜集、分步骤汇总时，才允许 task_planning\n\n策略选择优先级（从上到下匹配）：\n1. risk_score > 0.7 或 capital_score < 0.3 -> block_trade\n2. 缺少3个以上关键字段 -> watch_only\n3. RSI > 80 且 trend_score >= 0.8 -> pullback_buy\n4. RSI > 80 且 trend_score < 0.8 -> watch_only\n5. 接近阻力位 + 有明确事件催化 -> breakout_momentum\n6. 趋势健康 + RSI < 70 + 均线多头 -> trend_following\n7. 其他 -> watch_only\n\n请基于以下输入输出严格 JSON。\nsymbol=09988.HK\nmarket=hong_kong\ntask_type=strategy_select\ninput_json={\"trend_score\": 0.7, \"rsi\": 74.979, \"risk_score\": 0.4, \"capital_score\": 0.7, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+    },
+    {
+      "symbol": "01810.HK",
+      "market": "hong_kong",
+      "task_type": "strategy_select",
+      "payload": {
+        "trend_score": 0.55,
+        "rsi": 62.919,
+        "risk_score": 0.4,
+        "capital_score": 0.7,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": false,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n任务规划约束：\n- 对于单次策略选择、规则匹配、JSON 分类任务，禁止使用 task_planning\n- 仅当任务涉及多标的、多来源搜集、分步骤汇总时，才允许 task_planning\n\n策略选择优先级（从上到下匹配）：\n1. risk_score > 0.7 或 capital_score < 0.3 -> block_trade\n2. 缺少3个以上关键字段 -> watch_only\n3. RSI > 80 且 trend_score >= 0.8 -> pullback_buy\n4. RSI > 80 且 trend_score < 0.8 -> watch_only\n5. 接近阻力位 + 有明确事件催化 -> breakout_momentum\n6. 趋势健康 + RSI < 70 + 均线多头 -> trend_following\n7. 其他 -> watch_only\n\n请基于以下输入输出严格 JSON。\nsymbol=01810.HK\nmarket=hong_kong\ntask_type=strategy_select\ninput_json={\"trend_score\": 0.55, \"rsi\": 62.919, \"risk_score\": 0.4, \"capital_score\": 0.7, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": false, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
+    },
+    {
+      "symbol": "09868.HK",
+      "market": "hong_kong",
+      "task_type": "strategy_select",
+      "payload": {
+        "trend_score": 0.7,
+        "rsi": 69.96,
+        "risk_score": 0.4,
+        "capital_score": 0.7,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n任务规划约束：\n- 对于单次策略选择、规则匹配、JSON 分类任务，禁止使用 task_planning\n- 仅当任务涉及多标的、多来源搜集、分步骤汇总时，才允许 task_planning\n\n策略选择优先级（从上到下匹配）：\n1. risk_score > 0.7 或 capital_score < 0.3 -> block_trade\n2. 缺少3个以上关键字段 -> watch_only\n3. RSI > 80 且 trend_score >= 0.8 -> pullback_buy\n4. RSI > 80 且 trend_score < 0.8 -> watch_only\n5. 接近阻力位 + 有明确事件催化 -> breakout_momentum\n6. 趋势健康 + RSI < 70 + 均线多头 -> trend_following\n7. 其他 -> watch_only\n\n请基于以下输入输出严格 JSON。\nsymbol=09868.HK\nmarket=hong_kong\ntask_type=strategy_select\ninput_json={\"trend_score\": 0.7, \"rsi\": 69.96, \"risk_score\": 0.4, \"capital_score\": 0.7, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}"
     }
   ],
   "dynamic_candidate_tasks": [
     {
       "task_group": "dynamic_candidate_generation",
       "market": "hong_kong",
-      "prompt": "你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 hong_kong 自主挖掘值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。不要 markdown，不要解释。"
+      "target_count": 10,
+      "prompt": "你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 hong_kong 自主挖掘 10 个值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。market 固定为 hong_kong，confidence_source 固定为 knot_agent_dynamic。不要 markdown，不要解释。"
     },
     {
       "task_group": "dynamic_candidate_generation",
       "market": "us",
-      "prompt": "你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 us 自主挖掘值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。不要 markdown，不要解释。"
+      "target_count": 10,
+      "prompt": "你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 us 自主挖掘 10 个值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。market 固定为 us，confidence_source 固定为 knot_agent_dynamic。不要 markdown，不要解释。"
     }
   ],
   "integration_mode": "openclaw-session-orchestrated-remote"

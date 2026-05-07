@@ -15,7 +15,7 @@ def main() -> None:
 
     # refresh payloads
     rows = json.loads((runs / 'candidate_inputs.json').read_text(encoding='utf-8'))
-    hk = [r for r in rows if r.get('market') == 'hong_kong'][:15]
+    hk = [r for r in rows if r.get('market') == 'hong_kong'][:10]
     codes = [r['symbol'] for r in hk]
     quote = FutuQuoteClient().get_snapshot(codes)
     watch = FutuAccountProvider().get_watchlist_snapshot(codes)
@@ -67,10 +67,16 @@ def main() -> None:
     dynamic_candidate_tasks = [
         {
             'task_group': 'dynamic_candidate_generation',
-            'market': market,
-            'prompt': f'你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 {market} 自主挖掘值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。不要 markdown，不要解释。',
+            'market': 'hong_kong',
+            'target_count': 10,
+            'prompt': '你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 hong_kong 自主挖掘 10 个值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。market 固定为 hong_kong，confidence_source 固定为 knot_agent_dynamic。不要 markdown，不要解释。',
+        },
+        {
+            'task_group': 'dynamic_candidate_generation',
+            'market': 'us',
+            'target_count': 10,
+            'prompt': '你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 us 自主挖掘 10 个值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。market 固定为 us，confidence_source 固定为 knot_agent_dynamic。不要 markdown，不要解释。',
         }
-        for market in ['hong_kong', 'us']
     ]
     out = {'refresh_tasks': refresh_tasks, 'intraday_tasks': intraday_tasks, 'dynamic_candidate_tasks': dynamic_candidate_tasks, 'integration_mode': 'openclaw-session-orchestrated-remote'}
     path = runs / 'remote_knot_batch_tasks.json'
