@@ -83,14 +83,25 @@ class FutuAccountProvider:
             return {"status": "connected", "items": [], "message": f"SDK unavailable: {msg}"}
         try:
             rows = quote.get_snapshot(codes)
-            items = [
-                {
-                    "code": str(row.get("code", "")),
-                    "price": row.get("last_price"),
-                    "change_pct": row.get("change_rate"),
-                }
-                for row in rows
-            ]
+            items = []
+            for row in rows:
+                last_price = row.get("last_price")
+                prev_close = row.get("prev_close_price")
+                change_pct = None
+                try:
+                    if last_price is not None and prev_close not in (None, 0, 0.0):
+                        change_pct = round((float(last_price) - float(prev_close)) / float(prev_close) * 100, 3)
+                except Exception:
+                    change_pct = None
+                items.append(
+                    {
+                        "code": str(row.get("code", "")),
+                        "price": last_price,
+                        "change_pct": change_pct,
+                        "volume": row.get("volume"),
+                        "turnover": row.get("turnover"),
+                    }
+                )
             return {"status": "connected", "items": items, "message": "ok"}
         except Exception as e:
             return {"status": "connected", "items": [], "message": f"quote query failed: {e}"}
