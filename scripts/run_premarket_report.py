@@ -6,7 +6,7 @@ from pathlib import Path
 from execution.futu_bridge import FutuDraftStore, FutuPaperBridge
 from execution.paper_bridge import PaperIntentStore, PaperTradeBridge
 from execution.vnpy_bridge import VnpySignalBridge
-from services.approval_gate import ApprovalGate
+from services.approval_gate import ApprovalGate, ApprovalLogStore
 from services.candidate_engine import CandidateRanker, CandidateStateStore
 from services.candidate_engine.adapters import candidate_from_input
 from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider, FileCandidateProvider
@@ -140,6 +140,7 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     actions = [ActionLine(symbol=s.symbol, name=s.name, action=s.action, reason=s.reason) for s in decision.signals[:5]]
 
     approval = ApprovalGate(mode=approval_mode).evaluate(decision)
+    approval_path = ApprovalLogStore(repo_root / "state" / "runs").save(market, approval)
     risk_eval = RiskEngine().evaluate(decision)
 
     intents = PaperTradeBridge().build_intents(decision) if approval.allowed and risk_eval.allowed else []
@@ -158,7 +159,7 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     summary.extend(format_account_block(account_summary))
     summary.extend(format_quote_block(quote_summary))
     summary.extend(decision.summary)
-    summary.append(f"ApprovalGate：mode={approval.mode}, allowed={approval.allowed}, reason={approval.reason}")
+    summary.append(f"ApprovalGate：mode={approval.mode}, allowed={approval.allowed}, reason={approval.reason}, log={approval_path.name}")
     if approval.required_actions:
         summary.append("审批要求：" + ", ".join(approval.required_actions))
     summary.append(f"RiskEngine：allowed={risk_eval.allowed}")
