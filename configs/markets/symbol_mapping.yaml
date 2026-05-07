@@ -1,0 +1,16 @@
+version: v0
+markets:
+  a_share:
+    examples:
+      - "600519.SH"
+      - "000001.SZ"
+  hong_kong:
+    examples:
+      - "00700.HK"
+      - "01810.HK"
+  us:
+    examples:
+      - "NVDA.US"
+      - "QQQ.US"
+notes:
+  - "Maintain a normalized internal symbol convention across research, reporting, and execution."

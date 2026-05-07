@@ -1,0 +1,9 @@
+version: v0
+profiles:
+  personal_default:
+    max_single_position_pct: 0.15
+    max_sector_exposure_pct: 0.35
+    max_daily_new_positions: 3
+    max_portfolio_drawdown_pct: 0.12
+    earnings_event_reduce: true
+    cooldown_after_stoploss_days: 2

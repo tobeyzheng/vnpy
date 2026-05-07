@@ -1,0 +1,27 @@
+version: v0
+markets:
+  a_share:
+    weights:
+      trend: 0.25
+      fundamentals: 0.20
+      sector_strength: 0.20
+      capital_flow: 0.20
+      event_risk: 0.15
+  hong_kong:
+    weights:
+      trend: 0.25
+      fundamentals: 0.20
+      southbound_flow: 0.20
+      market_style: 0.20
+      event_risk: 0.15
+  us:
+    weights:
+      trend: 0.25
+      fundamentals: 0.20
+      macro_regime: 0.20
+      event_catalyst: 0.20
+      risk_indicators: 0.15
+confidence_bands:
+  strong: [80, 100]
+  medium: [65, 79]
+  weak: [0, 64]
