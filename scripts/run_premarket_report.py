@@ -10,6 +10,7 @@ from services.candidate_engine import CandidateRanker, CandidateStateStore
 from services.candidate_engine.adapters import candidate_from_input
 from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider
 from services.decision_engine import DecisionEngine
+from services.futu_account import FutuAccountProvider
 from services.futu_opend import OpenDClient
 from services.reporting import ActionLine, MarketEnvironment, PremarketReport, TextReportRenderer
 from services.watchlist_engine import WatchlistItem, WatchlistManager, WatchlistStateStore
@@ -119,11 +120,17 @@ def run_market(market: str) -> Path:
     futu_draft_path = FutuDraftStore(repo_root / "state/runs").save(market, futu_drafts)
     opend_probe = OpenDClient().probe()
 
+    account_summary = FutuAccountProvider().get_summary()
+    watchlist_codes = [d.code for d in futu_drafts[:5]]
+    quote_summary = FutuAccountProvider().get_watchlist_snapshot(watchlist_codes)
+
     summary = list(decision.summary)
     summary.append(f"已生成 {len(intents)} 条 paper-trade intents：{intent_path.name}")
     summary.append(f"已生成 {len(vnpy_drafts)} 条 vnpy draft requests（仅草案，不提交）。")
     summary.append(f"已生成 {len(futu_drafts)} 条 futu draft requests：{futu_draft_path.name}")
     summary.append(f"Futu OpenD 连通性：{'可连接' if opend_probe.reachable else '未连接'} ({opend_probe.host}:{opend_probe.port})")
+    summary.append(f"账户摘要：status={account_summary.status}, accounts={account_summary.account_count}, env={account_summary.env}, note={account_summary.message}")
+    summary.append(f"观察池快照：status={quote_summary.get('status')}, items={len(quote_summary.get('items', []))}, note={quote_summary.get('message')}")
 
     report = PremarketReport(
         market=MARKET_TO_LABEL[market],
