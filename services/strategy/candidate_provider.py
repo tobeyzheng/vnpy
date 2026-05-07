@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from services.strategy.symbols import normalize_symbol
 
 
 class UnifiedCandidateProvider:
@@ -14,7 +15,13 @@ class UnifiedCandidateProvider:
         if dynamic_path.exists():
             data = json.loads(dynamic_path.read_text(encoding='utf-8'))
             if isinstance(data, dict) and isinstance(data.get('items'), list) and data['items']:
-                return data['items']
+                items = data['items']
+                for row in items:
+                    row['symbol'] = normalize_symbol(row.get('symbol', ''), row.get('market'))
+                return items
         if static_path.exists():
-            return json.loads(static_path.read_text(encoding='utf-8'))
+            items = json.loads(static_path.read_text(encoding='utf-8'))
+            for row in items:
+                row['symbol'] = normalize_symbol(row.get('symbol', ''), row.get('market'))
+            return items
         return []

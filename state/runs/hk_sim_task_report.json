@@ -1,28 +1,28 @@
 {
   "task": "hk_real_env_sim_trading_v1",
   "cash": 15687.759800000003,
-  "nav": 99815.7598,
+  "nav": 99724.0838,
   "positions": [
     {
       "symbol": "09988.HK",
       "qty": 200,
       "avg_price": 140.31215999999998,
-      "market_value": 28039.999999999996,
-      "unrealized_pnl": -22.431999999997743
+      "market_value": 28062.431999999997,
+      "unrealized_pnl": 0.0
     },
     {
       "symbol": "01810.HK",
       "qty": 1200,
       "avg_price": 31.264992000000003,
-      "market_value": 37488.0,
-      "unrealized_pnl": -29.99040000000548
+      "market_value": 37344.0,
+      "unrealized_pnl": -173.9904000000024
     },
     {
       "symbol": "09868.HK",
       "qty": 300,
       "avg_price": 62.099639999999994,
-      "market_value": 18600.0,
-      "unrealized_pnl": -29.89199999999812
+      "market_value": 18629.892,
+      "unrealized_pnl": 0.0
     }
   ],
   "orders": [
@@ -144,85 +144,75 @@
   ],
   "actions": [
     {
-      "symbol": "09988.HK",
-      "action": "blocked",
-      "reason": "risk/budget limit"
-    },
-    {
       "symbol": "01810.HK",
-      "action": "blocked",
-      "reason": "risk/budget limit"
+      "action": "watch_only",
+      "reason": "入场条件不足，先观察"
     },
     {
-      "symbol": "02432.HK",
-      "action": "blocked",
-      "reason": "risk/budget limit"
+      "symbol": "03690.HK",
+      "action": "watch_only",
+      "reason": "入场条件不足，先观察"
+    },
+    {
+      "symbol": "01299.HK",
+      "action": "watch_only",
+      "reason": "入场条件不足，先观察"
     }
   ],
   "task_candidate_pool": [
     {
-      "symbol": "09988.HK",
-      "name": "阿里巴巴-W",
-      "price": 140.2,
-      "lot_size": 100,
-      "change_pct": 4.471,
-      "turnover": 13182718456.0,
-      "task_score": 77.56,
-      "rationale": "平台修复与回购支撑",
-      "raw_score_v2": 0.6603,
-      "entry_action": "watch_only",
-      "entry_reason": "入场条件不足，先观察",
-      "market_currency": "HKD"
-    },
-    {
       "symbol": "01810.HK",
-      "name": "小米集团-W",
-      "price": 31.24,
+      "name": "Xiaomi Group",
+      "price": 31.12,
       "lot_size": 200,
-      "change_pct": 1.363,
-      "turnover": 3649886602.0,
-      "task_score": 76.0,
-      "rationale": "产品催化与风险偏好改善",
-      "raw_score_v2": 0.6771,
+      "change_pct": 0.973,
+      "turnover": 4438707969.0,
+      "task_score": 75.81,
+      "rationale": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。",
+      "raw_score_v2": 0.6634,
       "entry_action": "watch_only",
       "entry_reason": "入场条件不足，先观察",
       "market_currency": "HKD"
     },
     {
-      "symbol": "02432.HK",
-      "name": "越疆",
-      "price": 33.14,
+      "symbol": "03690.HK",
+      "name": "Meituan",
+      "price": 84.25,
+      "lot_size": 100,
+      "change_pct": 2.121,
+      "turnover": 3523942411.0,
+      "task_score": 73.4,
+      "rationale": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。",
+      "raw_score_v2": 0.66,
+      "entry_action": "watch_only",
+      "entry_reason": "入场条件不足，先观察",
+      "market_currency": "HKD"
+    },
+    {
+      "symbol": "01299.HK",
+      "name": "AIA Group",
+      "price": 89.15,
       "lot_size": 200,
-      "change_pct": 9.013,
-      "turnover": 172248870.0,
-      "task_score": 59.83,
-      "rationale": "机器人主题活跃，小资金更易参与",
-      "raw_score_v2": 0.5567,
-      "entry_action": "breakout_momentum",
-      "entry_reason": "接近关键位且存在催化，适合等待突破确认",
+      "change_pct": 1.944,
+      "turnover": 2329887513.0,
+      "task_score": 70.77,
+      "rationale": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。",
+      "raw_score_v2": 0.6438,
+      "entry_action": "watch_only",
+      "entry_reason": "入场条件不足，先观察",
       "market_currency": "HKD"
     }
   ],
   "filtered_out": [
     {
       "symbol": "00700.HK",
-      "reason": "one-lot cost 47888.56 exceeds budget 20000.00",
+      "reason": "one-lot cost 47808.47 exceeds budget 20000.00",
       "lot_size": 100
     },
     {
-      "symbol": "00981.HK",
-      "reason": "one-lot cost 38783.37 exceeds budget 20000.00",
-      "lot_size": 500
-    },
-    {
-      "symbol": "01347.HK",
-      "reason": "one-lot cost 141673.48 exceeds budget 20000.00",
-      "lot_size": 1000
-    },
-    {
-      "symbol": "09992.HK",
-      "reason": "one-lot cost 32551.40 exceeds budget 20000.00",
-      "lot_size": 200
+      "symbol": "00388.HK",
+      "reason": "one-lot cost 42762.82 exceeds budget 20000.00",
+      "lot_size": 100
     }
   ],
   "snapshot_status": "connected",
