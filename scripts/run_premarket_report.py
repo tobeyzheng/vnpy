@@ -3,7 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from execution.paper_bridge import PaperTradeBridge
+from execution.paper_bridge import PaperIntentStore, PaperTradeBridge
+from execution.vnpy_bridge import VnpySignalBridge
 from services.candidate_engine import CandidateRanker, CandidateStateStore
 from services.candidate_engine.adapters import candidate_from_input
 from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider
@@ -111,9 +112,11 @@ def run_market(market: str) -> Path:
     decision = DecisionEngine().decide(market, top_candidates)
     actions = [ActionLine(symbol=s.symbol, name=s.name, action=s.action, reason=s.reason) for s in decision.signals[:5]]
     intents = PaperTradeBridge().build_intents(decision)
+    intent_path = PaperIntentStore(repo_root / "state/runs").save(market, intents)
+    drafts = VnpySignalBridge().build_drafts(intents)
     summary = list(decision.summary)
-    if intents:
-        summary.append(f"已生成 {len(intents)} 条 paper-trade intents（仅模拟，不下单）。")
+    summary.append(f"已生成 {len(intents)} 条 paper-trade intents：{intent_path.name}")
+    summary.append(f"已生成 {len(drafts)} 条 vnpy draft requests（仅草案，不提交）。")
 
     report = PremarketReport(
         market=MARKET_TO_LABEL[market],
