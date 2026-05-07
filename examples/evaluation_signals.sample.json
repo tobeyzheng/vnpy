@@ -1,0 +1,24 @@
+[
+  {
+    "symbol": "NVDA.US",
+    "market": "us",
+    "source": "alphalens",
+    "dimension": "skill_consensus",
+    "score": 0.82,
+    "confidence": 0.78,
+    "summary": "多维基本面和盈利质量仍偏强",
+    "risks": ["估值较高"],
+    "action_bias": "positive"
+  },
+  {
+    "symbol": "NVDA.US",
+    "market": "us",
+    "source": "knot_agent",
+    "dimension": "agent_judgment",
+    "score": 0.76,
+    "confidence": 0.72,
+    "summary": "若回调不破关键位，仍值得优先跟踪",
+    "risks": ["高波动"],
+    "action_bias": "positive"
+  }
+]
