@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from services.futu_account import FutuQuoteClient, FutuAccountProvider
-from services.knot_runtime.runtime import KnotAgentRuntime
+from services.knot_runtime.remote_runtime import RemoteKnotAgentRuntime
 
 
 def main() -> None:
@@ -17,7 +17,7 @@ def main() -> None:
     raw_map = {r['code'].replace('HK.', '') + '.HK': r for r in quote if r.get('last_price') is not None}
     watch_map = {i['code'].replace('HK.', '') + '.HK': i for i in watch.get('items', []) if i.get('price') is not None}
 
-    runtime = KnotAgentRuntime(repo)
+    runtime = RemoteKnotAgentRuntime(repo)
     outputs = []
     for row in hk:
         sym = row['symbol']

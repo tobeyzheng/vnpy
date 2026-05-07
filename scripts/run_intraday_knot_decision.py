@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from services.futu_account import FutuAccountProvider
-from services.knot_runtime.runtime import KnotAgentRuntime
+from services.knot_runtime.remote_runtime import RemoteKnotAgentRuntime
 from services.sim_account import SimAccountStore
 
 
@@ -14,7 +14,7 @@ def main() -> None:
     codes = [p.symbol for p in account.positions]
     watch = FutuAccountProvider().get_watchlist_snapshot(codes) if codes else {'items': []}
     watch_map = {i['code'].replace('HK.', '') + '.HK': i for i in watch.get('items', []) if i.get('price') is not None}
-    runtime = KnotAgentRuntime(repo)
+    runtime = RemoteKnotAgentRuntime(repo)
     decisions = []
     for p in account.positions:
         q = watch_map.get(p.symbol)
