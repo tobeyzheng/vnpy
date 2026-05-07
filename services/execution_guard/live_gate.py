@@ -28,7 +28,11 @@ class LiveExecutionGate:
         daily_new_pct: float,
         current_drawdown_pct: float,
         account_status: str,
+        approval_status: str,
     ) -> LiveGateResult:
+        reasons: List[str] = []
+        if approval_status != 'approved':
+            reasons.append(f'approval status is not approved: {approval_status}')
         pre = self.precheck.evaluate(order, mode=mode, signal_age_seconds=signal_age_seconds)
         risk = self.risk_guard.evaluate(
             order,
@@ -38,5 +42,6 @@ class LiveExecutionGate:
             signal_age_seconds=signal_age_seconds,
             account_status=account_status,
         )
-        reasons = [*pre.reasons, *risk.reasons]
+        reasons.extend(pre.reasons)
+        reasons.extend(risk.reasons)
         return LiveGateResult(allowed=not reasons, reasons=reasons)
