@@ -1,10 +1,13 @@
 {
-  "base_currency": "HKD",
-  "initial_cash": 100000.0,
+  "scenario": "forced_exit_validation",
+  "price_map": {
+    "09988.HK": 160.56,
+    "01810.HK": 28.65,
+    "09868.HK": 61.85
+  },
   "cash": 82033.0,
   "nav": 100588.0,
   "realized_pnl": 587.9999999999993,
-  "max_drawdown_limit_pct": 0.2,
   "positions": [
     {
       "symbol": "09868.HK",
@@ -39,6 +42,24 @@
       "status": "filled",
       "reason": "智能车主题活跃，适合趋势跟踪"
     },
+    {
+      "symbol": "09988.HK",
+      "side": "SELL",
+      "qty": 100,
+      "price": 160.56,
+      "status": "filled",
+      "reason": "take_profit"
+    },
+    {
+      "symbol": "01810.HK",
+      "side": "SELL",
+      "qty": 600,
+      "price": 28.65,
+      "status": "filled",
+      "reason": "stop_loss"
+    }
+  ],
+  "exit_actions": [
     {
       "symbol": "09988.HK",
       "side": "SELL",
