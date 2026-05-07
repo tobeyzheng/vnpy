@@ -1,0 +1,15 @@
+{
+  "review_summary": {
+    "hk_nav": 99851.7598,
+    "us_nav": 19978.2507,
+    "hk_realized_pnl": 0.0,
+    "us_realized_pnl": 0.0,
+    "remote_ai_items": 12
+  },
+  "observations": [
+    "港股当前候选多为 watch_only，说明 timing 过滤已开始起作用。",
+    "美股已出现可执行买点（NVDA），说明多市场框架已初步分化。",
+    "远程 AI 结果已进入主流程文件，但仍需进一步批量替换 fallback 结果。",
+    "Futu 持仓对账仍是执行一致性的重点风险项。"
+  ]
+}

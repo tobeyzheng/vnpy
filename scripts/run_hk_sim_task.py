@@ -86,6 +86,8 @@ def main() -> None:
             'raw_score_v2': raw_score_v2,
             'entry_action': timing.action,
             'entry_reason': timing.reason,
+            'invalidator': timing.invalidator,
+            'suggested_size_pct': timing.suggested_size_pct,
             'market_currency': market_rules.currency,
         })
 
@@ -94,12 +96,13 @@ def main() -> None:
 
     actions = []
     for row in selected:
+        sized_budget = max(float(row['price']) * int(row['lot_size']), budget_per_trade * max(0.25, float(row.get('suggested_size_pct', 0.0) or 0.0)))
         est_cost = engine.min_lot_cost(float(row['price']), lot_size=int(row['lot_size']))
         guard = risk_guard.can_open(account, symbol=row['symbol'], est_cost=est_cost)
         if row.get('entry_action') == 'watch_only':
             actions.append({'symbol': row['symbol'], 'action': 'watch_only', 'reason': row.get('entry_reason')})
         elif engine.can_open(account, budget_per_trade) and guard.allowed:
-            order = engine.place_buy(account, row['symbol'], float(row['price']), row.get('rationale', ''), budget_per_trade, lot_size=int(row['lot_size']))
+            order = engine.place_buy(account, row['symbol'], float(row['price']), row.get('rationale', ''), sized_budget, lot_size=int(row['lot_size']))
             actions.append({'symbol': row['symbol'], 'action': order.status, 'qty': order.qty, 'price': row['price'], 'lot_size': row['lot_size'], 'reason': order.reason})
         else:
             actions.append({'symbol': row['symbol'], 'action': 'blocked', 'reason': guard.reason if not guard.allowed else 'risk/budget limit'})

@@ -172,6 +172,8 @@
       "raw_score_v2": 0.6634,
       "entry_action": "watch_only",
       "entry_reason": "入场条件不足，先观察",
+      "invalidator": "等待更多确认信号",
+      "suggested_size_pct": 0.0,
       "market_currency": "HKD"
     },
     {
@@ -186,6 +188,8 @@
       "raw_score_v2": 0.66,
       "entry_action": "watch_only",
       "entry_reason": "入场条件不足，先观察",
+      "invalidator": "等待更多确认信号",
+      "suggested_size_pct": 0.0,
       "market_currency": "HKD"
     },
     {
@@ -200,6 +204,8 @@
       "raw_score_v2": 0.6438,
       "entry_action": "watch_only",
       "entry_reason": "入场条件不足，先观察",
+      "invalidator": "等待更多确认信号",
+      "suggested_size_pct": 0.0,
       "market_currency": "HKD"
     }
   ],
