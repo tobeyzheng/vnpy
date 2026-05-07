@@ -26,9 +26,9 @@ def main() -> None:
 
     rows = []
     for req in requests[:3]:
-        result = checker.evaluate(req, mode='paper')
+        result = checker.evaluate(req, mode='paper', signal_age_seconds=60)
         path = store.save(req, 'blocked' if not result.allowed else 'ready', result.reasons)
-        rows.append({'symbol': req.symbol, 'allowed': result.allowed, 'reasons': result.reasons, 'audit': path.name})
+        rows.append({'request_id': req.request_id, 'symbol': req.symbol, 'side': req.side, 'allowed': result.allowed, 'reasons': result.reasons, 'audit': path.name})
 
     out = repo / 'state' / 'runs' / 'live_precheck_demo.json'
     out.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding='utf-8')
