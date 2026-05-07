@@ -9,8 +9,22 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "继续持有",
     "signals": [
-      {"symbol": "00700.HK", "market": "hong_kong", "source": "trend", "category": "technical", "score": 0.84, "summary": "平台龙头趋势保持完整"},
-      {"symbol": "00700.HK", "market": "hong_kong", "source": "fundamentals", "category": "quality", "score": 0.79, "summary": "现金流与回购支撑较稳"}
+      {
+        "symbol": "00700.HK",
+        "market": "hong_kong",
+        "source": "trend",
+        "category": "technical",
+        "score": 0.84,
+        "summary": "平台龙头趋势保持完整"
+      },
+      {
+        "symbol": "00700.HK",
+        "market": "hong_kong",
+        "source": "fundamentals",
+        "category": "quality",
+        "score": 0.79,
+        "summary": "现金流与回购支撑较稳"
+      }
     ]
   },
   {
@@ -23,7 +37,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "回调再买",
     "signals": [
-      {"symbol": "00981.HK", "market": "hong_kong", "source": "trend", "category": "technical", "score": 0.82, "summary": "芯片主线偏强"}
+      {
+        "symbol": "00981.HK",
+        "market": "hong_kong",
+        "source": "trend",
+        "category": "technical",
+        "score": 0.82,
+        "summary": "芯片主线偏强"
+      }
     ]
   },
   {
@@ -36,7 +57,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "可小幅试加",
     "signals": [
-      {"symbol": "01810.HK", "market": "hong_kong", "source": "event", "category": "catalyst", "score": 0.78, "summary": "产品催化延续"}
+      {
+        "symbol": "01810.HK",
+        "market": "hong_kong",
+        "source": "event",
+        "category": "catalyst",
+        "score": 0.78,
+        "summary": "产品催化延续"
+      }
     ]
   },
   {
@@ -49,7 +77,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "回调再买",
     "signals": [
-      {"symbol": "300308.SZ", "market": "a_share", "source": "trend", "category": "technical", "score": 0.85, "summary": "算力链龙头延续"}
+      {
+        "symbol": "300308.SZ",
+        "market": "a_share",
+        "source": "trend",
+        "category": "technical",
+        "score": 0.85,
+        "summary": "算力链龙头延续"
+      }
     ]
   },
   {
@@ -62,7 +97,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "可小仓试错",
     "signals": [
-      {"symbol": "688041.SH", "market": "a_share", "source": "trend", "category": "technical", "score": 0.82, "summary": "国产算力主线清晰"}
+      {
+        "symbol": "688041.SH",
+        "market": "a_share",
+        "source": "trend",
+        "category": "technical",
+        "score": 0.82,
+        "summary": "国产算力主线清晰"
+      }
     ]
   },
   {
@@ -75,7 +117,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "继续观察",
     "signals": [
-      {"symbol": "002371.SZ", "market": "a_share", "source": "fundamentals", "category": "quality", "score": 0.78, "summary": "设备链逻辑仍稳"}
+      {
+        "symbol": "002371.SZ",
+        "market": "a_share",
+        "source": "fundamentals",
+        "category": "quality",
+        "score": 0.78,
+        "summary": "设备链逻辑仍稳"
+      }
     ]
   },
   {
@@ -88,7 +137,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "回调再买",
     "signals": [
-      {"symbol": "NVDA.US", "market": "us", "source": "trend", "category": "technical", "score": 0.86, "summary": "AI龙头趋势完整"}
+      {
+        "symbol": "NVDA.US",
+        "market": "us",
+        "source": "trend",
+        "category": "technical",
+        "score": 0.86,
+        "summary": "AI龙头趋势完整"
+      }
     ]
   },
   {
@@ -101,7 +157,14 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "可小仓试错",
     "signals": [
-      {"symbol": "AVGO.US", "market": "us", "source": "trend", "category": "technical", "score": 0.84, "summary": "AI链强势延续"}
+      {
+        "symbol": "AVGO.US",
+        "market": "us",
+        "source": "trend",
+        "category": "technical",
+        "score": 0.84,
+        "summary": "AI链强势延续"
+      }
     ]
   },
   {
@@ -114,7 +177,74 @@
     "confidence_source": "real_candidate_file",
     "action_hint": "继续观察",
     "signals": [
-      {"symbol": "MSFT.US", "market": "us", "source": "fundamentals", "category": "quality", "score": 0.8, "summary": "AI应用兑现能力较强"}
+      {
+        "symbol": "MSFT.US",
+        "market": "us",
+        "source": "fundamentals",
+        "category": "quality",
+        "score": 0.8,
+        "summary": "AI应用兑现能力较强"
+      }
+    ]
+  },
+  {
+    "symbol": "09988.HK",
+    "market": "hong_kong",
+    "name": "阿里巴巴-W",
+    "rationale": "平台修复与回购支撑",
+    "risk": "情绪波动仍在",
+    "raw_score": 0.74,
+    "confidence_source": "real_candidate_file",
+    "action_hint": "继续观察",
+    "signals": [
+      {
+        "symbol": "09988.HK",
+        "market": "hong_kong",
+        "source": "fundamentals",
+        "category": "quality",
+        "score": 0.76,
+        "summary": "平台基本面改善"
+      }
+    ]
+  },
+  {
+    "symbol": "02432.HK",
+    "market": "hong_kong",
+    "name": "越疆",
+    "rationale": "机器人主题活跃，小资金更易参与",
+    "risk": "波动较大",
+    "raw_score": 0.68,
+    "confidence_source": "real_candidate_file",
+    "action_hint": "小仓试错",
+    "signals": [
+      {
+        "symbol": "02432.HK",
+        "market": "hong_kong",
+        "source": "event",
+        "category": "catalyst",
+        "score": 0.72,
+        "summary": "机器人主题活跃"
+      }
+    ]
+  },
+  {
+    "symbol": "00772.HK",
+    "market": "hong_kong",
+    "name": "阅文集团",
+    "rationale": "内容资产与AI叙事有补涨空间",
+    "risk": "量能波动",
+    "raw_score": 0.66,
+    "confidence_source": "real_candidate_file",
+    "action_hint": "观察为主",
+    "signals": [
+      {
+        "symbol": "00772.HK",
+        "market": "hong_kong",
+        "source": "event",
+        "category": "catalyst",
+        "score": 0.69,
+        "summary": "内容与AI叙事"
+      }
     ]
   }
 ]
