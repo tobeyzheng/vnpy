@@ -157,7 +157,7 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     practical_model = PracticalScoringModel(practical_weights)
 
     file_provider = FileCandidateProvider(repo_root / "state" / "runs" / "candidate_inputs.json")
-    provider = CompositeCandidateProvider([file_provider, DemoCandidateProvider()])
+    provider = CompositeCandidateProvider([file_provider]) if file_provider.get_candidate_inputs(market) else CompositeCandidateProvider([file_provider, DemoCandidateProvider()])
     inputs = provider.get_candidate_inputs(market)
     candidates = [candidate_from_input(item) for item in inputs]
     for candidate in candidates:
