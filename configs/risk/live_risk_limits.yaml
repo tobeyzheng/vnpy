@@ -1,0 +1,6 @@
+limits:
+  max_single_position_pct: 0.10
+  max_daily_new_position_pct: 0.20
+  max_market_exposure_pct: 0.35
+  max_signal_age_seconds: 900
+  max_drawdown_pct: 0.08
