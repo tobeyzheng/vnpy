@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable, List
 
-from services.candidate_engine.models import Candidate
+from services.signals import CandidateInput
 
 from .base import CandidateProvider
 
@@ -11,18 +11,19 @@ class CompositeCandidateProvider(CandidateProvider):
     def __init__(self, providers: Iterable[CandidateProvider]):
         self.providers = list(providers)
 
-    def get_candidates(self, market: str) -> List[Candidate]:
-        merged: dict[str, Candidate] = {}
+    def get_candidate_inputs(self, market: str) -> List[CandidateInput]:
+        merged: dict[str, CandidateInput] = {}
         for provider in self.providers:
-            for candidate in provider.get_candidates(market):
-                if candidate.symbol not in merged:
-                    merged[candidate.symbol] = candidate
+            for item in provider.get_candidate_inputs(market):
+                if item.symbol not in merged:
+                    merged[item.symbol] = item
                     continue
-                existing = merged[candidate.symbol]
-                existing.evidence.extend(candidate.evidence)
-                if (candidate.confidence or 0) > (existing.confidence or 0):
-                    existing.confidence = candidate.confidence
-                    existing.rationale = candidate.rationale or existing.rationale
-                    existing.risk = candidate.risk or existing.risk
-                    existing.action = candidate.action or existing.action
+                existing = merged[item.symbol]
+                existing.signals.extend(item.signals)
+                if item.raw_score > existing.raw_score:
+                    existing.raw_score = item.raw_score
+                    existing.rationale = item.rationale or existing.rationale
+                    existing.risk = item.risk or existing.risk
+                    existing.action_hint = item.action_hint or existing.action_hint
+                    existing.confidence_source = item.confidence_source or existing.confidence_source
         return list(merged.values())

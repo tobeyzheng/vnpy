@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from execution.paper_bridge import PaperTradeBridge
 from services.candidate_engine import CandidateRanker, CandidateStateStore
+from services.candidate_engine.adapters import candidate_from_input
 from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider
 from services.decision_engine import DecisionEngine
 from services.reporting import ActionLine, MarketEnvironment, PremarketReport, TextReportRenderer
@@ -77,7 +79,8 @@ def run_market(market: str) -> Path:
     scorer = MarketScorer(weights)
 
     provider = CompositeCandidateProvider([DemoCandidateProvider()])
-    candidates = provider.get_candidates(market)
+    inputs = provider.get_candidate_inputs(market)
+    candidates = [candidate_from_input(item) for item in inputs]
     for candidate in candidates:
         factor_map = build_factor_map(market, candidate.symbol, [e.source for e in candidate.evidence])
         candidate.confidence = scorer.to_confidence(scorer.score(factor_map))
@@ -106,10 +109,11 @@ def run_market(market: str) -> Path:
     diff = manager.reconcile(previous_watchlist, current_watch_items.values())
 
     decision = DecisionEngine().decide(market, top_candidates)
-    actions = [
-        ActionLine(symbol=s.symbol, name=s.name, action=s.action, reason=s.reason)
-        for s in decision.signals[:5]
-    ]
+    actions = [ActionLine(symbol=s.symbol, name=s.name, action=s.action, reason=s.reason) for s in decision.signals[:5]]
+    intents = PaperTradeBridge().build_intents(decision)
+    summary = list(decision.summary)
+    if intents:
+        summary.append(f"已生成 {len(intents)} 条 paper-trade intents（仅模拟，不下单）。")
 
     report = PremarketReport(
         market=MARKET_TO_LABEL[market],
@@ -117,7 +121,7 @@ def run_market(market: str) -> Path:
         watchlist_diff=diff,
         top_candidates=top_candidates,
         actions=actions,
-        conclusion=decision.summary,
+        conclusion=summary,
     )
 
     final_items = []
