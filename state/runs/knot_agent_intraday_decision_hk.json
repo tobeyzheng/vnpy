@@ -6,7 +6,7 @@
       "symbol": "09988.HK",
       "market": "hong_kong",
       "task_type": "strategy_select",
-      "decision_time": "2026-05-07T17:51:35.838142",
+      "decision_time": "2026-05-07T18:51:37.134343",
       "payload": {
         "trend_score": 0.7,
         "rsi": 74.979,
@@ -42,7 +42,7 @@
       "symbol": "01810.HK",
       "market": "hong_kong",
       "task_type": "strategy_select",
-      "decision_time": "2026-05-07T17:51:35.838179",
+      "decision_time": "2026-05-07T18:51:37.134387",
       "payload": {
         "trend_score": 0.55,
         "rsi": 62.919,
@@ -78,7 +78,7 @@
       "symbol": "09868.HK",
       "market": "hong_kong",
       "task_type": "strategy_select",
-      "decision_time": "2026-05-07T17:51:35.838200",
+      "decision_time": "2026-05-07T18:51:37.134409",
       "payload": {
         "trend_score": 0.7,
         "rsi": 69.96,
