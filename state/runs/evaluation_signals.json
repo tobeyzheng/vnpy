@@ -1,0 +1,24 @@
+[
+  {
+    "symbol": "00700.HK",
+    "market": "hong_kong",
+    "source": "alphalens",
+    "dimension": "skill_consensus",
+    "score": 0.84,
+    "confidence": 0.8,
+    "summary": "平台龙头现金流与回购支撑较强",
+    "risks": ["南下波动"],
+    "action_bias": "positive"
+  },
+  {
+    "symbol": "00700.HK",
+    "market": "hong_kong",
+    "source": "knot_agent",
+    "dimension": "agent_judgment",
+    "score": 0.77,
+    "confidence": 0.72,
+    "summary": "若不跌破关键位，仍应维持优先跟踪",
+    "risks": ["高位震荡"],
+    "action_bias": "positive"
+  }
+]

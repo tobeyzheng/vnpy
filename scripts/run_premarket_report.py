@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from execution.futu_bridge import FutuDraftStore, FutuPaperBridge
@@ -12,7 +13,7 @@ from services.candidate_engine.adapters import candidate_from_input
 from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider, FileCandidateProvider
 from services.decision_engine import DecisionEngine
 from services.evaluation_hub import EvaluationHub
-from services.evaluation_hub.adapters import RealtimeWatchlistAdapter
+from services.evaluation_hub.adapters import KnotAgentEvaluationAdapter, RealtimeWatchlistAdapter, SkillEvaluationAdapter
 from services.evaluation_hub.models import EvaluationSignal
 from services.futu_account import FutuAccountProvider
 from services.futu_opend import OpenDClient
@@ -131,6 +132,20 @@ def to_evaluation_signals(market: str, candidate) -> list[EvaluationSignal]:
     return signals
 
 
+def load_external_evaluations(repo_root: Path, market: str) -> list[EvaluationSignal]:
+    path = repo_root / 'state' / 'runs' / 'evaluation_signals.json'
+    if not path.exists():
+        return []
+    rows = json.loads(path.read_text(encoding='utf-8'))
+    rows = [r for r in rows if r.get('market') == market]
+    skill_rows = [r for r in rows if r.get('source') != 'knot_agent']
+    agent_rows = [r for r in rows if r.get('source') == 'knot_agent']
+    return [
+        *SkillEvaluationAdapter().from_rows(skill_rows),
+        *KnotAgentEvaluationAdapter().from_rows(agent_rows),
+    ]
+
+
 def run_market(market: str, approval_mode: str = "research") -> Path:
     repo_root = Path(__file__).resolve().parents[1]
 
@@ -160,6 +175,7 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     for candidate in candidates:
         all_eval_signals.extend(to_evaluation_signals(market, candidate))
     all_eval_signals.extend(rt_adapter.from_quote_items(market, quote_items))
+    all_eval_signals.extend(load_external_evaluations(repo_root, market))
     bundles = {f"{b.symbol}:{b.market}": b for b in hub.merge(all_eval_signals)}
 
     for candidate in candidates:
