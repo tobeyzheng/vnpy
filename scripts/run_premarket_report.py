@@ -4,12 +4,13 @@ import argparse
 from pathlib import Path
 
 from services.candidate_engine import CandidateRanker, CandidateStateStore
+from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider
+from services.decision_engine import DecisionEngine
 from services.reporting import ActionLine, MarketEnvironment, PremarketReport, TextReportRenderer
-from services.reporting.demo_data import build_demo_candidates
-from services.scoring_engine import MarketScorer
 from services.watchlist_engine import WatchlistItem, WatchlistManager, WatchlistStateStore
 from services.watchlist_engine.configs import load_fixed_watchlist
 from services.common.config_loader import load_yaml
+from services.scoring_engine import MarketScorer
 
 MARKET_TO_CONFIG = {
     "us": "us.yaml",
@@ -68,19 +69,15 @@ def build_factor_map(market: str, symbol: str, evidence_sources: list[str]) -> d
     }
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--market", choices=["us", "hong_kong", "a_share"], required=True)
-    args = parser.parse_args()
-
+def run_market(market: str) -> Path:
     repo_root = Path(__file__).resolve().parents[1]
-    market = args.market
 
     scoring_cfg = load_yaml(repo_root / "configs/scoring/score_model.yaml")
     weights = scoring_cfg["markets"][market]["weights"]
     scorer = MarketScorer(weights)
 
-    candidates = build_demo_candidates(market)
+    provider = CompositeCandidateProvider([DemoCandidateProvider()])
+    candidates = provider.get_candidates(market)
     for candidate in candidates:
         factor_map = build_factor_map(market, candidate.symbol, [e.source for e in candidate.evidence])
         candidate.confidence = scorer.to_confidence(scorer.score(factor_map))
@@ -89,9 +86,9 @@ def main() -> None:
     top_candidates = ranker.top_n(candidates, n=5)
 
     fixed_watchlist = load_fixed_watchlist(repo_root / "configs/watchlists" / MARKET_TO_CONFIG[market])
-    previous_store = WatchlistStateStore(repo_root / "state/watchlists")
+    watchlist_store = WatchlistStateStore(repo_root / "state/watchlists")
     candidate_store = CandidateStateStore(repo_root / "state/candidates")
-    previous_watchlist = previous_store.load(market)
+    previous_watchlist = watchlist_store.load(market)
 
     current_watch_items = {item.symbol: item for item in fixed_watchlist}
     for candidate in top_candidates:
@@ -108,9 +105,10 @@ def main() -> None:
     manager = WatchlistManager()
     diff = manager.reconcile(previous_watchlist, current_watch_items.values())
 
+    decision = DecisionEngine().decide(market, top_candidates)
     actions = [
-        ActionLine(symbol=item.symbol, name=item.name, action=("继续观察" if idx > 1 else top_candidates[idx].action if idx < len(top_candidates) else "继续观察"), reason=item.note or "保持跟踪")
-        for idx, item in enumerate(list(current_watch_items.values())[:3])
+        ActionLine(symbol=s.symbol, name=s.name, action=s.action, reason=s.reason)
+        for s in decision.signals[:5]
     ]
 
     report = PremarketReport(
@@ -119,21 +117,25 @@ def main() -> None:
         watchlist_diff=diff,
         top_candidates=top_candidates,
         actions=actions,
-        conclusion=[
-            "今天更偏均衡，优先做高辨识度主线，不适合分散追高。",
-            "先看强主线是否获得二次确认，再决定是否扩大跟踪范围。",
-        ],
+        conclusion=decision.summary,
     )
 
     final_items = []
     for group in [diff.added, diff.retained, diff.promoted, diff.weakened, diff.pending_removal, diff.removed]:
         final_items.extend(group)
-    previous_store.save(market, final_items)
+    watchlist_store.save(market, final_items)
     candidate_store.save(market, top_candidates)
 
     out_path = repo_root / f"output_premarket_{market}.txt"
     out_path.write_text(TextReportRenderer().render_premarket(report), encoding="utf-8")
-    print(out_path)
+    return out_path
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--market", choices=["us", "hong_kong", "a_share"], required=True)
+    args = parser.parse_args()
+    print(run_market(args.market))
 
 
 if __name__ == "__main__":
