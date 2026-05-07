@@ -3,7 +3,7 @@
   "qty": 200,
   "price": 140.31215999999998,
   "success": false,
-  "message": "place_order failed: 下单接口价格参数精度不符合规范，请前往https://openapi.futunn.com/futu-api-doc/trade/place-order.html查看参数填写规范。",
+  "message": "place_order failed: 持仓不足",
   "order_id": null,
   "order_status": null,
   "dealt_qty": null,

@@ -15,6 +15,7 @@ class SimTradeResult:
     status: Optional[str] = None
     dealt_qty: Optional[int] = None
     dealt_avg_price: Optional[float] = None
+    submitted_price: Optional[float] = None
 
 
 class FutuSimTradeClient:
@@ -31,15 +32,55 @@ class FutuSimTradeClient:
     def _normalize_code(self, code: str) -> str:
         return FutuQuoteClient().normalize_code(code)
 
-    def _get_lot_size(self, code: str) -> int:
+    def _get_snapshot_row(self, code: str):
         rows = FutuQuoteClient().get_snapshot([code])
-        if rows and rows[0].get('lot_size') not in (None, 0, 0.0):
-            return int(rows[0]['lot_size'])
+        return rows[0] if rows else {}
+
+    def _get_lot_size(self, code: str) -> int:
+        row = self._get_snapshot_row(code)
+        if row and row.get('lot_size') not in (None, 0, 0.0):
+            return int(row['lot_size'])
         return 100
 
     def _normalize_qty(self, code: str, qty: int) -> int:
         lot = self._get_lot_size(code)
         return (int(qty) // lot) * lot
+
+    def _tick_size(self, price: float) -> float:
+        p = float(price)
+        if p < 0.25:
+            return 0.001
+        if p < 0.5:
+            return 0.005
+        if p < 10:
+            return 0.01
+        if p < 20:
+            return 0.02
+        if p < 100:
+            return 0.05
+        if p < 200:
+            return 0.1
+        if p < 500:
+            return 0.2
+        if p < 1000:
+            return 0.5
+        if p < 2000:
+            return 1.0
+        if p < 5000:
+            return 2.0
+        return 5.0
+
+    def _normalize_price(self, price: float, side: str) -> float:
+        tick = self._tick_size(price)
+        p = float(price)
+        units = p / tick
+        if side.upper() == 'BUY':
+            normalized = int(units) * tick
+        else:
+            import math
+            normalized = math.ceil(units) * tick
+        digits = max(0, len(str(tick).split('.')[-1]) if '.' in str(tick) else 0)
+        return round(normalized, digits)
 
     def _get_sim_acc(self, ctx, futu):
         ret, accounts = ctx.get_acc_list()
@@ -66,14 +107,15 @@ class FutuSimTradeClient:
         qty = self._normalize_qty(code, qty)
         if qty <= 0:
             return SimTradeResult(False, 'normalized qty is zero after lot-size adjustment')
+        norm_price = self._normalize_price(price, side)
 
         trd_side = futu.TrdSide.BUY if side.upper() == 'BUY' else futu.TrdSide.SELL
         ctx = futu.OpenSecTradeContext(host=self.config.host, port=self.config.port)
         try:
             acc_id = self._get_sim_acc(ctx, futu)
-            ret, data = ctx.place_order(price=float(price), qty=int(qty), code=code, trd_side=trd_side, order_type=futu.OrderType.NORMAL, trd_env=futu.TrdEnv.SIMULATE, acc_id=acc_id, remark=reason[:64] if reason else '')
+            ret, data = ctx.place_order(price=float(norm_price), qty=int(qty), code=code, trd_side=trd_side, order_type=futu.OrderType.NORMAL, trd_env=futu.TrdEnv.SIMULATE, acc_id=acc_id, remark=reason[:64] if reason else '')
             if ret != futu.RET_OK:
-                return SimTradeResult(False, f'place_order failed: {data}')
+                return SimTradeResult(False, f'place_order failed: {data}', submitted_price=norm_price)
             order_id = None
             status = None
             dealt_qty = None
@@ -85,9 +127,9 @@ class FutuSimTradeClient:
                 dealt_qty = int(row.get('dealt_qty', 0) or 0)
                 dap = row.get('dealt_avg_price', None)
                 dealt_avg_price = float(dap) if dap not in (None, '') else None
-            return SimTradeResult(True, 'ok', order_id=order_id, status=status, dealt_qty=dealt_qty, dealt_avg_price=dealt_avg_price)
+            return SimTradeResult(True, 'ok', order_id=order_id, status=status, dealt_qty=dealt_qty, dealt_avg_price=dealt_avg_price, submitted_price=norm_price)
         except Exception as e:
-            return SimTradeResult(False, str(e))
+            return SimTradeResult(False, str(e), submitted_price=norm_price)
         finally:
             ctx.close()
 
