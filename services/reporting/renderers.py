@@ -4,6 +4,9 @@ from services.reporting.schemas import MiddayReport, PremarketReport
 
 
 class TextReportRenderer:
+    def _fmt_items(self, items):
+        return ", ".join(f"{i.symbol}({i.status_label or '-'})" for i in items) or "无"
+
     def render_premarket(self, report: PremarketReport) -> str:
         lines = []
         lines.append("【盘前环境】")
@@ -12,11 +15,11 @@ class TextReportRenderer:
 
         lines.append("")
         lines.append("【观察池动态调整】")
-        lines.append(f"- 新增：{', '.join(f'{i.symbol}({i.status_label or '-'})' for i in report.watchlist_diff.added) or '无'}")
-        lines.append(f"- 继续保留：{', '.join(f'{i.symbol}({i.status_label or '-'})' for i in report.watchlist_diff.retained) or '无'}")
-        lines.append(f"- 升级重点：{', '.join(f'{i.symbol}({i.status_label or '-'})' for i in report.watchlist_diff.promoted) or '无'}")
-        lines.append(f"- 降级观察：{', '.join(f'{i.symbol}({i.status_label or '-'})' for i in report.watchlist_diff.weakened) or '无'}")
-        lines.append(f"- 暂时移出：{', '.join(f'{i.symbol}({i.status_label or '-'})' for i in report.watchlist_diff.pending_removal) or '无'}")
+        lines.append(f"- 新增：{self._fmt_items(report.watchlist_diff.added)}")
+        lines.append(f"- 继续保留：{self._fmt_items(report.watchlist_diff.retained)}")
+        lines.append(f"- 升级重点：{self._fmt_items(report.watchlist_diff.promoted)}")
+        lines.append(f"- 降级观察：{self._fmt_items(report.watchlist_diff.weakened)}")
+        lines.append(f"- 暂时移出：{self._fmt_items(report.watchlist_diff.pending_removal)}")
 
         lines.append("")
         lines.append(f"【{report.market} Top候选】")
