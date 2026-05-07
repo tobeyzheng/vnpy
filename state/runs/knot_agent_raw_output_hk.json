@@ -1,0 +1,336 @@
+{
+  "market": "hong_kong",
+  "results": [
+    {
+      "symbol": "00700.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314133",
+      "payload": {
+        "trend_score": 0.81,
+        "rsi": 62.096000000000004,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00700.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.81, \"rsi\": 62.096000000000004, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"trend_following\", \"confidence\": 0.78, \"reason\": \"趋势健康且不过热，可顺势跟随。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "trend_following",
+        "confidence": 0.78,
+        "reason": "趋势健康且不过热，可顺势跟随。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "00981.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314166",
+      "payload": {
+        "trend_score": 0.8,
+        "rsi": 64.964,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00981.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.8, \"rsi\": 64.964, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"trend_following\", \"confidence\": 0.78, \"reason\": \"趋势健康且不过热，可顺势跟随。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "trend_following",
+        "confidence": 0.78,
+        "reason": "趋势健康且不过热，可顺势跟随。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "01810.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314185",
+      "payload": {
+        "trend_score": 0.76,
+        "rsi": 54.412,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": true,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=01810.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.76, \"rsi\": 54.412, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"trend_following\", \"confidence\": 0.78, \"reason\": \"趋势健康且不过热，可顺势跟随。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "trend_following",
+        "confidence": 0.78,
+        "reason": "趋势健康且不过热，可顺势跟随。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "09988.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314208",
+      "payload": {
+        "trend_score": 0.74,
+        "rsi": 65.5,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09988.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.74, \"rsi\": 65.5, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"trend_following\", \"confidence\": 0.78, \"reason\": \"趋势健康且不过热，可顺势跟随。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "trend_following",
+        "confidence": 0.78,
+        "reason": "趋势健康且不过热，可顺势跟随。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "02432.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314227",
+      "payload": {
+        "trend_score": 0.68,
+        "rsi": 76.844,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": true,
+        "near_resistance": true,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=02432.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.68, \"rsi\": 76.844, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"breakout_momentum\", \"confidence\": 0.78, \"reason\": \"接近压力位且有催化，适合突破跟随。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "breakout_momentum",
+        "confidence": 0.78,
+        "reason": "接近压力位且有催化，适合突破跟随。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "00772.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314245",
+      "payload": {
+        "trend_score": 0.66,
+        "rsi": 70.74,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": true,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=00772.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.66, \"rsi\": 70.74, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"watch_only\", \"confidence\": 0.78, \"reason\": \"未满足明确开仓模式，先观察。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "watch_only",
+        "confidence": 0.78,
+        "reason": "未满足明确开仓模式，先观察。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "01347.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314265",
+      "payload": {
+        "trend_score": 0.71,
+        "rsi": 84.436,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": true,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=01347.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.71, \"rsi\": 84.436, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"watch_only\", \"confidence\": 0.78, \"reason\": \"短线过热且趋势支撑不足，先观察。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "watch_only",
+        "confidence": 0.78,
+        "reason": "短线过热且趋势支撑不足，先观察。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "09868.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314295",
+      "payload": {
+        "trend_score": 0.69,
+        "rsi": 58.964,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": true,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09868.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.69, \"rsi\": 58.964, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": true, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"watch_only\", \"confidence\": 0.78, \"reason\": \"未满足明确开仓模式，先观察。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "watch_only",
+        "confidence": 0.78,
+        "reason": "未满足明确开仓模式，先观察。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "09626.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314344",
+      "payload": {
+        "trend_score": 0.67,
+        "rsi": 61.548,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09626.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.67, \"rsi\": 61.548, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"watch_only\", \"confidence\": 0.78, \"reason\": \"未满足明确开仓模式，先观察。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "watch_only",
+        "confidence": 0.78,
+        "reason": "未满足明确开仓模式，先观察。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "02382.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314363",
+      "payload": {
+        "trend_score": 0.68,
+        "rsi": 60.084,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": false,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=02382.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.68, \"rsi\": 60.084, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": false, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"watch_only\", \"confidence\": 0.78, \"reason\": \"未满足明确开仓模式，先观察。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "watch_only",
+        "confidence": 0.78,
+        "reason": "未满足明确开仓模式，先观察。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    },
+    {
+      "symbol": "09992.HK",
+      "market": "hong_kong",
+      "task_type": "evaluation",
+      "decision_time": "2026-05-07T13:56:54.314379",
+      "payload": {
+        "trend_score": 0.72,
+        "rsi": 66.38,
+        "risk_score": 0.45,
+        "capital_score": 0.75,
+        "has_event_catalyst": false,
+        "near_resistance": true,
+        "moving_average_bullish": true,
+        "missing_fields": 0
+      },
+      "prompt": "你是 MarketResearchScreenerAgent，负责为量化交易系统执行新闻搜集、宏观风险识别、股票/ETF 筛选和结构化信号生成。\n\n你必须基于输入证据和可查询数据工作，不得编造事实，不得直接下单，不得绕过风控。你需要重点关注美联储态度、美国经济趋势、美债收益率、日元汇率/套息交易风险、VIX、行业事件、个股新闻、财报、资金流和技术趋势。\n\n当需要筛选股票时，按流动性、趋势、估值、财务质量、成长性、新闻情绪、事件强度、宏观敏感度和风险水平进行综合评分。当需要分析已知股票时，结合行情、K线、财务、资金、新闻、公告、研报和估值进行判断。当证据不足或风险升高时，必须保守处理。\n\n只能使用 decision_time 之前可见的信息。输出必须是严格 JSON。\n\n补充约束：\n- 必须且只能输出一个纯 JSON 对象\n- 禁止使用 Markdown 代码块\n- 禁止在 JSON 前后添加任何解释性文本\n- JSON 必须严格符合指定字段和枚举值\n- 若证据不足，也必须返回合法 JSON，而不是输出解释文字\n\n请基于以下输入输出严格 JSON。\nsymbol=09992.HK\nmarket=hong_kong\ntask_type=evaluation\ninput_json={\"trend_score\": 0.72, \"rsi\": 66.38, \"risk_score\": 0.45, \"capital_score\": 0.75, \"has_event_catalyst\": false, \"near_resistance\": true, \"moving_average_bullish\": true, \"missing_fields\": 0}\n\n输出 schema:\n{\"strategy\":\"trend_following|breakout_momentum|pullback_buy|watch_only|block_trade\",\"confidence\":0.0,\"reason\":\"string\",\"risk_flags\":[\"string\"]}",
+      "raw_response": "{\"strategy\": \"trend_following\", \"confidence\": 0.78, \"reason\": \"趋势健康且不过热，可顺势跟随。\", \"risk_flags\": [], \"use_task_planning\": false, \"format_ok\": true, \"fallback_used\": true}",
+      "parsed": {
+        "strategy": "trend_following",
+        "confidence": 0.78,
+        "reason": "趋势健康且不过热，可顺势跟随。",
+        "risk_flags": [],
+        "use_task_planning": false,
+        "format_ok": true,
+        "fallback_used": true
+      },
+      "runtime": "remote-knot-prompt-prepared",
+      "schema_validated": true,
+      "fallback_used": false
+    }
+  ],
+  "integration_mode": "openclaw-session-orchestrated-remote"
+}
