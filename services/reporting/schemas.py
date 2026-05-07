@@ -29,3 +29,18 @@ class PremarketReport:
     top_candidates: List[Candidate] = field(default_factory=list)
     actions: List[ActionLine] = field(default_factory=list)
     conclusion: List[str] = field(default_factory=list)
+
+
+@dataclass
+class MiddayMarketSummary:
+    strongest: str
+    weakest: str
+    key_change: str
+
+
+@dataclass
+class MiddayReport:
+    a_share: MiddayMarketSummary
+    hong_kong: MiddayMarketSummary
+    actions: List[ActionLine] = field(default_factory=list)
+    conclusion: List[str] = field(default_factory=list)
