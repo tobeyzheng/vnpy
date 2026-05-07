@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
+from services.futu_account import FutuQuoteClient
 from services.futu_opend import OpenDConfig
 
 
@@ -24,12 +25,31 @@ class FutuSimTradeClient:
         except Exception as e:
             self._import_error = str(e)
 
+    def _normalize_code(self, code: str) -> str:
+        return FutuQuoteClient().normalize_code(code)
+
+    def _get_lot_size(self, code: str) -> int:
+        rows = FutuQuoteClient().get_snapshot([code])
+        if rows and rows[0].get('lot_size') not in (None, 0, 0.0):
+            return int(rows[0]['lot_size'])
+        return 100
+
+    def _normalize_qty(self, code: str, qty: int) -> int:
+        lot = self._get_lot_size(code)
+        return (int(qty) // lot) * lot
+
     def submit_limit_order(self, code: str, side: str, qty: int, price: float, reason: str = '') -> SimTradeResult:
         if self._futu is None:
             return SimTradeResult(False, self._import_error or 'futu sdk unavailable')
         futu = self._futu
         if (self.config.trd_env or 'SIMULATE').upper() != 'SIMULATE':
             return SimTradeResult(False, 'REAL trading is blocked; SIMULATE only')
+
+        code = self._normalize_code(code)
+        qty = self._normalize_qty(code, qty)
+        if qty <= 0:
+            return SimTradeResult(False, 'normalized qty is zero after lot-size adjustment')
+
         trd_side = futu.TrdSide.BUY if side.upper() == 'BUY' else futu.TrdSide.SELL
         ctx = futu.OpenSecTradeContext(host=self.config.host, port=self.config.port)
         try:
@@ -46,9 +66,9 @@ class FutuSimTradeClient:
                 target = accounts.iloc[0]
             acc_id = int(target['acc_id'])
             ret, data = ctx.place_order(
-                price=price,
-                qty=qty,
-                code=code.replace('.HK', '').replace('HK.', 'HK.'),
+                price=float(price),
+                qty=int(qty),
+                code=code,
                 trd_side=trd_side,
                 order_type=futu.OrderType.NORMAL,
                 trd_env=futu.TrdEnv.SIMULATE,
