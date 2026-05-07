@@ -11,6 +11,13 @@ class SimTradingEngine:
         max_loss_nav = account.initial_cash * (1 - account.max_drawdown_limit_pct)
         return account.nav > max_loss_nav and account.cash >= budget_hkd
 
+    def min_lot_cost(self, price: float, lot_size: int | None = None) -> float:
+        lot = lot_size or self.lot_size_default
+        return float(price) * lot
+
+    def is_affordable(self, price: float, budget_hkd: float, lot_size: int | None = None) -> bool:
+        return self.min_lot_cost(price, lot_size) <= budget_hkd
+
     def place_buy(self, account: SimAccount, symbol: str, price: float, reason: str, budget_hkd: float, lot_size: int | None = None) -> SimOrder:
         lot = lot_size or self.lot_size_default
         qty = int(budget_hkd // (price * lot)) * lot
