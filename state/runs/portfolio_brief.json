@@ -1,0 +1,50 @@
+{
+  "portfolio_summary": {
+    "total_cash": 31093.7505,
+    "total_nav": 119830.0105,
+    "market_count": 2,
+    "position_count": 4
+  },
+  "markets": {
+    "hong_kong": {
+      "cash": 15687.759800000003,
+      "nav": 99851.7598,
+      "positions": [
+        {
+          "symbol": "09988.HK",
+          "qty": 200,
+          "avg_price": 140.31215999999998,
+          "market_value": 28039.999999999996,
+          "unrealized_pnl": -22.431999999997743
+        },
+        {
+          "symbol": "01810.HK",
+          "qty": 1200,
+          "avg_price": 31.264992000000003,
+          "market_value": 37464.0,
+          "unrealized_pnl": -53.99040000000497
+        },
+        {
+          "symbol": "09868.HK",
+          "qty": 300,
+          "avg_price": 62.099639999999994,
+          "market_value": 18660.0,
+          "unrealized_pnl": 30.108000000002733
+        }
+      ]
+    },
+    "us": {
+      "cash": 15405.9907,
+      "nav": 19978.2507,
+      "positions": [
+        {
+          "symbol": "NVDA.US",
+          "qty": 22,
+          "avg_price": 207.99626400000002,
+          "market_value": 4572.26,
+          "unrealized_pnl": -3.657808000000273
+        }
+      ]
+    }
+  }
+}

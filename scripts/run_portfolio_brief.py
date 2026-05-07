@@ -1,0 +1,40 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from services.portfolio.summary import build_portfolio_summary
+
+
+def load_json(path: Path):
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def main() -> None:
+    repo = Path(__file__).resolve().parents[1]
+    runs = repo / 'state' / 'runs'
+    hk = load_json(runs / 'hk_sim_close_report.json')
+    us = load_json(runs / 'us_sim_close_report.json')
+    summary = build_portfolio_summary([hk, us])
+    out = {
+        'portfolio_summary': {
+            'total_cash': summary.total_cash,
+            'total_nav': summary.total_nav,
+            'market_count': summary.market_count,
+            'position_count': summary.position_count,
+        },
+        'markets': {
+            'hong_kong': {'cash': hk.get('cash'), 'nav': hk.get('nav'), 'positions': hk.get('positions', [])},
+            'us': {'cash': us.get('cash'), 'nav': us.get('nav'), 'positions': us.get('positions', [])},
+        }
+    }
+    path = runs / 'portfolio_brief.json'
+    path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(path)
+    print(json.dumps(out, ensure_ascii=False, indent=2))
+
+
+if __name__ == '__main__':
+    main()
