@@ -1,0 +1,29 @@
+market: hong_kong
+fixed_watchlist:
+  - symbol: 00700.HK
+    name: 腾讯控股
+    sector: Internet
+  - symbol: 01810.HK
+    name: 小米集团-W
+    sector: Consumer Tech
+  - symbol: 09618.HK
+    name: 京东集团-SW
+    sector: E-commerce
+  - symbol: 00960.HK
+    name: 龙湖集团
+    sector: Property
+  - symbol: 00951.HK
+    name: 超威动力
+    sector: Battery
+  - symbol: 02432.HK
+    name: 越疆
+    sector: Robotics
+  - symbol: 00772.HK
+    name: 阅文集团
+    sector: Content/Platform
+  - symbol: 09988.HK
+    name: 阿里巴巴-W
+    sector: Internet
+  - symbol: 00981.HK
+    name: 中芯国际
+    sector: Semiconductor

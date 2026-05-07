@@ -1,0 +1,29 @@
+market: us
+fixed_watchlist:
+  - symbol: QQQ.US
+    name: Invesco QQQ Trust
+    sector: ETF
+  - symbol: NVDA.US
+    name: NVIDIA
+    sector: AI/Chip
+  - symbol: AVGO.US
+    name: Broadcom
+    sector: Semiconductor
+  - symbol: TSM.US
+    name: Taiwan Semiconductor
+    sector: Semiconductor
+  - symbol: MU.US
+    name: Micron
+    sector: Memory
+  - symbol: AMD.US
+    name: AMD
+    sector: Semiconductor
+  - symbol: SOXX.US
+    name: iShares Semiconductor ETF
+    sector: ETF
+  - symbol: SMH.US
+    name: VanEck Semiconductor ETF
+    sector: ETF
+  - symbol: TQQQ.US
+    name: ProShares UltraPro QQQ
+    sector: ETF
