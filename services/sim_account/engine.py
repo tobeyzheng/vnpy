@@ -37,6 +37,27 @@ class SimTradingEngine:
             account.positions.append(SimPosition(symbol=symbol, qty=qty, avg_price=price))
         return account.orders[-1]
 
+    def place_sell(self, account: SimAccount, symbol: str, price: float, reason: str) -> SimOrder:
+        existing = next((p for p in account.positions if p.symbol == symbol), None)
+        if not existing or existing.qty <= 0:
+            return SimOrder(symbol=symbol, side='SELL', qty=0, price=price, status='rejected', reason='no position to sell')
+        qty = existing.qty
+        proceeds = qty * price
+        realized = (price - existing.avg_price) * qty
+        account.cash += proceeds
+        account.realized_pnl += realized
+        account.orders.append(SimOrder(symbol=symbol, side='SELL', qty=qty, price=price, status='filled', reason=reason))
+        account.positions = [p for p in account.positions if p.symbol != symbol]
+        return account.orders[-1]
+
+    def evaluate_exit_reason(self, pos: SimPosition, current_price: float) -> str | None:
+        pnl_pct = (current_price - pos.avg_price) / pos.avg_price if pos.avg_price else 0.0
+        if pnl_pct <= -0.08:
+            return 'stop_loss'
+        if pnl_pct >= 0.15:
+            return 'take_profit'
+        return None
+
     def mark_to_market(self, account: SimAccount, quotes: dict[str, float]) -> SimAccount:
         nav = account.cash
         for pos in account.positions:
