@@ -24,7 +24,7 @@ def main() -> None:
     raw_map = {row['code'].replace('HK.', '') + '.HK': row for row in raw_rows if row.get('last_price') is not None}
     quote_map = {item['code'].replace('HK.', '') + '.HK': item for item in snapshot.get('items', []) if item.get('price') is not None}
 
-    budget_per_trade = 5000.0
+    budget_per_trade = 20000.0
     filtered_out = []
     task_candidate_pool = []
 

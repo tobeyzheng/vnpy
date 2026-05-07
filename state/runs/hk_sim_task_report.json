@@ -1,0 +1,136 @@
+{
+  "task": "hk_real_env_sim_trading_v1",
+  "cash": 48787.0,
+  "nav": 100000.0,
+  "positions": [
+    {
+      "symbol": "09988.HK",
+      "qty": 100,
+      "avg_price": 139.5,
+      "market_value": 13950.0,
+      "unrealized_pnl": 0.0
+    },
+    {
+      "symbol": "01810.HK",
+      "qty": 600,
+      "avg_price": 31.18,
+      "market_value": 18708.0,
+      "unrealized_pnl": 0.0
+    },
+    {
+      "symbol": "09868.HK",
+      "qty": 300,
+      "avg_price": 61.85,
+      "market_value": 18555.0,
+      "unrealized_pnl": 0.0
+    }
+  ],
+  "orders": [
+    {
+      "symbol": "09988.HK",
+      "side": "BUY",
+      "qty": 100,
+      "price": 139.5,
+      "status": "filled",
+      "reason": "平台修复与回购支撑"
+    },
+    {
+      "symbol": "01810.HK",
+      "side": "BUY",
+      "qty": 600,
+      "price": 31.18,
+      "status": "filled",
+      "reason": "产品催化与风险偏好改善"
+    },
+    {
+      "symbol": "09868.HK",
+      "side": "BUY",
+      "qty": 300,
+      "price": 61.85,
+      "status": "filled",
+      "reason": "智能车主题活跃，适合趋势跟踪"
+    }
+  ],
+  "actions": [
+    {
+      "symbol": "09988.HK",
+      "action": "filled",
+      "qty": 100,
+      "price": 139.5,
+      "lot_size": 100,
+      "reason": "平台修复与回购支撑"
+    },
+    {
+      "symbol": "01810.HK",
+      "action": "filled",
+      "qty": 600,
+      "price": 31.18,
+      "lot_size": 200,
+      "reason": "产品催化与风险偏好改善"
+    },
+    {
+      "symbol": "09868.HK",
+      "action": "filled",
+      "qty": 300,
+      "price": 61.85,
+      "lot_size": 100,
+      "reason": "智能车主题活跃，适合趋势跟踪"
+    }
+  ],
+  "task_candidate_pool": [
+    {
+      "symbol": "09988.HK",
+      "name": "阿里巴巴-W",
+      "price": 139.5,
+      "lot_size": 100,
+      "change_pct": 3.949,
+      "turnover": 11517046436.0,
+      "task_score": 90.05,
+      "rationale": "平台修复与回购支撑"
+    },
+    {
+      "symbol": "01810.HK",
+      "name": "小米集团-W",
+      "price": 31.18,
+      "lot_size": 200,
+      "change_pct": 1.168,
+      "turnover": 3092055383.0,
+      "task_score": 87.92,
+      "rationale": "产品催化与风险偏好改善"
+    },
+    {
+      "symbol": "09868.HK",
+      "name": "小鹏汽车-W",
+      "price": 61.85,
+      "lot_size": 100,
+      "change_pct": 2.656,
+      "turnover": 454185385.0,
+      "task_score": 76.8,
+      "rationale": "智能车主题活跃，适合趋势跟踪"
+    }
+  ],
+  "filtered_out": [
+    {
+      "symbol": "00700.HK",
+      "reason": "one-lot cost 47880.00 exceeds budget 20000.00",
+      "lot_size": 100
+    },
+    {
+      "symbol": "00981.HK",
+      "reason": "one-lot cost 38675.00 exceeds budget 20000.00",
+      "lot_size": 500
+    },
+    {
+      "symbol": "01347.HK",
+      "reason": "one-lot cost 140100.00 exceeds budget 20000.00",
+      "lot_size": 1000
+    },
+    {
+      "symbol": "09992.HK",
+      "reason": "one-lot cost 32580.00 exceeds budget 20000.00",
+      "lot_size": 200
+    }
+  ],
+  "snapshot_status": "connected",
+  "snapshot_message": "ok"
+}

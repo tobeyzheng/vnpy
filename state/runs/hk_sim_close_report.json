@@ -1,10 +1,11 @@
 {
-  "base_currency": "HKD",
-  "initial_cash": 100000.0,
+  "task": "hk_real_env_sim_trading_v1",
   "cash": 48787.0,
   "nav": 100010.0,
   "realized_pnl": 0.0,
-  "max_drawdown_limit_pct": 0.2,
+  "drawdown_pct": 0.0,
+  "drawdown_limit_pct": 0.2,
+  "risk_status": "normal",
   "positions": [
     {
       "symbol": "09988.HK",
@@ -53,5 +54,6 @@
       "status": "filled",
       "reason": "智能车主题活跃，适合趋势跟踪"
     }
-  ]
+  ],
+  "exit_actions": []
 }

@@ -1,0 +1,34 @@
+{
+  "cash": 48787.0,
+  "nav": 100020.0,
+  "positions": [
+    {
+      "symbol": "09988.HK",
+      "qty": 100,
+      "avg_price": 139.5,
+      "market_value": 13969.999999999998,
+      "unrealized_pnl": 19.999999999998863
+    },
+    {
+      "symbol": "01810.HK",
+      "qty": 600,
+      "avg_price": 31.18,
+      "market_value": 18708.0,
+      "unrealized_pnl": 0.0
+    },
+    {
+      "symbol": "09868.HK",
+      "qty": 300,
+      "avg_price": 61.85,
+      "market_value": 18555.0,
+      "unrealized_pnl": 0.0
+    }
+  ],
+  "quotes": {
+    "09988.HK": 139.7,
+    "01810.HK": 31.18,
+    "09868.HK": 61.85
+  },
+  "snapshot_status": "connected",
+  "snapshot_message": "ok"
+}

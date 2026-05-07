@@ -1,0 +1,57 @@
+{
+  "base_currency": "HKD",
+  "initial_cash": 50000.0,
+  "cash": 40968.0,
+  "nav": 50022.0,
+  "realized_pnl": 0.0,
+  "max_drawdown_limit_pct": 0.2,
+  "positions": [
+    {
+      "symbol": "01810.HK",
+      "qty": 100,
+      "avg_price": 31.46,
+      "market_value": 3130.0,
+      "unrealized_pnl": -16.000000000000014
+    },
+    {
+      "symbol": "02432.HK",
+      "qty": 100,
+      "avg_price": 32.04,
+      "market_value": 3246.0,
+      "unrealized_pnl": 42.00000000000017
+    },
+    {
+      "symbol": "00772.HK",
+      "qty": 100,
+      "avg_price": 26.82,
+      "market_value": 2678.0,
+      "unrealized_pnl": -3.9999999999999147
+    }
+  ],
+  "orders": [
+    {
+      "symbol": "01810.HK",
+      "side": "BUY",
+      "qty": 100,
+      "price": 31.46,
+      "status": "filled",
+      "reason": "产品催化与风险偏好改善"
+    },
+    {
+      "symbol": "02432.HK",
+      "side": "BUY",
+      "qty": 100,
+      "price": 32.04,
+      "status": "filled",
+      "reason": "机器人主题活跃，小资金更易参与"
+    },
+    {
+      "symbol": "00772.HK",
+      "side": "BUY",
+      "qty": 100,
+      "price": 26.82,
+      "status": "filled",
+      "reason": "内容资产与AI叙事有补涨空间"
+    }
+  ]
+}
