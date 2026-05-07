@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import List, Set
 
@@ -20,10 +21,14 @@ class SubmitPrecheck:
         reasons: List[str] = []
         if mode != 'live':
             reasons.append('mode is not live; submit blocked')
-        if order.qty <= 0:
-            reasons.append('qty must be positive')
-        if order.order_type == 'LIMIT' and order.price in (None, 0, 0.0):
-            reasons.append('limit order requires price')
+        if order.qty <= 0 or not math.isfinite(float(order.qty)):
+            reasons.append('qty must be positive and finite')
+        if order.order_type == 'LIMIT':
+            price = float(order.price or 0.0)
+            if price <= 0 or not math.isfinite(price):
+                reasons.append('limit order requires positive finite price')
+        if order.notional is not None and (order.notional <= 0 or not math.isfinite(float(order.notional))):
+            reasons.append('order notional must be positive and finite')
         if order.side not in {'BUY', 'SELL'}:
             reasons.append('invalid side')
         if order.request_id in self._seen:

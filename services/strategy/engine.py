@@ -8,6 +8,7 @@ from services.strategy.raw_score import RawScoreEngine, RawScoreFeatures
 from services.strategy.timing import EntryTimingEngine, ExitTimingEngine, TimingDecision
 
 from .registry import StrategyRegistry
+from .strategy_selector import StrategySelection, StrategySelector
 
 
 @dataclass
@@ -21,12 +22,14 @@ class StrategyEvaluation:
 
 
 class StrategyEngine:
-    def __init__(self, registry: StrategyRegistry | None = None, strategy_id: str = "raw_score_timing_v1"):
+    def __init__(self, registry: StrategyRegistry | None = None, strategy_id: str = "raw_score_timing_v1", enable_strategy_selection: bool = True):
         self.registry = registry or StrategyRegistry()
         self.definition = self.registry.get(strategy_id)
         self.raw_score_engine = RawScoreEngine()
         self.entry_engine = EntryTimingEngine()
         self.exit_engine = ExitTimingEngine()
+        self.enable_strategy_selection = enable_strategy_selection
+        self.strategy_selector = StrategySelector()
 
     def evaluate_candidate(
         self,
@@ -35,6 +38,7 @@ class StrategyEngine:
         quote: dict[str, Any],
         flow_divisor: float,
         has_event_catalyst: bool,
+        external_strategy_selection: StrategySelection | None = None,
     ) -> StrategyEvaluation:
         legacy = float(candidate.get("raw_score", 0.5) or 0.5)
         change_pct = float(quote.get("change_pct") or 0)
@@ -56,21 +60,37 @@ class StrategyEngine:
             near_resistance=abs(change_pct) > 4,
             moving_average_bullish=change_pct > 0,
         )
-        task_score = self._task_score(raw_score=raw_score, change_pct=change_pct, turnover=turnover, action=timing.action)
+        selection = self._select_strategy(
+            features={
+                "raw_score": raw_score,
+                "trend_score": features.trend_score,
+                "risk_score": features.risk_penalty,
+                "capital_score": features.flow_score,
+                "rsi": 50 + min(35, abs(change_pct) * 4),
+                "near_resistance": abs(change_pct) > 4,
+                "has_event_catalyst": has_event_catalyst,
+                "moving_average_bullish": change_pct > 0,
+                "missing_fields": self._missing_fields(candidate, quote),
+            },
+            timing=timing,
+        )
+        selection = self._merge_external_selection(selection, external_strategy_selection)
+        effective_timing = self._apply_selection(timing, selection)
+        task_score = self._task_score(raw_score=raw_score, change_pct=change_pct, turnover=turnover, action=effective_timing.action)
         signal = StrategySignal(
             strategy_id=self.definition.strategy_id,
             symbol=str(candidate.get("symbol", "")),
             market=str(candidate.get("market", "")),
-            direction="long" if timing.action in self.definition.tradable_actions else "flat",
+            direction="long" if selection.allow_trade and effective_timing.action in self.definition.tradable_actions else "flat",
             score=raw_score,
-            confidence=timing.confidence,
-            allow_trade=raw_score >= self.definition.min_raw_score and timing.action in self.definition.tradable_actions,
-            target_position_pct=timing.suggested_size_pct,
-            reason=timing.reason,
-            risk_flags=[],
-            metadata={"entry_action": timing.action, "invalidator": timing.invalidator},
+            confidence=min(effective_timing.confidence, selection.confidence),
+            allow_trade=raw_score >= self.definition.min_raw_score and selection.allow_trade and effective_timing.action in self.definition.tradable_actions,
+            target_position_pct=effective_timing.suggested_size_pct if selection.allow_trade else 0.0,
+            reason=effective_timing.reason,
+            risk_flags=selection.risk_flags,
+            metadata={"entry_action": effective_timing.action, "invalidator": effective_timing.invalidator, "strategy_selection": selection.to_dict()},
         )
-        return StrategyEvaluation(signal=signal, raw_score=raw_score, entry_timing=timing, features=features, task_score=task_score)
+        return StrategyEvaluation(signal=signal, raw_score=raw_score, entry_timing=effective_timing, features=features, task_score=task_score, metadata={"strategy_selection": selection.to_dict()})
 
     def evaluate_bar(
         self,
@@ -106,23 +126,100 @@ class StrategyEngine:
             near_resistance=near_resistance,
             moving_average_bullish=fast > slow,
         )
+        selection = self._select_strategy(
+            features={
+                "raw_score": raw_score,
+                "trend_score": trend_score,
+                "risk_score": features.risk_penalty,
+                "capital_score": features.flow_score,
+                "rsi": 55 if fast > slow else 45,
+                "near_resistance": near_resistance,
+                "has_event_catalyst": event_score > 0.6,
+                "moving_average_bullish": fast > slow,
+                "missing_fields": 0,
+            },
+            timing=timing,
+        )
+        effective_timing = self._apply_selection(timing, selection)
         signal = StrategySignal(
             strategy_id=self.definition.strategy_id,
             symbol=symbol,
             market=market,
-            direction="long" if timing.action in self.definition.tradable_actions else "flat",
+            direction="long" if selection.allow_trade and effective_timing.action in self.definition.tradable_actions else "flat",
             score=raw_score,
-            confidence=timing.confidence,
-            allow_trade=raw_score >= self.definition.min_raw_score and timing.action in self.definition.tradable_actions,
-            target_position_pct=timing.suggested_size_pct,
-            reason=timing.reason,
-            risk_flags=[],
-            metadata={"entry_action": timing.action, "invalidator": timing.invalidator, "trend_score": trend_score},
+            confidence=min(effective_timing.confidence, selection.confidence),
+            allow_trade=raw_score >= self.definition.min_raw_score and selection.allow_trade and effective_timing.action in self.definition.tradable_actions,
+            target_position_pct=effective_timing.suggested_size_pct if selection.allow_trade else 0.0,
+            reason=effective_timing.reason,
+            risk_flags=selection.risk_flags,
+            metadata={"entry_action": effective_timing.action, "invalidator": effective_timing.invalidator, "trend_score": trend_score, "strategy_selection": selection.to_dict()},
         )
-        return StrategyEvaluation(signal=signal, raw_score=raw_score, entry_timing=timing, features=features, task_score=raw_score * 100)
+        return StrategyEvaluation(signal=signal, raw_score=raw_score, entry_timing=effective_timing, features=features, task_score=raw_score * 100, metadata={"strategy_selection": selection.to_dict()})
 
     def evaluate_exit(self, *, pnl_pct: float, rsi: float, trend_score: float, risk_score: float) -> TimingDecision:
         return self.exit_engine.decide(pnl_pct=pnl_pct, rsi=rsi, trend_score=trend_score, risk_score=risk_score)
+
+    def _select_strategy(self, *, features: dict[str, Any], timing: TimingDecision) -> StrategySelection:
+        if not self.enable_strategy_selection:
+            return StrategySelection(
+                strategy_id=timing.action,
+                allow_trade=timing.action in self.definition.tradable_actions,
+                confidence=timing.confidence,
+                reason=timing.reason,
+                source="timing_only",
+            )
+        return self.strategy_selector.select(features=features, timing=timing)
+
+    def _merge_external_selection(self, rules: StrategySelection, external: StrategySelection | None) -> StrategySelection:
+        if external is None:
+            return rules
+        metadata = {**external.metadata, "rules_selection": rules.to_dict()}
+        if external.strategy_id in {"watch_only", "block_trade"}:
+            return StrategySelection(
+                strategy_id=external.strategy_id,
+                allow_trade=False,
+                confidence=min(external.confidence, 0.95),
+                reason=external.reason,
+                source=external.source,
+                risk_flags=sorted(set([*rules.risk_flags, *external.risk_flags, "external_selection_block"])),
+                metadata=metadata,
+            )
+        if rules.allow_trade:
+            return StrategySelection(
+                strategy_id=external.strategy_id,
+                allow_trade=external.allow_trade,
+                confidence=min(rules.confidence, external.confidence),
+                reason=external.reason,
+                source=external.source,
+                risk_flags=sorted(set([*rules.risk_flags, *external.risk_flags])),
+                metadata=metadata,
+            )
+        return StrategySelection(
+            strategy_id=rules.strategy_id,
+            allow_trade=False,
+            confidence=rules.confidence,
+            reason=rules.reason,
+            source=rules.source,
+            risk_flags=sorted(set([*rules.risk_flags, "external_selection_not_allowed_by_rules"])),
+            metadata={**rules.metadata, "external_selection": external.to_dict()},
+        )
+
+    def _apply_selection(self, timing: TimingDecision, selection: StrategySelection) -> TimingDecision:
+        if selection.strategy_id in {"watch_only", "block_trade"}:
+            return TimingDecision(selection.strategy_id, selection.reason, selection.confidence, timing.invalidator, 0.0)
+        suggested_size = timing.suggested_size_pct or self._default_size(selection.strategy_id)
+        return TimingDecision(selection.strategy_id, selection.reason, min(timing.confidence, selection.confidence), timing.invalidator, suggested_size)
+
+    def _default_size(self, strategy_id: str) -> float:
+        return {
+            "trend_following": 0.18,
+            "breakout_momentum": 0.12,
+            "pullback_buy": 0.10,
+        }.get(strategy_id, 0.0)
+
+    def _missing_fields(self, candidate: dict[str, Any], quote: dict[str, Any]) -> int:
+        required = [candidate.get("symbol"), candidate.get("market"), quote.get("change_pct"), quote.get("turnover"), quote.get("price", quote.get("last_price"))]
+        return sum(1 for value in required if value in {None, ""})
 
     def _quality_score(self, candidate: dict[str, Any]) -> float:
         signals = candidate.get("signals") or [{"score": 0.5}]

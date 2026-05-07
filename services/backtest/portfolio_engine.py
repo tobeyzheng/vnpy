@@ -10,6 +10,7 @@ from vnpy.trader.object import BarData
 
 from services.portfolio.risk import PortfolioExposureHelper, PortfolioRiskGuard
 from services.strategy.raw_score import RawScoreEngine, RawScoreFeatures
+from services.strategy.selection_store import StrategySelectionStore
 
 
 @dataclass
@@ -39,12 +40,13 @@ def parse_vt_symbol(vt_symbol: str) -> tuple[str, Exchange, str]:
 
 
 class PortfolioBacktestEngine:
-    def __init__(self, *, initial_cash: float = 80000.0, max_single_position_pct: float = 0.25, max_total_positions: int = 8, max_market_exposure_pct: float = 0.85):
+    def __init__(self, *, initial_cash: float = 80000.0, max_single_position_pct: float = 0.25, max_total_positions: int = 8, max_market_exposure_pct: float = 0.85, strategy_selection_root: str | None = None):
         self.initial_cash = initial_cash
         self.max_single_position_pct = max_single_position_pct
         self.max_total_positions = max_total_positions
         self.max_market_exposure_pct = max_market_exposure_pct
         self.strategy_engine = StrategyEngine()
+        self.strategy_selection_store = StrategySelectionStore(strategy_selection_root) if strategy_selection_root else None
         self.portfolio_guard = PortfolioRiskGuard(max_market_exposure_pct=max_market_exposure_pct, max_total_positions=max_total_positions)
         self.exposure_helper = PortfolioExposureHelper()
         self.db = get_database()
@@ -120,6 +122,10 @@ class PortfolioBacktestEngine:
                     avg_volume=0.0,
                     near_resistance=bar.close_price >= max(hist[-5:]),
                 )
+                replay = self.strategy_selection_store.load_latest_before(market, s, dt) if self.strategy_selection_store else None
+                strategy_selection = (replay or {}).get("strategy_selection", {})
+                if strategy_selection and strategy_selection.get("strategy_id") in {"watch_only", "block_trade"}:
+                    continue
                 candidates.append((s, evaluation.raw_score, bar, market))
 
             candidates.sort(key=lambda x: x[1], reverse=True)

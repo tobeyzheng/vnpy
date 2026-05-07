@@ -12,11 +12,17 @@
 
 当前安全原则：
 
-- `live_submit_enabled = False`
-- `VnpyExecutor` 仅支持 `paper/sim` dry-run 状态落盘。
-- 默认不调用 `MainEngine.send_order()`。
-- 默认不调用 `FutuGateway.send_order()`。
-- Futu SIM submit 脚本提交前必须通过 reconciliation。
+- 默认不做真实实盘提交；实盘入口默认 dry-run。
+- `VnpyExecutor` 支持 `paper/sim/sim_submit/live_submit`，但 `sim_submit/live_submit` 必须显式开关。
+- 真实提交需同时满足 `--live-submit`、`VNPY_LIVE_CONFIG=YES`、`VNPY_LIVE_SUBMIT=YES`，默认还要求 `VNPY_LIVE_APPROVED=YES`。
+- Futu SIM 会话只操作 `TrdEnv.SIMULATE`，不得切到 REAL。
+- Knot/LLM 只能产出结构化评估或策略建议，不得绕过风控、对账、审批、幂等和订单状态机。
+
+AI / Vibe Coding 协作底座：
+
+- 项目规则：`.codebuddy/rules/vnpy-quant-system-vibecoding-context.mdc`
+- 当前主线：`scripts/` 只保留入口与参数，`services/` 放业务逻辑，`execution/` 放执行桥，`state/runs/` 放运行产物。
+- 历史实验目录：`examples/` 仅作参考，不作为当前开发基线。
 
 ## 2. 交易主入口文件
 
@@ -27,12 +33,11 @@
   - 已启用 `reconciliation_required=True`。
 - 盘后收盘：`scripts/run_hk_sim_close.py`
 - 盘中盯市/估值：`scripts/run_hk_sim_mark.py`
+- 富途模拟账户会话：`scripts/run_hk_futu_sim_session.py`
+  - 操作 Futu `SIMULATE` 账户，默认港股常规交易时段内轮询，支持 `--max-budget`、`--max-order-value`、`--max-loss`、`--quote-retries`。
+  - 输出 `state/runs/hk_futu_sim_session_report.json` / `state/runs/hk_futu_sim_session_state.json` / `state/runs/hk_futu_sim_session.log`。
 - 港股 Knot 刷新：`scripts/run_knot_agent_hk_refresh.py`
 - 港股盘中 Knot 决策：`scripts/run_intraday_knot_decision.py`
-- Futu SIM 买入提交验证：`scripts/demo_futu_sim_submit.py`
-  - 已接入 `ReconciliationGuard`。
-- Futu SIM 卖出提交验证：`scripts/demo_futu_sim_sell_submit.py`
-  - 已接入 `ReconciliationGuard` 和可卖数量约束。
 
 ### 美股交易入口
 
@@ -76,8 +81,8 @@
 
 当前仍未抽象的部分：
 
-- `run_hk_sim_close.py` / `run_us_sim_close.py` 仍是两个脚本，下一步应抽成统一 close pipeline。
-- 本地 `SimTradingEngine` 成交尚未全部写入 `OrderStateStore`。
+- Futu 模拟账户会话脚本已经支持 HK/US 两地独立入口，但尚未抽成同一个参数化 session pipeline。
+- Futu SIM submit 会话已写入 `OrderStateStore`，仍需继续增强成交回报轮询与撤单超时处理。
 
 ## 4. 候选池入口
 
@@ -116,6 +121,7 @@
 
 - 策略注册：`services/strategy/registry.py`
 - 策略引擎：`services/strategy/engine.py`
+- 策略选择器：`services/strategy/strategy_selector.py`
 - 测试：`tests/test_strategy_engine.py`
 
 核心类：
@@ -124,10 +130,20 @@
 - `StrategyRegistry`
 - `StrategyEngine`
 - `StrategyEvaluation`
+- `StrategySelector`
+- `StrategySelection`
 
 当前默认策略：
 
 - `raw_score_timing_v1`
+
+当前策略选择枚举：
+
+- `trend_following`
+- `breakout_momentum`
+- `pullback_buy`
+- `watch_only`
+- `block_trade`
 
 当前已接入：
 
@@ -135,7 +151,7 @@
 - `services/backtest/vnpy_strategy_bridge.py`
 - `services/backtest/portfolio_engine.py`
 
-目标：让模拟、回测、未来实盘复用同一套策略计算，避免回测和交易逻辑分叉。
+目标：让模拟、回测、未来实盘复用同一套策略计算，避免回测和交易逻辑分叉。LLM/Knot 只负责结构化策略选择或评估，不直接决定下单数量，也不得绕过硬风控。
 
 ## 6. 订单协议与状态机
 
@@ -266,8 +282,8 @@ created
 当前接入：
 
 - `services/trading_pipeline/sim_task.py`
-- `scripts/demo_futu_sim_submit.py`
-- `scripts/demo_futu_sim_sell_submit.py`
+- `scripts/run_hk_futu_sim_session.py`
+- `scripts/run_us_futu_sim_session.py`
 - `services/healthcheck/checks.py`
 
 ## 9. 回测相关文件
@@ -371,8 +387,6 @@ created
 - `state/runs/remote_knot_batch_tasks.json`
 - `state/runs/knot_agent_raw_output_hk.json`
 - `state/runs/knot_agent_intraday_decision_hk.json`
-- `state/runs/knot_agent_prompt_spec.json`
-- `state/runs/knot_agent_validation_demo.json`
 - `state/runs/hk_5w_candidate_refresh.json`
 
 ### 交易 / 执行
@@ -383,8 +397,10 @@ created
 - `state/runs/us_sim_task_report.json`
 - `state/runs/hk_sim_close_report.json`
 - `state/runs/us_sim_close_report.json`
-- `state/runs/futu_sim_submit_demo.json`
-- `state/runs/futu_sim_sell_submit_demo.json`
+- `state/runs/hk_futu_sim_session_report.json`
+- `state/runs/hk_futu_sim_session_state.json`
+- `state/runs/us_futu_sim_session_report.json`
+- `state/runs/us_futu_sim_session_state.json`
 - `state/runs/futu_sim_position_reconcile.json`
 - `state/runs/orders/<request_id>.json`
 - `state/runs/vnpy_gateway_events_YYYYMMDD.jsonl`
@@ -429,6 +445,16 @@ UnifiedCandidateProvider.load(market)
 -> ReconciliationGuard
 -> SimTradingEngine local fill
 -> sim task report
+
+Futu SIM session:
+UnifiedCandidateProvider.load(market) + existing Futu SIM positions
+-> quote snapshot with retry
+-> StrategyEngine.evaluate_candidate()
+-> max_budget / max_order_value / max_loss
+-> FutuSimTradeClient.submit_limit_order(SIMULATE)
+-> status check
+-> OrderStateStore
+-> *_futu_sim_session_report.json
 ```
 
 ### vn.py/Futu 事件链
@@ -472,17 +498,23 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 - vn.py 账户、持仓、订单、成交事件记录器 scaffold。
 - reconciliation guard 与 Futu SIM submit 阻断。
 - `StrategyRegistry` / `StrategyEngine`。
+- `StrategySelector` 已迁入 `services/strategy/strategy_selector.py`，并接入 `StrategyEngine.evaluate_candidate()` / `evaluate_bar()`。
+- `scripts/run_hk_sim_task.py` / `scripts/run_us_sim_task.py` 可直接从仓库根目录执行，并通过 `MultiMarketSimTradingPipeline` 输出 `strategy_selection`。
+- 新增 `services/trading_pipeline/live_task.py`、`scripts/run_us_live_task.py`、`scripts/run_hk_live_task.py`；默认 dry-run，真实提交需同时满足 `--live-submit`、`VNPY_LIVE_CONFIG=YES`、`VNPY_LIVE_SUBMIT=YES`。
+- `VnpyExecutor` 增加 `sim_submit` / `live_submit` 显式提交模式，默认仍不提交。
+- `SimTradingEngine` 本地成交开始写入 `OrderStateStore`。
 - 回测开始复用 `StrategyEngine`。
 - `HealthcheckService`、`run_healthcheck.py`、daily brief、alerts。
 
 ### 仍待继续接入
 
-- `run_hk_sim_close.py` / `run_us_sim_close.py` 抽成统一 close pipeline。
-- `SimTradingEngine` 本地成交完整写入 `OrderStateStore`。
-- `VnpyExecutor` 的 `sim explicit-submit` 模式，但默认仍需关闭。
-- 订单持久化幂等去重。
+- Futu SIM session 继续抽象成统一参数化 session pipeline。
+- Futu SIM session 增强成交回报轮询与撤单超时处理。
+- `VnpyExecutor` 的 `sim explicit-submit` 模式默认仍需关闭。
+- 订单持久化幂等去重继续强化。
 - Futu SIM 与本地账本自动修复策略。
 - 动态 candidate 历史化。
+- `strategy_selection` 历史化与回放替身。
 - Knot Agent 历史回放替身。
 - 多市场货币/汇率处理。
 - 行业/策略/市场暴露归因。
@@ -534,14 +566,16 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 
 ## 16. 关键结论
 
-- 当前交易入口：`scripts/run_hk_sim_task.py`、`scripts/run_us_sim_task.py`。
-- 当前统一交易 pipeline：`services/trading_pipeline/sim_task.py`。
+- 当前本地模拟交易入口：`scripts/run_hk_sim_task.py`、`scripts/run_us_sim_task.py`。
+- 当前 Futu SIM 账户会话入口：`scripts/run_hk_futu_sim_session.py`、`scripts/run_us_futu_sim_session.py`。
+- 当前实盘 dry-run/live gate 入口：`scripts/run_hk_live_task.py`、`scripts/run_us_live_task.py`。
+- 当前统一交易 pipeline：`services/trading_pipeline/sim_task.py`、`services/trading_pipeline/live_task.py`、`services/trading_pipeline/close_task.py`。
 - 当前统一策略入口：`services/strategy/engine.py`。
 - 当前订单状态入口：`services/trade_state/state_machine.py`。
-- 当前 vn.py dry-run 执行入口：`execution/vnpy_bridge/executor.py`。
+- 当前 vn.py dry-run / live-submit 执行入口：`execution/vnpy_bridge/executor.py`。
 - 当前 Futu/vn.py 事件记录入口：`execution/vnpy_bridge/event_recorder.py`。
 - 当前对账阻断入口：`services/execution_guard/reconciliation.py`。
 - 当前健康检查入口：`scripts/run_healthcheck.py`。
 - 当前 daily brief 入口：`scripts/run_portfolio_brief.py`。
 
-系统已经从“脚本堆叠”推进到“pipeline + strategy engine + order state + reconciliation + healthcheck”的结构。下一阶段重点应是统一 close pipeline、订单幂等、SimTradingEngine 状态落盘，以及在严格开关控制下推进 `sim explicit-submit`。
+系统已经从“脚本堆叠”推进到“pipeline + strategy engine + order state + reconciliation + healthcheck + Futu SIM session + live gate”的结构。下一阶段重点应是统一 HK/US session pipeline、成交回报轮询、撤单超时、订单幂等和组合级实盘风控。

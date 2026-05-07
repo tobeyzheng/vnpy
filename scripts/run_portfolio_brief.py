@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from dataclasses import asdict
+
 from services.healthcheck import HealthcheckService
-from services.portfolio.risk import PortfolioRiskGuard
+from services.portfolio.risk import PortfolioExposureAnalyzer, PortfolioRiskGuard
 from services.portfolio.summary import build_portfolio_summary
 
 
@@ -25,6 +27,16 @@ def main() -> None:
     us_nav = float(us.get('nav', 0) or 0)
     hk_risk = risk_guard.check(total_nav=summary.total_nav, market_nav=hk_nav, total_positions=summary.position_count)
     us_risk = risk_guard.check(total_nav=summary.total_nav, market_nav=us_nav, total_positions=summary.position_count)
+    positions = []
+    for market, report, currency in [("hong_kong", hk, "HKD"), ("us", us, "USD")]:
+        for pos in report.get('positions', []) or []:
+            row = dict(pos)
+            row.setdefault('market', market)
+            row.setdefault('currency', currency)
+            row.setdefault('market_value', row.get('market_value', float(row.get('qty', 0) or 0) * float(row.get('avg_price', 0) or 0)))
+            positions.append(row)
+    exposure = PortfolioExposureAnalyzer().summarize(cash=float(hk.get('cash', 0) or 0) + float(us.get('cash', 0) or 0), cash_currency='USD', positions=positions)
+    exposure_risk = risk_guard.check_breakdown(exposure, total_positions=summary.position_count)
     health = HealthcheckService(repo).run()
     out = {
         'portfolio_summary': {
@@ -36,7 +48,9 @@ def main() -> None:
         'portfolio_risk': {
             'hong_kong': {'allowed': hk_risk.allowed, 'reason': hk_risk.reason},
             'us': {'allowed': us_risk.allowed, 'reason': us_risk.reason},
+            'exposure': {'allowed': exposure_risk.allowed, 'reason': exposure_risk.reason},
         },
+        'exposure_breakdown': asdict(exposure),
         'concentration': {
             'hong_kong_nav_pct': round(hk_nav / summary.total_nav, 4) if summary.total_nav else 0.0,
             'us_nav_pct': round(us_nav / summary.total_nav, 4) if summary.total_nav else 0.0,

@@ -23,6 +23,7 @@ class LiveOrderBridge:
                     market=intent.market,
                     side=side,
                     qty=qty,
+                    target_position_pct=qty,
                     order_type='LIMIT',
                     price=None,
                     reason=intent.reason,

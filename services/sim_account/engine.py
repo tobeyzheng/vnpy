@@ -1,18 +1,24 @@
 from __future__ import annotations
 
 import math
+from dataclasses import asdict
 
+from services.common import OrderIntent
 from services.sim_account.models import CostBreakdown, SimAccount, SimOrder, SimPosition
+from services.trade_state import OrderStateStore
+from services.trade_state.state_machine import OrderStateMachine
 
 
 class SimTradingEngine:
-    def __init__(self, lot_size_default: int = 100, commission_rate: float = 0.0003, platform_fee: float = 15.0, settlement_rate: float = 0.00002, stamp_duty_rate_sell: float = 0.0013, slippage_bps: float = 8.0):
+    def __init__(self, lot_size_default: int = 100, commission_rate: float = 0.0003, platform_fee: float = 15.0, settlement_rate: float = 0.00002, stamp_duty_rate_sell: float = 0.0013, slippage_bps: float = 8.0, order_state_store: OrderStateStore | None = None):
         self.lot_size_default = lot_size_default
         self.commission_rate = commission_rate
         self.platform_fee = platform_fee
         self.settlement_rate = settlement_rate
         self.stamp_duty_rate_sell = stamp_duty_rate_sell
         self.slippage_bps = slippage_bps
+        self.order_state_store = order_state_store
+        self.order_state_machine = OrderStateMachine()
 
     def can_open(self, account: SimAccount, budget_hkd: float) -> bool:
         max_loss_nav = account.initial_cash * (1 - account.max_drawdown_limit_pct)
@@ -52,6 +58,7 @@ class SimTradingEngine:
         account.cash -= cash_needed
         order = SimOrder(symbol=symbol, side='BUY', qty=qty, price=price, status='filled', reason=reason, filled_qty=qty, avg_fill_price=exec_price, gross_amount=fees.gross_amount, fees=fees)
         account.orders.append(order)
+        self._record_order_state(order)
         existing = next((p for p in account.positions if p.symbol == symbol), None)
         if existing:
             total_cost = existing.avg_price * existing.qty + exec_price * qty
@@ -73,8 +80,40 @@ class SimTradingEngine:
         account.realized_pnl += realized
         order = SimOrder(symbol=symbol, side='SELL', qty=qty, price=price, status='filled', reason=reason, filled_qty=qty, avg_fill_price=exec_price, gross_amount=fees.gross_amount, fees=fees)
         account.orders.append(order)
+        self._record_order_state(order)
         account.positions = [p for p in account.positions if p.symbol != symbol]
         return order
+
+    def _record_order_state(self, order: SimOrder) -> None:
+        if not self.order_state_store or order.qty <= 0:
+            return
+        request_id = order.order_id or f"sim_{len(self.order_state_store.list()) + 1}_{order.symbol}_{order.side}"
+        intent = OrderIntent(
+            request_id=request_id,
+            symbol=order.symbol,
+            market="sim",
+            strategy_id="sim_trading_engine",
+            side=order.side,
+            qty=order.qty,
+            price=order.price,
+            target_position_pct=0.0,
+            reason=order.reason,
+            signal_snapshot={"submit_status": order.submit_status},
+        )
+        state = self.order_state_machine.create(intent)
+        state = self.order_state_machine.transition(state, "validated", note="sim_order_created")
+        state = self.order_state_machine.transition(state, "risk_checked", note="sim_order_risk_checked")
+        state = self.order_state_machine.transition(state, "approved", note="sim_order_approved")
+        state = self.order_state_machine.transition(state, "submitted", note="sim_order_submitted")
+        state = self.order_state_machine.apply_broker_order(
+            state,
+            broker_order_id=request_id,
+            broker_status="FILLED_ALL" if order.status == "filled" else order.status,
+            filled_qty=order.filled_qty,
+            avg_fill_price=order.avg_fill_price,
+            snapshot={"sim_order": asdict(order)},
+        )
+        self.order_state_store.save(state)
 
     def evaluate_exit_reason(self, pos: SimPosition, current_price: float) -> str | None:
         pnl_pct = (current_price - pos.avg_price) / pos.avg_price if pos.avg_price else 0.0

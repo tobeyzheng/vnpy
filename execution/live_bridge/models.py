@@ -11,6 +11,8 @@ class LiveOrderRequest:
     market: str
     side: str
     qty: float
+    target_position_pct: float | None = None
+    notional: float | None = None
     order_type: str = 'LIMIT'
     price: Optional[float] = None
     tif: str = 'DAY'

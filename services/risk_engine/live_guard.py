@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import List, Set
 
@@ -33,14 +34,21 @@ class LiveRiskGuard:
         signal_age_limit = int(self.limits.get('max_signal_age_seconds', 900))
         drawdown_limit = float(self.limits.get('max_drawdown_pct', 0.08))
 
+        order_exposure_pct = float(order.target_position_pct if order.target_position_pct is not None else order.qty)
+        max_order_value = self.limits.get('max_order_value')
+
         if order.request_id in self._seen:
             reasons.append('duplicate live request detected')
-        if order.qty > single_limit:
+        if order_exposure_pct <= 0 or not math.isfinite(order_exposure_pct):
+            reasons.append('order exposure must be positive and finite')
+        if order_exposure_pct > single_limit:
             reasons.append(f'single position exceeds limit {single_limit}')
-        if daily_new_pct + order.qty > daily_limit:
+        if daily_new_pct + order_exposure_pct > daily_limit:
             reasons.append(f'daily new exposure exceeds limit {daily_limit}')
-        if market_existing_pct + order.qty > market_limit:
+        if market_existing_pct + order_exposure_pct > market_limit:
             reasons.append(f'market exposure exceeds limit {market_limit}')
+        if max_order_value is not None and order.notional is not None and order.notional > float(max_order_value):
+            reasons.append(f'order value exceeds limit {float(max_order_value)}')
         if signal_age_seconds > signal_age_limit:
             reasons.append('signal too old for live trading')
         if current_drawdown_pct >= drawdown_limit:

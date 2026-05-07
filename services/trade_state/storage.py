@@ -61,6 +61,21 @@ class OrderStateStore:
                 continue
         return states
 
+    def find_by_broker_order_id(self, broker_order_id: str) -> OrderState | None:
+        if not broker_order_id:
+            return None
+        for state in self.list():
+            if state.broker_order_id == broker_order_id:
+                return state
+        return None
+
+    def has_open_request(self, request_id: str) -> bool:
+        state = self.load(request_id)
+        if not state:
+            return False
+        open_status = {'created', 'validated', 'risk_checked', 'approval_required', 'approved', 'submitting', 'submitted', 'partial_filled', 'cancel_requested'}
+        return state.status in open_status
+
     def summary(self) -> dict[str, int]:
         states = self.list()
         open_status = {'created', 'validated', 'risk_checked', 'approval_required', 'approved', 'submitting', 'submitted', 'partial_filled', 'cancel_requested'}

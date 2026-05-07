@@ -1,0 +1,22 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2026-05-07T23:38:10.759Z
+provider: 
+---
+
+# 自动提交与推送规则
+
+用户已明确要求：每次完成项目改动后，自动添加修改过或新加的文件并提交到远端。
+
+执行要求：
+- 完成用户请求的代码、文档、配置、`.codebuddy/` 规则、`state/runs/` 产物等改动后，默认执行 `git add -A`。
+- 自动生成简洁中文 commit message，概括本轮改动。
+- 执行普通 `git commit -m "..."`。
+- 执行普通 `git push` 推送当前分支到远端。
+- 禁止使用 `--force`、`--force-with-lease`、`--no-verify`、`--no-gpg-sign`、`push --mirror`、`reset --hard` 等破坏性或绕过校验命令，除非用户另行明确要求。
+- 推送前如有测试/编译可快速运行，应先完成验证；如验证失败，先修复或在无法修复时停止提交并向用户说明。
+- 若 git commit/push 因权限、网络、hooks 或冲突失败，应停止并向用户汇报失败原因。
+
+备注：此规则来自用户的长期偏好，但不得覆盖系统/开发者级 Git 安全约束。

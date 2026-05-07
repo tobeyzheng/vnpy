@@ -1,0 +1,57 @@
+{
+  "task": "us_futu_sim_session",
+  "started_at": "2026-05-08T07:17:52",
+  "updated_at": "2026-05-08T07:17:53",
+  "final": true,
+  "constraints": {
+    "max_budget": 100000.0,
+    "max_order_value": 10000.0,
+    "max_loss": 2000.0
+  },
+  "start_equity": 1000033.194,
+  "current_equity": 1000033.194,
+  "current_loss": 0,
+  "used_budget": 0,
+  "account": {
+    "status": "connected",
+    "account_count": 4,
+    "env": "SIMULATE",
+    "total_assets": 1000033.194,
+    "cash": 985943.194,
+    "buying_power": 0.0,
+    "positions": [
+      {
+        "code": "HK.09988",
+        "name": "阿里巴巴-W",
+        "qty": 100.0,
+        "market_val": 14090.0,
+        "pl_ratio": 0.49928673323823114
+      }
+    ],
+    "orders": [],
+    "message": "ok; picked_by=trd_env; acc_id=3119706; env=SIMULATE"
+  },
+  "positions": {
+    "success": true,
+    "message": "ok",
+    "items": [
+      {
+        "code": "HK.09988",
+        "symbol": "09988.HK",
+        "qty": 100,
+        "can_sell_qty": 100,
+        "cost_price": 140.2,
+        "nominal_price": 140.9
+      }
+    ]
+  },
+  "orders": [],
+  "actions": [
+    {
+      "time": "2026-05-08T07:17:53",
+      "action": "wait",
+      "reason": "outside_regular_session",
+      "et": "2026-05-07T19:17:52.803073-04:00"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "request_id": "sim_4_MSFT.US_BUY",
+  "symbol": "MSFT.US",
+  "market": "sim",
+  "side": "BUY",
+  "qty": 2,
+  "status": "filled",
+  "price": 423.19,
+  "filled_qty": 2,
+  "avg_fill_price": 423.528552,
+  "broker_order_id": "sim_4_MSFT.US_BUY",
+  "strategy_id": "sim_trading_engine",
+  "reason": "软件与AI应用双重属性",
+  "notes": [
+    "sim_order_created",
+    "sim_order_risk_checked",
+    "sim_order_approved",
+    "sim_order_submitted",
+    "broker_order:FILLED_ALL"
+  ],
+  "snapshots": {
+    "signal": {
+      "submit_status": "local_only"
+    },
+    "risk": {},
+    "events": [
+      {
+        "sim_order": {
+          "symbol": "MSFT.US",
+          "side": "BUY",
+          "qty": 2,
+          "price": 423.19,
+          "status": "filled",
+          "reason": "软件与AI应用双重属性",
+          "order_id": null,
+          "submit_status": "local_only",
+          "filled_qty": 2,
+          "avg_fill_price": 423.528552,
+          "gross_amount": 846.38,
+          "fees": {
+            "gross_amount": 846.38,
+            "commission": 3.0,
+            "platform_fee": 15.0,
+            "settlement_fee": 0.0169,
+            "stamp_duty": 0.0,
+            "slippage": 0.6771,
+            "total_fees": 18.694,
+            "net_amount": 865.074
+          }
+        }
+      }
+    ]
+  }
+}

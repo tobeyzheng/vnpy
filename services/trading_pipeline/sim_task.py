@@ -7,11 +7,14 @@ from typing import Any
 
 from services.futu_account import FutuAccountProvider, FutuQuoteClient
 from services.sim_account import SimAccountStore, SimTradingEngine
+from services.trade_state import OrderStateStore
 from services.strategy.candidate_provider import UnifiedCandidateProvider
+from services.execution_guard.reconciliation import ReconciliationGuard
+from services.strategy.engine import StrategyEngine
+from services.strategy.external_selection import ExternalStrategySelectionStore
 from services.strategy.market_rules import get_market_rules
-from services.strategy.raw_score import RawScoreEngine, RawScoreFeatures
 from services.strategy.risk_guard import RiskGuard
-from services.strategy.timing import EntryTimingEngine
+from services.strategy.selection_store import StrategySelectionStore
 
 
 @dataclass(frozen=True)
@@ -29,6 +32,9 @@ class MarketSimTaskConfig:
     affordability_label: str
     max_candidates: int = 30
     max_selected: int = 3
+    reconciliation_required: bool = False
+    reconciliation_max_age_minutes: int = 60
+    strategy_selection_enabled: bool = True
 
 
 class MultiMarketSimTradingPipeline:
@@ -38,10 +44,12 @@ class MultiMarketSimTradingPipeline:
         self.account_path = repo_root / "state" / "runs" / config.account_filename
         self.report_path = repo_root / "state" / "runs" / config.report_filename
         self.account_store = SimAccountStore(self.account_path)
-        self.engine = SimTradingEngine(lot_size_default=config.lot_size_default)
+        self.order_state_store = OrderStateStore(repo_root / "state" / "runs" / "orders")
+        self.engine = SimTradingEngine(lot_size_default=config.lot_size_default, order_state_store=self.order_state_store)
         self.quote_client = FutuQuoteClient()
         self.account_provider = FutuAccountProvider()
-        self.strategy_engine = StrategyEngine()
+        self.strategy_engine = StrategyEngine(enable_strategy_selection=config.strategy_selection_enabled)
+        self.selection_store = StrategySelectionStore(repo_root / "state" / "runs" / "strategy_selection")
         self.risk_guard = RiskGuard()
         self.reconciliation_guard = ReconciliationGuard(
             repo_root / "state" / "runs" / "futu_sim_position_reconcile.json",
@@ -71,6 +79,7 @@ class MultiMarketSimTradingPipeline:
         report = {
             "task": self.config.task_name,
             "market": self.config.market,
+            "strategy_selection_enabled": self.config.strategy_selection_enabled,
             "cash": account.cash,
             "nav": account.nav,
             "positions": [asdict(p) for p in account.positions],
@@ -137,15 +146,19 @@ class MultiMarketSimTradingPipeline:
                 })
                 continue
 
+            external_selection = self.external_selection_store.load_latest(self.config.market, symbol)
             evaluation = self.strategy_engine.evaluate_candidate(
                 candidate=candidate,
                 quote=item,
                 flow_divisor=self.config.flow_divisor,
                 has_event_catalyst=self._has_event_catalyst(candidate),
+                external_strategy_selection=external_selection,
             )
             raw_score_v2 = evaluation.raw_score
             timing = evaluation.entry_timing
             score = evaluation.task_score
+            strategy_selection = evaluation.metadata.get("strategy_selection", evaluation.signal.metadata.get("strategy_selection", {}))
+            self.selection_store.append(self.config.market, {"symbol": symbol, "market": self.config.market, "strategy_selection": strategy_selection, "raw_score": raw_score_v2, "task_score": score})
 
             task_candidate_pool.append({
                 "symbol": symbol,
@@ -161,6 +174,9 @@ class MultiMarketSimTradingPipeline:
                 "entry_reason": timing.reason,
                 "invalidator": timing.invalidator,
                 "suggested_size_pct": timing.suggested_size_pct,
+                "allow_trade": evaluation.signal.allow_trade,
+                "risk_flags": evaluation.signal.risk_flags,
+                "strategy_selection": strategy_selection,
                 "market_currency": market_rules.currency,
             })
         return task_candidate_pool
