@@ -1,0 +1,14 @@
+version: 1
+mode: weighted_v1
+weights:
+  trend_score: 0.24
+  momentum_score: 0.18
+  flow_score: 0.16
+  quality_score: 0.16
+  event_score: 0.14
+  risk_penalty: 0.12
+legacy:
+  enable_analyze_stock_once_score: true
+  weight: 0.35
+notes:
+  - legacy analyze_stock_once score is treated as an input feature, not the sole final score

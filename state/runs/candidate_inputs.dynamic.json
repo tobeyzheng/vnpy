@@ -1,0 +1,310 @@
+{
+  "mode": "dynamic_candidate_generation_scaffold",
+  "next_step": "populate candidates via knot agent batch orchestration",
+  "markets": [
+    "a_share",
+    "hong_kong",
+    "us"
+  ],
+  "count_seed_rows": 17,
+  "items": [
+    {
+      "symbol": "00700.HK",
+      "market": "hong_kong",
+      "name": "腾讯控股",
+      "rationale": "平台龙头与回购支撑增强",
+      "risk": "若南下转弱弹性会下降",
+      "raw_score": 0.81,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "继续持有",
+      "signals": [
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "trend",
+          "category": "technical",
+          "score": 0.84,
+          "summary": "平台龙头趋势保持完整"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "fundamentals",
+          "category": "quality",
+          "score": 0.79,
+          "summary": "现金流与回购支撑较稳"
+        }
+      ]
+    },
+    {
+      "symbol": "00981.HK",
+      "market": "hong_kong",
+      "name": "中芯国际",
+      "rationale": "半导体主线共振增强",
+      "risk": "波动较大且受政策预期影响",
+      "raw_score": 0.8,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "回调再买",
+      "signals": [
+        {
+          "symbol": "00981.HK",
+          "market": "hong_kong",
+          "source": "trend",
+          "category": "technical",
+          "score": 0.82,
+          "summary": "芯片主线偏强"
+        }
+      ]
+    },
+    {
+      "symbol": "01810.HK",
+      "market": "hong_kong",
+      "name": "小米集团-W",
+      "rationale": "产品催化与风险偏好改善",
+      "risk": "涨速过快时容易震荡",
+      "raw_score": 0.76,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "可小幅试加",
+      "signals": [
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "event",
+          "category": "catalyst",
+          "score": 0.78,
+          "summary": "产品催化延续"
+        }
+      ]
+    },
+    {
+      "symbol": "300308.SZ",
+      "market": "a_share",
+      "name": "中际旭创",
+      "rationale": "AI算力链辨识度高",
+      "risk": "高位分歧时回撤会更快",
+      "raw_score": 0.82,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "回调再买",
+      "signals": [
+        {
+          "symbol": "300308.SZ",
+          "market": "a_share",
+          "source": "trend",
+          "category": "technical",
+          "score": 0.85,
+          "summary": "算力链龙头延续"
+        }
+      ]
+    },
+    {
+      "symbol": "688041.SH",
+      "market": "a_share",
+      "name": "海光信息",
+      "rationale": "国产算力主线清晰",
+      "risk": "高估值下对情绪敏感",
+      "raw_score": 0.8,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "可小仓试错",
+      "signals": [
+        {
+          "symbol": "688041.SH",
+          "market": "a_share",
+          "source": "trend",
+          "category": "technical",
+          "score": 0.82,
+          "summary": "国产算力主线清晰"
+        }
+      ]
+    },
+    {
+      "symbol": "002371.SZ",
+      "market": "a_share",
+      "name": "北方华创",
+      "rationale": "设备链景气和国产替代逻辑仍在",
+      "risk": "若主线切换会阶段承压",
+      "raw_score": 0.77,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "继续观察",
+      "signals": [
+        {
+          "symbol": "002371.SZ",
+          "market": "a_share",
+          "source": "fundamentals",
+          "category": "quality",
+          "score": 0.78,
+          "summary": "设备链逻辑仍稳"
+        }
+      ]
+    },
+    {
+      "symbol": "NVDA.US",
+      "market": "us",
+      "name": "NVIDIA",
+      "rationale": "趋势、事件催化与龙头属性共振",
+      "risk": "高位波动放大",
+      "raw_score": 0.84,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "回调再买",
+      "signals": [
+        {
+          "symbol": "NVDA.US",
+          "market": "us",
+          "source": "trend",
+          "category": "technical",
+          "score": 0.86,
+          "summary": "AI龙头趋势完整"
+        }
+      ]
+    },
+    {
+      "symbol": "AVGO.US",
+      "market": "us",
+      "name": "Broadcom",
+      "rationale": "AI链景气度延续",
+      "risk": "高位滞涨后或先消化",
+      "raw_score": 0.82,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "可小仓试错",
+      "signals": [
+        {
+          "symbol": "AVGO.US",
+          "market": "us",
+          "source": "trend",
+          "category": "technical",
+          "score": 0.84,
+          "summary": "AI链强势延续"
+        }
+      ]
+    },
+    {
+      "symbol": "MSFT.US",
+      "market": "us",
+      "name": "Microsoft",
+      "rationale": "软件与AI应用双重属性",
+      "risk": "防守风格下弹性或偏弱",
+      "raw_score": 0.75,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "继续观察",
+      "signals": [
+        {
+          "symbol": "MSFT.US",
+          "market": "us",
+          "source": "fundamentals",
+          "category": "quality",
+          "score": 0.8,
+          "summary": "AI应用兑现能力较强"
+        }
+      ]
+    },
+    {
+      "symbol": "09988.HK",
+      "market": "hong_kong",
+      "name": "阿里巴巴-W",
+      "rationale": "平台修复与回购支撑",
+      "risk": "情绪波动仍在",
+      "raw_score": 0.74,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "继续观察",
+      "signals": [
+        {
+          "symbol": "09988.HK",
+          "market": "hong_kong",
+          "source": "fundamentals",
+          "category": "quality",
+          "score": 0.76,
+          "summary": "平台基本面改善"
+        }
+      ]
+    },
+    {
+      "symbol": "02432.HK",
+      "market": "hong_kong",
+      "name": "越疆",
+      "rationale": "机器人主题活跃，小资金更易参与",
+      "risk": "波动较大",
+      "raw_score": 0.68,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "小仓试错",
+      "signals": [
+        {
+          "symbol": "02432.HK",
+          "market": "hong_kong",
+          "source": "event",
+          "category": "catalyst",
+          "score": 0.72,
+          "summary": "机器人主题活跃"
+        }
+      ]
+    },
+    {
+      "symbol": "00772.HK",
+      "market": "hong_kong",
+      "name": "阅文集团",
+      "rationale": "内容资产与AI叙事有补涨空间",
+      "risk": "量能波动",
+      "raw_score": 0.66,
+      "confidence_source": "real_candidate_file",
+      "action_hint": "观察为主",
+      "signals": [
+        {
+          "symbol": "00772.HK",
+          "market": "hong_kong",
+          "source": "event",
+          "category": "catalyst",
+          "score": 0.69,
+          "summary": "内容与AI叙事"
+        }
+      ]
+    },
+    {
+      "symbol": "01347.HK",
+      "market": "hong_kong",
+      "name": "华虹半导体",
+      "rationale": "半导体链有交易弹性，适合事件驱动观察",
+      "risk": "波动偏大",
+      "raw_score": 0.71,
+      "confidence_source": "refresh_agent_candidate",
+      "action_hint": "观察突破"
+    },
+    {
+      "symbol": "09868.HK",
+      "market": "hong_kong",
+      "name": "小鹏汽车-W",
+      "rationale": "智能车主题活跃，适合趋势跟踪",
+      "risk": "主题波动高",
+      "raw_score": 0.69,
+      "confidence_source": "refresh_agent_candidate",
+      "action_hint": "回踩关注"
+    },
+    {
+      "symbol": "09626.HK",
+      "market": "hong_kong",
+      "name": "哔哩哔哩-W",
+      "rationale": "成长修复与情绪弹性并存",
+      "risk": "高beta",
+      "raw_score": 0.67,
+      "confidence_source": "refresh_agent_candidate",
+      "action_hint": "小仓跟踪"
+    },
+    {
+      "symbol": "02382.HK",
+      "market": "hong_kong",
+      "name": "舜宇光学科技",
+      "rationale": "消费电子链修复弹性",
+      "risk": "景气反复",
+      "raw_score": 0.68,
+      "confidence_source": "refresh_agent_candidate",
+      "action_hint": "跟踪量价"
+    },
+    {
+      "symbol": "09992.HK",
+      "market": "hong_kong",
+      "name": "泡泡玛特",
+      "rationale": "消费成长强势，趋势属性较好",
+      "risk": "估值偏高",
+      "raw_score": 0.72,
+      "confidence_source": "refresh_agent_candidate",
+      "action_hint": "顺势为主"
+    }
+  ]
+}

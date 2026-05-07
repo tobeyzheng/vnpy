@@ -1,0 +1,19 @@
+market: us
+currency: USD
+lot_size_mode: unitary
+trading_sessions:
+  - regular
+  - premarket
+  - postmarket
+cost_model:
+  commission_rate: 0.0
+  platform_fee: 0.0
+  settlement_rate: 0.0
+  sec_fee_rate_sell: 0.0
+  taf_fee_sell_per_share: 0.0
+  slippage_bps: 5
+price_rules:
+  tick_size_mode: us_simple
+risk:
+  default_stop_loss_pct: 0.07
+  default_take_profit_pct: 0.18

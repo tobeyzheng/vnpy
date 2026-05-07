@@ -1,0 +1,17 @@
+market: hong_kong
+currency: HKD
+lot_size_mode: dynamic
+trading_sessions:
+  - morning
+  - afternoon
+cost_model:
+  commission_rate: 0.0003
+  platform_fee: 15.0
+  settlement_rate: 0.00002
+  stamp_duty_rate_sell: 0.0013
+  slippage_bps: 8
+price_rules:
+  tick_size_mode: hk_segmented
+risk:
+  default_stop_loss_pct: 0.08
+  default_take_profit_pct: 0.15
