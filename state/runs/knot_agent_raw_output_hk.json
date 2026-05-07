@@ -330,6 +330,21 @@
       "runtime": "remote-knot-prompt-prepared",
       "schema_validated": true,
       "fallback_used": false
+    },
+    {
+      "symbol": "NVDA.US",
+      "task_type": "evaluation",
+      "remote_result": {
+        "strategy": "watch_only",
+        "confidence": 0.78,
+        "reason": "NVDA.US shows a strong trend setup with bullish moving averages, solid capital support, and an event catalyst, but RSI at 73 indicates overbought conditions and price is already near resistance. The trend remains constructive, yet immediate risk-reward for fresh entry is less attractive than waiting for either a clean breakout confirmation or a pullback reset.",
+        "risk_flags": [
+          "overbought_rsi",
+          "near_resistance",
+          "post-catalyst_volatility"
+        ]
+      },
+      "runtime": "openclaw-subagent-remote"
     }
   ],
   "integration_mode": "openclaw-session-orchestrated-remote"

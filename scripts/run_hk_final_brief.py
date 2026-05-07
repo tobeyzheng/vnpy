@@ -18,6 +18,8 @@ def main() -> None:
     mark = load_json(runs / 'hk_sim_mark_report.json') or {}
     close = load_json(runs / 'hk_sim_close_report.json') or {}
     forced = load_json(runs / 'hk_sim_forced_exit_report.json') or {}
+    reconcile = load_json(runs / 'futu_sim_position_reconcile.json') or {}
+    remote_hk = load_json(runs / 'knot_agent_raw_output_hk.json') or {}
     out = {
         'summary': {
             'task': task.get('task'),
@@ -32,6 +34,8 @@ def main() -> None:
         'positions_after_mark': mark.get('positions', []),
         'close_exit_actions': close.get('exit_actions', []),
         'forced_exit_validation': forced.get('exit_actions', []),
+        'reconciliation': reconcile.get('diffs', []),
+        'remote_ai_summary': remote_hk.get('results', [])[:5],
         'latest_orders': close.get('orders', [])[-10:] if close.get('orders') else [],
     }
     path = runs / 'hk_final_brief.json'
