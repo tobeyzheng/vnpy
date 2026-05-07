@@ -1,0 +1,36 @@
+{
+  "success": true,
+  "message": "ok",
+  "diffs": [
+    {
+      "symbol": "01810.HK",
+      "local_qty": 1200,
+      "futu_qty": 0,
+      "futu_can_sell_qty": 0,
+      "qty_match": false,
+      "sellable_match": false,
+      "local_avg_price": 31.264992000000003,
+      "futu_cost_price": null
+    },
+    {
+      "symbol": "09868.HK",
+      "local_qty": 300,
+      "futu_qty": 0,
+      "futu_can_sell_qty": 0,
+      "qty_match": false,
+      "sellable_match": false,
+      "local_avg_price": 62.099639999999994,
+      "futu_cost_price": null
+    },
+    {
+      "symbol": "09988.HK",
+      "local_qty": 200,
+      "futu_qty": 100,
+      "futu_can_sell_qty": 100,
+      "qty_match": false,
+      "sellable_match": false,
+      "local_avg_price": 140.31215999999998,
+      "futu_cost_price": 140.2
+    }
+  ]
+}

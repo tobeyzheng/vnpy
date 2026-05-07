@@ -155,3 +155,31 @@ class FutuSimTradeClient:
             return SimTradeResult(False, str(e), order_id=order_id)
         finally:
             ctx.close()
+
+    def get_positions(self) -> dict:
+        if self._futu is None:
+            return {'success': False, 'message': self._import_error or 'futu sdk unavailable', 'items': []}
+        futu = self._futu
+        ctx = futu.OpenSecTradeContext(host=self.config.host, port=self.config.port)
+        try:
+            acc_id = self._get_sim_acc(ctx, futu)
+            ret, data = ctx.position_list_query(trd_env=futu.TrdEnv.SIMULATE, acc_id=acc_id)
+            if ret != futu.RET_OK:
+                return {'success': False, 'message': f'position_list_query failed: {data}', 'items': []}
+            items = []
+            if hasattr(data, 'iterrows'):
+                for _, row in data.iterrows():
+                    code = str(row.get('code', ''))
+                    items.append({
+                        'code': code,
+                        'symbol': code.replace('HK.', '') + '.HK' if code.startswith('HK.') else code,
+                        'qty': int(row.get('qty', 0) or 0),
+                        'can_sell_qty': int(row.get('can_sell_qty', 0) or 0),
+                        'cost_price': float(row.get('cost_price', 0) or 0),
+                        'nominal_price': float(row.get('nominal_price', 0) or 0),
+                    })
+            return {'success': True, 'message': 'ok', 'items': items}
+        except Exception as e:
+            return {'success': False, 'message': str(e), 'items': []}
+        finally:
+            ctx.close()
