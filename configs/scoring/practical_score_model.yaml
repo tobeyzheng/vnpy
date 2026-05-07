@@ -1,0 +1,9 @@
+default_weights:
+  market_trend: 0.20
+  liquidity: 0.10
+  catalyst: 0.15
+  fundamentals: 0.15
+  skill_consensus: 0.15
+  agent_judgment: 0.10
+  execution_fit: 0.10
+  risk_penalty: -0.15

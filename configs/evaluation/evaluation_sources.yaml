@@ -1,0 +1,13 @@
+sources:
+  candidate_file:
+    type: provider
+    enabled: true
+  realtime_watchlist:
+    type: provider
+    enabled: true
+  knot_agent:
+    type: evaluator
+    enabled: true
+  stock_skills:
+    type: evaluator_group
+    enabled: true
