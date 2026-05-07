@@ -5,6 +5,7 @@ from typing import List
 from services.futu_opend import OpenDClient
 
 from .models import FutuAccountSummary, FutuOrder, FutuPosition
+from .quote_client import FutuQuoteClient
 from .sdk_client import FutuSdkClient
 
 
@@ -76,12 +77,20 @@ class FutuAccountProvider:
         probe = OpenDClient().probe()
         if not probe.reachable:
             return {"status": "disconnected", "items": [], "message": probe.message}
-        sdk = FutuSdkClient()
-        avail = sdk.availability()
-        if not avail.available:
-            return {"status": "connected", "items": [], "message": f"SDK unavailable: {avail.message}"}
-        return {
-            "status": "connected",
-            "items": [{"code": code, "price": None, "change_pct": None} for code in codes],
-            "message": "SDK quote query hook reserved",
-        }
+        quote = FutuQuoteClient()
+        ok, msg = quote.availability()
+        if not ok:
+            return {"status": "connected", "items": [], "message": f"SDK unavailable: {msg}"}
+        try:
+            rows = quote.get_snapshot(codes)
+            items = [
+                {
+                    "code": str(row.get("code", "")),
+                    "price": row.get("last_price"),
+                    "change_pct": row.get("change_rate"),
+                }
+                for row in rows
+            ]
+            return {"status": "connected", "items": items, "message": "ok"}
+        except Exception as e:
+            return {"status": "connected", "items": [], "message": f"quote query failed: {e}"}

@@ -75,6 +75,23 @@ def build_factor_map(market: str, symbol: str, evidence_sources: list[str]) -> d
     }
 
 
+def format_account_block(summary) -> list[str]:
+    lines = []
+    lines.append(f"账户状态：{summary.status} | env={summary.env} | accounts={summary.account_count}")
+    if summary.total_assets is not None:
+        lines.append(f"总资产：{summary.total_assets}")
+    if summary.cash is not None:
+        lines.append(f"现金：{summary.cash}")
+    if summary.buying_power is not None:
+        lines.append(f"购买力：{summary.buying_power}")
+    if summary.positions:
+        lines.append("持仓：" + ", ".join(f"{p.code} x {p.qty}" for p in summary.positions[:5]))
+    if summary.orders:
+        lines.append("订单：" + ", ".join(f"{o.code} {o.side} {o.status}" for o in summary.orders[:5]))
+    lines.append(f"备注：{summary.message}")
+    return lines
+
+
 def run_market(market: str) -> Path:
     repo_root = Path(__file__).resolve().parents[1]
 
@@ -120,16 +137,18 @@ def run_market(market: str) -> Path:
     futu_draft_path = FutuDraftStore(repo_root / "state/runs").save(market, futu_drafts)
     opend_probe = OpenDClient().probe()
 
-    account_summary = FutuAccountProvider().get_summary()
+    account_provider = FutuAccountProvider()
+    account_summary = account_provider.get_summary()
     watchlist_codes = [d.code for d in futu_drafts[:5]]
-    quote_summary = FutuAccountProvider().get_watchlist_snapshot(watchlist_codes)
+    quote_summary = account_provider.get_watchlist_snapshot(watchlist_codes)
 
-    summary = list(decision.summary)
+    summary = []
+    summary.extend(format_account_block(account_summary))
+    summary.extend(decision.summary)
     summary.append(f"已生成 {len(intents)} 条 paper-trade intents：{intent_path.name}")
     summary.append(f"已生成 {len(vnpy_drafts)} 条 vnpy draft requests（仅草案，不提交）。")
     summary.append(f"已生成 {len(futu_drafts)} 条 futu draft requests：{futu_draft_path.name}")
     summary.append(f"Futu OpenD 连通性：{'可连接' if opend_probe.reachable else '未连接'} ({opend_probe.host}:{opend_probe.port})")
-    summary.append(f"账户摘要：status={account_summary.status}, accounts={account_summary.account_count}, env={account_summary.env}, note={account_summary.message}")
     summary.append(f"观察池快照：status={quote_summary.get('status')}, items={len(quote_summary.get('items', []))}, note={quote_summary.get('message')}")
 
     report = PremarketReport(
