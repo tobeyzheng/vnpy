@@ -5,6 +5,18 @@ from typing import List, Optional
 
 
 @dataclass
+class CostBreakdown:
+    gross_amount: float = 0.0
+    commission: float = 0.0
+    platform_fee: float = 0.0
+    settlement_fee: float = 0.0
+    stamp_duty: float = 0.0
+    slippage: float = 0.0
+    total_fees: float = 0.0
+    net_amount: float = 0.0
+
+
+@dataclass
 class SimPosition:
     symbol: str
     qty: int
@@ -21,6 +33,12 @@ class SimOrder:
     price: float
     status: str
     reason: str
+    order_id: Optional[str] = None
+    submit_status: str = 'local_only'
+    filled_qty: int = 0
+    avg_fill_price: float = 0.0
+    gross_amount: float = 0.0
+    fees: CostBreakdown = field(default_factory=CostBreakdown)
 
 
 @dataclass
