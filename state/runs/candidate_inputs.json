@@ -246,5 +246,55 @@
         "summary": "内容与AI叙事"
       }
     ]
+  },
+  {
+    "symbol": "01347.HK",
+    "market": "hong_kong",
+    "name": "华虹半导体",
+    "rationale": "半导体链有交易弹性，适合事件驱动观察",
+    "risk": "波动偏大",
+    "raw_score": 0.71,
+    "confidence_source": "refresh_agent_candidate",
+    "action_hint": "观察突破"
+  },
+  {
+    "symbol": "09868.HK",
+    "market": "hong_kong",
+    "name": "小鹏汽车-W",
+    "rationale": "智能车主题活跃，适合趋势跟踪",
+    "risk": "主题波动高",
+    "raw_score": 0.69,
+    "confidence_source": "refresh_agent_candidate",
+    "action_hint": "回踩关注"
+  },
+  {
+    "symbol": "09626.HK",
+    "market": "hong_kong",
+    "name": "哔哩哔哩-W",
+    "rationale": "成长修复与情绪弹性并存",
+    "risk": "高beta",
+    "raw_score": 0.67,
+    "confidence_source": "refresh_agent_candidate",
+    "action_hint": "小仓跟踪"
+  },
+  {
+    "symbol": "02382.HK",
+    "market": "hong_kong",
+    "name": "舜宇光学科技",
+    "rationale": "消费电子链修复弹性",
+    "risk": "景气反复",
+    "raw_score": 0.68,
+    "confidence_source": "refresh_agent_candidate",
+    "action_hint": "跟踪量价"
+  },
+  {
+    "symbol": "09992.HK",
+    "market": "hong_kong",
+    "name": "泡泡玛特",
+    "rationale": "消费成长强势，趋势属性较好",
+    "risk": "估值偏高",
+    "raw_score": 0.72,
+    "confidence_source": "refresh_agent_candidate",
+    "action_hint": "顺势为主"
   }
 ]

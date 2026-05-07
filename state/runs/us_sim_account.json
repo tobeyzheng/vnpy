@@ -2,7 +2,7 @@
   "base_currency": "USD",
   "initial_cash": 20000.0,
   "cash": 15405.9907,
-  "nav": 19978.2507,
+  "nav": 19981.908508,
   "realized_pnl": 0.0,
   "max_drawdown_limit_pct": 0.2,
   "positions": [
@@ -10,8 +10,8 @@
       "symbol": "NVDA.US",
       "qty": 22,
       "avg_price": 207.99626400000002,
-      "market_value": 4572.26,
-      "unrealized_pnl": -3.657808000000273
+      "market_value": 4575.917808,
+      "unrealized_pnl": 0.0
     }
   ],
   "orders": [
