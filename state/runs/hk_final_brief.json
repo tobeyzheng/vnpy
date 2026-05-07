@@ -312,6 +312,12 @@
       "fallback_used": false
     }
   ],
+  "execution_summary": {
+    "buy_action_count": 3,
+    "close_exit_count": 0,
+    "forced_exit_count": 2,
+    "reconcile_diff_count": 3
+  },
   "latest_orders": [
     {
       "symbol": "09988.HK",

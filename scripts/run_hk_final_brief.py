@@ -36,6 +36,12 @@ def main() -> None:
         'forced_exit_validation': forced.get('exit_actions', []),
         'reconciliation': reconcile.get('diffs', []),
         'remote_ai_summary': remote_hk.get('results', [])[:5],
+        'execution_summary': {
+            'buy_action_count': len(task.get('actions', [])),
+            'close_exit_count': len(close.get('exit_actions', [])),
+            'forced_exit_count': len(forced.get('exit_actions', [])),
+            'reconcile_diff_count': len(reconcile.get('diffs', [])),
+        },
         'latest_orders': close.get('orders', [])[-10:] if close.get('orders') else [],
     }
     path = runs / 'hk_final_brief.json'

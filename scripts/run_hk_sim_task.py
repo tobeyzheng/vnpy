@@ -11,6 +11,7 @@ from services.strategy.candidate_provider import UnifiedCandidateProvider
 from services.strategy.market_rules import get_market_rules
 from services.strategy.raw_score import RawScoreEngine, RawScoreFeatures
 from services.strategy.timing import EntryTimingEngine
+from services.strategy.risk_guard import RiskGuard
 
 
 def main() -> None:
@@ -32,6 +33,7 @@ def main() -> None:
     budget_per_trade = 20000.0
     raw_score_engine = RawScoreEngine()
     entry_engine = EntryTimingEngine()
+    risk_guard = RiskGuard()
     filtered_out = []
     task_candidate_pool = []
 
@@ -92,11 +94,15 @@ def main() -> None:
 
     actions = []
     for row in selected:
-        if engine.can_open(account, budget_per_trade):
+        est_cost = engine.min_lot_cost(float(row['price']), lot_size=int(row['lot_size']))
+        guard = risk_guard.can_open(account, symbol=row['symbol'], est_cost=est_cost)
+        if row.get('entry_action') == 'watch_only':
+            actions.append({'symbol': row['symbol'], 'action': 'watch_only', 'reason': row.get('entry_reason')})
+        elif engine.can_open(account, budget_per_trade) and guard.allowed:
             order = engine.place_buy(account, row['symbol'], float(row['price']), row.get('rationale', ''), budget_per_trade, lot_size=int(row['lot_size']))
             actions.append({'symbol': row['symbol'], 'action': order.status, 'qty': order.qty, 'price': row['price'], 'lot_size': row['lot_size'], 'reason': order.reason})
         else:
-            actions.append({'symbol': row['symbol'], 'action': 'blocked', 'reason': 'risk/budget limit'})
+            actions.append({'symbol': row['symbol'], 'action': 'blocked', 'reason': guard.reason if not guard.allowed else 'risk/budget limit'})
 
     engine.mark_to_market(account, {k: float(v['price']) for k, v in quote_map.items()})
     SimAccountStore(account_path).save(account)
