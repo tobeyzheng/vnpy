@@ -1,0 +1,30 @@
+[
+  {
+    "symbol": "NVDA.US",
+    "market": "us",
+    "name": "NVIDIA",
+    "rationale": "AI主线与龙头趋势共振，且财报预期仍有支撑。",
+    "risk": "高位波动放大，若利率与风险偏好逆转则回撤会加快。",
+    "raw_score": 0.86,
+    "confidence_source": "technical_strategy_pack",
+    "action_hint": "回调再买",
+    "signals": [
+      {
+        "symbol": "NVDA.US",
+        "market": "us",
+        "source": "trend_pack",
+        "category": "technical",
+        "score": 0.88,
+        "summary": "多头趋势保持完整"
+      },
+      {
+        "symbol": "NVDA.US",
+        "market": "us",
+        "source": "event_pack",
+        "category": "event",
+        "score": 0.84,
+        "summary": "AI需求预期继续支撑"
+      }
+    ]
+  }
+]
