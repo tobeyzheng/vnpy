@@ -1,9 +1,9 @@
 {
   "task": "hk_real_env_sim_trading_v1",
   "cash": 15687.759800000003,
-  "nav": 99830.7598,
+  "nav": 99851.7598,
   "realized_pnl": 0.0,
-  "drawdown_pct": 0.001692402000000002,
+  "drawdown_pct": 0.0014824020000000018,
   "drawdown_limit_pct": 0.2,
   "risk_status": "normal",
   "positions": [
@@ -18,15 +18,15 @@
       "symbol": "01810.HK",
       "qty": 1200,
       "avg_price": 31.264992000000003,
-      "market_value": 37488.0,
-      "unrealized_pnl": -29.99040000000548
+      "market_value": 37464.0,
+      "unrealized_pnl": -53.99040000000497
     },
     {
       "symbol": "09868.HK",
       "qty": 300,
       "avg_price": 62.099639999999994,
-      "market_value": 18615.0,
-      "unrealized_pnl": -14.891999999998973
+      "market_value": 18660.0,
+      "unrealized_pnl": 30.108000000002733
     }
   ],
   "orders": [

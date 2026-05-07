@@ -64,7 +64,15 @@ def main() -> None:
         }
         intraday_tasks.append({'symbol': p.symbol, 'market': 'hong_kong', 'task_type': 'strategy_select', 'payload': payload, 'prompt': runtime.build_prompt(symbol=p.symbol, market='hong_kong', payload=payload, task_type='strategy_select')})
 
-    out = {'refresh_tasks': refresh_tasks, 'intraday_tasks': intraday_tasks, 'integration_mode': 'openclaw-session-orchestrated-remote'}
+    dynamic_candidate_tasks = [
+        {
+            'task_group': 'dynamic_candidate_generation',
+            'market': market,
+            'prompt': f'你是 MarketResearchScreenerAgent。请基于当前市场风格与主线，面向 {market} 自主挖掘值得跟踪的股票候选，严格只输出 JSON 数组。每个元素字段：symbol, market, name, rationale, risk, raw_score, confidence_source, action_hint。不要 markdown，不要解释。',
+        }
+        for market in ['hong_kong', 'us']
+    ]
+    out = {'refresh_tasks': refresh_tasks, 'intraday_tasks': intraday_tasks, 'dynamic_candidate_tasks': dynamic_candidate_tasks, 'integration_mode': 'openclaw-session-orchestrated-remote'}
     path = runs / 'remote_knot_batch_tasks.json'
     path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
     print(path)

@@ -1,0 +1,106 @@
+{
+  "task": "us_real_env_sim_trading_v1",
+  "cash": 15405.9907,
+  "nav": 19978.2507,
+  "positions": [
+    {
+      "symbol": "NVDA.US",
+      "qty": 22,
+      "avg_price": 207.99626400000002,
+      "market_value": 4572.26,
+      "unrealized_pnl": -3.657808000000273
+    }
+  ],
+  "orders": [
+    {
+      "symbol": "NVDA.US",
+      "side": "BUY",
+      "qty": 22,
+      "price": 207.83,
+      "status": "filled",
+      "reason": "趋势、事件催化与龙头属性共振",
+      "order_id": null,
+      "submit_status": "local_only",
+      "filled_qty": 22,
+      "avg_fill_price": 207.99626400000002,
+      "gross_amount": 4572.26,
+      "fees": {
+        "gross_amount": 4572.26,
+        "commission": 3.0,
+        "platform_fee": 15.0,
+        "settlement_fee": 0.0914,
+        "stamp_duty": 0.0,
+        "slippage": 3.6578,
+        "total_fees": 21.7493,
+        "net_amount": 4594.0093
+      }
+    }
+  ],
+  "actions": [
+    {
+      "symbol": "NVDA.US",
+      "action": "filled",
+      "qty": 22,
+      "price": 207.83,
+      "lot_size": 1,
+      "reason": "趋势、事件催化与龙头属性共振"
+    },
+    {
+      "symbol": "AVGO.US",
+      "action": "watch_only",
+      "reason": "入场条件不足，先观察"
+    },
+    {
+      "symbol": "MSFT.US",
+      "action": "watch_only",
+      "reason": "入场条件不足，先观察"
+    }
+  ],
+  "task_candidate_pool": [
+    {
+      "symbol": "NVDA.US",
+      "name": "NVIDIA",
+      "price": 207.83,
+      "lot_size": 1,
+      "change_pct": 5.766,
+      "turnover": 38663394258.0,
+      "task_score": 92.4,
+      "rationale": "趋势、事件催化与龙头属性共振",
+      "raw_score_v2": 0.7517,
+      "entry_action": "breakout_momentum",
+      "entry_reason": "接近关键位且存在催化，适合等待突破确认",
+      "market_currency": "USD"
+    },
+    {
+      "symbol": "AVGO.US",
+      "name": "Broadcom",
+      "price": 425.44,
+      "lot_size": 1,
+      "change_pct": -0.449,
+      "turnover": 8794766401.0,
+      "task_score": 84.66,
+      "rationale": "AI链景气度延续",
+      "raw_score_v2": 0.7031,
+      "entry_action": "watch_only",
+      "entry_reason": "入场条件不足，先观察",
+      "market_currency": "USD"
+    },
+    {
+      "symbol": "MSFT.US",
+      "name": "Microsoft",
+      "price": 413.96,
+      "lot_size": 1,
+      "change_pct": 0.627,
+      "turnover": 12499034532.0,
+      "task_score": 82.35,
+      "rationale": "软件与AI应用双重属性",
+      "raw_score_v2": 0.6698,
+      "entry_action": "watch_only",
+      "entry_reason": "入场条件不足，先观察",
+      "market_currency": "USD"
+    }
+  ],
+  "filtered_out": [],
+  "snapshot_status": "connected",
+  "snapshot_message": "ok"
+}

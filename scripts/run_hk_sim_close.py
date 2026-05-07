@@ -6,6 +6,7 @@ from pathlib import Path
 
 from services.futu_account import FutuAccountProvider
 from services.sim_account import SimAccountStore, SimTradingEngine
+from services.strategy.timing import ExitTimingEngine
 
 
 def main() -> None:
@@ -13,6 +14,7 @@ def main() -> None:
     store = SimAccountStore(repo / 'state' / 'runs' / 'hk_sim_account.json')
     account = store.load()
     engine = SimTradingEngine(lot_size_default=100)
+    exit_engine = ExitTimingEngine()
 
     codes = [p.symbol for p in account.positions]
     snapshot = FutuAccountProvider().get_watchlist_snapshot(codes) if codes else {'items': [], 'status': 'connected', 'message': 'no positions'}
@@ -21,7 +23,9 @@ def main() -> None:
     exit_actions = []
     for pos in list(account.positions):
         price = quote_map.get(pos.symbol, pos.avg_price)
-        reason = engine.evaluate_exit_reason(pos, price)
+        pnl_pct = (price - pos.avg_price) / pos.avg_price if pos.avg_price else 0.0
+        timing = exit_engine.decide(pnl_pct=pnl_pct, rsi=70.0, trend_score=0.6 if pnl_pct < 0 else 0.72, risk_score=0.4 if abs(pnl_pct) < 0.05 else 0.78)
+        reason = timing.action if timing.action in ('stop_loss', 'take_profit', 'trim_or_exit', 'reduce_risk') else None
         if reason:
             order = engine.place_sell(account, pos.symbol, price, reason)
             exit_actions.append(asdict(order))
