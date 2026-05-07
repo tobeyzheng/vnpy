@@ -6,13 +6,15 @@ from pathlib import Path
 from execution.futu_bridge import FutuDraftStore, FutuPaperBridge
 from execution.paper_bridge import PaperIntentStore, PaperTradeBridge
 from execution.vnpy_bridge import VnpySignalBridge
+from services.approval_gate import ApprovalGate
 from services.candidate_engine import CandidateRanker, CandidateStateStore
 from services.candidate_engine.adapters import candidate_from_input
-from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider
+from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider, FileCandidateProvider
 from services.decision_engine import DecisionEngine
 from services.futu_account import FutuAccountProvider
 from services.futu_opend import OpenDClient
 from services.reporting import ActionLine, MarketEnvironment, PremarketReport, TextReportRenderer
+from services.risk_engine import RiskEngine
 from services.watchlist_engine import WatchlistItem, WatchlistManager, WatchlistStateStore
 from services.watchlist_engine.configs import load_fixed_watchlist
 from services.common.config_loader import load_yaml
@@ -98,14 +100,15 @@ def format_quote_block(quote_summary: dict) -> list[str]:
     return lines
 
 
-def run_market(market: str) -> Path:
+def run_market(market: str, approval_mode: str = "research") -> Path:
     repo_root = Path(__file__).resolve().parents[1]
 
     scoring_cfg = load_yaml(repo_root / "configs/scoring/score_model.yaml")
     weights = scoring_cfg["markets"][market]["weights"]
     scorer = MarketScorer(weights)
 
-    provider = CompositeCandidateProvider([DemoCandidateProvider()])
+    file_provider = FileCandidateProvider(repo_root / "state" / "runs" / "candidate_inputs.json")
+    provider = CompositeCandidateProvider([file_provider, DemoCandidateProvider()])
     inputs = provider.get_candidate_inputs(market)
     candidates = [candidate_from_input(item) for item in inputs]
     for candidate in candidates:
@@ -136,7 +139,10 @@ def run_market(market: str) -> Path:
     decision = DecisionEngine().decide(market, top_candidates)
     actions = [ActionLine(symbol=s.symbol, name=s.name, action=s.action, reason=s.reason) for s in decision.signals[:5]]
 
-    intents = PaperTradeBridge().build_intents(decision)
+    approval = ApprovalGate(mode=approval_mode).evaluate(decision)
+    risk_eval = RiskEngine().evaluate(decision)
+
+    intents = PaperTradeBridge().build_intents(decision) if approval.allowed and risk_eval.allowed else []
     intent_path = PaperIntentStore(repo_root / "state/runs").save(market, intents)
     vnpy_drafts = VnpySignalBridge().build_drafts(intents)
     futu_drafts = FutuPaperBridge().build_drafts(intents)
@@ -152,6 +158,12 @@ def run_market(market: str) -> Path:
     summary.extend(format_account_block(account_summary))
     summary.extend(format_quote_block(quote_summary))
     summary.extend(decision.summary)
+    summary.append(f"ApprovalGate：mode={approval.mode}, allowed={approval.allowed}, reason={approval.reason}")
+    if approval.required_actions:
+        summary.append("审批要求：" + ", ".join(approval.required_actions))
+    summary.append(f"RiskEngine：allowed={risk_eval.allowed}")
+    for alert in risk_eval.alerts:
+        summary.append(f"风险提示（{alert.level}）：{alert.message}")
     summary.append(f"已生成 {len(intents)} 条 paper-trade intents：{intent_path.name}")
     summary.append(f"已生成 {len(vnpy_drafts)} 条 vnpy draft requests（仅草案，不提交）。")
     summary.append(f"已生成 {len(futu_drafts)} 条 futu draft requests：{futu_draft_path.name}")
@@ -180,8 +192,9 @@ def run_market(market: str) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--market", choices=["us", "hong_kong", "a_share"], required=True)
+    parser.add_argument("--approval-mode", choices=["research", "paper", "semi_auto", "blocked"], default="research")
     args = parser.parse_args()
-    print(run_market(args.market))
+    print(run_market(args.market, approval_mode=args.approval_mode))
 
 
 if __name__ == "__main__":
