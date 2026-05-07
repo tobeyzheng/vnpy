@@ -1,0 +1,13 @@
+{
+  "metrics": {
+    "action_count": 3,
+    "filled_count": 0,
+    "watch_only_count": 3,
+    "blocked_count": 0,
+    "fill_rate": 0.0,
+    "watch_rate": 1.0,
+    "blocked_rate": 0.0,
+    "portfolio_realized_pnl": 0.0,
+    "remote_ai_item_count": 12
+  }
+}

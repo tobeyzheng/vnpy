@@ -15,6 +15,10 @@
       "reason": "ok"
     }
   },
+  "concentration": {
+    "hong_kong_nav_pct": 0.8333,
+    "us_nav_pct": 0.1667
+  },
   "markets": {
     "hong_kong": {
       "cash": 15687.759800000003,

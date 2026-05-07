@@ -35,6 +35,10 @@ def main() -> None:
             'hong_kong': {'allowed': hk_risk.allowed, 'reason': hk_risk.reason},
             'us': {'allowed': us_risk.allowed, 'reason': us_risk.reason},
         },
+        'concentration': {
+            'hong_kong_nav_pct': round(hk_nav / summary.total_nav, 4) if summary.total_nav else 0.0,
+            'us_nav_pct': round(us_nav / summary.total_nav, 4) if summary.total_nav else 0.0,
+        },
         'markets': {
             'hong_kong': {'cash': hk.get('cash'), 'nav': hk.get('nav'), 'positions': hk.get('positions', [])},
             'us': {'cash': us.get('cash'), 'nav': us.get('nav'), 'positions': us.get('positions', [])},
