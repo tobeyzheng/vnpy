@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from services.futu_account import FutuQuoteClient
@@ -74,8 +75,8 @@ def main() -> None:
         'task': 'hk_real_env_sim_trading_v1',
         'cash': account.cash,
         'nav': account.nav,
-        'positions': [p.__dict__ for p in account.positions],
-        'orders': [o.__dict__ for o in account.orders[-10:]],
+        'positions': [asdict(p) for p in account.positions],
+        'orders': [asdict(o) for o in account.orders[-10:]],
         'actions': actions,
         'task_candidate_pool': selected,
         'filtered_out': filtered_out,

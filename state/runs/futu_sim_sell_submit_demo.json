@@ -1,0 +1,12 @@
+{
+  "symbol": "09988.HK",
+  "qty": 200,
+  "price": 140.31215999999998,
+  "success": false,
+  "message": "place_order failed: 下单接口价格参数精度不符合规范，请前往https://openapi.futunn.com/futu-api-doc/trade/place-order.html查看参数填写规范。",
+  "order_id": null,
+  "order_status": null,
+  "dealt_qty": null,
+  "dealt_avg_price": null,
+  "status_check": null
+}

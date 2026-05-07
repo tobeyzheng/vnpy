@@ -1,32 +1,32 @@
 {
   "task": "hk_real_env_sim_trading_v1",
-  "cash": 48787.0,
-  "nav": 100010.0,
+  "cash": 15687.759800000003,
+  "nav": 99830.7598,
   "realized_pnl": 0.0,
-  "drawdown_pct": 0.0,
+  "drawdown_pct": 0.001692402000000002,
   "drawdown_limit_pct": 0.2,
   "risk_status": "normal",
   "positions": [
     {
       "symbol": "09988.HK",
-      "qty": 100,
-      "avg_price": 139.5,
-      "market_value": 13960.0,
-      "unrealized_pnl": 9.999999999999432
+      "qty": 200,
+      "avg_price": 140.31215999999998,
+      "market_value": 28039.999999999996,
+      "unrealized_pnl": -22.431999999997743
     },
     {
       "symbol": "01810.HK",
-      "qty": 600,
-      "avg_price": 31.18,
-      "market_value": 18708.0,
-      "unrealized_pnl": 0.0
+      "qty": 1200,
+      "avg_price": 31.264992000000003,
+      "market_value": 37488.0,
+      "unrealized_pnl": -29.99040000000548
     },
     {
       "symbol": "09868.HK",
       "qty": 300,
-      "avg_price": 61.85,
-      "market_value": 18555.0,
-      "unrealized_pnl": 0.0
+      "avg_price": 62.099639999999994,
+      "market_value": 18615.0,
+      "unrealized_pnl": -14.891999999998973
     }
   ],
   "orders": [
@@ -34,25 +34,116 @@
       "symbol": "09988.HK",
       "side": "BUY",
       "qty": 100,
-      "price": 139.5,
+      "price": 140.2,
       "status": "filled",
-      "reason": "平台修复与回购支撑"
+      "reason": "平台修复与回购支撑",
+      "order_id": null,
+      "submit_status": "local_only",
+      "filled_qty": 100,
+      "avg_fill_price": 140.31215999999998,
+      "gross_amount": 14020.0,
+      "fees": {
+        "gross_amount": 14020.0,
+        "commission": 4.206,
+        "platform_fee": 15.0,
+        "settlement_fee": 0.2804,
+        "stamp_duty": 0.0,
+        "slippage": 11.216,
+        "total_fees": 30.7024,
+        "net_amount": 14050.7024
+      }
     },
     {
       "symbol": "01810.HK",
       "side": "BUY",
       "qty": 600,
-      "price": 31.18,
+      "price": 31.24,
       "status": "filled",
-      "reason": "产品催化与风险偏好改善"
+      "reason": "产品催化与风险偏好改善",
+      "order_id": null,
+      "submit_status": "local_only",
+      "filled_qty": 600,
+      "avg_fill_price": 31.264992,
+      "gross_amount": 18744.0,
+      "fees": {
+        "gross_amount": 18744.0,
+        "commission": 5.6232,
+        "platform_fee": 15.0,
+        "settlement_fee": 0.3749,
+        "stamp_duty": 0.0,
+        "slippage": 14.9952,
+        "total_fees": 35.9933,
+        "net_amount": 18779.9933
+      }
     },
     {
       "symbol": "09868.HK",
       "side": "BUY",
       "qty": 300,
-      "price": 61.85,
+      "price": 62.05,
       "status": "filled",
-      "reason": "智能车主题活跃，适合趋势跟踪"
+      "reason": "智能车主题活跃，适合趋势跟踪",
+      "order_id": null,
+      "submit_status": "local_only",
+      "filled_qty": 300,
+      "avg_fill_price": 62.099639999999994,
+      "gross_amount": 18615.0,
+      "fees": {
+        "gross_amount": 18615.0,
+        "commission": 5.5845,
+        "platform_fee": 15.0,
+        "settlement_fee": 0.3723,
+        "stamp_duty": 0.0,
+        "slippage": 14.892,
+        "total_fees": 35.8488,
+        "net_amount": 18650.8488
+      }
+    },
+    {
+      "symbol": "09988.HK",
+      "side": "BUY",
+      "qty": 100,
+      "price": 140.2,
+      "status": "filled",
+      "reason": "平台修复与回购支撑",
+      "order_id": null,
+      "submit_status": "local_only",
+      "filled_qty": 100,
+      "avg_fill_price": 140.31215999999998,
+      "gross_amount": 14020.0,
+      "fees": {
+        "gross_amount": 14020.0,
+        "commission": 4.206,
+        "platform_fee": 15.0,
+        "settlement_fee": 0.2804,
+        "stamp_duty": 0.0,
+        "slippage": 11.216,
+        "total_fees": 30.7024,
+        "net_amount": 14050.7024
+      }
+    },
+    {
+      "symbol": "01810.HK",
+      "side": "BUY",
+      "qty": 600,
+      "price": 31.24,
+      "status": "filled",
+      "reason": "产品催化与风险偏好改善",
+      "order_id": null,
+      "submit_status": "local_only",
+      "filled_qty": 600,
+      "avg_fill_price": 31.264992,
+      "gross_amount": 18744.0,
+      "fees": {
+        "gross_amount": 18744.0,
+        "commission": 5.6232,
+        "platform_fee": 15.0,
+        "settlement_fee": 0.3749,
+        "stamp_duty": 0.0,
+        "slippage": 14.9952,
+        "total_fees": 35.9933,
+        "net_amount": 18779.9933
+      }
     }
   ],
   "exit_actions": []

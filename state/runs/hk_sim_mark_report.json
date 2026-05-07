@@ -1,33 +1,33 @@
 {
-  "cash": 48787.0,
-  "nav": 100020.0,
+  "cash": 15687.759800000003,
+  "nav": 99806.7598,
   "positions": [
     {
       "symbol": "09988.HK",
-      "qty": 100,
-      "avg_price": 139.5,
-      "market_value": 13969.999999999998,
-      "unrealized_pnl": 19.999999999998863
+      "qty": 200,
+      "avg_price": 140.31215999999998,
+      "market_value": 28039.999999999996,
+      "unrealized_pnl": -22.431999999997743
     },
     {
       "symbol": "01810.HK",
-      "qty": 600,
-      "avg_price": 31.18,
-      "market_value": 18708.0,
-      "unrealized_pnl": 0.0
+      "qty": 1200,
+      "avg_price": 31.264992000000003,
+      "market_value": 37464.0,
+      "unrealized_pnl": -53.99040000000497
     },
     {
       "symbol": "09868.HK",
       "qty": 300,
-      "avg_price": 61.85,
-      "market_value": 18555.0,
-      "unrealized_pnl": 0.0
+      "avg_price": 62.099639999999994,
+      "market_value": 18615.0,
+      "unrealized_pnl": -14.891999999998973
     }
   ],
   "quotes": {
-    "09988.HK": 139.7,
-    "01810.HK": 31.18,
-    "09868.HK": 61.85
+    "09988.HK": 140.2,
+    "01810.HK": 31.22,
+    "09868.HK": 62.05
   },
   "snapshot_status": "connected",
   "snapshot_message": "ok"

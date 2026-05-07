@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from services.futu_account import FutuAccountProvider
@@ -24,7 +25,7 @@ def main() -> None:
     report = {
         'cash': account.cash,
         'nav': account.nav,
-        'positions': [p.__dict__ for p in account.positions],
+        'positions': [asdict(p) for p in account.positions],
         'quotes': quote_map,
         'snapshot_status': snapshot.get('status'),
         'snapshot_message': snapshot.get('message'),

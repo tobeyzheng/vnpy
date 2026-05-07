@@ -1,8 +1,86 @@
 {
-  "task": "hk_real_env_sim_trading_v1",
-  "cash": 15687.759800000003,
-  "nav": 99830.7598,
-  "positions": [
+  "summary": {
+    "task": "hk_real_env_sim_trading_v1",
+    "cash": 15687.759800000003,
+    "nav": 99830.7598,
+    "risk_status": "normal",
+    "realized_pnl": 0.0
+  },
+  "candidate_pool": [
+    {
+      "symbol": "09988.HK",
+      "name": "阿里巴巴-W",
+      "price": 140.2,
+      "lot_size": 100,
+      "change_pct": 4.471,
+      "turnover": 11896258174.0,
+      "task_score": 89.53,
+      "rationale": "平台修复与回购支撑"
+    },
+    {
+      "symbol": "01810.HK",
+      "name": "小米集团-W",
+      "price": 31.24,
+      "lot_size": 200,
+      "change_pct": 1.363,
+      "turnover": 3247277791.0,
+      "task_score": 87.88,
+      "rationale": "产品催化与风险偏好改善"
+    },
+    {
+      "symbol": "09868.HK",
+      "name": "小鹏汽车-W",
+      "price": 62.05,
+      "lot_size": 100,
+      "change_pct": 2.988,
+      "turnover": 471695420.0,
+      "task_score": 76.48,
+      "rationale": "智能车主题活跃，适合趋势跟踪"
+    }
+  ],
+  "buy_actions": [
+    {
+      "symbol": "09988.HK",
+      "action": "filled",
+      "qty": 100,
+      "price": 140.2,
+      "lot_size": 100,
+      "reason": "平台修复与回购支撑"
+    },
+    {
+      "symbol": "01810.HK",
+      "action": "filled",
+      "qty": 600,
+      "price": 31.24,
+      "lot_size": 200,
+      "reason": "产品催化与风险偏好改善"
+    },
+    {
+      "symbol": "09868.HK",
+      "action": "blocked",
+      "reason": "risk/budget limit"
+    }
+  ],
+  "futu_buy_submit": {
+    "symbol": "09988.HK",
+    "qty": 100,
+    "price": 140.2,
+    "success": true,
+    "message": "ok",
+    "order_id": "7934363",
+    "order_status": "SUBMITTING",
+    "dealt_qty": 0,
+    "dealt_avg_price": 0.0,
+    "status_check": {
+      "success": true,
+      "message": "ok",
+      "order_id": "7934363",
+      "order_status": "SUBMITTING",
+      "dealt_qty": 0,
+      "dealt_avg_price": 0.0
+    }
+  },
+  "positions_after_mark": [
     {
       "symbol": "09988.HK",
       "qty": 200,
@@ -14,8 +92,8 @@
       "symbol": "01810.HK",
       "qty": 1200,
       "avg_price": 31.264992000000003,
-      "market_value": 37488.0,
-      "unrealized_pnl": -29.99040000000548
+      "market_value": 37464.0,
+      "unrealized_pnl": -53.99040000000497
     },
     {
       "symbol": "09868.HK",
@@ -25,7 +103,26 @@
       "unrealized_pnl": -14.891999999998973
     }
   ],
-  "orders": [
+  "close_exit_actions": [],
+  "forced_exit_validation": [
+    {
+      "symbol": "09988.HK",
+      "side": "SELL",
+      "qty": 100,
+      "price": 160.56,
+      "status": "filled",
+      "reason": "take_profit"
+    },
+    {
+      "symbol": "01810.HK",
+      "side": "SELL",
+      "qty": 600,
+      "price": 28.65,
+      "status": "filled",
+      "reason": "stop_loss"
+    }
+  ],
+  "latest_orders": [
     {
       "symbol": "09988.HK",
       "side": "BUY",
@@ -141,84 +238,5 @@
         "net_amount": 18779.9933
       }
     }
-  ],
-  "actions": [
-    {
-      "symbol": "09988.HK",
-      "action": "filled",
-      "qty": 100,
-      "price": 140.2,
-      "lot_size": 100,
-      "reason": "平台修复与回购支撑"
-    },
-    {
-      "symbol": "01810.HK",
-      "action": "filled",
-      "qty": 600,
-      "price": 31.24,
-      "lot_size": 200,
-      "reason": "产品催化与风险偏好改善"
-    },
-    {
-      "symbol": "09868.HK",
-      "action": "blocked",
-      "reason": "risk/budget limit"
-    }
-  ],
-  "task_candidate_pool": [
-    {
-      "symbol": "09988.HK",
-      "name": "阿里巴巴-W",
-      "price": 140.2,
-      "lot_size": 100,
-      "change_pct": 4.471,
-      "turnover": 11896258174.0,
-      "task_score": 89.53,
-      "rationale": "平台修复与回购支撑"
-    },
-    {
-      "symbol": "01810.HK",
-      "name": "小米集团-W",
-      "price": 31.24,
-      "lot_size": 200,
-      "change_pct": 1.363,
-      "turnover": 3247277791.0,
-      "task_score": 87.88,
-      "rationale": "产品催化与风险偏好改善"
-    },
-    {
-      "symbol": "09868.HK",
-      "name": "小鹏汽车-W",
-      "price": 62.05,
-      "lot_size": 100,
-      "change_pct": 2.988,
-      "turnover": 471695420.0,
-      "task_score": 76.48,
-      "rationale": "智能车主题活跃，适合趋势跟踪"
-    }
-  ],
-  "filtered_out": [
-    {
-      "symbol": "00700.HK",
-      "reason": "one-lot cost 48028.72 exceeds budget 20000.00",
-      "lot_size": 100
-    },
-    {
-      "symbol": "00981.HK",
-      "reason": "one-lot cost 38783.37 exceeds budget 20000.00",
-      "lot_size": 500
-    },
-    {
-      "symbol": "01347.HK",
-      "reason": "one-lot cost 141373.14 exceeds budget 20000.00",
-      "lot_size": 1000
-    },
-    {
-      "symbol": "09992.HK",
-      "reason": "one-lot cost 32711.58 exceeds budget 20000.00",
-      "lot_size": 200
-    }
-  ],
-  "snapshot_status": "connected",
-  "snapshot_message": "ok"
+  ]
 }

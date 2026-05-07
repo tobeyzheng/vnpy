@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from services.futu_account import FutuAccountProvider
@@ -23,7 +24,7 @@ def main() -> None:
         reason = engine.evaluate_exit_reason(pos, price)
         if reason:
             order = engine.place_sell(account, pos.symbol, price, reason)
-            exit_actions.append(order.__dict__)
+            exit_actions.append(asdict(order))
 
     engine.mark_to_market(account, quote_map)
     store.save(account)
@@ -40,8 +41,8 @@ def main() -> None:
         'drawdown_pct': drawdown,
         'drawdown_limit_pct': account.max_drawdown_limit_pct,
         'risk_status': 'stop_new_trades' if drawdown >= account.max_drawdown_limit_pct else 'normal',
-        'positions': [p.__dict__ for p in account.positions],
-        'orders': [o.__dict__ for o in account.orders[-20:]],
+        'positions': [asdict(p) for p in account.positions],
+        'orders': [asdict(o) for o in account.orders[-20:]],
         'exit_actions': exit_actions,
     }
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
