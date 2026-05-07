@@ -5,6 +5,16 @@
     "market_count": 2,
     "position_count": 4
   },
+  "portfolio_risk": {
+    "hong_kong": {
+      "allowed": true,
+      "reason": "ok"
+    },
+    "us": {
+      "allowed": true,
+      "reason": "ok"
+    }
+  },
   "markets": {
     "hong_kong": {
       "cash": 15687.759800000003,

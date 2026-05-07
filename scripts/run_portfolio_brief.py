@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from services.portfolio.summary import build_portfolio_summary
+from services.portfolio.risk import PortfolioRiskGuard
 
 
 def load_json(path: Path):
@@ -18,12 +19,21 @@ def main() -> None:
     hk = load_json(runs / 'hk_sim_close_report.json')
     us = load_json(runs / 'us_sim_close_report.json')
     summary = build_portfolio_summary([hk, us])
+    risk_guard = PortfolioRiskGuard()
+    hk_nav = float(hk.get('nav', 0) or 0)
+    us_nav = float(us.get('nav', 0) or 0)
+    hk_risk = risk_guard.check(total_nav=summary.total_nav, market_nav=hk_nav, total_positions=summary.position_count)
+    us_risk = risk_guard.check(total_nav=summary.total_nav, market_nav=us_nav, total_positions=summary.position_count)
     out = {
         'portfolio_summary': {
             'total_cash': summary.total_cash,
             'total_nav': summary.total_nav,
             'market_count': summary.market_count,
             'position_count': summary.position_count,
+        },
+        'portfolio_risk': {
+            'hong_kong': {'allowed': hk_risk.allowed, 'reason': hk_risk.reason},
+            'us': {'allowed': us_risk.allowed, 'reason': us_risk.reason},
         },
         'markets': {
             'hong_kong': {'cash': hk.get('cash'), 'nav': hk.get('nav'), 'positions': hk.get('positions', [])},

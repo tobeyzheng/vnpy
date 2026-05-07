@@ -1,0 +1,45 @@
+{
+  "summary": {
+    "hk_candidates": 3,
+    "us_candidates": 3,
+    "hk_actions": [
+      {
+        "symbol": "01810.HK",
+        "action": "watch_only",
+        "reason": "入场条件不足，先观察"
+      },
+      {
+        "symbol": "03690.HK",
+        "action": "watch_only",
+        "reason": "入场条件不足，先观察"
+      },
+      {
+        "symbol": "01299.HK",
+        "action": "watch_only",
+        "reason": "入场条件不足，先观察"
+      }
+    ],
+    "us_actions": [
+      {
+        "symbol": "NVDA.US",
+        "action": "filled",
+        "qty": 22,
+        "price": 207.83,
+        "lot_size": 1,
+        "reason": "趋势、事件催化与龙头属性共振"
+      },
+      {
+        "symbol": "AVGO.US",
+        "action": "watch_only",
+        "reason": "入场条件不足，先观察"
+      },
+      {
+        "symbol": "MSFT.US",
+        "action": "watch_only",
+        "reason": "入场条件不足，先观察"
+      }
+    ],
+    "hk_risk_status": "normal",
+    "us_risk_status": "normal"
+  }
+}
