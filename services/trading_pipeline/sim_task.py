@@ -41,9 +41,14 @@ class MultiMarketSimTradingPipeline:
         self.engine = SimTradingEngine(lot_size_default=config.lot_size_default)
         self.quote_client = FutuQuoteClient()
         self.account_provider = FutuAccountProvider()
-        self.raw_score_engine = RawScoreEngine()
-        self.entry_engine = EntryTimingEngine()
+        self.strategy_engine = StrategyEngine()
         self.risk_guard = RiskGuard()
+        self.reconciliation_guard = ReconciliationGuard(
+            repo_root / "state" / "runs" / "futu_sim_position_reconcile.json",
+            max_age_minutes=config.reconciliation_max_age_minutes,
+            fail_closed=True,
+        ) if config.reconciliation_required else None
+
 
     def run(self) -> dict[str, Any]:
         account = self.account_store.load()
@@ -132,31 +137,16 @@ class MultiMarketSimTradingPipeline:
                 })
                 continue
 
-            legacy = float(candidate.get("raw_score", 0.5) or 0.5)
-            change_pct = float(item.get("change_pct") or 0)
-            turnover = float(item.get("turnover") or 0)
-            has_catalyst = self._has_event_catalyst(candidate)
-            features = RawScoreFeatures(
-                trend_score=legacy,
-                momentum_score=max(0.0, min(1.0, 0.5 + change_pct / 20.0)),
-                flow_score=max(0.0, min(1.0, turnover / self.config.flow_divisor)),
-                quality_score=self._quality_score(candidate),
-                event_score=0.75 if has_catalyst else 0.5,
-                risk_penalty=0.65 if abs(change_pct) > 6 else 0.35,
-                legacy_score=legacy,
+            evaluation = self.strategy_engine.evaluate_candidate(
+                candidate=candidate,
+                quote=item,
+                flow_divisor=self.config.flow_divisor,
+                has_event_catalyst=self._has_event_catalyst(candidate),
             )
-            raw_score_v2 = self.raw_score_engine.score(features)
-            timing = self.entry_engine.decide(
-                trend_score=raw_score_v2,
-                rsi=50 + min(35, abs(change_pct) * 4),
-                has_event_catalyst=has_catalyst,
-                near_resistance=abs(change_pct) > 4,
-                moving_average_bullish=change_pct > 0,
-            )
-            score = raw_score_v2 * 100
-            score += max(0.0, 10 - abs(change_pct))
-            score += min(10.0, turnover / 1e9)
-            score += 3.0 if timing.action != "watch_only" else -4.0
+            raw_score_v2 = evaluation.raw_score
+            timing = evaluation.entry_timing
+            score = evaluation.task_score
+
             task_candidate_pool.append({
                 "symbol": symbol,
                 "name": candidate.get("name"),
@@ -195,11 +185,18 @@ class MultiMarketSimTradingPipeline:
                 actions.append({"symbol": row["symbol"], "action": "watch_only", "reason": row.get("entry_reason")})
                 continue
 
+            if self.reconciliation_guard:
+                reconciliation = self.reconciliation_guard.evaluate(side="BUY", symbol=row["symbol"])
+                if not reconciliation.allowed:
+                    actions.append({"symbol": row["symbol"], "action": "blocked", "reason": ";".join(reconciliation.reasons) or "reconciliation_blocked"})
+                    continue
+
             sized_budget = max(
                 float(row["price"]) * int(row["lot_size"]),
                 self.config.budget_per_trade * max(0.25, float(row.get("suggested_size_pct", 0.0) or 0.0)),
             )
             guard = self.risk_guard.can_open(account, symbol=row["symbol"], est_cost=sized_budget)
+
             if self.engine.can_open(account, sized_budget) and guard.allowed:
                 order = self.engine.place_buy(account, row["symbol"], float(row["price"]), row.get("rationale", ""), sized_budget, lot_size=int(row["lot_size"]))
                 actions.append({"symbol": row["symbol"], "action": order.status, "qty": order.qty, "price": row["price"], "lot_size": row["lot_size"], "reason": order.reason})

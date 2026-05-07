@@ -216,6 +216,8 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     intents = PaperTradeBridge().build_intents(decision) if approval.allowed and risk_eval.allowed else []
     intent_path = PaperIntentStore(repo_root / "state/runs").save(market, intents)
     vnpy_drafts = VnpySignalBridge().build_drafts(intents)
+    vnpy_executor = VnpyExecutor(repo_root / "state" / "runs", mode="paper")
+    vnpy_execution_states = [vnpy_executor.execute_draft(draft) for draft in vnpy_drafts if draft.direction in {"BUY", "SELL"}]
     futu_drafts = FutuPaperBridge().build_drafts(intents)
     futu_draft_path = FutuDraftStore(repo_root / "state/runs").save(market, futu_drafts)
     opend_probe = OpenDClient().probe()

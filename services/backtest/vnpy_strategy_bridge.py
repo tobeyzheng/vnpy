@@ -26,9 +26,7 @@ class AdaptiveBacktestStrategy(CtaTemplate):
 
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
-        self.entry_engine = EntryTimingEngine()
-        self.exit_engine = ExitTimingEngine()
-        self.raw_score_engine = RawScoreEngine()
+        self.strategy_engine = StrategyEngine()
         self.risk_guard = RiskGuard(max_single_position_pct=self.max_single_position_pct, max_positions=self.max_positions)
         self.closes: list[float] = []
         self.volumes: list[float] = []
@@ -69,36 +67,23 @@ class AdaptiveBacktestStrategy(CtaTemplate):
         flow_ratio = (bar.volume / avg_vol) if avg_vol else 1.0
 
         trend_score = 0.8 if fast > slow else 0.35
-        momentum_score = min(1.0, max(0.0, 0.5 + momentum * 10))
-        flow_score = min(1.0, max(0.0, flow_ratio / 2))
-        quality_score = 0.55 if fast > slow else 0.45
-        event_score = 0.5
         risk_penalty = min(1.0, max(0.0, abs(momentum) * 8))
-
-        self.raw_score_value = self.raw_score_engine.score(
-            RawScoreFeatures(
-                trend_score=trend_score,
-                momentum_score=momentum_score,
-                flow_score=flow_score,
-                quality_score=quality_score,
-                event_score=event_score,
-                risk_penalty=risk_penalty,
-                legacy_score=None,
-            )
-        )
-
-        rsi_proxy = 55 if fast > slow else 45
-        moving_average_bullish = fast > slow
         near_resistance = bar.close_price >= max(self.closes[-self.fast_window:])
+        evaluation = self.strategy_engine.evaluate_bar(
+            symbol=bar.symbol,
+            market='backtest',
+            close_price=float(bar.close_price),
+            prev_close=float(prev),
+            fast=float(fast),
+            slow=float(slow),
+            volume=float(bar.volume),
+            avg_volume=float(avg_vol),
+            near_resistance=near_resistance,
+        )
+        self.raw_score_value = evaluation.raw_score
 
         if self.pos == 0:
-            decision = self.entry_engine.decide(
-                trend_score=trend_score,
-                rsi=rsi_proxy,
-                has_event_catalyst=False,
-                near_resistance=near_resistance,
-                moving_average_bullish=moving_average_bullish,
-            )
+            decision = evaluation.entry_timing
             self.last_entry_action = decision.action
             account = self._build_account(bar)
             est_cost = float(bar.close_price * self.fixed_size)
@@ -108,7 +93,7 @@ class AdaptiveBacktestStrategy(CtaTemplate):
         else:
             pnl_pct = (bar.close_price / prev - 1.0) if prev else 0.0
             risk_score = max(risk_penalty, 1 - self.raw_score_value)
-            decision = self.exit_engine.decide(
+            decision = self.strategy_engine.evaluate_exit(
                 pnl_pct=pnl_pct,
                 rsi=65,
                 trend_score=trend_score,

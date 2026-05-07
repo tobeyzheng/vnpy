@@ -44,7 +44,7 @@ class PortfolioBacktestEngine:
         self.max_single_position_pct = max_single_position_pct
         self.max_total_positions = max_total_positions
         self.max_market_exposure_pct = max_market_exposure_pct
-        self.raw_score_engine = RawScoreEngine()
+        self.strategy_engine = StrategyEngine()
         self.portfolio_guard = PortfolioRiskGuard(max_market_exposure_pct=max_market_exposure_pct, max_total_positions=max_total_positions)
         self.exposure_helper = PortfolioExposureHelper()
         self.db = get_database()
@@ -108,18 +108,19 @@ class PortfolioBacktestEngine:
                 fast = mean(hist[-5:])
                 slow = mean(hist[-20:])
                 prev = hist[-2] if len(hist) >= 2 else bar.close_price
-                momentum = (bar.close_price / prev - 1.0) if prev else 0.0
-                trend_score = 0.8 if fast > slow else 0.35
-                raw = self.raw_score_engine.score(RawScoreFeatures(
-                    trend_score=trend_score,
-                    momentum_score=min(1.0, max(0.0, 0.5 + momentum * 10)),
-                    flow_score=0.5,
-                    quality_score=0.55 if fast > slow else 0.45,
-                    event_score=0.5,
-                    risk_penalty=min(1.0, max(0.0, abs(momentum) * 8)),
-                ))
                 market = parse_vt_symbol(s)[2]
-                candidates.append((s, raw, bar, market))
+                evaluation = self.strategy_engine.evaluate_bar(
+                    symbol=s,
+                    market=market,
+                    close_price=float(bar.close_price),
+                    prev_close=float(prev),
+                    fast=float(fast),
+                    slow=float(slow),
+                    volume=float(bar.volume),
+                    avg_volume=0.0,
+                    near_resistance=bar.close_price >= max(hist[-5:]),
+                )
+                candidates.append((s, evaluation.raw_score, bar, market))
 
             candidates.sort(key=lambda x: x[1], reverse=True)
             for s, raw, bar, market in candidates:

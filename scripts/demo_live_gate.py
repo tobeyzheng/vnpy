@@ -38,6 +38,7 @@ def main() -> None:
             daily_new_pct=0.15,
             current_drawdown_pct=0.02,
             account_status='connected',
+            approval_status='pending',
         )
         rows.append({'request_id': req.request_id, 'symbol': req.symbol, 'allowed': result.allowed, 'reasons': result.reasons})
         # 再跑一次同单，验证 duplicate
@@ -49,6 +50,7 @@ def main() -> None:
             daily_new_pct=0.15,
             current_drawdown_pct=0.02,
             account_status='disconnected',
+            approval_status='pending',
         )
         rows.append({'request_id': req.request_id, 'symbol': req.symbol, 'allowed': result2.allowed, 'reasons': result2.reasons})
 

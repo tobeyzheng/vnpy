@@ -18,6 +18,7 @@ CONFIG = MarketSimTaskConfig(
     flow_divisor=2e9,
     catalyst_keywords=("主题", "催化"),
     affordability_label="one-lot",
+    reconciliation_required=True,
 )
 
 

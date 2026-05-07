@@ -10,7 +10,7 @@ from run_premarket_report import run_market
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["premarket", "midday", "recap"], required=True)
+    parser.add_argument("--mode", choices=["premarket", "midday", "recap", "healthcheck", "brief"], required=True)
     parser.add_argument("--market", choices=["us", "hong_kong", "a_share"])
     args = parser.parse_args()
 

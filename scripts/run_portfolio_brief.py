@@ -3,8 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from services.portfolio.summary import build_portfolio_summary
+from services.healthcheck import HealthcheckService
 from services.portfolio.risk import PortfolioRiskGuard
+from services.portfolio.summary import build_portfolio_summary
 
 
 def load_json(path: Path):
@@ -24,6 +25,7 @@ def main() -> None:
     us_nav = float(us.get('nav', 0) or 0)
     hk_risk = risk_guard.check(total_nav=summary.total_nav, market_nav=hk_nav, total_positions=summary.position_count)
     us_risk = risk_guard.check(total_nav=summary.total_nav, market_nav=us_nav, total_positions=summary.position_count)
+    health = HealthcheckService(repo).run()
     out = {
         'portfolio_summary': {
             'total_cash': summary.total_cash,
@@ -42,12 +44,18 @@ def main() -> None:
         'markets': {
             'hong_kong': {'cash': hk.get('cash'), 'nav': hk.get('nav'), 'positions': hk.get('positions', [])},
             'us': {'cash': us.get('cash'), 'nav': us.get('nav'), 'positions': us.get('positions', [])},
-        }
+        },
+        'healthcheck': health,
+        'daily_brief': {
+            'status': health.get('status'),
+            'alerts': health.get('alerts', []),
+            'execution_blocked': health.get('status') == 'blocked',
+        },
     }
     path = runs / 'portfolio_brief.json'
-    path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
+    path.write_text(json.dumps(out, ensure_ascii=False, indent=2, default=str), encoding='utf-8')
     print(path)
-    print(json.dumps(out, ensure_ascii=False, indent=2))
+    print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
 
 
 if __name__ == '__main__':
