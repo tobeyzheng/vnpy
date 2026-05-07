@@ -100,6 +100,9 @@ class FutuAccountProvider:
                         "change_pct": change_pct,
                         "volume": row.get("volume"),
                         "turnover": row.get("turnover"),
+                        "amplitude": row.get("amplitude"),
+                        "bid_price": row.get("bid_price"),
+                        "ask_price": row.get("ask_price"),
                     }
                 )
             return {"status": "connected", "items": items, "message": "ok"}
