@@ -1,0 +1,62 @@
+[
+  {
+    "symbol": "00700.HK",
+    "name": "腾讯控股",
+    "market": "hong_kong",
+    "sector": null,
+    "rationale": "平台龙头与回购支撑增强 | 实操评分: fundamentals:0.47 | skill_consensus:0.67 | agent_judgment:0.50",
+    "risk": "若南下转弱弹性会下降",
+    "confidence": 73,
+    "action": "继续持有",
+    "evidence": [
+      {
+        "source": "trend",
+        "category": "technical",
+        "summary": "平台龙头趋势保持完整",
+        "score": 0.84
+      },
+      {
+        "source": "fundamentals",
+        "category": "quality",
+        "summary": "现金流与回购支撑较稳",
+        "score": 0.79
+      }
+    ]
+  },
+  {
+    "symbol": "00981.HK",
+    "name": "中芯国际",
+    "market": "hong_kong",
+    "sector": null,
+    "rationale": "半导体主线共振增强 | 实操评分: agent_judgment:0.44",
+    "risk": "波动较大且受政策预期影响",
+    "confidence": 73,
+    "action": "回调再买",
+    "evidence": [
+      {
+        "source": "trend",
+        "category": "technical",
+        "summary": "芯片主线偏强",
+        "score": 0.82
+      }
+    ]
+  },
+  {
+    "symbol": "01810.HK",
+    "name": "小米集团-W",
+    "market": "hong_kong",
+    "sector": null,
+    "rationale": "产品催化与风险偏好改善 | 实操评分: skill_consensus:0.45 | agent_judgment:0.42",
+    "risk": "涨速过快时容易震荡",
+    "confidence": 70,
+    "action": "可小幅试加",
+    "evidence": [
+      {
+        "source": "event",
+        "category": "catalyst",
+        "summary": "产品催化延续",
+        "score": 0.78
+      }
+    ]
+  }
+]

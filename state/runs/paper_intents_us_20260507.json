@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "NVDA.US",
+    "market": "us",
+    "side": "BUY",
+    "reason": "趋势、事件催化与龙头属性共振 | 实操评分: agent_judgment:0.46",
+    "confidence": 76,
+    "target_position_pct": 0.07,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  },
+  {
+    "symbol": "AVGO.US",
+    "market": "us",
+    "side": "BUY",
+    "reason": "AI链景气度延续 | 实操评分: agent_judgment:0.45",
+    "confidence": 75,
+    "target_position_pct": 0.07,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  },
+  {
+    "symbol": "MSFT.US",
+    "market": "us",
+    "side": "WATCH",
+    "reason": "软件与AI应用双重属性 | 实操评分: fundamentals:0.44 | agent_judgment:0.41",
+    "confidence": 68,
+    "target_position_pct": 0.04,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  }
+]

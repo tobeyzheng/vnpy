@@ -1,0 +1,8 @@
+{
+  "mode": "paper",
+  "allowed": true,
+  "reason": "paper mode: allow simulated execution only",
+  "required_actions": [
+    "paper_only"
+  ]
+}

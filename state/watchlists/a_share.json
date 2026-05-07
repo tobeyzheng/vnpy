@@ -1,0 +1,77 @@
+[
+  {
+    "symbol": "300308.SZ",
+    "name": "中际旭创",
+    "market": "a_share",
+    "sector": null,
+    "state": "retained",
+    "note": "AI算力链辨识度高 | 实操评分: agent_judgment:0.45",
+    "resonance_days": 2,
+    "weak_days": 0,
+    "confidence": 75,
+    "tags": [
+      "candidate"
+    ],
+    "status_label": "连续共振2天"
+  },
+  {
+    "symbol": "300502.SZ",
+    "name": "新易盛",
+    "market": "a_share",
+    "sector": "Optical/AI",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 2,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "688041.SH",
+    "name": "海光信息",
+    "market": "a_share",
+    "sector": null,
+    "state": "retained",
+    "note": "国产算力主线清晰 | 实操评分: agent_judgment:0.45",
+    "resonance_days": 2,
+    "weak_days": 0,
+    "confidence": 75,
+    "tags": [
+      "candidate"
+    ],
+    "status_label": "连续共振2天"
+  },
+  {
+    "symbol": "002371.SZ",
+    "name": "北方华创",
+    "market": "a_share",
+    "sector": null,
+    "state": "retained",
+    "note": "设备链景气和国产替代逻辑仍在 | 实操评分: fundamentals:0.46 | agent_judgment:0.43",
+    "resonance_days": 2,
+    "weak_days": 0,
+    "confidence": 71,
+    "tags": [
+      "candidate"
+    ],
+    "status_label": "连续共振2天"
+  },
+  {
+    "symbol": "002463.SZ",
+    "name": "沪电股份",
+    "market": "a_share",
+    "sector": "PCB/AI Infra",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 2,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  }
+]

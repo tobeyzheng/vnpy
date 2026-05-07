@@ -1,0 +1,10 @@
+{
+  "approval": "approval_state_20260507_114648_968975.json",
+  "trade_state": "trade_state_20260507_114648_969782.json",
+  "allowed": false,
+  "reasons": [
+    "approval status is not approved: pending",
+    "mode is not live; submit blocked",
+    "limit order requires price"
+  ]
+}

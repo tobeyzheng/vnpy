@@ -1,0 +1,41 @@
+[
+  {
+    "code": "US.NVDA",
+    "trd_env": "SIMULATE",
+    "side": "BUY",
+    "reason": "趋势、事件催化与龙头属性共振 | 实操评分: agent_judgment:0.46",
+    "qty": null,
+    "target_position_pct": 0.07,
+    "confidence": 76,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  },
+  {
+    "code": "US.AVGO",
+    "trd_env": "SIMULATE",
+    "side": "BUY",
+    "reason": "AI链景气度延续 | 实操评分: agent_judgment:0.45",
+    "qty": null,
+    "target_position_pct": 0.07,
+    "confidence": 75,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  },
+  {
+    "code": "US.MSFT",
+    "trd_env": "SIMULATE",
+    "side": "WATCH",
+    "reason": "软件与AI应用双重属性 | 实操评分: fundamentals:0.44 | agent_judgment:0.41",
+    "qty": null,
+    "target_position_pct": 0.04,
+    "confidence": 68,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  }
+]

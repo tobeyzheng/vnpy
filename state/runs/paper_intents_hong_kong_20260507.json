@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "00700.HK",
+    "market": "hong_kong",
+    "side": "WATCH",
+    "reason": "平台龙头与回购支撑增强 | 实操评分: fundamentals:0.47 | skill_consensus:0.67 | agent_judgment:0.50",
+    "confidence": 73,
+    "target_position_pct": 0.04,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  },
+  {
+    "symbol": "00981.HK",
+    "market": "hong_kong",
+    "side": "BUY",
+    "reason": "半导体主线共振增强 | 实操评分: agent_judgment:0.44",
+    "confidence": 73,
+    "target_position_pct": 0.04,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  },
+  {
+    "symbol": "01810.HK",
+    "market": "hong_kong",
+    "side": "WATCH",
+    "reason": "产品催化与风险偏好改善 | 实操评分: skill_consensus:0.45 | agent_judgment:0.42",
+    "confidence": 70,
+    "target_position_pct": 0.04,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  }
+]

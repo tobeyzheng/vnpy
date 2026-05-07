@@ -1,0 +1,56 @@
+[
+  {
+    "symbol": "NVDA.US",
+    "name": "NVIDIA",
+    "market": "us",
+    "sector": null,
+    "rationale": "趋势、事件催化与龙头属性共振 | 实操评分: agent_judgment:0.46",
+    "risk": "高位波动放大",
+    "confidence": 76,
+    "action": "回调再买",
+    "evidence": [
+      {
+        "source": "trend",
+        "category": "technical",
+        "summary": "AI龙头趋势完整",
+        "score": 0.86
+      }
+    ]
+  },
+  {
+    "symbol": "AVGO.US",
+    "name": "Broadcom",
+    "market": "us",
+    "sector": null,
+    "rationale": "AI链景气度延续 | 实操评分: agent_judgment:0.45",
+    "risk": "高位滞涨后或先消化",
+    "confidence": 75,
+    "action": "可小仓试错",
+    "evidence": [
+      {
+        "source": "trend",
+        "category": "technical",
+        "summary": "AI链强势延续",
+        "score": 0.84
+      }
+    ]
+  },
+  {
+    "symbol": "MSFT.US",
+    "name": "Microsoft",
+    "market": "us",
+    "sector": null,
+    "rationale": "软件与AI应用双重属性 | 实操评分: fundamentals:0.44 | agent_judgment:0.41",
+    "risk": "防守风格下弹性或偏弱",
+    "confidence": 68,
+    "action": "继续观察",
+    "evidence": [
+      {
+        "source": "fundamentals",
+        "category": "quality",
+        "summary": "AI应用兑现能力较强",
+        "score": 0.8
+      }
+    ]
+  }
+]

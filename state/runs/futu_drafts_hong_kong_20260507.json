@@ -1,0 +1,41 @@
+[
+  {
+    "code": "HK.00700",
+    "trd_env": "SIMULATE",
+    "side": "WATCH",
+    "reason": "平台龙头与回购支撑增强 | 实操评分: fundamentals:0.47 | skill_consensus:0.67 | agent_judgment:0.50",
+    "qty": null,
+    "target_position_pct": 0.04,
+    "confidence": 73,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  },
+  {
+    "code": "HK.00981",
+    "trd_env": "SIMULATE",
+    "side": "BUY",
+    "reason": "半导体主线共振增强 | 实操评分: agent_judgment:0.44",
+    "qty": null,
+    "target_position_pct": 0.04,
+    "confidence": 73,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  },
+  {
+    "code": "HK.01810",
+    "trd_env": "SIMULATE",
+    "side": "WATCH",
+    "reason": "产品催化与风险偏好改善 | 实操评分: skill_consensus:0.45 | agent_judgment:0.42",
+    "qty": null,
+    "target_position_pct": 0.04,
+    "confidence": 70,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  }
+]

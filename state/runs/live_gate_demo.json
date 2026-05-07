@@ -1,0 +1,31 @@
+[
+  {
+    "request_id": "02dec31cbff1",
+    "symbol": "00981.HK",
+    "allowed": false,
+    "reasons": [
+      "mode is not live; submit blocked",
+      "limit order requires price",
+      "stale signal detected",
+      "daily new exposure exceeds limit 0.2",
+      "market exposure exceeds limit 0.35",
+      "signal too old for live trading"
+    ]
+  },
+  {
+    "request_id": "02dec31cbff1",
+    "symbol": "00981.HK",
+    "allowed": false,
+    "reasons": [
+      "mode is not live; submit blocked",
+      "limit order requires price",
+      "duplicate request detected",
+      "stale signal detected",
+      "duplicate live request detected",
+      "daily new exposure exceeds limit 0.2",
+      "market exposure exceeds limit 0.35",
+      "signal too old for live trading",
+      "account status not ready: disconnected"
+    ]
+  }
+]

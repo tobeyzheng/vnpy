@@ -1,0 +1,41 @@
+[
+  {
+    "code": "SZ.300308",
+    "trd_env": "SIMULATE",
+    "side": "BUY",
+    "reason": "AI算力链辨识度高 | 实操评分: agent_judgment:0.45",
+    "qty": null,
+    "target_position_pct": 0.07,
+    "confidence": 75,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  },
+  {
+    "code": "SH.688041",
+    "trd_env": "SIMULATE",
+    "side": "BUY",
+    "reason": "国产算力主线清晰 | 实操评分: agent_judgment:0.45",
+    "qty": null,
+    "target_position_pct": 0.07,
+    "confidence": 75,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  },
+  {
+    "code": "SZ.002371",
+    "trd_env": "SIMULATE",
+    "side": "WATCH",
+    "reason": "设备链景气和国产替代逻辑仍在 | 实操评分: fundamentals:0.46 | agent_judgment:0.43",
+    "qty": null,
+    "target_position_pct": 0.04,
+    "confidence": 71,
+    "notes": [
+      "futu_draft_only",
+      "not_submitted"
+    ]
+  }
+]

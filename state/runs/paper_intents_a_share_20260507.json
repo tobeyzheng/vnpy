@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "300308.SZ",
+    "market": "a_share",
+    "side": "BUY",
+    "reason": "AI算力链辨识度高 | 实操评分: agent_judgment:0.45",
+    "confidence": 75,
+    "target_position_pct": 0.07,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  },
+  {
+    "symbol": "688041.SH",
+    "market": "a_share",
+    "side": "BUY",
+    "reason": "国产算力主线清晰 | 实操评分: agent_judgment:0.45",
+    "confidence": 75,
+    "target_position_pct": 0.07,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  },
+  {
+    "symbol": "002371.SZ",
+    "market": "a_share",
+    "side": "WATCH",
+    "reason": "设备链景气和国产替代逻辑仍在 | 实操评分: fundamentals:0.46 | agent_judgment:0.43",
+    "confidence": 71,
+    "target_position_pct": 0.04,
+    "tags": [
+      "均衡",
+      "paper"
+    ]
+  }
+]

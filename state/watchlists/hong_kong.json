@@ -1,0 +1,137 @@
+[
+  {
+    "symbol": "09618.HK",
+    "name": "京东集团-SW",
+    "market": "hong_kong",
+    "sector": "E-commerce",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "00960.HK",
+    "name": "龙湖集团",
+    "market": "hong_kong",
+    "sector": "Property",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "00951.HK",
+    "name": "超威动力",
+    "market": "hong_kong",
+    "sector": "Battery",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "02432.HK",
+    "name": "越疆",
+    "market": "hong_kong",
+    "sector": "Robotics",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "00772.HK",
+    "name": "阅文集团",
+    "market": "hong_kong",
+    "sector": "Content/Platform",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "09988.HK",
+    "name": "阿里巴巴-W",
+    "market": "hong_kong",
+    "sector": "Internet",
+    "state": "fixed",
+    "note": "",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": null,
+    "tags": [
+      "fixed"
+    ],
+    "status_label": "固定观察"
+  },
+  {
+    "symbol": "00700.HK",
+    "name": "腾讯控股",
+    "market": "hong_kong",
+    "sector": null,
+    "state": "promoted",
+    "note": "平台龙头与回购支撑增强 | 实操评分: fundamentals:0.47 | skill_consensus:0.67 | agent_judgment:0.50",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": 73,
+    "tags": [
+      "candidate"
+    ],
+    "status_label": "连续共振3天+"
+  },
+  {
+    "symbol": "01810.HK",
+    "name": "小米集团-W",
+    "market": "hong_kong",
+    "sector": null,
+    "state": "promoted",
+    "note": "产品催化与风险偏好改善 | 实操评分: skill_consensus:0.45 | agent_judgment:0.42",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": 70,
+    "tags": [
+      "candidate"
+    ],
+    "status_label": "连续共振3天+"
+  },
+  {
+    "symbol": "00981.HK",
+    "name": "中芯国际",
+    "market": "hong_kong",
+    "sector": null,
+    "state": "promoted",
+    "note": "半导体主线共振增强 | 实操评分: agent_judgment:0.44",
+    "resonance_days": 4,
+    "weak_days": 0,
+    "confidence": 73,
+    "tags": [
+      "candidate"
+    ],
+    "status_label": "连续共振3天+"
+  }
+]

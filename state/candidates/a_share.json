@@ -1,0 +1,56 @@
+[
+  {
+    "symbol": "300308.SZ",
+    "name": "中际旭创",
+    "market": "a_share",
+    "sector": null,
+    "rationale": "AI算力链辨识度高 | 实操评分: agent_judgment:0.45",
+    "risk": "高位分歧时回撤会更快",
+    "confidence": 75,
+    "action": "回调再买",
+    "evidence": [
+      {
+        "source": "trend",
+        "category": "technical",
+        "summary": "算力链龙头延续",
+        "score": 0.85
+      }
+    ]
+  },
+  {
+    "symbol": "688041.SH",
+    "name": "海光信息",
+    "market": "a_share",
+    "sector": null,
+    "rationale": "国产算力主线清晰 | 实操评分: agent_judgment:0.45",
+    "risk": "高估值下对情绪敏感",
+    "confidence": 75,
+    "action": "可小仓试错",
+    "evidence": [
+      {
+        "source": "trend",
+        "category": "technical",
+        "summary": "国产算力主线清晰",
+        "score": 0.82
+      }
+    ]
+  },
+  {
+    "symbol": "002371.SZ",
+    "name": "北方华创",
+    "market": "a_share",
+    "sector": null,
+    "rationale": "设备链景气和国产替代逻辑仍在 | 实操评分: fundamentals:0.46 | agent_judgment:0.43",
+    "risk": "若主线切换会阶段承压",
+    "confidence": 71,
+    "action": "继续观察",
+    "evidence": [
+      {
+        "source": "fundamentals",
+        "category": "quality",
+        "summary": "设备链逻辑仍稳",
+        "score": 0.78
+      }
+    ]
+  }
+]
