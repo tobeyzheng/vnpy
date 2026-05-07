@@ -7,6 +7,10 @@ from pathlib import Path
 from services.futu_account import FutuQuoteClient
 from services.futu_account import FutuAccountProvider
 from services.sim_account import SimAccountStore, SimTradingEngine
+from services.strategy.candidate_provider import UnifiedCandidateProvider
+from services.strategy.market_rules import get_market_rules
+from services.strategy.raw_score import RawScoreEngine, RawScoreFeatures
+from services.strategy.timing import EntryTimingEngine
 
 
 def main() -> None:
@@ -17,7 +21,7 @@ def main() -> None:
     engine = SimTradingEngine(lot_size_default=100)
     quote_client = FutuQuoteClient()
 
-    candidates = json.loads((repo / 'state' / 'runs' / 'candidate_inputs.json').read_text(encoding='utf-8'))
+    candidates = UnifiedCandidateProvider(repo).load()
     hk_candidates = [c for c in candidates if c.get('market') == 'hong_kong'][:30]
     codes = [c['symbol'] for c in hk_candidates]
     snapshot = FutuAccountProvider().get_watchlist_snapshot(codes)
@@ -26,6 +30,8 @@ def main() -> None:
     quote_map = {item['code'].replace('HK.', '') + '.HK': item for item in snapshot.get('items', []) if item.get('price') is not None}
 
     budget_per_trade = 20000.0
+    raw_score_engine = RawScoreEngine()
+    entry_engine = EntryTimingEngine()
     filtered_out = []
     task_candidate_pool = []
 
@@ -42,10 +48,30 @@ def main() -> None:
         if not engine.is_affordable(price, budget_per_trade, lot_size=lot_size):
             filtered_out.append({'symbol': symbol, 'reason': f'one-lot cost {min_cost:.2f} exceeds budget {budget_per_trade:.2f}', 'lot_size': lot_size})
             continue
+        market_rules = get_market_rules(c.get('market', 'hong_kong'))
+        legacy = float(c.get('raw_score', 0.5) or 0.5)
+        features = RawScoreFeatures(
+            trend_score=legacy,
+            momentum_score=max(0.0, min(1.0, 0.5 + float(item.get('change_pct') or 0) / 20.0)),
+            flow_score=max(0.0, min(1.0, float(item.get('turnover') or 0) / 2e9)),
+            quality_score=min(1.0, max(s.get('score', 0.5) for s in c.get('signals', [{'score': 0.5}]))),
+            event_score=0.75 if ('主题' in (c.get('rationale') or '') or '催化' in (c.get('rationale') or '')) else 0.5,
+            risk_penalty=0.65 if abs(float(item.get('change_pct') or 0)) > 6 else 0.35,
+            legacy_score=legacy,
+        )
+        raw_score_v2 = raw_score_engine.score(features)
+        timing = entry_engine.decide(
+            trend_score=raw_score_v2,
+            rsi=50 + min(35, abs(float(item.get('change_pct') or 0)) * 4),
+            has_event_catalyst=('主题' in (c.get('rationale') or '') or '催化' in (c.get('rationale') or '')),
+            near_resistance=abs(float(item.get('change_pct') or 0)) > 4,
+            moving_average_bullish=float(item.get('change_pct') or 0) > 0,
+        )
         score = 0.0
-        score += max(0.0, float(c.get('raw_score', 0)) * 100)
+        score += raw_score_v2 * 100
         score += max(0.0, 10 - abs(float(item.get('change_pct') or 0)))
         score += min(10.0, float(item.get('turnover') or 0) / 1e9)
+        score += 3.0 if timing.action != 'watch_only' else -4.0
         task_candidate_pool.append({
             'symbol': symbol,
             'name': c.get('name'),
@@ -55,6 +81,10 @@ def main() -> None:
             'turnover': item.get('turnover'),
             'task_score': round(score, 2),
             'rationale': c.get('rationale', ''),
+            'raw_score_v2': raw_score_v2,
+            'entry_action': timing.action,
+            'entry_reason': timing.reason,
+            'market_currency': market_rules.currency,
         })
 
     task_candidate_pool.sort(key=lambda x: x['task_score'], reverse=True)
