@@ -1,12 +1,19 @@
 {
   "symbol": "09988.HK",
-  "qty": 200,
+  "qty": 100,
   "price": 140.31215999999998,
-  "success": false,
-  "message": "place_order failed: 持仓不足",
-  "order_id": null,
-  "order_status": null,
-  "dealt_qty": null,
-  "dealt_avg_price": null,
-  "status_check": null
+  "success": true,
+  "message": "ok",
+  "order_id": "7934674",
+  "order_status": "SUBMITTING",
+  "dealt_qty": 0,
+  "dealt_avg_price": 0.0,
+  "status_check": {
+    "success": true,
+    "message": "ok",
+    "order_id": "7934674",
+    "order_status": "SUBMITTING",
+    "dealt_qty": 0,
+    "dealt_avg_price": 0.0
+  }
 }

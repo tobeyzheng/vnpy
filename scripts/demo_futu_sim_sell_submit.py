@@ -14,11 +14,18 @@ def main() -> None:
     if account.positions:
         pos = account.positions[0]
         client = FutuSimTradeClient()
-        result = client.submit_limit_order(pos.symbol, 'SELL', int(pos.qty), float(pos.avg_price), reason='forced sell validation')
-        status_result = client.get_order(result.order_id) if result.order_id else None
-        payload = {
-            'symbol': pos.symbol,
-            'qty': int(pos.qty),
+        positions = client.get_positions()
+        futu_map = {item['symbol']: item for item in positions.get('items', [])}
+        sellable = int(futu_map.get(pos.symbol, {}).get('can_sell_qty', 0) or 0)
+        sell_qty = min(int(pos.qty), sellable) if sellable > 0 else 0
+        if sell_qty <= 0:
+            payload = {'symbol': pos.symbol, 'qty': 0, 'price': float(pos.avg_price), 'success': False, 'message': 'no futu sellable qty', 'order_id': None, 'order_status': None, 'dealt_qty': None, 'dealt_avg_price': None, 'status_check': None}
+        else:
+            result = client.submit_limit_order(pos.symbol, 'SELL', int(sell_qty), float(pos.avg_price), reason='forced sell validation')
+            status_result = client.get_order(result.order_id) if result.order_id else None
+            payload = {
+                'symbol': pos.symbol,
+                'qty': int(sell_qty),
             'price': float(pos.avg_price),
             'success': result.success,
             'message': result.message,
