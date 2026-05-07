@@ -11,14 +11,17 @@ from services.candidate_engine import CandidateRanker, CandidateStateStore
 from services.candidate_engine.adapters import candidate_from_input
 from services.candidate_engine.providers import CompositeCandidateProvider, DemoCandidateProvider, FileCandidateProvider
 from services.decision_engine import DecisionEngine
+from services.evaluation_hub import EvaluationHub
+from services.evaluation_hub.adapters import RealtimeWatchlistAdapter
+from services.evaluation_hub.models import EvaluationSignal
 from services.futu_account import FutuAccountProvider
 from services.futu_opend import OpenDClient
 from services.reporting import ActionLine, MarketEnvironment, PremarketReport, TextReportRenderer
 from services.risk_engine import RiskEngine
+from services.scoring_engine import MarketScorer, PracticalScoringModel
 from services.watchlist_engine import WatchlistItem, WatchlistManager, WatchlistStateStore
 from services.watchlist_engine.configs import load_fixed_watchlist
 from services.common.config_loader import load_yaml
-from services.scoring_engine import MarketScorer
 
 MARKET_TO_CONFIG = {
     "us": "us.yaml",
@@ -100,12 +103,43 @@ def format_quote_block(quote_summary: dict) -> list[str]:
     return lines
 
 
+def to_evaluation_signals(market: str, candidate) -> list[EvaluationSignal]:
+    signals = []
+    for evidence in candidate.evidence:
+        signals.append(EvaluationSignal(
+            symbol=candidate.symbol,
+            market=market,
+            source=evidence.source,
+            dimension='skill_consensus' if evidence.source not in {'trend', 'fundamentals'} else evidence.source,
+            score=min(1.0, max(0.0, candidate.confidence / 100 if candidate.confidence else 0.6)),
+            confidence=0.65,
+            summary=evidence.summary,
+            risks=[candidate.risk] if candidate.risk else [],
+            action_bias='positive' if '买' in candidate.action else 'neutral',
+        ))
+    signals.append(EvaluationSignal(
+        symbol=candidate.symbol,
+        market=market,
+        source='candidate_rationale',
+        dimension='agent_judgment',
+        score=min(1.0, max(0.0, candidate.confidence / 100 if candidate.confidence else 0.6)),
+        confidence=0.6,
+        summary=candidate.rationale,
+        risks=[candidate.risk] if candidate.risk else [],
+        action_bias='positive' if '买' in candidate.action else 'neutral',
+    ))
+    return signals
+
+
 def run_market(market: str, approval_mode: str = "research") -> Path:
     repo_root = Path(__file__).resolve().parents[1]
 
     scoring_cfg = load_yaml(repo_root / "configs/scoring/score_model.yaml")
     weights = scoring_cfg["markets"][market]["weights"]
     scorer = MarketScorer(weights)
+
+    practical_weights = load_yaml(repo_root / "configs/scoring/practical_score_model.yaml")["default_weights"]
+    practical_model = PracticalScoringModel(practical_weights)
 
     file_provider = FileCandidateProvider(repo_root / "state" / "runs" / "candidate_inputs.json")
     provider = CompositeCandidateProvider([file_provider, DemoCandidateProvider()])
@@ -114,6 +148,26 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     for candidate in candidates:
         factor_map = build_factor_map(market, candidate.symbol, [e.source for e in candidate.evidence])
         candidate.confidence = scorer.to_confidence(scorer.score(factor_map))
+
+    account_provider = FutuAccountProvider()
+    watchlist_codes = [c.symbol for c in candidates[:5]]
+    quote_summary = account_provider.get_watchlist_snapshot(watchlist_codes)
+    quote_items = quote_summary.get('items', [])
+
+    hub = EvaluationHub()
+    rt_adapter = RealtimeWatchlistAdapter()
+    all_eval_signals = []
+    for candidate in candidates:
+        all_eval_signals.extend(to_evaluation_signals(market, candidate))
+    all_eval_signals.extend(rt_adapter.from_quote_items(market, quote_items))
+    bundles = {f"{b.symbol}:{b.market}": b for b in hub.merge(all_eval_signals)}
+
+    for candidate in candidates:
+        bundle = bundles.get(f"{candidate.symbol}:{candidate.market}")
+        if bundle:
+            practical = practical_model.score_bundle(bundle)
+            candidate.confidence = max(candidate.confidence or 0, practical.confidence)
+            candidate.rationale = f"{candidate.rationale} | 实操评分: {practical.summary}"
 
     ranker = CandidateRanker()
     top_candidates = ranker.top_n(candidates, n=5)
@@ -150,15 +204,13 @@ def run_market(market: str, approval_mode: str = "research") -> Path:
     futu_draft_path = FutuDraftStore(repo_root / "state/runs").save(market, futu_drafts)
     opend_probe = OpenDClient().probe()
 
-    account_provider = FutuAccountProvider()
     account_summary = account_provider.get_summary()
-    watchlist_codes = [d.code for d in futu_drafts[:5]]
-    quote_summary = account_provider.get_watchlist_snapshot(watchlist_codes)
 
     summary = []
     summary.extend(format_account_block(account_summary))
     summary.extend(format_quote_block(quote_summary))
     summary.extend(decision.summary)
+    summary.append(f"EvaluationHub signals={len(all_eval_signals)} bundles={len(bundles)}")
     summary.append(f"ApprovalGate：mode={approval.mode}, allowed={approval.allowed}, reason={approval.reason}, log={approval_path.name}")
     if approval.required_actions:
         summary.append("审批要求：" + ", ".join(approval.required_actions))
