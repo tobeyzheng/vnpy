@@ -1,0 +1,15 @@
+﻿{
+    "expected_stop":  "HK close 16:00",
+    "pid":  35504,
+    "max_symbols":  20,
+    "task":  "hk_futu_sim_session",
+    "max_loss":  10000,
+    "interval_seconds":  300,
+    "stdout":  "e:\\local\\vnpy\\state\\runs\\hk_futu_sim_session_20260508_102642.out.log",
+    "max_new_orders":  10,
+    "started_at":  "2026-05-08T10:26:42",
+    "stderr":  "e:\\local\\vnpy\\state\\runs\\hk_futu_sim_session_20260508_102642.err.log",
+    "max_order_value":  50000,
+    "max_budget":  500000,
+    "futu_trade_env":  "SIMULATE"
+}

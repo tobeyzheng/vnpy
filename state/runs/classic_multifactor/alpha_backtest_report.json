@@ -1,0 +1,10 @@
+{
+  "strategy": "classic_multifactor_alpha_with_external_overlay",
+  "status": "dependency_missing",
+  "message": "AlphaStrategy backtest requires optional dependency: polars",
+  "next_step": "install vnpy alpha optional dependencies or use cta-backtest mode first",
+  "symbols": [
+    "NVDA.US",
+    "MSFT.US"
+  ]
+}

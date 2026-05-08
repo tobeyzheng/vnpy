@@ -36,7 +36,22 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-new-orders", type=int, default=5)
     parser.add_argument("--quote-retries", type=int, default=3)
     parser.add_argument("--quote-retry-sleep", type=float, default=5.0)
+    parser.add_argument("--trend-budget-pct", type=float, default=0.25, help="追趋势资金袖占总预算比例")
+    parser.add_argument("--grid-budget-pct", type=float, default=0.25, help="日内做T/网格资金袖占总预算比例")
+    parser.add_argument("--trend-min-score", type=float, default=68.0, help="追趋势最低 task_score")
+    parser.add_argument("--trend-min-change-pct", type=float, default=0.8, help="追趋势最低日内涨幅")
+    parser.add_argument("--trend-max-change-pct", type=float, default=7.0, help="追趋势最高日内涨幅，避免追过热")
+    parser.add_argument("--trend-fallback-min-raw-score", type=float, default=0.65, help="change_pct 缺失时趋势试单最低 raw_score")
+    parser.add_argument("--trend-fallback-min-turnover", type=float, default=2e9, help="change_pct 缺失时趋势试单最低成交额")
+    parser.add_argument("--trend-fallback-order-pct", type=float, default=0.5, help="change_pct 缺失时趋势试单使用单笔上限比例")
+    parser.add_argument("--grid-step-pct", type=float, default=1.2, help="网格下跌买入触发幅度")
+    parser.add_argument("--grid-take-profit-pct", type=float, default=1.8, help="网格上涨卖出触发幅度")
+
+    parser.add_argument("--grid-trade-pct", type=float, default=0.25, help="每次做T最多处理持仓比例")
+    parser.add_argument("--grid-max-order-value", type=float, default=0.0, help="单笔网格买入上限；0 表示 max_order_value * grid_trade_pct")
+    parser.add_argument("--max-symbol-value-pct", type=float, default=0.20, help="单标的最大持仓市值占总预算比例")
     parser.add_argument("--force-once", action="store_true", help="只执行一次评估，用于验证")
+
     return parser
 
 
@@ -103,8 +118,10 @@ class HkFutuSimSession:
         round_info: dict[str, Any] = {
             "time": datetime.now().isoformat(timespec="seconds"),
             "phase": "evaluate_and_trade",
+            "budget_plan": self._budget_plan(snapshot),
             "candidates": [],
             "evaluations": [],
+            "grid_evaluations": [],
             "decisions": [],
             "submitted_orders": [],
             "summary": {},
@@ -118,13 +135,14 @@ class HkFutuSimSession:
         candidates = self._candidate_rows(snapshot)
         round_info["candidates"] = [{"symbol": row.get("symbol"), "name": row.get("name"), "raw_score": row.get("raw_score"), "rationale": row.get("rationale")} for row in candidates]
         self._emit({"action": "candidate_loaded", "candidate_count": len(candidates), "symbols": [row.get("symbol") for row in candidates]})
-        if not candidates:
-            round_info["summary"] = {"decision": "skip", "reason": "no_candidates"}
+        if not candidates and not self._hk_positions(snapshot.get("positions", {}).get("items", [])):
+            round_info["summary"] = {"decision": "skip", "reason": "no_candidates_or_positions"}
             self.rounds.append(round_info)
-            self._emit({"action": "skip", "reason": "no_candidates"})
+            self._emit({"action": "skip", "reason": "no_candidates_or_positions"})
             return
 
-        quote_rows = self._safe_get_snapshot([row["symbol"] for row in candidates])
+        quote_symbols = sorted({*[row["symbol"] for row in candidates], *self._held_symbols(snapshot)})
+        quote_rows = self._safe_get_snapshot(quote_symbols)
         round_info["quote_count"] = len(quote_rows)
         if not quote_rows:
             round_info["summary"] = {"decision": "skip", "reason": "quote_snapshot_unavailable"}
@@ -141,32 +159,179 @@ class HkFutuSimSession:
                 round_info["evaluations"].append({"symbol": symbol, "decision": "missing_quote"})
                 continue
             evaluation = self.strategy_engine.evaluate_candidate(candidate=candidate, quote=quote, flow_divisor=2e9, has_event_catalyst=self._has_catalyst(candidate))
+            strategy_id = self._strategy_id(evaluation)
+            change_pct = self._float(quote.get("change_pct"), 0.0)
+            change_pct_missing = bool(quote.get("_change_pct_missing"))
+            turnover = self._float(quote.get("turnover"), 0.0)
+            trend_mode = self._trend_candidate_mode(evaluation, change_pct, change_pct_missing, turnover)
             evaluation_row = {
+
                 "symbol": symbol,
                 "name": candidate.get("name"),
-                "price": quote.get("ask_price") or quote.get("last_price") or quote.get("price"),
+                "price": self._quote_price(quote, "BUY"),
                 "change_pct": quote.get("change_pct"),
+                "change_pct_missing": change_pct_missing,
                 "turnover": quote.get("turnover"),
+
                 "task_score": evaluation.task_score,
                 "raw_score": evaluation.raw_score,
                 "entry_action": evaluation.entry_timing.action,
                 "entry_reason": evaluation.entry_timing.reason,
                 "allow_trade": evaluation.signal.allow_trade,
                 "target_position_pct": evaluation.signal.target_position_pct,
+                "strategy_id": strategy_id,
+                "trend_mode": trend_mode,
+                "trend_eligible": trend_mode != "none",
                 "strategy_selection": evaluation.metadata.get("strategy_selection", {}),
+
                 "risk_flags": evaluation.signal.risk_flags,
             }
             round_info["evaluations"].append(evaluation_row)
-            ranked.append({"candidate": candidate, "quote": quote, "evaluation": evaluation, "score": evaluation.task_score})
+            ranked.append({"candidate": candidate, "quote": quote, "evaluation": evaluation, "score": evaluation.task_score, "strategy_id": strategy_id, "change_pct": change_pct, "change_pct_missing": change_pct_missing, "turnover": turnover, "trend_mode": trend_mode})
+
         ranked.sort(key=lambda item: item["score"], reverse=True)
         top_symbols = [item["candidate"]["symbol"] for item in ranked[: self.args.max_new_orders]]
         self._emit({"action": "evaluation_done", "evaluated_count": len(round_info["evaluations"]), "top_symbols": top_symbols})
 
-        for item in ranked[: self.args.max_new_orders]:
+        submitted_symbols: set[str] = set()
+        order_slots = max(int(self.args.max_new_orders), 0)
+        order_slots = self._run_grid_sleeve(snapshot, quote_map, round_info, submitted_symbols, order_slots)
+        if round_info["submitted_orders"]:
+            snapshot = self._snapshot()
+            round_info["budget_plan_after_grid"] = self._budget_plan(snapshot)
+
+        order_slots = self._run_trend_sleeve(snapshot, ranked, round_info, submitted_symbols, order_slots)
+        if len(round_info["submitted_orders"]) > 0:
+            snapshot = self._snapshot()
+            round_info["budget_plan_after_trend"] = self._budget_plan(snapshot)
+
+        self._run_core_sleeve(snapshot, ranked, round_info, submitted_symbols, order_slots)
+
+        submitted_count = len(round_info["submitted_orders"])
+        round_info["summary"] = {
+            "decision": "submitted" if submitted_count else "no_submit",
+            "submitted_count": submitted_count,
+            "decision_count": len(round_info["decisions"]),
+            "grid_decision_count": len(round_info["grid_evaluations"]),
+            "budget_plan": self._budget_plan(self._snapshot()),
+        }
+        self.rounds.append(round_info)
+        self._emit({"action": "round_decision_done", **round_info["summary"]})
+
+    def _run_grid_sleeve(self, snapshot: dict[str, Any], quote_map: dict[str, dict[str, Any]], round_info: dict[str, Any], submitted_symbols: set[str], order_slots: int) -> int:
+        if order_slots <= 0 or self._grid_budget_cap() <= 0:
+            return order_slots
+        grid_remaining = self._remaining_sleeve_buy_budget("grid", self._grid_budget_cap())
+        for pos in self._hk_positions(snapshot.get("positions", {}).get("items", [])):
+            if order_slots <= 0:
+                break
+            symbol = self._to_vt_symbol(pos.get("code") or pos.get("symbol", ""))
+            quote = quote_map.get(symbol)
+            price = self._quote_price(quote or {}, "SELL") or self._float(pos.get("nominal_price"), 0.0)
+            cost = self._float(pos.get("cost_price"), 0.0)
+            qty = int(pos.get("qty") or 0)
+            can_sell_qty = int(pos.get("can_sell_qty") or 0)
+            lot = self._lot_size(quote or {})
+            pnl_pct = (price / cost - 1.0) * 100 if price > 0 and cost > 0 else 0.0
+            grid_row = {"symbol": symbol, "price": price, "cost_price": cost, "qty": qty, "can_sell_qty": can_sell_qty, "pnl_pct": round(pnl_pct, 4), "lot_size": lot}
+            if price <= 0 or qty <= 0:
+                grid_row.update({"final_decision": "skip", "reason": "invalid_position_price_or_qty"})
+                round_info["grid_evaluations"].append(grid_row)
+                continue
+            if pnl_pct >= float(self.args.grid_take_profit_pct) and can_sell_qty > 0:
+                sell_qty = self._round_lot(min(can_sell_qty, max(lot, int(can_sell_qty * self._bounded_pct(self.args.grid_trade_pct, 0.25)))), lot)
+                if sell_qty <= 0:
+                    grid_row.update({"final_decision": "skip", "reason": "sell_qty_zero"})
+                    round_info["grid_evaluations"].append(grid_row)
+                    continue
+                grid_row.update({"final_decision": "submit_sell", "reason": "grid_take_profit", "qty": sell_qty, "trigger_pct": self.args.grid_take_profit_pct})
+                submitted = self._submit(symbol, "SELL", sell_qty, price * 0.998, "grid_take_profit", sleeve="grid")
+                if submitted:
+                    round_info["submitted_orders"].append(submitted)
+                    submitted_symbols.add(symbol)
+                    order_slots -= 1
+                round_info["grid_evaluations"].append(grid_row)
+                continue
+            if pnl_pct <= -float(self.args.grid_step_pct) and grid_remaining > 0:
+                total_remaining = self._remaining_total_budget(snapshot)
+                symbol_remaining = self._remaining_symbol_budget(snapshot, symbol, price)
+                order_value = min(self._grid_order_value_cap(), grid_remaining, total_remaining, symbol_remaining)
+                buy_qty = self._round_lot(int(order_value // price), lot)
+                grid_row.update({"order_value": round(order_value, 4), "qty": buy_qty, "trigger_pct": -float(self.args.grid_step_pct)})
+                if buy_qty <= 0:
+                    grid_row.update({"final_decision": "skip", "reason": "grid_buy_qty_zero"})
+                    round_info["grid_evaluations"].append(grid_row)
+                    continue
+                grid_row.update({"final_decision": "submit_buy", "reason": "grid_pullback_buy"})
+                submitted = self._submit(symbol, "BUY", buy_qty, price * 1.002, "grid_pullback_buy", sleeve="grid")
+                if submitted:
+                    round_info["submitted_orders"].append(submitted)
+                    submitted_symbols.add(symbol)
+                    grid_remaining = max(grid_remaining - buy_qty * price, 0.0)
+                    order_slots -= 1
+                round_info["grid_evaluations"].append(grid_row)
+                continue
+            grid_row.update({"final_decision": "hold", "reason": "inside_grid_band", "buy_trigger_pct": -float(self.args.grid_step_pct), "sell_trigger_pct": float(self.args.grid_take_profit_pct)})
+            round_info["grid_evaluations"].append(grid_row)
+        self._emit({"action": "grid_evaluation_done", "evaluated_count": len(round_info["grid_evaluations"]), "remaining_grid_budget": round(grid_remaining, 4), "remaining_order_slots": order_slots})
+        return order_slots
+
+    def _run_trend_sleeve(self, snapshot: dict[str, Any], ranked: list[dict[str, Any]], round_info: dict[str, Any], submitted_symbols: set[str], order_slots: int) -> int:
+        trend_remaining = self._remaining_sleeve_buy_budget("trend", self._trend_budget_cap())
+        for item in ranked:
+            if order_slots <= 0 or trend_remaining <= 0:
+                break
             evaluation = item["evaluation"]
             symbol = item["candidate"]["symbol"]
-            price = float(item["quote"].get("ask_price") or item["quote"].get("last_price") or item["quote"].get("price") or 0)
-            decision = {"symbol": symbol, "score": evaluation.task_score, "allow_trade": evaluation.signal.allow_trade, "price": price}
+            price = self._quote_price(item["quote"], "BUY")
+            trend_mode = str(item.get("trend_mode") or "none")
+            decision = {"sleeve": "trend", "symbol": symbol, "score": evaluation.task_score, "strategy_id": item.get("strategy_id"), "change_pct": item.get("change_pct"), "change_pct_missing": item.get("change_pct_missing"), "trend_mode": trend_mode, "allow_trade": evaluation.signal.allow_trade, "price": price}
+
+            if symbol in submitted_symbols:
+                decision.update({"final_decision": "skip", "reason": "already_submitted_this_round"})
+                round_info["decisions"].append(decision)
+                continue
+            if trend_mode == "none":
+                decision.update({"final_decision": "skip", "reason": "not_trend_eligible"})
+                round_info["decisions"].append(decision)
+                continue
+            order_cap = float(self.args.max_order_value)
+            if trend_mode == "fallback_missing_change_pct":
+                order_cap *= self._bounded_pct(self.args.trend_fallback_order_pct, 0.5)
+            order_value = min(order_cap, trend_remaining, self._remaining_total_budget(snapshot), self._remaining_symbol_budget(snapshot, symbol, price))
+
+            qty = self._round_lot(int(order_value // price) if price > 0 else 0, self._lot_size(item["quote"]))
+            decision.update({"order_value": round(order_value, 4), "qty": qty, "trend_remaining_before": round(trend_remaining, 4)})
+            if price <= 0 or qty <= 0:
+                decision.update({"final_decision": "skip", "reason": "trend_qty_zero_or_invalid_price"})
+                round_info["decisions"].append(decision)
+                continue
+            submit_reason = f"trend_sleeve:{trend_mode}:{evaluation.signal.reason}"
+            decision.update({"final_decision": "submit", "reason": submit_reason})
+            submitted = self._submit(symbol, "BUY", qty, price * 1.002, submit_reason, sleeve="trend")
+
+            if submitted:
+                round_info["submitted_orders"].append(submitted)
+                submitted_symbols.add(symbol)
+                trend_remaining = max(trend_remaining - qty * price, 0.0)
+                order_slots -= 1
+            round_info["decisions"].append(decision)
+        self._emit({"action": "trend_sleeve_done", "remaining_trend_budget": round(trend_remaining, 4), "remaining_order_slots": order_slots})
+        return order_slots
+
+    def _run_core_sleeve(self, snapshot: dict[str, Any], ranked: list[dict[str, Any]], round_info: dict[str, Any], submitted_symbols: set[str], order_slots: int) -> int:
+        core_remaining = self._remaining_sleeve_buy_budget("core", self._core_budget_cap())
+        for item in ranked:
+            if order_slots <= 0 or core_remaining <= 0:
+                break
+            evaluation = item["evaluation"]
+            symbol = item["candidate"]["symbol"]
+            price = self._quote_price(item["quote"], "BUY")
+            decision = {"sleeve": "core", "symbol": symbol, "score": evaluation.task_score, "allow_trade": evaluation.signal.allow_trade, "price": price}
+            if symbol in submitted_symbols:
+                decision.update({"final_decision": "skip", "reason": "already_submitted_this_round"})
+                round_info["decisions"].append(decision)
+                continue
             if price <= 0:
                 decision.update({"final_decision": "skip", "reason": "invalid_price"})
                 round_info["decisions"].append(decision)
@@ -180,40 +345,165 @@ class HkFutuSimSession:
                 decision.update({"final_decision": "skip", "reason": "already_held", "held_qty": held_qty})
                 round_info["decisions"].append(decision)
                 continue
-            used_budget = self._used_budget(snapshot)
-            if used_budget >= self.args.max_budget:
-                decision.update({"final_decision": "stop", "reason": "max_budget_reached", "used_budget": used_budget})
-                round_info["decisions"].append(decision)
-                break
-            order_value = min(self.args.max_order_value, self.args.max_budget - used_budget)
-            qty = int(order_value // price)
-            decision.update({"order_value": round(order_value, 4), "qty": qty, "used_budget_before": round(used_budget, 4)})
+            order_value = min(self.args.max_order_value, core_remaining, self._remaining_total_budget(snapshot), self._remaining_symbol_budget(snapshot, symbol, price))
+            qty = self._round_lot(int(order_value // price), self._lot_size(item["quote"]))
+            decision.update({"order_value": round(order_value, 4), "qty": qty, "core_remaining_before": round(core_remaining, 4)})
             if qty <= 0:
                 decision.update({"final_decision": "skip", "reason": "qty_zero"})
                 round_info["decisions"].append(decision)
                 continue
-            decision.update({"final_decision": "submit", "reason": evaluation.signal.reason})
-            submitted = self._submit(symbol, "BUY", qty, price * 1.002, evaluation.signal.reason)
+            decision.update({"final_decision": "submit", "reason": f"core_sleeve:{evaluation.signal.reason}"})
+            submitted = self._submit(symbol, "BUY", qty, price * 1.002, f"core_sleeve:{evaluation.signal.reason}", sleeve="core")
             if submitted:
                 round_info["submitted_orders"].append(submitted)
+                submitted_symbols.add(symbol)
+                core_remaining = max(core_remaining - qty * price, 0.0)
+                order_slots -= 1
             round_info["decisions"].append(decision)
-            snapshot = self._snapshot()
+        self._emit({"action": "core_sleeve_done", "remaining_core_budget": round(core_remaining, 4), "remaining_order_slots": order_slots})
+        return order_slots
 
-        submitted_count = len(round_info["submitted_orders"])
-        round_info["summary"] = {"decision": "submitted" if submitted_count else "no_submit", "submitted_count": submitted_count, "decision_count": len(round_info["decisions"])}
-        self.rounds.append(round_info)
-        self._emit({"action": "round_decision_done", **round_info["summary"]})
 
+
+
+
+    def _budget_plan(self, snapshot: dict[str, Any]) -> dict[str, float]:
+
+        used = self._used_budget(snapshot)
+        trend_cap = self._trend_budget_cap()
+        grid_cap = self._grid_budget_cap()
+        core_cap = self._core_budget_cap()
+        return {
+            "max_budget": float(self.args.max_budget),
+            "used_budget": round(used, 4),
+            "remaining_total": round(max(float(self.args.max_budget) - used, 0.0), 4),
+            "core_cap": round(core_cap, 4),
+            "trend_cap": round(trend_cap, 4),
+            "grid_cap": round(grid_cap, 4),
+            "core_session_buy": round(self._session_buy_value("core"), 4),
+            "trend_session_buy": round(self._session_buy_value("trend"), 4),
+            "grid_session_buy": round(self._session_buy_value("grid"), 4),
+            "grid_session_sell": round(self._session_sell_value("grid"), 4),
+        }
+
+    def _core_budget_cap(self) -> float:
+        trend = self._bounded_pct(self.args.trend_budget_pct, 0.25)
+        grid = self._bounded_pct(self.args.grid_budget_pct, 0.25)
+        return max(float(self.args.max_budget) * max(1.0 - trend - grid, 0.0), 0.0)
+
+    def _trend_budget_cap(self) -> float:
+        return max(float(self.args.max_budget) * self._bounded_pct(self.args.trend_budget_pct, 0.25), 0.0)
+
+    def _grid_budget_cap(self) -> float:
+        return max(float(self.args.max_budget) * self._bounded_pct(self.args.grid_budget_pct, 0.25), 0.0)
+
+    def _grid_order_value_cap(self) -> float:
+        configured = float(self.args.grid_max_order_value or 0.0)
+        if configured > 0:
+            return min(configured, float(self.args.max_order_value))
+        return max(float(self.args.max_order_value) * self._bounded_pct(self.args.grid_trade_pct, 0.25), 0.0)
+
+    def _remaining_total_budget(self, snapshot: dict[str, Any]) -> float:
+        return max(float(self.args.max_budget) - self._used_budget(snapshot), 0.0)
+
+    def _remaining_sleeve_buy_budget(self, sleeve: str, cap: float) -> float:
+        return max(float(cap) - self._session_buy_value(sleeve), 0.0)
+
+    def _remaining_symbol_budget(self, snapshot: dict[str, Any], symbol: str, price: float) -> float:
+        symbol_cap = max(float(self.args.max_budget) * self._bounded_pct(self.args.max_symbol_value_pct, 0.20), 0.0)
+        current_value = self._held_qty(snapshot, symbol) * max(float(price), 0.0)
+        return max(symbol_cap - current_value, 0.0)
+
+    def _session_buy_value(self, sleeve: str) -> float:
+        return sum(self._order_value(order) for order in self.orders if order.get("sleeve") == sleeve and str(order.get("side", "")).upper() == "BUY" and order.get("success"))
+
+    def _session_sell_value(self, sleeve: str) -> float:
+        return sum(self._order_value(order) for order in self.orders if order.get("sleeve") == sleeve and str(order.get("side", "")).upper() == "SELL" and order.get("success"))
+
+    def _order_value(self, order: dict[str, Any]) -> float:
+        return max(float(order.get("submitted_price") or order.get("input_price") or 0.0), 0.0) * max(int(order.get("qty") or 0), 0)
+
+    def _strategy_id(self, evaluation: Any) -> str:
+        selection = evaluation.metadata.get("strategy_selection", {}) if isinstance(evaluation.metadata, dict) else {}
+        return str(selection.get("strategy_id") or evaluation.entry_timing.action or "")
+
+    def _trend_candidate_mode(self, evaluation: Any, change_pct: float, change_pct_missing: bool, turnover: float) -> str:
+        strategy_id = self._strategy_id(evaluation)
+        if (
+            evaluation.signal.allow_trade
+            and strategy_id in {"trend_following", "breakout_momentum"}
+            and float(evaluation.task_score) >= float(self.args.trend_min_score)
+            and float(self.args.trend_min_change_pct) <= float(change_pct) <= float(self.args.trend_max_change_pct)
+        ):
+            return "rules_confirmed"
+        if (
+            change_pct_missing
+            and float(evaluation.task_score) >= float(self.args.trend_min_score)
+            and float(evaluation.raw_score) >= float(self.args.trend_fallback_min_raw_score)
+            and float(turnover) >= float(self.args.trend_fallback_min_turnover)
+        ):
+            return "fallback_missing_change_pct"
+        return "none"
+
+    def _held_symbols(self, snapshot: dict[str, Any]) -> list[str]:
+
+        return [self._to_vt_symbol(p.get("code") or p.get("symbol", "")) for p in self._hk_positions(snapshot.get("positions", {}).get("items", [])) if int(p.get("qty") or 0) > 0]
+
+    def _quote_price(self, quote: dict[str, Any], side: str) -> float:
+        if side.upper() == "SELL":
+            return self._float(quote.get("bid_price") or quote.get("last_price") or quote.get("price"), 0.0)
+        return self._float(quote.get("ask_price") or quote.get("last_price") or quote.get("price"), 0.0)
+
+    def _lot_size(self, quote: dict[str, Any]) -> int:
+        try:
+            lot = int(float(quote.get("lot_size") or 100))
+        except (TypeError, ValueError):
+            lot = 100
+        return max(lot, 1)
+
+    def _round_lot(self, qty: int, lot: int) -> int:
+        lot = max(int(lot), 1)
+        return max(int(qty), 0) // lot * lot
+
+    def _bounded_pct(self, value: Any, default: float) -> float:
+        pct = self._float(value, default)
+        return min(max(pct, 0.0), 1.0)
+
+    def _float(self, value: Any, default: float) -> float:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
+
+    def _normalize_quote_row(self, row: dict[str, Any]) -> dict[str, Any]:
+        item = dict(row)
+        last_price = self._float(item.get("last_price") or item.get("price"), 0.0)
+        prev_close = self._float(item.get("prev_close_price") or item.get("prev_close"), 0.0)
+        if item.get("price") in {None, ""} and last_price > 0:
+            item["price"] = last_price
+        if item.get("change_pct") in {None, ""}:
+            if last_price > 0 and prev_close > 0:
+                item["change_pct"] = round((last_price / prev_close - 1.0) * 100, 4)
+                item["_change_pct_missing"] = False
+            else:
+                item["change_pct"] = None
+                item["_change_pct_missing"] = True
+        else:
+            item["change_pct"] = self._float(item.get("change_pct"), 0.0)
+            item["_change_pct_missing"] = False
+        return item
 
     def _safe_get_snapshot(self, codes: list[str]) -> list[dict[str, Any]]:
         clean_codes = [code for code in codes if code]
+
         if not clean_codes:
             return []
         last_error = ""
         for attempt in range(1, max(int(self.args.quote_retries), 1) + 1):
             try:
-                return self.quote_client.get_snapshot(clean_codes)
+                return [self._normalize_quote_row(row) for row in self.quote_client.get_snapshot(clean_codes)]
             except Exception as exc:
+
                 last_error = str(exc)
                 self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "quote_retry", "attempt": attempt, "reason": last_error, "symbols": clean_codes})
                 time.sleep(max(float(self.args.quote_retry_sleep), 0.0))
@@ -233,20 +523,24 @@ class HkFutuSimSession:
             if price > 0:
                 self._submit(symbol, "SELL", qty, price * 0.998, "max_loss_reduce_losing_position")
 
-    def _submit(self, symbol: str, side: str, qty: int, price: float, reason: str) -> dict[str, Any] | None:
+    def _submit(self, symbol: str, side: str, qty: int, price: float, reason: str, *, sleeve: str = "core") -> dict[str, Any] | None:
         request_id = f"hk_futu_sim_{datetime.now().strftime('%Y%m%d%H%M%S')}_{symbol.replace('.', '_')}_{side}"
-        self._emit({"action": "submit_attempt", "request_id": request_id, "symbol": symbol, "side": side, "qty": qty, "price": round(price, 4), "reason": reason})
+        self._emit({"action": "submit_attempt", "request_id": request_id, "sleeve": sleeve, "symbol": symbol, "side": side, "qty": qty, "price": round(price, 4), "reason": reason})
+
         try:
             result = self.trade_client.submit_limit_order(symbol, side, qty, price, reason=reason)
             status = self.trade_client.get_order(result.order_id) if result.order_id else None
         except Exception as exc:
-            self._emit({"action": "submit_failed", "request_id": request_id, "symbol": symbol, "side": side, "qty": qty, "reason": str(exc)})
+            self._emit({"action": "submit_failed", "request_id": request_id, "sleeve": sleeve, "symbol": symbol, "side": side, "qty": qty, "reason": str(exc)})
+
             return None
         payload = {
             "time": datetime.now().isoformat(timespec="seconds"),
             "request_id": request_id,
+            "sleeve": sleeve,
             "symbol": symbol,
             "side": side,
+
             "qty": qty,
             "input_price": round(price, 4),
             "submitted_price": result.submitted_price,
@@ -259,7 +553,8 @@ class HkFutuSimSession:
             "status_check": None if not status else asdict(status),
         }
         self.orders.append(payload)
-        self._emit({"action": "submit_result", "request_id": request_id, "symbol": symbol, "success": result.success, "message": result.message, "order_id": result.order_id, "order_status": result.status, "dealt_qty": result.dealt_qty})
+        self._emit({"action": "submit_result", "request_id": request_id, "sleeve": sleeve, "symbol": symbol, "success": result.success, "message": result.message, "order_id": result.order_id, "order_status": result.status, "dealt_qty": result.dealt_qty})
+
         self._record_order_state(payload, reason)
         return payload
 
@@ -307,10 +602,30 @@ class HkFutuSimSession:
             "started_at": self.started_at,
             "updated_at": datetime.now().isoformat(timespec="seconds"),
             "final": final,
-            "constraints": {"max_budget": self.args.max_budget, "max_order_value": self.args.max_order_value, "max_loss": self.args.max_loss},
+            "constraints": {
+                "max_budget": self.args.max_budget,
+                "max_order_value": self.args.max_order_value,
+                "max_loss": self.args.max_loss,
+                "trend_budget_pct": self.args.trend_budget_pct,
+                "grid_budget_pct": self.args.grid_budget_pct,
+                "trend_min_score": self.args.trend_min_score,
+                "trend_min_change_pct": self.args.trend_min_change_pct,
+                "trend_max_change_pct": self.args.trend_max_change_pct,
+                "trend_fallback_min_raw_score": self.args.trend_fallback_min_raw_score,
+                "trend_fallback_min_turnover": self.args.trend_fallback_min_turnover,
+                "trend_fallback_order_pct": self.args.trend_fallback_order_pct,
+                "grid_step_pct": self.args.grid_step_pct,
+                "grid_take_profit_pct": self.args.grid_take_profit_pct,
+
+                "grid_trade_pct": self.args.grid_trade_pct,
+                "grid_max_order_value": self.args.grid_max_order_value,
+                "max_symbol_value_pct": self.args.max_symbol_value_pct,
+            },
+            "budget_plan": self._budget_plan(snapshot),
             "start_equity": self.start_equity,
             "current_equity": self._equity(snapshot),
             "current_loss": self._current_loss(snapshot),
+
             "used_budget": self._used_budget(snapshot),
             "account": snapshot.get("account"),
             "positions": snapshot.get("positions"),

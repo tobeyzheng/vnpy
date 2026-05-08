@@ -1,5 +1,494 @@
 {
-  "started_at": "2026-05-08T07:23:10",
-  "last_update": "2026-05-08T07:23:12",
-  "orders": []
+  "started_at": "2026-05-08T14:08:40",
+  "last_update": "2026-05-08T15:59:07",
+  "orders": [],
+  "latest_round": {
+    "time": "2026-05-08T15:59:07",
+    "phase": "evaluate_and_trade",
+    "budget_plan": {
+      "max_budget": 500000.0,
+      "used_budget": 13920.0,
+      "remaining_total": 486080.0,
+      "core_cap": 250000.0,
+      "trend_cap": 125000.0,
+      "grid_cap": 125000.0,
+      "core_session_buy": 0,
+      "trend_session_buy": 0,
+      "grid_session_buy": 0,
+      "grid_session_sell": 0
+    },
+    "candidates": [
+      {
+        "symbol": "00700.HK",
+        "name": "Tencent Holdings",
+        "raw_score": 0.91,
+        "rationale": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。"
+      },
+      {
+        "symbol": "01810.HK",
+        "name": "Xiaomi Group",
+        "raw_score": 0.84,
+        "rationale": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。"
+      },
+      {
+        "symbol": "03690.HK",
+        "name": "Meituan",
+        "raw_score": 0.82,
+        "rationale": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。"
+      },
+      {
+        "symbol": "01299.HK",
+        "name": "AIA Group",
+        "raw_score": 0.79,
+        "rationale": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。"
+      },
+      {
+        "symbol": "00388.HK",
+        "name": "Hong Kong Exchanges and Clearing",
+        "raw_score": 0.77,
+        "rationale": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+      },
+      {
+        "symbol": "09988.HK",
+        "name": "09988.HK",
+        "raw_score": 0.62,
+        "rationale": "existing_or_fallback_hk_candidate"
+      },
+      {
+        "symbol": "01024.HK",
+        "name": "01024.HK",
+        "raw_score": 0.62,
+        "rationale": "existing_or_fallback_hk_candidate"
+      },
+      {
+        "symbol": "09618.HK",
+        "name": "09618.HK",
+        "raw_score": 0.62,
+        "rationale": "existing_or_fallback_hk_candidate"
+      }
+    ],
+    "evaluations": [
+      {
+        "symbol": "00700.HK",
+        "name": "Tencent Holdings",
+        "price": 472.8,
+        "change_pct": null,
+        "turnover": 10888999449.0,
+        "task_score": 87.59,
+        "raw_score": 0.7159,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "01810.HK",
+        "name": "Xiaomi Group",
+        "price": 31.72,
+        "change_pct": null,
+        "turnover": 3952066477.0,
+        "task_score": 75.72,
+        "raw_score": 0.6577,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "03690.HK",
+        "name": "Meituan",
+        "price": 84.0,
+        "change_pct": null,
+        "turnover": 1870312113.0,
+        "task_score": 71.96,
+        "raw_score": 0.6409,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "01299.HK",
+        "name": "AIA Group",
+        "price": 86.65,
+        "change_pct": null,
+        "turnover": 2373769528.0,
+        "task_score": 71.61,
+        "raw_score": 0.6324,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "00388.HK",
+        "name": "Hong Kong Exchanges and Clearing",
+        "price": 424.0,
+        "change_pct": null,
+        "turnover": 1245205901.0,
+        "task_score": 65.56,
+        "raw_score": 0.5831,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "09988.HK",
+        "name": "09988.HK",
+        "price": 139.3,
+        "change_pct": null,
+        "turnover": 7597057769.0,
+        "task_score": 68.24,
+        "raw_score": 0.5464,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "01024.HK",
+        "name": "01024.HK",
+        "price": 53.1,
+        "change_pct": null,
+        "turnover": 8769916072.0,
+        "task_score": 69.41,
+        "raw_score": 0.5464,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      },
+      {
+        "symbol": "09618.HK",
+        "name": "09618.HK",
+        "price": 118.5,
+        "change_pct": null,
+        "turnover": 978516089.0,
+        "task_score": 56.31,
+        "raw_score": 0.4933,
+        "entry_action": "watch_only",
+        "entry_reason": "入场条件不足，先观察",
+        "allow_trade": false,
+        "target_position_pct": 0.0,
+        "strategy_id": "watch_only",
+        "trend_eligible": false,
+        "strategy_selection": {
+          "strategy_id": "watch_only",
+          "allow_trade": false,
+          "confidence": 0.68,
+          "reason": "入场条件不足，先观察",
+          "source": "timing_fallback",
+          "risk_flags": [],
+          "metadata": {
+            "invalidator": "等待更多确认信号"
+          }
+        },
+        "risk_flags": []
+      }
+    ],
+    "grid_evaluations": [
+      {
+        "symbol": "09988.HK",
+        "price": 139.2,
+        "cost_price": 140.2,
+        "qty": 100,
+        "can_sell_qty": 100,
+        "pnl_pct": -0.7133,
+        "lot_size": 100,
+        "final_decision": "hold",
+        "reason": "inside_grid_band",
+        "buy_trigger_pct": -1.2,
+        "sell_trigger_pct": 1.8
+      }
+    ],
+    "decisions": [
+      {
+        "sleeve": "trend",
+        "symbol": "00700.HK",
+        "score": 87.59,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 472.8,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "01810.HK",
+        "score": 75.72,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 31.72,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "03690.HK",
+        "score": 71.96,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 84.0,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "01299.HK",
+        "score": 71.61,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 86.65,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "01024.HK",
+        "score": 69.41,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 53.1,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "09988.HK",
+        "score": 68.24,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 139.3,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "00388.HK",
+        "score": 65.56,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 424.0,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "trend",
+        "symbol": "09618.HK",
+        "score": 56.31,
+        "strategy_id": "watch_only",
+        "change_pct": 0.0,
+        "allow_trade": false,
+        "price": 118.5,
+        "final_decision": "skip",
+        "reason": "not_trend_eligible"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "00700.HK",
+        "score": 87.59,
+        "allow_trade": false,
+        "price": 472.8,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "01810.HK",
+        "score": 75.72,
+        "allow_trade": false,
+        "price": 31.72,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "03690.HK",
+        "score": 71.96,
+        "allow_trade": false,
+        "price": 84.0,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "01299.HK",
+        "score": 71.61,
+        "allow_trade": false,
+        "price": 86.65,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "01024.HK",
+        "score": 69.41,
+        "allow_trade": false,
+        "price": 53.1,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "09988.HK",
+        "score": 68.24,
+        "allow_trade": false,
+        "price": 139.3,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "00388.HK",
+        "score": 65.56,
+        "allow_trade": false,
+        "price": 424.0,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      },
+      {
+        "sleeve": "core",
+        "symbol": "09618.HK",
+        "score": 56.31,
+        "allow_trade": false,
+        "price": 118.5,
+        "final_decision": "skip",
+        "reason": "strategy_blocked",
+        "entry_action": "watch_only"
+      }
+    ],
+    "submitted_orders": [],
+    "summary": {
+      "decision": "no_submit",
+      "submitted_count": 0,
+      "decision_count": 16,
+      "grid_decision_count": 1,
+      "budget_plan": {
+        "max_budget": 500000.0,
+        "used_budget": 13920.0,
+        "remaining_total": 486080.0,
+        "core_cap": 250000.0,
+        "trend_cap": 125000.0,
+        "grid_cap": 125000.0,
+        "core_session_buy": 0,
+        "trend_session_buy": 0,
+        "grid_session_buy": 0,
+        "grid_session_sell": 0
+      }
+    },
+    "quote_count": 8
+  }
 }

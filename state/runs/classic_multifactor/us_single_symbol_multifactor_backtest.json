@@ -1,0 +1,2654 @@
+{
+  "report_path": "E:\\local\\vnpy\\state\\runs\\classic_multifactor\\us_single_symbol_multifactor_backtest.json",
+  "mode": "backtest",
+  "strategy": "classic_multifactor_no_llm_vnpy_template_v2",
+  "symbol": "NVDA.US",
+  "vt_symbol": "NVDA.SMART",
+  "futu_code": "US.NVDA",
+  "start": "2024-01-01",
+  "end": "2024-12-31",
+  "params": {
+    "mode": "backtest",
+    "symbol": "NVDA.US",
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "capital": 20000.0,
+    "max_order_value": 5000.0,
+    "max_position_pct": 0.35,
+    "fast_window": 10,
+    "slow_window": 60,
+    "momentum_window": 20,
+    "atr_window": 14,
+    "entry_score": 0.62,
+    "exit_score": 0.46,
+    "stop_loss_pct": 0.08,
+    "take_profit_pct": 0.22,
+    "trailing_stop_pct": 0.12,
+    "commission_rate": 0.0003,
+    "slippage_bps": 5.0,
+    "fetch_futu_history": true,
+    "submit_sim": false,
+    "output": "",
+    "model_config": {
+      "fast_window": 10,
+      "slow_window": 60,
+      "momentum_window": 20,
+      "atr_window": 14,
+      "entry_score": 0.62,
+      "exit_score": 0.46,
+      "stop_loss_pct": 0.08,
+      "take_profit_pct": 0.22,
+      "trailing_stop_pct": 0.12,
+      "max_position_pct": 0.35,
+      "max_order_value": 5000.0,
+      "commission_rate": 0.0003,
+      "slippage_bps": 5.0
+    }
+  },
+  "status": "ok",
+  "bar_count": 377,
+  "stats": {
+    "initial_capital": 20000.0,
+    "final_equity": 28398.9,
+    "total_return_pct": 41.9945,
+    "annual_return_pct": 32.4967,
+    "max_drawdown_pct": -13.2326,
+    "sharpe_ratio": 1.5163,
+    "trade_count": 4,
+    "buy_count": 2,
+    "sell_count": 2
+  },
+  "latest_factor": {
+    "datetime": "2024-12-30T00:00:00+08:00",
+    "symbol": "NVDA.SMART",
+    "close": 137.445,
+    "fast_ma": 135.0557,
+    "slow_ma": 138.7532,
+    "return_5d": 0.020713,
+    "return_20d": -0.005429,
+    "rsi": 50.357,
+    "volume_ratio": 0.8535,
+    "atr_pct": 0.037297,
+    "trend_score": 0.25,
+    "momentum_score": 0.5071,
+    "volume_score": 0.4268,
+    "low_risk_score": 0.7016,
+    "breakout_score": 0.0,
+    "raw_score": 0.3835,
+    "signal": "exit_or_flat",
+    "reason": "classic_multifactor_exit",
+    "metadata": {
+      "source": "vnpy.ArrayManager",
+      "windows": {
+        "fast_window": 10,
+        "slow_window": 60,
+        "momentum_window": 20,
+        "atr_window": 14
+      }
+    }
+  },
+  "trades": [
+    {
+      "datetime": "2023-10-12T00:00:00+08:00",
+      "side": "buy",
+      "price": 46.7677,
+      "qty": 106,
+      "commission": 1.4872,
+      "cash": 15041.14,
+      "position": 106,
+      "equity": 20013.83,
+      "raw_score": 0.6676,
+      "reason": "classic_multifactor_entry"
+    },
+    {
+      "datetime": "2023-10-18T00:00:00+08:00",
+      "side": "sell",
+      "price": 42.54,
+      "qty": 106,
+      "commission": 1.3528,
+      "cash": 19549.02,
+      "position": 0,
+      "equity": 19549.02,
+      "raw_score": 0.4888,
+      "reason": "classic_multifactor_exit"
+    },
+    {
+      "datetime": "2023-11-13T00:00:00+08:00",
+      "side": "buy",
+      "price": 48.3104,
+      "qty": 103,
+      "commission": 1.4928,
+      "cash": 14571.56,
+      "position": 103,
+      "equity": 19575.92,
+      "raw_score": 0.6908,
+      "reason": "classic_multifactor_entry"
+    },
+    {
+      "datetime": "2024-12-31T00:00:00+08:00",
+      "side": "sell",
+      "price": 134.1789,
+      "qty": 103,
+      "commission": 4.1461,
+      "cash": 28387.84,
+      "position": 0,
+      "equity": 28387.84,
+      "raw_score": 0.3835,
+      "reason": "final_close"
+    }
+  ],
+  "equity_curve": [
+    {
+      "datetime": "2023-10-03T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 43.4866,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-04T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 44.0102,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-05T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 44.6568,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-06T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 45.73,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-09T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 45.2414,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-10T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 45.766,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-11T00:00:00+08:00",
+      "equity": 20000.0,
+      "cash": 20000.0,
+      "position": 0,
+      "close_price": 46.7733,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-12T00:00:00+08:00",
+      "equity": 20013.83,
+      "cash": 15041.14,
+      "position": 106,
+      "close_price": 46.9122,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2023-10-13T00:00:00+08:00",
+      "equity": 19856.64,
+      "cash": 15041.14,
+      "position": 106,
+      "close_price": 45.4292,
+      "drawdown_pct": -0.7854
+    },
+    {
+      "datetime": "2023-10-16T00:00:00+08:00",
+      "equity": 19923.79,
+      "cash": 15041.14,
+      "position": 106,
+      "close_price": 46.0628,
+      "drawdown_pct": -0.4499
+    },
+    {
+      "datetime": "2023-10-17T00:00:00+08:00",
+      "equity": 19695.31,
+      "cash": 15041.14,
+      "position": 106,
+      "close_price": 43.9073,
+      "drawdown_pct": -1.5915
+    },
+    {
+      "datetime": "2023-10-18T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 42.1665,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-19T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 42.0716,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-20T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 41.3581,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-23T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 42.945,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-24T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 43.6325,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-25T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 41.7498,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-26T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 40.2978,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-27T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 40.4717,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-30T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 41.1322,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-10-31T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 40.7515,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-01T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 42.2954,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-02T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 43.4756,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-03T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 44.9736,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-06T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 45.719,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-07T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 45.9229,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-08T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 46.5415,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-09T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 46.9172,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-10T00:00:00+08:00",
+      "equity": 19549.02,
+      "cash": 19549.02,
+      "position": 0,
+      "close_price": 48.3012,
+      "drawdown_pct": -2.3224
+    },
+    {
+      "datetime": "2023-11-13T00:00:00+08:00",
+      "equity": 19575.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.586,
+      "drawdown_pct": -2.188
+    },
+    {
+      "datetime": "2023-11-14T00:00:00+08:00",
+      "equity": 19682.55,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.6213,
+      "drawdown_pct": -1.6552
+    },
+    {
+      "datetime": "2023-11-15T00:00:00+08:00",
+      "equity": 19603.5,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.8538,
+      "drawdown_pct": -2.0502
+    },
+    {
+      "datetime": "2023-11-16T00:00:00+08:00",
+      "equity": 19664.44,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.4454,
+      "drawdown_pct": -1.7458
+    },
+    {
+      "datetime": "2023-11-17T00:00:00+08:00",
+      "equity": 19645.7,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.2636,
+      "drawdown_pct": -1.8394
+    },
+    {
+      "datetime": "2023-11-20T00:00:00+08:00",
+      "equity": 19760.06,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 50.3738,
+      "drawdown_pct": -1.268
+    },
+    {
+      "datetime": "2023-11-21T00:00:00+08:00",
+      "equity": 19712.2,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.9091,
+      "drawdown_pct": -1.5071
+    },
+    {
+      "datetime": "2023-11-22T00:00:00+08:00",
+      "equity": 19585.8,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.682,
+      "drawdown_pct": -2.1387
+    },
+    {
+      "datetime": "2023-11-24T00:00:00+08:00",
+      "equity": 19489.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 47.7426,
+      "drawdown_pct": -2.6221
+    },
+    {
+      "datetime": "2023-11-27T00:00:00+08:00",
+      "equity": 19537.01,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.2083,
+      "drawdown_pct": -2.3824
+    },
+    {
+      "datetime": "2023-11-28T00:00:00+08:00",
+      "equity": 19493.68,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 47.7876,
+      "drawdown_pct": -2.599
+    },
+    {
+      "datetime": "2023-11-29T00:00:00+08:00",
+      "equity": 19526.51,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.1064,
+      "drawdown_pct": -2.4349
+    },
+    {
+      "datetime": "2023-11-30T00:00:00+08:00",
+      "equity": 19385.5,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 46.7373,
+      "drawdown_pct": -3.1395
+    },
+    {
+      "datetime": "2023-12-01T00:00:00+08:00",
+      "equity": 19384.99,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 46.7323,
+      "drawdown_pct": -3.142
+    },
+    {
+      "datetime": "2023-12-04T00:00:00+08:00",
+      "equity": 19255.81,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 45.4782,
+      "drawdown_pct": -3.7875
+    },
+    {
+      "datetime": "2023-12-05T00:00:00+08:00",
+      "equity": 19364.93,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 46.5376,
+      "drawdown_pct": -3.2423
+    },
+    {
+      "datetime": "2023-12-06T00:00:00+08:00",
+      "equity": 19255.5,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 45.4752,
+      "drawdown_pct": -3.789
+    },
+    {
+      "datetime": "2023-12-07T00:00:00+08:00",
+      "equity": 19368.02,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 46.5675,
+      "drawdown_pct": -3.2268
+    },
+    {
+      "datetime": "2023-12-08T00:00:00+08:00",
+      "equity": 19461.69,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 47.477,
+      "drawdown_pct": -2.7588
+    },
+    {
+      "datetime": "2023-12-11T00:00:00+08:00",
+      "equity": 19371.21,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 46.5985,
+      "drawdown_pct": -3.2109
+    },
+    {
+      "datetime": "2023-12-12T00:00:00+08:00",
+      "equity": 19477.23,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 47.6279,
+      "drawdown_pct": -2.6811
+    },
+    {
+      "datetime": "2023-12-13T00:00:00+08:00",
+      "equity": 19521.6,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.0586,
+      "drawdown_pct": -2.4595
+    },
+    {
+      "datetime": "2023-12-14T00:00:00+08:00",
+      "equity": 19548.57,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.3205,
+      "drawdown_pct": -2.3247
+    },
+    {
+      "datetime": "2023-12-15T00:00:00+08:00",
+      "equity": 19604.15,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.8601,
+      "drawdown_pct": -2.047
+    },
+    {
+      "datetime": "2023-12-18T00:00:00+08:00",
+      "equity": 19726.34,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 50.0464,
+      "drawdown_pct": -1.4365
+    },
+    {
+      "datetime": "2023-12-19T00:00:00+08:00",
+      "equity": 19677.65,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.5737,
+      "drawdown_pct": -1.6797
+    },
+    {
+      "datetime": "2023-12-20T00:00:00+08:00",
+      "equity": 19523.96,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.0816,
+      "drawdown_pct": -2.4476
+    },
+    {
+      "datetime": "2023-12-21T00:00:00+08:00",
+      "equity": 19614.45,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.9601,
+      "drawdown_pct": -1.9955
+    },
+    {
+      "datetime": "2023-12-22T00:00:00+08:00",
+      "equity": 19597.98,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.8002,
+      "drawdown_pct": -2.0778
+    },
+    {
+      "datetime": "2023-12-26T00:00:00+08:00",
+      "equity": 19644.2,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.2489,
+      "drawdown_pct": -1.8469
+    },
+    {
+      "datetime": "2023-12-27T00:00:00+08:00",
+      "equity": 19658.4,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.3868,
+      "drawdown_pct": -1.7759
+    },
+    {
+      "datetime": "2023-12-28T00:00:00+08:00",
+      "equity": 19669.21,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.4917,
+      "drawdown_pct": -1.7219
+    },
+    {
+      "datetime": "2023-12-29T00:00:00+08:00",
+      "equity": 19669.21,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.4917,
+      "drawdown_pct": -1.7219
+    },
+    {
+      "datetime": "2024-01-02T00:00:00+08:00",
+      "equity": 19529.83,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 48.1386,
+      "drawdown_pct": -2.4183
+    },
+    {
+      "datetime": "2024-01-03T00:00:00+08:00",
+      "equity": 19468.17,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 47.5399,
+      "drawdown_pct": -2.7264
+    },
+    {
+      "datetime": "2024-01-04T00:00:00+08:00",
+      "equity": 19512.33,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 47.9687,
+      "drawdown_pct": -2.5058
+    },
+    {
+      "datetime": "2024-01-05T00:00:00+08:00",
+      "equity": 19625.46,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 49.067,
+      "drawdown_pct": -1.9405
+    },
+    {
+      "datetime": "2024-01-08T00:00:00+08:00",
+      "equity": 19950.33,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 52.2211,
+      "drawdown_pct": -0.3173
+    },
+    {
+      "datetime": "2024-01-09T00:00:00+08:00",
+      "equity": 20041.64,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 53.1075,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-10T00:00:00+08:00",
+      "equity": 20166.19,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 54.3168,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-11T00:00:00+08:00",
+      "equity": 20214.78,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 54.7885,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-12T00:00:00+08:00",
+      "equity": 20203.25,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 54.6766,
+      "drawdown_pct": -0.057
+    },
+    {
+      "datetime": "2024-01-16T00:00:00+08:00",
+      "equity": 20375.36,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 56.3476,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-17T00:00:00+08:00",
+      "equity": 20341.49,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 56.0188,
+      "drawdown_pct": -0.1662
+    },
+    {
+      "datetime": "2024-01-18T00:00:00+08:00",
+      "equity": 20449.99,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 57.0721,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-19T00:00:00+08:00",
+      "equity": 20695.39,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 59.4547,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-22T00:00:00+08:00",
+      "equity": 20712.17,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 59.6176,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-23T00:00:00+08:00",
+      "equity": 20734.71,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 59.8364,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-24T00:00:00+08:00",
+      "equity": 20887.98,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 61.3245,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-25T00:00:00+08:00",
+      "equity": 20914.23,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 61.5794,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-26T00:00:00+08:00",
+      "equity": 20853.91,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 60.9937,
+      "drawdown_pct": -0.2884
+    },
+    {
+      "datetime": "2024-01-29T00:00:00+08:00",
+      "equity": 21001.52,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 62.4268,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-30T00:00:00+08:00",
+      "equity": 21033.33,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 62.7357,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-01-31T00:00:00+08:00",
+      "equity": 20904.97,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 61.4894,
+      "drawdown_pct": -0.6103
+    },
+    {
+      "datetime": "2024-02-01T00:00:00+08:00",
+      "equity": 21059.37,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 62.9885,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-02T00:00:00+08:00",
+      "equity": 21381.88,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 66.1196,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-05T00:00:00+08:00",
+      "equity": 21708.39,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 69.2896,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-06T00:00:00+08:00",
+      "equity": 21594.24,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 68.1813,
+      "drawdown_pct": -0.5259
+    },
+    {
+      "datetime": "2024-02-07T00:00:00+08:00",
+      "equity": 21787.35,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 70.0562,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-08T00:00:00+08:00",
+      "equity": 21740.2,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 69.5985,
+      "drawdown_pct": -0.2164
+    },
+    {
+      "datetime": "2024-02-09T00:00:00+08:00",
+      "equity": 21996.72,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 72.0889,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-12T00:00:00+08:00",
+      "equity": 22008.56,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 72.2039,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-13T00:00:00+08:00",
+      "equity": 21996.2,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 72.0839,
+      "drawdown_pct": -0.0561
+    },
+    {
+      "datetime": "2024-02-14T00:00:00+08:00",
+      "equity": 22178.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 73.8549,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-15T00:00:00+08:00",
+      "equity": 22050.76,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 72.6136,
+      "drawdown_pct": -0.5764
+    },
+    {
+      "datetime": "2024-02-16T00:00:00+08:00",
+      "equity": 22046.13,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 72.5686,
+      "drawdown_pct": -0.5973
+    },
+    {
+      "datetime": "2024-02-20T00:00:00+08:00",
+      "equity": 21720.74,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 69.4096,
+      "drawdown_pct": -2.0644
+    },
+    {
+      "datetime": "2024-02-21T00:00:00+08:00",
+      "equity": 21516.93,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 67.4308,
+      "drawdown_pct": -2.9834
+    },
+    {
+      "datetime": "2024-02-22T00:00:00+08:00",
+      "equity": 22656.03,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 78.49,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-23T00:00:00+08:00",
+      "equity": 22684.75,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 78.7688,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-26T00:00:00+08:00",
+      "equity": 22713.06,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 79.0437,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-02-27T00:00:00+08:00",
+      "equity": 22672.81,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 78.6529,
+      "drawdown_pct": -0.1772
+    },
+    {
+      "datetime": "2024-02-28T00:00:00+08:00",
+      "equity": 22565.96,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 77.6156,
+      "drawdown_pct": -0.6476
+    },
+    {
+      "datetime": "2024-02-29T00:00:00+08:00",
+      "equity": 22715.12,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 79.0637,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-01T00:00:00+08:00",
+      "equity": 23041.12,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 82.2287,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-04T00:00:00+08:00",
+      "equity": 23345.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.1849,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-05T00:00:00+08:00",
+      "equity": 23420.86,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.9155,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-06T00:00:00+08:00",
+      "equity": 23702.51,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 88.65,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-07T00:00:00+08:00",
+      "equity": 24111.08,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 92.6167,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-08T00:00:00+08:00",
+      "equity": 23581.86,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.4786,
+      "drawdown_pct": -2.1949
+    },
+    {
+      "datetime": "2024-03-11T00:00:00+08:00",
+      "equity": 23401.3,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.7256,
+      "drawdown_pct": -2.9438
+    },
+    {
+      "datetime": "2024-03-12T00:00:00+08:00",
+      "equity": 24033.26,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 91.8612,
+      "drawdown_pct": -0.3228
+    },
+    {
+      "datetime": "2024-03-13T00:00:00+08:00",
+      "equity": 23927.74,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.8367,
+      "drawdown_pct": -0.7604
+    },
+    {
+      "datetime": "2024-03-14T00:00:00+08:00",
+      "equity": 23624.68,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.8944,
+      "drawdown_pct": -2.0173
+    },
+    {
+      "datetime": "2024-03-15T00:00:00+08:00",
+      "equity": 23613.62,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.787,
+      "drawdown_pct": -2.0632
+    },
+    {
+      "datetime": "2024-03-18T00:00:00+08:00",
+      "equity": 23677.29,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 88.4051,
+      "drawdown_pct": -1.7992
+    },
+    {
+      "datetime": "2024-03-19T00:00:00+08:00",
+      "equity": 23774.36,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 89.3476,
+      "drawdown_pct": -1.3965
+    },
+    {
+      "datetime": "2024-03-20T00:00:00+08:00",
+      "equity": 23874.62,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.321,
+      "drawdown_pct": -0.9807
+    },
+    {
+      "datetime": "2024-03-21T00:00:00+08:00",
+      "equity": 23984.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 91.3834,
+      "drawdown_pct": -0.5269
+    },
+    {
+      "datetime": "2024-03-22T00:00:00+08:00",
+      "equity": 24277.85,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 94.2358,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-25T00:00:00+08:00",
+      "equity": 24351.25,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 94.9484,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-03-26T00:00:00+08:00",
+      "equity": 24099.96,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 92.5088,
+      "drawdown_pct": -1.0319
+    },
+    {
+      "datetime": "2024-03-27T00:00:00+08:00",
+      "equity": 23862.07,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.1991,
+      "drawdown_pct": -2.0088
+    },
+    {
+      "datetime": "2024-03-28T00:00:00+08:00",
+      "equity": 23872.98,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.305,
+      "drawdown_pct": -1.964
+    },
+    {
+      "datetime": "2024-04-01T00:00:00+08:00",
+      "equity": 23873.7,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.312,
+      "drawdown_pct": -1.9611
+    },
+    {
+      "datetime": "2024-04-02T00:00:00+08:00",
+      "equity": 23779.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 89.4015,
+      "drawdown_pct": -2.3462
+    },
+    {
+      "datetime": "2024-04-03T00:00:00+08:00",
+      "equity": 23729.68,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 88.9138,
+      "drawdown_pct": -2.5525
+    },
+    {
+      "datetime": "2024-04-04T00:00:00+08:00",
+      "equity": 23414.78,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.8565,
+      "drawdown_pct": -3.8456
+    },
+    {
+      "datetime": "2024-04-05T00:00:00+08:00",
+      "equity": 23631.27,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.9584,
+      "drawdown_pct": -2.9566
+    },
+    {
+      "datetime": "2024-04-08T00:00:00+08:00",
+      "equity": 23541.2,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.0839,
+      "drawdown_pct": -3.3265
+    },
+    {
+      "datetime": "2024-04-09T00:00:00+08:00",
+      "equity": 23358.06,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.3059,
+      "drawdown_pct": -4.0786
+    },
+    {
+      "datetime": "2024-04-10T00:00:00+08:00",
+      "equity": 23531.52,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 86.9899,
+      "drawdown_pct": -3.3663
+    },
+    {
+      "datetime": "2024-04-11T00:00:00+08:00",
+      "equity": 23899.74,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.5649,
+      "drawdown_pct": -1.8541
+    },
+    {
+      "datetime": "2024-04-12T00:00:00+08:00",
+      "equity": 23649.59,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 88.1363,
+      "drawdown_pct": -2.8814
+    },
+    {
+      "datetime": "2024-04-15T00:00:00+08:00",
+      "equity": 23424.67,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.9525,
+      "drawdown_pct": -3.8051
+    },
+    {
+      "datetime": "2024-04-16T00:00:00+08:00",
+      "equity": 23570.23,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.3657,
+      "drawdown_pct": -3.2073
+    },
+    {
+      "datetime": "2024-04-17T00:00:00+08:00",
+      "equity": 23222.28,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 83.9876,
+      "drawdown_pct": -4.6362
+    },
+    {
+      "datetime": "2024-04-18T00:00:00+08:00",
+      "equity": 23287.75,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 84.6232,
+      "drawdown_pct": -4.3673
+    },
+    {
+      "datetime": "2024-04-19T00:00:00+08:00",
+      "equity": 22415.73,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 76.157,
+      "drawdown_pct": -7.9483
+    },
+    {
+      "datetime": "2024-04-22T00:00:00+08:00",
+      "equity": 22757.29,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 79.4732,
+      "drawdown_pct": -6.5457
+    },
+    {
+      "datetime": "2024-04-23T00:00:00+08:00",
+      "equity": 23056.34,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 82.3765,
+      "drawdown_pct": -5.3176
+    },
+    {
+      "datetime": "2024-04-24T00:00:00+08:00",
+      "equity": 22773.66,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 79.6321,
+      "drawdown_pct": -6.4785
+    },
+    {
+      "datetime": "2024-04-25T00:00:00+08:00",
+      "equity": 23077.85,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 82.5854,
+      "drawdown_pct": -5.2293
+    },
+    {
+      "datetime": "2024-04-26T00:00:00+08:00",
+      "equity": 23603.17,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.6855,
+      "drawdown_pct": -3.072
+    },
+    {
+      "datetime": "2024-04-29T00:00:00+08:00",
+      "equity": 23605.43,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 87.7075,
+      "drawdown_pct": -3.0627
+    },
+    {
+      "datetime": "2024-04-30T00:00:00+08:00",
+      "equity": 23465.95,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 86.3533,
+      "drawdown_pct": -3.6355
+    },
+    {
+      "datetime": "2024-05-01T00:00:00+08:00",
+      "equity": 23119.96,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 82.9942,
+      "drawdown_pct": -5.0564
+    },
+    {
+      "datetime": "2024-05-02T00:00:00+08:00",
+      "equity": 23405.72,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 85.7686,
+      "drawdown_pct": -3.8828
+    },
+    {
+      "datetime": "2024-05-03T00:00:00+08:00",
+      "equity": 23711.67,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 88.7389,
+      "drawdown_pct": -2.6265
+    },
+    {
+      "datetime": "2024-05-06T00:00:00+08:00",
+      "equity": 24056.63,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 92.088,
+      "drawdown_pct": -1.2099
+    },
+    {
+      "datetime": "2024-05-07T00:00:00+08:00",
+      "equity": 23893.36,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.5029,
+      "drawdown_pct": -1.8803
+    },
+    {
+      "datetime": "2024-05-08T00:00:00+08:00",
+      "equity": 23878.74,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.361,
+      "drawdown_pct": -1.9404
+    },
+    {
+      "datetime": "2024-05-09T00:00:00+08:00",
+      "equity": 23707.34,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 88.6969,
+      "drawdown_pct": -2.6442
+    },
+    {
+      "datetime": "2024-05-10T00:00:00+08:00",
+      "equity": 23823.77,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 89.8273,
+      "drawdown_pct": -2.1661
+    },
+    {
+      "datetime": "2024-05-13T00:00:00+08:00",
+      "equity": 23877.4,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 90.348,
+      "drawdown_pct": -1.9459
+    },
+    {
+      "datetime": "2024-05-14T00:00:00+08:00",
+      "equity": 23975.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 91.3045,
+      "drawdown_pct": -1.5413
+    },
+    {
+      "datetime": "2024-05-15T00:00:00+08:00",
+      "equity": 24312.95,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 94.5766,
+      "drawdown_pct": -0.1573
+    },
+    {
+      "datetime": "2024-05-16T00:00:00+08:00",
+      "equity": 24285.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 94.3058,
+      "drawdown_pct": -0.2718
+    },
+    {
+      "datetime": "2024-05-17T00:00:00+08:00",
+      "equity": 24091.52,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 92.4268,
+      "drawdown_pct": -1.0666
+    },
+    {
+      "datetime": "2024-05-20T00:00:00+08:00",
+      "equity": 24328.39,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 94.7265,
+      "drawdown_pct": -0.0938
+    },
+    {
+      "datetime": "2024-05-21T00:00:00+08:00",
+      "equity": 24390.78,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 95.3322,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-05-22T00:00:00+08:00",
+      "equity": 24345.89,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 94.8964,
+      "drawdown_pct": -0.184
+    },
+    {
+      "datetime": "2024-05-23T00:00:00+08:00",
+      "equity": 25256.83,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 103.7405,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-05-24T00:00:00+08:00",
+      "equity": 25531.68,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 106.4089,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-05-28T00:00:00+08:00",
+      "equity": 26296.75,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 113.8368,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-05-29T00:00:00+08:00",
+      "equity": 26391.86,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 114.7602,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-05-30T00:00:00+08:00",
+      "equity": 25946.64,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 110.4377,
+      "drawdown_pct": -1.687
+    },
+    {
+      "datetime": "2024-05-31T00:00:00+08:00",
+      "equity": 25857.39,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 109.5712,
+      "drawdown_pct": -2.0251
+    },
+    {
+      "datetime": "2024-06-03T00:00:00+08:00",
+      "equity": 26409.88,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 114.9351,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-04T00:00:00+08:00",
+      "equity": 26557.81,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.3713,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-05T00:00:00+08:00",
+      "equity": 27175.77,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 122.3709,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-06T00:00:00+08:00",
+      "equity": 27027.32,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 120.9298,
+      "drawdown_pct": -0.5462
+    },
+    {
+      "datetime": "2024-06-07T00:00:00+08:00",
+      "equity": 27016.0,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 120.8198,
+      "drawdown_pct": -0.5879
+    },
+    {
+      "datetime": "2024-06-10T00:00:00+08:00",
+      "equity": 27108.85,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 121.7213,
+      "drawdown_pct": -0.2462
+    },
+    {
+      "datetime": "2024-06-11T00:00:00+08:00",
+      "equity": 27019.29,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 120.8517,
+      "drawdown_pct": -0.5758
+    },
+    {
+      "datetime": "2024-06-12T00:00:00+08:00",
+      "equity": 27460.94,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 125.1397,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-13T00:00:00+08:00",
+      "equity": 27914.96,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 129.5475,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-14T00:00:00+08:00",
+      "equity": 28148.65,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 131.8164,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-17T00:00:00+08:00",
+      "equity": 28056.0,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 130.9169,
+      "drawdown_pct": -0.3292
+    },
+    {
+      "datetime": "2024-06-18T00:00:00+08:00",
+      "equity": 28529.57,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.5147,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-06-20T00:00:00+08:00",
+      "equity": 28035.41,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 130.717,
+      "drawdown_pct": -1.7321
+    },
+    {
+      "datetime": "2024-06-21T00:00:00+08:00",
+      "equity": 27601.99,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 126.509,
+      "drawdown_pct": -3.2513
+    },
+    {
+      "datetime": "2024-06-24T00:00:00+08:00",
+      "equity": 26731.03,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 118.0531,
+      "drawdown_pct": -6.3041
+    },
+    {
+      "datetime": "2024-06-25T00:00:00+08:00",
+      "equity": 27552.57,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 126.0292,
+      "drawdown_pct": -3.4245
+    },
+    {
+      "datetime": "2024-06-26T00:00:00+08:00",
+      "equity": 27584.48,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 126.3391,
+      "drawdown_pct": -3.3126
+    },
+    {
+      "datetime": "2024-06-27T00:00:00+08:00",
+      "equity": 27336.37,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 123.9302,
+      "drawdown_pct": -4.1823
+    },
+    {
+      "datetime": "2024-06-28T00:00:00+08:00",
+      "equity": 27290.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 123.4805,
+      "drawdown_pct": -4.3447
+    },
+    {
+      "datetime": "2024-07-01T00:00:00+08:00",
+      "equity": 27368.29,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 124.2401,
+      "drawdown_pct": -4.0704
+    },
+    {
+      "datetime": "2024-07-02T00:00:00+08:00",
+      "equity": 27200.48,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 122.6109,
+      "drawdown_pct": -4.6586
+    },
+    {
+      "datetime": "2024-07-03T00:00:00+08:00",
+      "equity": 27778.03,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 128.2182,
+      "drawdown_pct": -2.6342
+    },
+    {
+      "datetime": "2024-07-05T00:00:00+08:00",
+      "equity": 27525.8,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 125.7694,
+      "drawdown_pct": -3.5183
+    },
+    {
+      "datetime": "2024-07-08T00:00:00+08:00",
+      "equity": 27769.8,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 128.1382,
+      "drawdown_pct": -2.6631
+    },
+    {
+      "datetime": "2024-07-09T00:00:00+08:00",
+      "equity": 28097.18,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 131.3167,
+      "drawdown_pct": -1.5156
+    },
+    {
+      "datetime": "2024-07-10T00:00:00+08:00",
+      "equity": 28460.59,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 134.845,
+      "drawdown_pct": -0.2418
+    },
+    {
+      "datetime": "2024-07-11T00:00:00+08:00",
+      "equity": 27687.43,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 127.3386,
+      "drawdown_pct": -2.9518
+    },
+    {
+      "datetime": "2024-07-12T00:00:00+08:00",
+      "equity": 27876.86,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 129.1777,
+      "drawdown_pct": -2.2878
+    },
+    {
+      "datetime": "2024-07-15T00:00:00+08:00",
+      "equity": 27794.5,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 128.3781,
+      "drawdown_pct": -2.5765
+    },
+    {
+      "datetime": "2024-07-16T00:00:00+08:00",
+      "equity": 27580.37,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 126.2991,
+      "drawdown_pct": -3.3271
+    },
+    {
+      "datetime": "2024-07-17T00:00:00+08:00",
+      "equity": 26718.67,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 117.9331,
+      "drawdown_pct": -6.3474
+    },
+    {
+      "datetime": "2024-07-18T00:00:00+08:00",
+      "equity": 27037.82,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 121.0316,
+      "drawdown_pct": -5.2288
+    },
+    {
+      "datetime": "2024-07-19T00:00:00+08:00",
+      "equity": 26712.49,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 117.8732,
+      "drawdown_pct": -6.3691
+    },
+    {
+      "datetime": "2024-07-22T00:00:00+08:00",
+      "equity": 27290.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 123.4805,
+      "drawdown_pct": -4.3447
+    },
+    {
+      "datetime": "2024-07-23T00:00:00+08:00",
+      "equity": 27192.24,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 122.5309,
+      "drawdown_pct": -4.6875
+    },
+    {
+      "datetime": "2024-07-24T00:00:00+08:00",
+      "equity": 26333.64,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 114.1949,
+      "drawdown_pct": -7.697
+    },
+    {
+      "datetime": "2024-07-25T00:00:00+08:00",
+      "equity": 26130.83,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 112.2259,
+      "drawdown_pct": -8.4079
+    },
+    {
+      "datetime": "2024-07-26T00:00:00+08:00",
+      "equity": 26211.13,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 113.0055,
+      "drawdown_pct": -8.1265
+    },
+    {
+      "datetime": "2024-07-29T00:00:00+08:00",
+      "equity": 26059.79,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 111.5362,
+      "drawdown_pct": -8.6569
+    },
+    {
+      "datetime": "2024-07-30T00:00:00+08:00",
+      "equity": 25250.6,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 103.68,
+      "drawdown_pct": -11.4932
+    },
+    {
+      "datetime": "2024-07-31T00:00:00+08:00",
+      "equity": 26618.81,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.9636,
+      "drawdown_pct": -6.6975
+    },
+    {
+      "datetime": "2024-08-01T00:00:00+08:00",
+      "equity": 25814.77,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 109.1574,
+      "drawdown_pct": -9.5157
+    },
+    {
+      "datetime": "2024-08-02T00:00:00+08:00",
+      "equity": 25615.04,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 107.2183,
+      "drawdown_pct": -10.2158
+    },
+    {
+      "datetime": "2024-08-05T00:00:00+08:00",
+      "equity": 24912.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 100.4016,
+      "drawdown_pct": -12.6768
+    },
+    {
+      "datetime": "2024-08-06T00:00:00+08:00",
+      "equity": 25304.13,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 104.1998,
+      "drawdown_pct": -11.3056
+    },
+    {
+      "datetime": "2024-08-07T00:00:00+08:00",
+      "equity": 24754.38,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 98.8623,
+      "drawdown_pct": -13.2326
+    },
+    {
+      "datetime": "2024-08-08T00:00:00+08:00",
+      "equity": 25378.26,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 104.9194,
+      "drawdown_pct": -11.0458
+    },
+    {
+      "datetime": "2024-08-09T00:00:00+08:00",
+      "equity": 25355.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 104.6995,
+      "drawdown_pct": -11.1252
+    },
+    {
+      "datetime": "2024-08-12T00:00:00+08:00",
+      "equity": 25795.21,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 108.9675,
+      "drawdown_pct": -9.5843
+    },
+    {
+      "datetime": "2024-08-13T00:00:00+08:00",
+      "equity": 26528.21,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.084,
+      "drawdown_pct": -7.015
+    },
+    {
+      "datetime": "2024-08-14T00:00:00+08:00",
+      "equity": 26727.94,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 118.0231,
+      "drawdown_pct": -6.315
+    },
+    {
+      "datetime": "2024-08-15T00:00:00+08:00",
+      "equity": 27220.04,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 122.8008,
+      "drawdown_pct": -4.5901
+    },
+    {
+      "datetime": "2024-08-16T00:00:00+08:00",
+      "equity": 27397.11,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 124.52,
+      "drawdown_pct": -3.9694
+    },
+    {
+      "datetime": "2024-08-19T00:00:00+08:00",
+      "equity": 27955.11,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 129.9373,
+      "drawdown_pct": -2.0136
+    },
+    {
+      "datetime": "2024-08-20T00:00:00+08:00",
+      "equity": 27671.99,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 127.1887,
+      "drawdown_pct": -3.0059
+    },
+    {
+      "datetime": "2024-08-21T00:00:00+08:00",
+      "equity": 27800.68,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 128.4381,
+      "drawdown_pct": -2.5549
+    },
+    {
+      "datetime": "2024-08-22T00:00:00+08:00",
+      "equity": 27310.64,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 123.6804,
+      "drawdown_pct": -4.2725
+    },
+    {
+      "datetime": "2024-08-23T00:00:00+08:00",
+      "equity": 27890.25,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 129.3077,
+      "drawdown_pct": -2.2409
+    },
+    {
+      "datetime": "2024-08-26T00:00:00+08:00",
+      "equity": 27590.66,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 126.3991,
+      "drawdown_pct": -3.291
+    },
+    {
+      "datetime": "2024-08-27T00:00:00+08:00",
+      "equity": 27780.09,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 128.2382,
+      "drawdown_pct": -2.627
+    },
+    {
+      "datetime": "2024-08-28T00:00:00+08:00",
+      "equity": 27503.15,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 125.5495,
+      "drawdown_pct": -3.5977
+    },
+    {
+      "datetime": "2024-08-29T00:00:00+08:00",
+      "equity": 26677.49,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 117.5333,
+      "drawdown_pct": -6.4918
+    },
+    {
+      "datetime": "2024-08-30T00:00:00+08:00",
+      "equity": 26860.74,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 119.3125,
+      "drawdown_pct": -5.8495
+    },
+    {
+      "datetime": "2024-09-03T00:00:00+08:00",
+      "equity": 25690.2,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 107.9479,
+      "drawdown_pct": -9.9524
+    },
+    {
+      "datetime": "2024-09-04T00:00:00+08:00",
+      "equity": 25505.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 106.1588,
+      "drawdown_pct": -10.5983
+    },
+    {
+      "datetime": "2024-09-05T00:00:00+08:00",
+      "equity": 25608.87,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 107.1583,
+      "drawdown_pct": -10.2375
+    },
+    {
+      "datetime": "2024-09-06T00:00:00+08:00",
+      "equity": 25157.94,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 102.7804,
+      "drawdown_pct": -11.818
+    },
+    {
+      "datetime": "2024-09-09T00:00:00+08:00",
+      "equity": 25532.68,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 106.4187,
+      "drawdown_pct": -10.5045
+    },
+    {
+      "datetime": "2024-09-10T00:00:00+08:00",
+      "equity": 25700.49,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 108.0479,
+      "drawdown_pct": -9.9163
+    },
+    {
+      "datetime": "2024-09-11T00:00:00+08:00",
+      "equity": 26607.49,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.8537,
+      "drawdown_pct": -6.7372
+    },
+    {
+      "datetime": "2024-09-12T00:00:00+08:00",
+      "equity": 26838.11,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 119.0928,
+      "drawdown_pct": -5.9288
+    },
+    {
+      "datetime": "2024-09-13T00:00:00+08:00",
+      "equity": 26834.0,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 119.0528,
+      "drawdown_pct": -5.9432
+    },
+    {
+      "datetime": "2024-09-16T00:00:00+08:00",
+      "equity": 26595.13,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.7337,
+      "drawdown_pct": -6.7805
+    },
+    {
+      "datetime": "2024-09-17T00:00:00+08:00",
+      "equity": 26472.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 115.5442,
+      "drawdown_pct": -7.2099
+    },
+    {
+      "datetime": "2024-09-18T00:00:00+08:00",
+      "equity": 26244.04,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 113.3251,
+      "drawdown_pct": -8.0111
+    },
+    {
+      "datetime": "2024-09-19T00:00:00+08:00",
+      "equity": 26707.36,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 117.8233,
+      "drawdown_pct": -6.3871
+    },
+    {
+      "datetime": "2024-09-20T00:00:00+08:00",
+      "equity": 26514.82,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 115.954,
+      "drawdown_pct": -7.062
+    },
+    {
+      "datetime": "2024-09-23T00:00:00+08:00",
+      "equity": 26541.59,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.2139,
+      "drawdown_pct": -6.9681
+    },
+    {
+      "datetime": "2024-09-24T00:00:00+08:00",
+      "equity": 27016.23,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 120.8221,
+      "drawdown_pct": -5.3044
+    },
+    {
+      "datetime": "2024-09-25T00:00:00+08:00",
+      "equity": 27288.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 123.461,
+      "drawdown_pct": -4.3517
+    },
+    {
+      "datetime": "2024-09-26T00:00:00+08:00",
+      "equity": 27342.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 123.9908,
+      "drawdown_pct": -4.1604
+    },
+    {
+      "datetime": "2024-09-27T00:00:00+08:00",
+      "equity": 27070.8,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 121.3519,
+      "drawdown_pct": -5.1132
+    },
+    {
+      "datetime": "2024-09-30T00:00:00+08:00",
+      "equity": 27074.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 121.3919,
+      "drawdown_pct": -5.0987
+    },
+    {
+      "datetime": "2024-10-01T00:00:00+08:00",
+      "equity": 26617.78,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 116.9536,
+      "drawdown_pct": -6.7011
+    },
+    {
+      "datetime": "2024-10-02T00:00:00+08:00",
+      "equity": 26808.26,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 118.8029,
+      "drawdown_pct": -6.0334
+    },
+    {
+      "datetime": "2024-10-03T00:00:00+08:00",
+      "equity": 27220.09,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 122.8013,
+      "drawdown_pct": -4.5899
+    },
+    {
+      "datetime": "2024-10-04T00:00:00+08:00",
+      "equity": 27433.22,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 124.8705,
+      "drawdown_pct": -3.8429
+    },
+    {
+      "datetime": "2024-10-07T00:00:00+08:00",
+      "equity": 27721.5,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 127.6694,
+      "drawdown_pct": -2.8324
+    },
+    {
+      "datetime": "2024-10-08T00:00:00+08:00",
+      "equity": 28253.8,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 132.8373,
+      "drawdown_pct": -0.9666
+    },
+    {
+      "datetime": "2024-10-09T00:00:00+08:00",
+      "equity": 28229.09,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 132.5974,
+      "drawdown_pct": -1.0532
+    },
+    {
+      "datetime": "2024-10-10T00:00:00+08:00",
+      "equity": 28451.48,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 134.7566,
+      "drawdown_pct": -0.2737
+    },
+    {
+      "datetime": "2024-10-11T00:00:00+08:00",
+      "equity": 28450.45,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 134.7466,
+      "drawdown_pct": -0.2773
+    },
+    {
+      "datetime": "2024-10-14T00:00:00+08:00",
+      "equity": 28787.13,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 138.0153,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-10-15T00:00:00+08:00",
+      "equity": 28120.99,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 131.5478,
+      "drawdown_pct": -2.314
+    },
+    {
+      "datetime": "2024-10-16T00:00:00+08:00",
+      "equity": 28545.18,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.6662,
+      "drawdown_pct": -0.8405
+    },
+    {
+      "datetime": "2024-10-17T00:00:00+08:00",
+      "equity": 28669.76,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 136.8757,
+      "drawdown_pct": -0.4077
+    },
+    {
+      "datetime": "2024-10-18T00:00:00+08:00",
+      "equity": 28779.92,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 137.9453,
+      "drawdown_pct": -0.025
+    },
+    {
+      "datetime": "2024-10-21T00:00:00+08:00",
+      "equity": 29367.82,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 143.653,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-10-22T00:00:00+08:00",
+      "equity": 29355.47,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 143.5331,
+      "drawdown_pct": -0.0421
+    },
+    {
+      "datetime": "2024-10-23T00:00:00+08:00",
+      "equity": 28940.54,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 139.5047,
+      "drawdown_pct": -1.4549
+    },
+    {
+      "datetime": "2024-10-24T00:00:00+08:00",
+      "equity": 29028.06,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 140.3543,
+      "drawdown_pct": -1.1569
+    },
+    {
+      "datetime": "2024-10-25T00:00:00+08:00",
+      "equity": 29144.4,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 141.4839,
+      "drawdown_pct": -0.7608
+    },
+    {
+      "datetime": "2024-10-28T00:00:00+08:00",
+      "equity": 29039.38,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 140.4643,
+      "drawdown_pct": -1.1184
+    },
+    {
+      "datetime": "2024-10-29T00:00:00+08:00",
+      "equity": 29114.54,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 141.194,
+      "drawdown_pct": -0.8624
+    },
+    {
+      "datetime": "2024-10-30T00:00:00+08:00",
+      "equity": 28917.37,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 139.2798,
+      "drawdown_pct": -1.5338
+    },
+    {
+      "datetime": "2024-10-31T00:00:00+08:00",
+      "equity": 28240.42,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 132.7074,
+      "drawdown_pct": -3.8389
+    },
+    {
+      "datetime": "2024-11-01T00:00:00+08:00",
+      "equity": 28512.23,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.3463,
+      "drawdown_pct": -2.9134
+    },
+    {
+      "datetime": "2024-11-04T00:00:00+08:00",
+      "equity": 28579.15,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.9961,
+      "drawdown_pct": -2.6855
+    },
+    {
+      "datetime": "2024-11-05T00:00:00+08:00",
+      "equity": 28976.58,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 139.8545,
+      "drawdown_pct": -1.3322
+    },
+    {
+      "datetime": "2024-11-06T00:00:00+08:00",
+      "equity": 29563.44,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 145.5523,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-11-07T00:00:00+08:00",
+      "equity": 29900.12,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 148.821,
+      "drawdown_pct": 0.0
+    },
+    {
+      "datetime": "2024-11-08T00:00:00+08:00",
+      "equity": 29771.42,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 147.5715,
+      "drawdown_pct": -0.4304
+    },
+    {
+      "datetime": "2024-11-11T00:00:00+08:00",
+      "equity": 29527.41,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 145.2024,
+      "drawdown_pct": -1.2465
+    },
+    {
+      "datetime": "2024-11-12T00:00:00+08:00",
+      "equity": 29839.37,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 148.2312,
+      "drawdown_pct": -0.2032
+    },
+    {
+      "datetime": "2024-11-13T00:00:00+08:00",
+      "equity": 29631.4,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 146.212,
+      "drawdown_pct": -0.8987
+    },
+    {
+      "datetime": "2024-11-14T00:00:00+08:00",
+      "equity": 29681.85,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 146.7018,
+      "drawdown_pct": -0.73
+    },
+    {
+      "datetime": "2024-11-15T00:00:00+08:00",
+      "equity": 29189.7,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 141.9237,
+      "drawdown_pct": -2.376
+    },
+    {
+      "datetime": "2024-11-18T00:00:00+08:00",
+      "equity": 29001.29,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 140.0944,
+      "drawdown_pct": -3.0061
+    },
+    {
+      "datetime": "2024-11-19T00:00:00+08:00",
+      "equity": 29707.59,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 146.9517,
+      "drawdown_pct": -0.6439
+    },
+    {
+      "datetime": "2024-11-20T00:00:00+08:00",
+      "equity": 29592.27,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 145.8322,
+      "drawdown_pct": -1.0296
+    },
+    {
+      "datetime": "2024-11-21T00:00:00+08:00",
+      "equity": 29672.58,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 146.6119,
+      "drawdown_pct": -0.761
+    },
+    {
+      "datetime": "2024-11-22T00:00:00+08:00",
+      "equity": 29186.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 141.8937,
+      "drawdown_pct": -2.3863
+    },
+    {
+      "datetime": "2024-11-25T00:00:00+08:00",
+      "equity": 28576.06,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.9661,
+      "drawdown_pct": -4.4283
+    },
+    {
+      "datetime": "2024-11-26T00:00:00+08:00",
+      "equity": 28668.73,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 136.8657,
+      "drawdown_pct": -4.1184
+    },
+    {
+      "datetime": "2024-11-27T00:00:00+08:00",
+      "equity": 28506.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.2863,
+      "drawdown_pct": -4.6624
+    },
+    {
+      "datetime": "2024-11-29T00:00:00+08:00",
+      "equity": 28805.66,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 138.1952,
+      "drawdown_pct": -3.6604
+    },
+    {
+      "datetime": "2024-12-02T00:00:00+08:00",
+      "equity": 28844.79,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 138.575,
+      "drawdown_pct": -3.5295
+    },
+    {
+      "datetime": "2024-12-03T00:00:00+08:00",
+      "equity": 29012.61,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 140.2044,
+      "drawdown_pct": -2.9682
+    },
+    {
+      "datetime": "2024-12-04T00:00:00+08:00",
+      "equity": 29515.05,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 145.0825,
+      "drawdown_pct": -1.2878
+    },
+    {
+      "datetime": "2024-12-05T00:00:00+08:00",
+      "equity": 29507.84,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 145.0125,
+      "drawdown_pct": -1.312
+    },
+    {
+      "datetime": "2024-12-06T00:00:00+08:00",
+      "equity": 29238.07,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 142.3933,
+      "drawdown_pct": -2.2142
+    },
+    {
+      "datetime": "2024-12-09T00:00:00+08:00",
+      "equity": 28864.31,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 138.7645,
+      "drawdown_pct": -3.4642
+    },
+    {
+      "datetime": "2024-12-10T00:00:00+08:00",
+      "equity": 28479.21,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 135.0258,
+      "drawdown_pct": -4.7522
+    },
+    {
+      "datetime": "2024-12-11T00:00:00+08:00",
+      "equity": 28915.79,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 139.2644,
+      "drawdown_pct": -3.2921
+    },
+    {
+      "datetime": "2024-12-12T00:00:00+08:00",
+      "equity": 28712.95,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 137.295,
+      "drawdown_pct": -3.9705
+    },
+    {
+      "datetime": "2024-12-13T00:00:00+08:00",
+      "equity": 28394.78,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 134.206,
+      "drawdown_pct": -5.0346
+    },
+    {
+      "datetime": "2024-12-16T00:00:00+08:00",
+      "equity": 28163.11,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 131.9568,
+      "drawdown_pct": -5.8094
+    },
+    {
+      "datetime": "2024-12-17T00:00:00+08:00",
+      "equity": 27997.33,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 130.3473,
+      "drawdown_pct": -6.3638
+    },
+    {
+      "datetime": "2024-12-18T00:00:00+08:00",
+      "equity": 27844.94,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 128.8678,
+      "drawdown_pct": -6.8735
+    },
+    {
+      "datetime": "2024-12-19T00:00:00+08:00",
+      "equity": 28027.19,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 130.6372,
+      "drawdown_pct": -6.264
+    },
+    {
+      "datetime": "2024-12-20T00:00:00+08:00",
+      "equity": 28441.11,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 134.6559,
+      "drawdown_pct": -4.8796
+    },
+    {
+      "datetime": "2024-12-23T00:00:00+08:00",
+      "equity": 28952.86,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 139.6242,
+      "drawdown_pct": -3.1681
+    },
+    {
+      "datetime": "2024-12-24T00:00:00+08:00",
+      "equity": 29009.49,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 140.1741,
+      "drawdown_pct": -2.9787
+    },
+    {
+      "datetime": "2024-12-26T00:00:00+08:00",
+      "equity": 28979.63,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 139.8842,
+      "drawdown_pct": -3.0786
+    },
+    {
+      "datetime": "2024-12-27T00:00:00+08:00",
+      "equity": 28678.97,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 136.9651,
+      "drawdown_pct": -4.0841
+    },
+    {
+      "datetime": "2024-12-30T00:00:00+08:00",
+      "equity": 28728.39,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 137.445,
+      "drawdown_pct": -3.9188
+    },
+    {
+      "datetime": "2024-12-31T00:00:00+08:00",
+      "equity": 28398.9,
+      "cash": 14571.56,
+      "position": 103,
+      "close_price": 134.246,
+      "drawdown_pct": -5.0208
+    }
+  ]
+}
