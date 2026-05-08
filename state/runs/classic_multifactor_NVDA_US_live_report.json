@@ -21,12 +21,12 @@
     "gateway_env": "REAL"
   },
   "account_status": "connected",
-  "account_message": "ok; picked_by=strict:uni_card_num; acc_id=281756477904458164; env=REAL; acc_type=MARGIN; auth=['HK', 'US', 'HKCC', 'HKFUND', 'USFUND', 'JP']; uni_last4=6219",
+  "account_message": "ok; picked_by=strict:triple; acc_id=281756477904458164; env=REAL; acc_type=MARGIN; auth=['HK', 'US', 'HKCC', 'HKFUND', 'USFUND', 'JP']; uni_last4=6219",
   "selected": [
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 217.1,
+      "price": 215.35,
       "task_score": 87.79,
       "raw_score": 0.7179,
       "allow_trade": false,
@@ -48,12 +48,12 @@
       "order_value_limit": 1000.0,
       "sizing_status": "target_size_too_small",
       "risk_context": {
-        "total_nav": 165092.6948,
-        "cash": -189332.47,
-        "buying_power": 70610.8124,
-        "market_exposure_pct": 0.894356,
+        "total_nav": 164888.5554,
+        "cash": -189334.48,
+        "buying_power": 70430.3475,
+        "market_exposure_pct": 0.895308,
         "symbol_exposure_pct": 0.0,
-        "daily_new_pct": 0.023156,
+        "daily_new_pct": 0.0,
         "current_drawdown_pct": 0.0761,
         "position_count": 10
       },

@@ -44,6 +44,39 @@ class FutuQuoteClient:
             ret, data = ctx.get_market_snapshot(normalized)
             if ret != futu.RET_OK:
                 raise RuntimeError(str(data))
-            return data.to_dict(orient="records") if hasattr(data, "to_dict") else []
+            rows = data.to_dict(orient="records") if hasattr(data, "to_dict") else []
+            return [self._normalize_row(row) for row in rows]
         finally:
             ctx.close()
+
+    @staticmethod
+    def _normalize_row(row: dict[str, Any]) -> dict[str, Any]:
+        """Normalize Futu snapshot row field aliases for downstream consumers.
+
+        - Adds ``change_pct`` alias when only ``change_rate`` is present.
+          Futu's ``change_rate`` is already expressed in percent units
+          (e.g. -1.23 means -1.23%), identical to what callers expect from
+          ``change_pct``. Original ``change_rate`` is preserved.
+        - Falls back to computing ``change_pct`` from ``last_price`` and
+          ``prev_close_price`` when neither field is provided.
+        """
+        if not isinstance(row, dict):
+            return row
+        if row.get("change_pct") in (None, ""):
+            change_rate = row.get("change_rate")
+            if change_rate not in (None, ""):
+                try:
+                    row["change_pct"] = float(change_rate)
+                except (TypeError, ValueError):
+                    pass
+            else:
+                last = row.get("last_price")
+                prev = row.get("prev_close_price")
+                try:
+                    if last not in (None, "") and prev not in (None, "", 0):
+                        row["change_pct"] = round(
+                            (float(last) - float(prev)) / float(prev) * 100, 3
+                        )
+                except (TypeError, ValueError, ZeroDivisionError):
+                    pass
+        return row
