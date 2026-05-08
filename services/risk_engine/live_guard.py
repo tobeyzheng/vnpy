@@ -39,16 +39,17 @@ class LiveRiskGuard:
         order_exposure_pct = float(order.target_position_pct if order.target_position_pct is not None else order.qty)
         max_order_value = self.limits.get('max_order_value')
 
-        # Market-exposure check uses notional amounts against budget_per_trade when provided;
-        # falls back to the pct-based check otherwise.
+        # Symbol-exposure check (labelled "market exposure" for backward compatibility):
+        # when budget_per_trade is provided, compares (existing symbol value + this order notional)
+        # against budget_per_trade; otherwise falls back to the original pct-based check.
         order_notional = float(order.notional or 0.0)
         budget = float(budget_per_trade or 0.0)
         if budget > 0:
-            market_projected_pct = (float(market_existing_value or 0.0) + max(order_notional, 0.0)) / budget
-            market_over = market_projected_pct > market_limit
+            symbol_projected_pct = (float(market_existing_value or 0.0) + max(order_notional, 0.0)) / budget
+            market_over = symbol_projected_pct > market_limit
         else:
-            market_projected_pct = market_existing_pct + order_exposure_pct
-            market_over = market_projected_pct > market_limit
+            symbol_projected_pct = market_existing_pct + order_exposure_pct
+            market_over = symbol_projected_pct > market_limit
 
         if order.request_id in self._seen:
             reasons.append('duplicate live request detected')

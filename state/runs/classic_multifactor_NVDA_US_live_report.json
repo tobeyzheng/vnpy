@@ -24,9 +24,9 @@
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 215.902,
-      "task_score": 93.93,
-      "raw_score": 0.7301,
+      "price": 215.62,
+      "task_score": 93.98,
+      "raw_score": 0.7293,
       "allow_trade": true,
       "target_position_pct": 0.18,
       "strategy_selection": {
@@ -40,18 +40,20 @@
       },
       "external_strategy_selection": null,
       "qty": 2,
-      "order_value": 431.804,
+      "order_value": 431.24,
       "order_value_limit": 1000.0,
       "sizing_status": "ok",
       "risk_context": {
-        "total_nav": 164803.0601,
-        "cash": -189334.34,
-        "buying_power": 70351.1642,
-        "market_exposure_pct": 0.895705,
-        "symbol_exposure_pct": 0.00262,
+        "total_nav": 164748.7484,
+        "cash": -189336.35,
+        "buying_power": 70304.3122,
+        "market_exposure_pct": 0.895959,
+        "symbol_exposure_pct": 0.002618,
         "daily_new_pct": 0.0,
         "current_drawdown_pct": 0.0761,
-        "position_count": 10
+        "position_count": 10,
+        "market_existing_value": 147608.2,
+        "symbol_existing_value": 0.0
       },
       "live_gate": {
         "allowed": false,
