@@ -30,7 +30,7 @@ class FutuSdkClient:
         self.config = config or OpenDConfig()
         self._futu = None
         self._import_error: Optional[str] = None
-        self.account_last4 = os.getenv("FUTU_ACCOUNT_LAST4", "6219")
+        self.account_last4 = os.getenv("FUTU_ACCOUNT_LAST4", "").strip()
         # live-strict selection configuration (defaults keep legacy behavior untouched)
         self.live_strict = bool(live_strict)
         self.expect_trd_env = (expect_trd_env or "").upper() or None
@@ -71,12 +71,13 @@ class FutuSdkClient:
         if not records:
             return None, None, records
 
-        # 1) 按账户后4位优先
-        for row in records:
-            for key in ["acc_id", "sim_acc_id", "real_acc_id", "card_num", "acc_num"]:
-                value = row.get(key)
-                if value is not None and str(value).endswith(self.account_last4):
-                    return row, key, records
+        # 1) 按账户后4位优先（仅当显式配置 FUTU_ACCOUNT_LAST4 时启用）
+        if self.account_last4:
+            for row in records:
+                for key in ["acc_id", "sim_acc_id", "real_acc_id", "card_num", "acc_num"]:
+                    value = row.get(key)
+                    if value is not None and str(value).endswith(self.account_last4):
+                        return row, key, records
 
         # 2) 优先模拟账户字段
         for row in records:

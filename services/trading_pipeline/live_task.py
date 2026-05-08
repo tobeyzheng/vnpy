@@ -102,17 +102,20 @@ class LiveTradingPipeline:
         self.gateway_event_bridge: VnpyGatewayEventBridge | None = None
 
     def _build_account_provider(self) -> FutuAccountProvider:
-        """Build FutuAccountProvider with strict live-account selection when configured."""
+        """Build FutuAccountProvider with strict live-account selection when configured.
+
+        Identity check is fully delegated to OpenD-reported trd_env + acc_type + market;
+        FUTU_ACCOUNT_LAST4 is no longer consulted here.
+        """
         if not self.config.live_account_strict:
             return FutuAccountProvider()
         expect_market = "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else ""
-        expect_last4 = os.environ.get(self.config.expected_last4_env_var, "")
         return FutuAccountProvider(
             live_strict=True,
             expect_trd_env=(self.config.gateway_env or "").upper() or "REAL",
             expect_acc_type=(self.config.expected_acc_type or "").upper() or None,
             expect_market=expect_market or None,
-            expect_last4=expect_last4 or None,
+            expect_last4=None,
         )
 
     def run(self) -> dict[str, Any]:
@@ -145,7 +148,7 @@ class LiveTradingPipeline:
                     "gateway_env": self.config.gateway_env,
                     "live_account_strict": self.config.live_account_strict,
                     "expected_acc_type": self.config.expected_acc_type,
-                    "expected_last4": os.environ.get(self.config.expected_last4_env_var, ""),
+                    "expected_last4": None,
                     "expected_market": "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else "",
                 },
                 "account_status": account_summary.status,
@@ -273,10 +276,10 @@ class LiveTradingPipeline:
             reasons.append("FUTU_TRADE_ENV is not REAL")
         if self.config.gateway_env.upper() == "REAL" and not os.environ.get(self.config.gateway_password_env_var_name):
             reasons.append(f"{self.config.gateway_password_env_var_name} is missing")
-        if self.config.live_account_strict and self.config.gateway_env.upper() == "REAL":
-            last4 = os.environ.get(self.config.expected_last4_env_var, "").strip()
-            if not last4:
-                reasons.append(f"{self.config.expected_last4_env_var} is empty (required by live-strict)")
+        # NOTE: FUTU_ACCOUNT_LAST4 env precheck removed on purpose.
+        # Live-account identity is enforced by FutuAccountProvider(live_strict=True)
+        # using OpenD-reported trd_env + acc_type + market; run() will abort on
+        # account_summary.status == "live_account_mismatch".
         return reasons
 
     def _get_quote_rows(self, codes: list[str]) -> list[dict[str, Any]]:
