@@ -85,6 +85,8 @@ def build_parser() -> argparse.ArgumentParser:
     # daily circuit breaker
     p.add_argument("--daily-loss-limit", type=float, default=200.0,
                    help="单日累计亏损美元上限，>0 触发熔断；0 表示关闭")
+    p.add_argument("--anchor-reset", action="store_true",
+                   help="强制重建当日 NAV 锚点")
     return p
 
 
@@ -113,27 +115,64 @@ def _report_path_for(symbol: str) -> Path:
     return REPO_ROOT / "state" / "runs" / f"classic_multifactor_{symbol.replace('.', '_')}_live_report.json"
 
 
-def _read_drawdown_usd(symbol: str) -> tuple[float | None, dict[str, Any] | None]:
+def _anchor_path_for(task_tag: str) -> Path:
+    return LOG_DIR / f"loop_anchor_{task_tag}.json"
+
+
+def _read_current_nav(symbol: str) -> tuple[float | None, float | None, dict[str, Any] | None]:
+    """Return (total_nav, cash, raw_report) from latest live report."""
     path = _report_path_for(symbol)
     if not path.exists():
-        return None, None
+        return None, None, None
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except Exception:
-        return None, None
+        return None, None, None
     selected = data.get("selected") or []
     if not selected:
-        return None, data
+        return None, None, data
     rc = (selected[0] or {}).get("risk_context") or {}
-    dd_pct = rc.get("current_drawdown_pct")
-    nav = rc.get("total_nav")
-    if dd_pct is None or nav is None:
-        return None, data
     try:
-        return float(dd_pct) * float(nav), data
+        nav = float(rc.get("total_nav")) if rc.get("total_nav") is not None else None
     except Exception:
-        return None, data
+        nav = None
+    try:
+        cash = float(rc.get("cash")) if rc.get("cash") is not None else None
+    except Exception:
+        cash = None
+    return nav, cash, data
+
+
+def _load_or_build_anchor(task_tag: str, today_str: str,
+                          current_nav: float | None, current_cash: float | None,
+                          force_reset: bool) -> dict[str, Any] | None:
+    """Load anchor for today; rebuild if missing / stale / forced."""
+    path = _anchor_path_for(task_tag)
+    anchor: dict[str, Any] | None = None
+    if path.exists() and not force_reset:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                anchor = json.load(f)
+        except Exception:
+            anchor = None
+    if anchor and anchor.get("date") != today_str:
+        anchor = None  # stale, rebuild
+    if anchor is None:
+        if current_nav is None:
+            return None  # cannot anchor yet
+        anchor = {
+            "date": today_str,
+            "initial_nav": current_nav,
+            "initial_cash": current_cash,
+            "created_ts": _now_bj().isoformat(),
+        }
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(anchor, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+    return anchor
 
 
 def _append_loop_log(task_tag: str, record: dict[str, Any]) -> None:
@@ -206,11 +245,23 @@ def main() -> int:
                 duration_ms = int((time.time() - t0) * 1000)
                 _child_proc = None
 
-        # circuit breaker: daily loss
-        breaker_tripped = False
-        dd_usd, _ = _read_drawdown_usd(args.symbol)
-        if args.daily_loss_limit > 0 and dd_usd is not None and dd_usd >= args.daily_loss_limit:
-            breaker_tripped = True
+        # circuit breaker: daily loss via NAV anchor
+        today_str = _now_bj().strftime("%Y-%m-%d")
+        cur_nav, cur_cash, _ = _read_current_nav(args.symbol)
+        anchor = _load_or_build_anchor(
+            task_tag, today_str, cur_nav, cur_cash,
+            force_reset=(args.anchor_reset and iteration == 1),
+        )
+        initial_nav = float(anchor["initial_nav"]) if anchor and anchor.get("initial_nav") is not None else None
+        realized_loss_usd: float | None = None
+        if initial_nav is not None and cur_nav is not None:
+            realized_loss_usd = max(0.0, initial_nav - cur_nav)
+
+        breaker_tripped = (
+            args.daily_loss_limit > 0
+            and realized_loss_usd is not None
+            and realized_loss_usd >= args.daily_loss_limit
+        )
 
         record = {
             "ts": _now_bj().isoformat(),
@@ -219,18 +270,23 @@ def main() -> int:
             "timed_out": timed_out,
             "duration_ms": duration_ms,
             "report_path": str(_report_path_for(args.symbol)),
-            "drawdown_usd": dd_usd,
+            "anchor_date": (anchor or {}).get("date"),
+            "initial_nav": initial_nav,
+            "current_nav": cur_nav,
+            "realized_loss_usd": realized_loss_usd,
             "daily_loss_limit": args.daily_loss_limit,
             "breaker_tripped": breaker_tripped,
             "dry_run_loop": args.dry_run_loop,
         }
         _append_loop_log(task_tag, record)
         print(f"[loop] iter={iteration} exit={exit_code} timed_out={timed_out} "
-              f"dd_usd={dd_usd} tripped={breaker_tripped}", flush=True)
+              f"initial_nav={initial_nav} current_nav={cur_nav} "
+              f"realized_loss_usd={realized_loss_usd} tripped={breaker_tripped}", flush=True)
 
         if breaker_tripped:
+            assert realized_loss_usd is not None
             print(f"[loop] daily-loss circuit breaker tripped "
-                  f"(dd_usd={dd_usd:.2f} >= {args.daily_loss_limit}), stop", flush=True)
+                  f"(realized_loss_usd={realized_loss_usd:.2f} >= {args.daily_loss_limit}), stop", flush=True)
             break
 
         if exit_code != 0 and args.on_error == "stop":

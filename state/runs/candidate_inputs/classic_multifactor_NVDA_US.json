@@ -13,6 +13,35 @@
     "strategy_selection": {
       "strategy_id": "classic_multifactor_cta",
       "allow_trade": true
+    },
+    "minute_profile": true,
+    "strategy_config": {
+      "signal_interval_minutes": 5,
+      "entry_score": 0.66,
+      "exit_score": 0.46,
+      "fast_window": 6,
+      "slow_window": 24,
+      "momentum_window": 12,
+      "atr_window": 14,
+      "max_order_value": 1250.0,
+      "capital": 5000.0,
+      "confirm_bars": 1,
+      "min_volume_ratio": 0.8,
+      "min_atr_pct": 0.0012,
+      "min_trend_score": 0.55,
+      "stop_atr": 1.5,
+      "take_profit_atr": 2.5,
+      "trailing_atr": 2.0,
+      "entry_cooldown_minutes": 30,
+      "min_hold_minutes": 20,
+      "no_new_entry_after": "15:30",
+      "max_intraday_trades": 4,
+      "regime_filter_mode": "off",
+      "regime_trend_lookback": 5,
+      "regime_ema_span": 20,
+      "regime_atr_pct_lo": 0.008,
+      "regime_atr_pct_hi": 0.05,
+      "regime_atr_days": 5
     }
   }
 ]
