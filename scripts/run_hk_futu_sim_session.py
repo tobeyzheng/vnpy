@@ -54,10 +54,17 @@ class HkFutuSimSession:
         self.order_machine = OrderStateMachine()
         self.orders: list[dict[str, Any]] = []
         self.actions: list[dict[str, Any]] = []
+        self.rounds: list[dict[str, Any]] = []
         self.started_at = datetime.now().isoformat(timespec="seconds")
         self.start_equity = 0.0
 
+    def _emit(self, event: dict[str, Any]) -> None:
+        payload = {"time": datetime.now().isoformat(timespec="seconds"), **event}
+        self.actions.append(payload)
+        print(json.dumps(payload, ensure_ascii=False, default=str), flush=True)
+
     def run(self) -> dict[str, Any]:
+
         first = self._snapshot()
         self.start_equity = self._equity(first)
         if self.start_equity <= 0:
@@ -68,15 +75,17 @@ class HkFutuSimSession:
             try:
                 snapshot = self._snapshot()
                 loss = self._current_loss(snapshot)
+                self._emit({"action": "round_start", "hk_time": now_hk.isoformat(), "current_loss": loss, "used_budget": self._used_budget(snapshot), "equity": self._equity(snapshot)})
                 if loss >= self.args.max_loss:
-                    self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "stop_new_orders", "reason": "max_loss_reached", "loss": loss})
+                    self._emit({"action": "stop_new_orders", "reason": "max_loss_reached", "loss": loss})
                     self._reduce_losing_positions(snapshot)
                 elif self._is_regular_session(now_hk):
                     self._evaluate_and_trade(snapshot)
                 else:
-                    self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "wait", "reason": "outside_regular_session", "hk_time": now_hk.isoformat()})
+                    self._emit({"action": "wait", "reason": "outside_regular_session", "hk_time": now_hk.isoformat()})
             except Exception as exc:
-                self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "error", "reason": "loop_exception", "error": str(exc)})
+                self._emit({"action": "error", "reason": "loop_exception", "error": str(exc)})
+
 
             report = self._write_report(snapshot=snapshot, final=now_hk.time() >= dtime(16, 0) or self.args.force_once)
             if self.args.force_once or now_hk.time() >= dtime(16, 0):
@@ -91,43 +100,110 @@ class HkFutuSimSession:
         return {"account": asdict(account), "positions": positions, "position_quotes": watch, "time": datetime.now().isoformat(timespec="seconds")}
 
     def _evaluate_and_trade(self, snapshot: dict[str, Any]) -> None:
+        round_info: dict[str, Any] = {
+            "time": datetime.now().isoformat(timespec="seconds"),
+            "phase": "evaluate_and_trade",
+            "candidates": [],
+            "evaluations": [],
+            "decisions": [],
+            "submitted_orders": [],
+            "summary": {},
+        }
         if self._has_open_orders(snapshot):
-            self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "skip", "reason": "open_orders_exist"})
+            round_info["summary"] = {"decision": "skip", "reason": "open_orders_exist"}
+            self.rounds.append(round_info)
+            self._emit({"action": "skip", "reason": "open_orders_exist"})
             return
+
         candidates = self._candidate_rows(snapshot)
+        round_info["candidates"] = [{"symbol": row.get("symbol"), "name": row.get("name"), "raw_score": row.get("raw_score"), "rationale": row.get("rationale")} for row in candidates]
+        self._emit({"action": "candidate_loaded", "candidate_count": len(candidates), "symbols": [row.get("symbol") for row in candidates]})
         if not candidates:
-            self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "skip", "reason": "no_candidates"})
+            round_info["summary"] = {"decision": "skip", "reason": "no_candidates"}
+            self.rounds.append(round_info)
+            self._emit({"action": "skip", "reason": "no_candidates"})
             return
+
         quote_rows = self._safe_get_snapshot([row["symbol"] for row in candidates])
+        round_info["quote_count"] = len(quote_rows)
         if not quote_rows:
-            self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "skip", "reason": "quote_snapshot_unavailable"})
+            round_info["summary"] = {"decision": "skip", "reason": "quote_snapshot_unavailable"}
+            self.rounds.append(round_info)
+            self._emit({"action": "skip", "reason": "quote_snapshot_unavailable"})
             return
+
         quote_map = {self._to_vt_symbol(str(row.get("code", ""))): row for row in quote_rows}
         ranked: list[dict[str, Any]] = []
         for candidate in candidates:
             symbol = candidate["symbol"]
             quote = quote_map.get(symbol)
             if not quote:
+                round_info["evaluations"].append({"symbol": symbol, "decision": "missing_quote"})
                 continue
             evaluation = self.strategy_engine.evaluate_candidate(candidate=candidate, quote=quote, flow_divisor=2e9, has_event_catalyst=self._has_catalyst(candidate))
+            evaluation_row = {
+                "symbol": symbol,
+                "name": candidate.get("name"),
+                "price": quote.get("ask_price") or quote.get("last_price") or quote.get("price"),
+                "change_pct": quote.get("change_pct"),
+                "turnover": quote.get("turnover"),
+                "task_score": evaluation.task_score,
+                "raw_score": evaluation.raw_score,
+                "entry_action": evaluation.entry_timing.action,
+                "entry_reason": evaluation.entry_timing.reason,
+                "allow_trade": evaluation.signal.allow_trade,
+                "target_position_pct": evaluation.signal.target_position_pct,
+                "strategy_selection": evaluation.metadata.get("strategy_selection", {}),
+                "risk_flags": evaluation.signal.risk_flags,
+            }
+            round_info["evaluations"].append(evaluation_row)
             ranked.append({"candidate": candidate, "quote": quote, "evaluation": evaluation, "score": evaluation.task_score})
         ranked.sort(key=lambda item: item["score"], reverse=True)
+        top_symbols = [item["candidate"]["symbol"] for item in ranked[: self.args.max_new_orders]]
+        self._emit({"action": "evaluation_done", "evaluated_count": len(round_info["evaluations"]), "top_symbols": top_symbols})
+
         for item in ranked[: self.args.max_new_orders]:
             evaluation = item["evaluation"]
             symbol = item["candidate"]["symbol"]
             price = float(item["quote"].get("ask_price") or item["quote"].get("last_price") or item["quote"].get("price") or 0)
-            if price <= 0 or not evaluation.signal.allow_trade:
+            decision = {"symbol": symbol, "score": evaluation.task_score, "allow_trade": evaluation.signal.allow_trade, "price": price}
+            if price <= 0:
+                decision.update({"final_decision": "skip", "reason": "invalid_price"})
+                round_info["decisions"].append(decision)
                 continue
-            if self._held_qty(snapshot, symbol) > 0:
+            if not evaluation.signal.allow_trade:
+                decision.update({"final_decision": "skip", "reason": "strategy_blocked", "entry_action": evaluation.entry_timing.action})
+                round_info["decisions"].append(decision)
                 continue
-            if self._used_budget(snapshot) >= self.args.max_budget:
+            held_qty = self._held_qty(snapshot, symbol)
+            if held_qty > 0:
+                decision.update({"final_decision": "skip", "reason": "already_held", "held_qty": held_qty})
+                round_info["decisions"].append(decision)
+                continue
+            used_budget = self._used_budget(snapshot)
+            if used_budget >= self.args.max_budget:
+                decision.update({"final_decision": "stop", "reason": "max_budget_reached", "used_budget": used_budget})
+                round_info["decisions"].append(decision)
                 break
-            order_value = min(self.args.max_order_value, self.args.max_budget - self._used_budget(snapshot))
+            order_value = min(self.args.max_order_value, self.args.max_budget - used_budget)
             qty = int(order_value // price)
+            decision.update({"order_value": round(order_value, 4), "qty": qty, "used_budget_before": round(used_budget, 4)})
             if qty <= 0:
+                decision.update({"final_decision": "skip", "reason": "qty_zero"})
+                round_info["decisions"].append(decision)
                 continue
-            self._submit(symbol, "BUY", qty, price * 1.002, evaluation.signal.reason)
+            decision.update({"final_decision": "submit", "reason": evaluation.signal.reason})
+            submitted = self._submit(symbol, "BUY", qty, price * 1.002, evaluation.signal.reason)
+            if submitted:
+                round_info["submitted_orders"].append(submitted)
+            round_info["decisions"].append(decision)
             snapshot = self._snapshot()
+
+        submitted_count = len(round_info["submitted_orders"])
+        round_info["summary"] = {"decision": "submitted" if submitted_count else "no_submit", "submitted_count": submitted_count, "decision_count": len(round_info["decisions"])}
+        self.rounds.append(round_info)
+        self._emit({"action": "round_decision_done", **round_info["summary"]})
+
 
     def _safe_get_snapshot(self, codes: list[str]) -> list[dict[str, Any]]:
         clean_codes = [code for code in codes if code]
@@ -157,14 +233,15 @@ class HkFutuSimSession:
             if price > 0:
                 self._submit(symbol, "SELL", qty, price * 0.998, "max_loss_reduce_losing_position")
 
-    def _submit(self, symbol: str, side: str, qty: int, price: float, reason: str) -> None:
+    def _submit(self, symbol: str, side: str, qty: int, price: float, reason: str) -> dict[str, Any] | None:
         request_id = f"hk_futu_sim_{datetime.now().strftime('%Y%m%d%H%M%S')}_{symbol.replace('.', '_')}_{side}"
+        self._emit({"action": "submit_attempt", "request_id": request_id, "symbol": symbol, "side": side, "qty": qty, "price": round(price, 4), "reason": reason})
         try:
             result = self.trade_client.submit_limit_order(symbol, side, qty, price, reason=reason)
             status = self.trade_client.get_order(result.order_id) if result.order_id else None
         except Exception as exc:
-            self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "submit_failed", "symbol": symbol, "side": side, "qty": qty, "reason": str(exc)})
-            return
+            self._emit({"action": "submit_failed", "request_id": request_id, "symbol": symbol, "side": side, "qty": qty, "reason": str(exc)})
+            return None
         payload = {
             "time": datetime.now().isoformat(timespec="seconds"),
             "request_id": request_id,
@@ -182,7 +259,10 @@ class HkFutuSimSession:
             "status_check": None if not status else asdict(status),
         }
         self.orders.append(payload)
+        self._emit({"action": "submit_result", "request_id": request_id, "symbol": symbol, "success": result.success, "message": result.message, "order_id": result.order_id, "order_status": result.status, "dealt_qty": result.dealt_qty})
         self._record_order_state(payload, reason)
+        return payload
+
 
     def _record_order_state(self, payload: dict[str, Any], reason: str) -> None:
         if not payload.get("success") or int(payload.get("qty") or 0) <= 0:
@@ -235,10 +315,13 @@ class HkFutuSimSession:
             "account": snapshot.get("account"),
             "positions": snapshot.get("positions"),
             "orders": self.orders,
-            "actions": self.actions[-100:],
+            "actions": self.actions[-200:],
+            "rounds": self.rounds[-20:],
+            "latest_round": self.rounds[-1] if self.rounds else None,
         }
         self.report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
-        self.state_path.write_text(json.dumps({"started_at": self.started_at, "last_update": report["updated_at"], "orders": self.orders}, ensure_ascii=False, indent=2), encoding="utf-8")
+        self.state_path.write_text(json.dumps({"started_at": self.started_at, "last_update": report["updated_at"], "orders": self.orders, "latest_round": report["latest_round"]}, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+
         return report
 
     def _equity(self, snapshot: dict[str, Any]) -> float:
