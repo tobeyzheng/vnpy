@@ -65,7 +65,10 @@ class LiveRiskGuard:
             reasons.append(f'order value exceeds limit {float(max_order_value)}')
         if signal_age_seconds > signal_age_limit:
             reasons.append('signal too old for live trading')
-        if current_drawdown_pct >= drawdown_limit:
+        # Per-symbol drawdown stop only applies to BUY (open/add). SELL (reduce/close)
+        # is intentionally allowed even when the symbol is underwater, because the
+        # whole point of a drawdown stop is to prevent *more* exposure, not to block exits.
+        if str(getattr(order, 'side', '') or '').upper() == 'BUY' and current_drawdown_pct >= drawdown_limit:
             reasons.append(f'drawdown stop triggered at {current_drawdown_pct}')
         if account_status != 'connected':
             reasons.append(f'account status not ready: {account_status}')

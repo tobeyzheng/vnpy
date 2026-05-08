@@ -44,7 +44,7 @@ class LiveRiskContextBuilder:
             market_exposure_pct=self._pct(current_market_value, total_nav),
             symbol_exposure_pct=self._pct(projected_symbol_value, total_nav),
             daily_new_pct=self._pct(daily_new_value, total_nav),
-            current_drawdown_pct=self._drawdown(account),
+            current_drawdown_pct=self._drawdown(account, symbol=symbol),
             position_count=len(account.positions),
             market_existing_value=round(max(float(current_market_value or 0.0), 0.0), 4),
             symbol_existing_value=round(max(float(symbol_market_value or 0.0), 0.0), 4),
@@ -70,8 +70,18 @@ class LiveRiskContextBuilder:
                 total += max(float(state.qty or 0), 0.0) * max(float(state.price or 0.0), 0.0)
         return total
 
-    def _drawdown(self, account: FutuAccountSummary) -> float:
-        losses = [abs(float(p.pl_ratio or 0.0)) / 100.0 for p in account.positions if p.pl_ratio is not None and float(p.pl_ratio or 0.0) < 0]
+    def _drawdown(self, account: FutuAccountSummary, *, symbol: str = "") -> float:
+        # Per-symbol drawdown: only inspect the position matching the requested symbol.
+        # If the account has no position for this symbol, drawdown is treated as 0.
+        if not symbol:
+            return 0.0
+        losses = [
+            abs(float(p.pl_ratio or 0.0)) / 100.0
+            for p in account.positions
+            if self._same_symbol(p.code, symbol)
+            and p.pl_ratio is not None
+            and float(p.pl_ratio or 0.0) < 0
+        ]
         return round(max(losses, default=0.0), 4)
 
     def _pct(self, value: float, total: float) -> float:

@@ -1,14 +1,15 @@
 [loop] symbol=NVDA.US interval=300s session(BJ)=22:30->05:00 daily_loss_limit=$200.0 live_submit=True simulate=False dry_run_loop=False
-[loop] iter=1 ts=2026-05-09T01:05:18.141679+08:00 cmd=/usr/bin/python3 /projects/vnpy/scripts/classic_multifactor/run.py live --symbol NVDA.US --config nvda_g09.json --budget-per-trade 3000.0 --max-order-value 1000.0 --max-candidates 1 --max-selected 4 --reconciliation-max-age 60 --limit-price-buffer-pct 0.0 --minute-profile --live-submit
-2026-05-09 01:05:18,604 | 2659246 | 139824422995776 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458562689634389172(1) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f2aeb3510d0>
-2026-05-09 01:05:18,826 | 2659246 | 139822302541504 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
-2026-05-09 01:05:18,829 | 2659246 | 139824422995776 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458562690581935886(2) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f2aedd40d50>
-2026-05-09 01:05:18,903 | 2659246 | 139822302541504 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(2) reason=CallClose
-2026-05-09 01:05:19.006 | INFO | MainEngine | 连接登录 -> FUTU
-2026-05-09 01:05:19,009 | 2659246 | 139824422995776 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458562691335370948(3) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f2ae842cb10>
-2026-05-09 01:05:19.009 | INFO | FUTU | 行情接口连接成功
-2026-05-09 01:05:19,020 | 2659246 | 139824422995776 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458562691382486223(4) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f2ae842db50>
-2026-05-09 01:05:19.100 | INFO | FUTU | 交易接口连接成功
+[loop] iter=1 ts=2026-05-09T01:12:25.925951+08:00 cmd=/usr/bin/python3 /projects/vnpy/scripts/classic_multifactor/run.py live --symbol NVDA.US --config nvda_g09.json --budget-per-trade 3000.0 --max-order-value 1000.0 --max-candidates 1 --max-selected 4 --reconciliation-max-age 60 --limit-price-buffer-pct 0.0 --minute-profile --live-submit
+2026-05-09 01:12:26,330 | 2665759 | 140703332452160 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458564483651337700(1) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7ff78e4acc50>
+2026-05-09 01:12:26,603 | 2665759 | 140701211993792 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+2026-05-09 01:12:26,606 | 2665759 | 140703332452160 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458564484806449340(2) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7ff790fa9b50>
+2026-05-09 01:12:26,682 | 2665759 | 140701211993792 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(2) reason=CallClose
+2026-05-09 01:12:26.792 | INFO | MainEngine | 连接登录 -> FUTU
+2026-05-09 01:12:26,795 | 2665759 | 140703332452160 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458564485601347136(3) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7ff7761ed110>
+2026-05-09 01:12:26.795 | INFO | FUTU | 行情接口连接成功
+2026-05-09 01:12:26,796 | 2665759 | 140703332452160 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458564485608714199(4) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7ff7761edc10>
+2026-05-09 01:12:26.882 | INFO | FUTU | 交易接口连接成功
+2026-05-09 01:12:28.885 | INFO | MainEngine | 委托下单 -> FUTU：OrderRequest(symbol='NVDA', exchange=<Exchange.SMART: 'SMART'>, direction=<Direction.LONG: '多'>, type=<OrderType.LIMIT: '限价'>, volume=2, price=215.5, offset=<Offset.NONE: ''>, reference='2bfdeb17cbd20de4')
 /projects/vnpy/state/runs/classic_multifactor_NVDA_US_live_report.json
 {
   "task": "classic_multifactor_NVDA_US",
@@ -36,9 +37,9 @@
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 215.4599,
-      "task_score": 94.02,
-      "raw_score": 0.7289,
+      "price": 215.5,
+      "task_score": 94.01,
+      "raw_score": 0.729,
       "allow_trade": true,
       "target_position_pct": 0.18,
       "strategy_selection": {
@@ -52,26 +53,24 @@
       },
       "external_strategy_selection": null,
       "qty": 2,
-      "order_value": 430.9198,
+      "order_value": 431.0,
       "order_value_limit": 1000.0,
       "sizing_status": "ok",
       "risk_context": {
-        "total_nav": 164634.9369,
-        "cash": -189332.83,
-        "buying_power": 70215.2623,
-        "market_exposure_pct": 0.896488,
+        "total_nav": 164694.0873,
+        "cash": -189335.59,
+        "buying_power": 70254.8901,
+        "market_exposure_pct": 0.896214,
         "symbol_exposure_pct": 0.002617,
         "daily_new_pct": 0.0,
-        "current_drawdown_pct": 0.0825,
+        "current_drawdown_pct": 0.0,
         "position_count": 10,
-        "market_existing_value": 147593.3,
+        "market_existing_value": 147601.15,
         "symbol_existing_value": 0.0
       },
       "live_gate": {
-        "allowed": false,
-        "reasons": [
-          "drawdown stop triggered at 0.0825"
-        ]
+        "allowed": true,
+        "reasons": []
       },
       "idempotency": {
         "allowed": true,
@@ -79,10 +78,61 @@
       }
     }
   ],
-  "order_states": []
+  "order_states": [
+    {
+      "request_id": "2bfdeb17cbd20de4",
+      "symbol": "NVDA.US",
+      "market": "us",
+      "side": "BUY",
+      "qty": 2,
+      "status": "submitted",
+      "price": 215.5,
+      "filled_qty": 0,
+      "avg_fill_price": null,
+      "broker_order_id": "FUTU.FH1C7D01A35D1FA000",
+      "strategy_id": "raw_score_timing_v1",
+      "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+      "notes": [
+        "executor_mode:live_submit",
+        "executor_risk_checked",
+        "explicit_submit_approved",
+        "sending_to_vnpy_gateway",
+        "sent_to_vnpy_gateway"
+      ],
+      "snapshots": {
+        "signal": {
+          "strategy_selection": {
+            "strategy_id": "trend_following",
+            "allow_trade": true,
+            "confidence": 0.78,
+            "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+            "source": "rules",
+            "risk_flags": [],
+            "metadata": {}
+          },
+          "score": 0.729
+        },
+        "risk": {
+          "total_nav": 164694.0873,
+          "cash": -189335.59,
+          "buying_power": 70254.8901,
+          "market_exposure_pct": 0.896214,
+          "symbol_exposure_pct": 0.002617,
+          "daily_new_pct": 0.0,
+          "current_drawdown_pct": 0.0,
+          "position_count": 10,
+          "market_existing_value": 147601.15,
+          "symbol_existing_value": 0.0
+        },
+        "events": [
+          {
+            "vt_orderid": "FUTU.FH1C7D01A35D1FA000"
+          }
+        ]
+      }
+    }
+  ]
 }
-2026-05-09 01:05:22,088 | 2659246 | 139822302541504 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(3) reason=CallClose
-2026-05-09 01:05:22,104 | 2659246 | 139822302541504 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(4) reason=CallClose
-[loop] iter=1 exit=0 timed_out=False env=REAL acct_last4=6219 initial_nav=164842.3688 current_nav=164634.9369 realized_loss_usd=207.43189999999595 tripped=True
-[loop] daily-loss circuit breaker tripped (realized_loss_usd=207.43 >= 200.0), stop
-[loop] exit
+2026-05-09 01:12:29,866 | 2665759 | 140701211993792 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(3) reason=CallClose
+2026-05-09 01:12:29,884 | 2665759 | 140701211993792 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(4) reason=CallClose
+[loop] iter=1 exit=0 timed_out=False env=REAL acct_last4=6219 initial_nav=164842.3688 current_nav=164694.0873 realized_loss_usd=148.28149999998277 tripped=False
