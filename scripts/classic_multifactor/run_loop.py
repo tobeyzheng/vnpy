@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -119,6 +120,27 @@ def _anchor_path_for(task_tag: str) -> Path:
     return LOG_DIR / f"loop_anchor_{task_tag}.json"
 
 
+def _extract_env_fingerprint(report: dict[str, Any] | None) -> dict[str, str | None]:
+    """Extract env/account_last4/market from live report for anchor fingerprint."""
+    if not report:
+        return {"env": None, "account_last4": None, "market": None}
+    market = report.get("market")
+    env = None
+    try:
+        env = (report.get("risk_config") or {}).get("gateway_env")
+    except Exception:
+        env = None
+    account_last4 = None
+    msg = report.get("account_message") or ""
+    m = re.search(r"uni_last4=(\w+)", msg)
+    if m:
+        account_last4 = m.group(1)
+    else:
+        m2 = re.search(r"acc_id=(\d+)", msg)
+        if m2:
+            account_last4 = m2.group(1)[-4:]
+    return {"env": env, "account_last4": account_last4, "market": market}
+
 def _read_current_nav(symbol: str) -> tuple[float | None, float | None, dict[str, Any] | None]:
     """Return (total_nav, cash, raw_report) from latest live report."""
     path = _report_path_for(symbol)
@@ -144,27 +166,59 @@ def _read_current_nav(symbol: str) -> tuple[float | None, float | None, dict[str
     return nav, cash, data
 
 
+def _fingerprint_mismatch(anchor: dict[str, Any], fp: dict[str, str | None]) -> str | None:
+    """Return a human-readable reason if anchor fingerprint disagrees with current fp, else None.
+    If either side missing a field, that field is skipped (best-effort)."""
+    for key in ("env", "account_last4", "market"):
+        a_val = anchor.get(key)
+        c_val = fp.get(key)
+        if a_val is None or c_val is None:
+            continue
+        if str(a_val) != str(c_val):
+            return f"{key}:{a_val}->{c_val}"
+    return None
+
 def _load_or_build_anchor(task_tag: str, today_str: str,
                           current_nav: float | None, current_cash: float | None,
-                          force_reset: bool) -> dict[str, Any] | None:
-    """Load anchor for today; rebuild if missing / stale / forced."""
+                          fp: dict[str, str | None],
+                          force_reset: bool) -> tuple[dict[str, Any] | None, bool, str | None]:
+    """Load anchor for today; rebuild if missing / stale / forced / env-mismatch.
+
+    Returns (anchor, just_rebuilt, stale_reason).
+    just_rebuilt=True means the anchor was (re)created in THIS call; caller should
+    skip circuit-breaker for this iteration to avoid false trips.
+    """
     path = _anchor_path_for(task_tag)
     anchor: dict[str, Any] | None = None
+    stale_reason: str | None = None
     if path.exists() and not force_reset:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 anchor = json.load(f)
         except Exception:
             anchor = None
-    if anchor and anchor.get("date") != today_str:
-        anchor = None  # stale, rebuild
+            stale_reason = "unreadable"
+    elif force_reset:
+        stale_reason = "force_reset"
+    if anchor is not None and anchor.get("date") != today_str:
+        stale_reason = f"date:{anchor.get('date')}->{today_str}"
+        anchor = None
+    if anchor is not None:
+        mismatch = _fingerprint_mismatch(anchor, fp)
+        if mismatch is not None:
+            stale_reason = f"env_mismatch:{mismatch}"
+            anchor = None
+    just_rebuilt = False
     if anchor is None:
         if current_nav is None:
-            return None  # cannot anchor yet
+            return None, False, stale_reason  # cannot anchor yet
         anchor = {
             "date": today_str,
             "initial_nav": current_nav,
             "initial_cash": current_cash,
+            "env": fp.get("env"),
+            "account_last4": fp.get("account_last4"),
+            "market": fp.get("market"),
             "created_ts": _now_bj().isoformat(),
         }
         LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -172,7 +226,8 @@ def _load_or_build_anchor(task_tag: str, today_str: str,
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(anchor, f, ensure_ascii=False, indent=2)
         os.replace(tmp, path)
-    return anchor
+        just_rebuilt = True
+    return anchor, just_rebuilt, stale_reason
 
 
 def _append_loop_log(task_tag: str, record: dict[str, Any]) -> None:
@@ -247,18 +302,22 @@ def main() -> int:
 
         # circuit breaker: daily loss via NAV anchor
         today_str = _now_bj().strftime("%Y-%m-%d")
-        cur_nav, cur_cash, _ = _read_current_nav(args.symbol)
-        anchor = _load_or_build_anchor(
-            task_tag, today_str, cur_nav, cur_cash,
+        cur_nav, cur_cash, cur_report = _read_current_nav(args.symbol)
+        fp = _extract_env_fingerprint(cur_report)
+        anchor, just_rebuilt, stale_reason = _load_or_build_anchor(
+            task_tag, today_str, cur_nav, cur_cash, fp,
             force_reset=(args.anchor_reset and iteration == 1),
         )
+        if stale_reason:
+            print(f"[loop] anchor stale ({stale_reason}), rebuilt={just_rebuilt}", flush=True)
         initial_nav = float(anchor["initial_nav"]) if anchor and anchor.get("initial_nav") is not None else None
         realized_loss_usd: float | None = None
         if initial_nav is not None and cur_nav is not None:
             realized_loss_usd = max(0.0, initial_nav - cur_nav)
 
         breaker_tripped = (
-            args.daily_loss_limit > 0
+            not just_rebuilt
+            and args.daily_loss_limit > 0
             and realized_loss_usd is not None
             and realized_loss_usd >= args.daily_loss_limit
         )
@@ -271,6 +330,14 @@ def main() -> int:
             "duration_ms": duration_ms,
             "report_path": str(_report_path_for(args.symbol)),
             "anchor_date": (anchor or {}).get("date"),
+            "anchor_env": (anchor or {}).get("env"),
+            "anchor_account_last4": (anchor or {}).get("account_last4"),
+            "anchor_market": (anchor or {}).get("market"),
+            "anchor_just_rebuilt": just_rebuilt,
+            "anchor_stale_reason": stale_reason,
+            "current_env": fp.get("env"),
+            "current_account_last4": fp.get("account_last4"),
+            "current_market": fp.get("market"),
             "initial_nav": initial_nav,
             "current_nav": cur_nav,
             "realized_loss_usd": realized_loss_usd,
@@ -280,6 +347,7 @@ def main() -> int:
         }
         _append_loop_log(task_tag, record)
         print(f"[loop] iter={iteration} exit={exit_code} timed_out={timed_out} "
+              f"env={fp.get('env')} acct_last4={fp.get('account_last4')} "
               f"initial_nav={initial_nav} current_nav={cur_nav} "
               f"realized_loss_usd={realized_loss_usd} tripped={breaker_tripped}", flush=True)
 
