@@ -21,9 +21,10 @@ class HealthcheckService:
         opend = OpenDClient().probe()
         sdk = FutuSdkClient().availability()
         account = FutuAccountProvider().get_summary()
-        reconciliation_path = self.runs / "futu_sim_position_reconcile.json"
-        reconciliation = ReconciliationGuard(reconciliation_path, fail_closed=False).evaluate()
+        sim_reconciliation = ReconciliationGuard(self.runs / "futu_sim_position_reconcile.json", fail_closed=False).evaluate()
+        live_reconciliation = ReconciliationGuard(self.runs / "futu_live_position_reconcile.json", fail_closed=False).evaluate()
         order_summary = OrderStateStore(self.runs / "orders").summary()
+
         report = {
             "python_runtime": sys.version.split()[0],
             "opend_reachable": opend.reachable,
@@ -36,11 +37,24 @@ class HealthcheckService:
             "readonly_position_count": len(account.positions),
             "readonly_order_count": len(account.orders),
             "reconciliation": {
-                "allowed": reconciliation.allowed,
-                "reasons": reconciliation.reasons,
-                "blocking_level": reconciliation.blocking_level,
-                "diff_symbols": reconciliation.diff_symbols,
+                "allowed": live_reconciliation.allowed,
+                "reasons": live_reconciliation.reasons,
+                "blocking_level": live_reconciliation.blocking_level,
+                "diff_symbols": live_reconciliation.diff_symbols,
             },
+            "sim_reconciliation": {
+                "allowed": sim_reconciliation.allowed,
+                "reasons": sim_reconciliation.reasons,
+                "blocking_level": sim_reconciliation.blocking_level,
+                "diff_symbols": sim_reconciliation.diff_symbols,
+            },
+            "live_reconciliation": {
+                "allowed": live_reconciliation.allowed,
+                "reasons": live_reconciliation.reasons,
+                "blocking_level": live_reconciliation.blocking_level,
+                "diff_symbols": live_reconciliation.diff_symbols,
+            },
+
             "order_state_total_count": order_summary.get("total", 0),
             "order_state_open_count": order_summary.get("open", 0),
             "order_state_failed_count": order_summary.get("failed", 0),

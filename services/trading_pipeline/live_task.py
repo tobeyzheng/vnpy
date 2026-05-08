@@ -4,31 +4,33 @@ import hashlib
 import json
 import math
 import os
+import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+
 from execution.live_bridge.models import LiveOrderRequest
 from execution.vnpy_bridge import VnpyEventRecorder, VnpyExecutor, VnpyGatewayEventBridge
 from services.common import OrderIntent
-from services.common.config_loader import load_yaml
+
 from services.execution_guard.idempotency import OrderIdempotencyGuard
 from services.execution_guard.live_context import LiveRiskContextBuilder
 from services.execution_guard.live_gate import LiveExecutionGate
 from services.execution_guard.precheck import SubmitPrecheck
 from services.execution_guard.reconciliation import ReconciliationGuard
 from services.futu_account import FutuAccountProvider, FutuQuoteClient
+from services.futu_opend import OpenDConfig
 from services.risk_engine import LiveRiskGuard
+
 from services.strategy.candidate_provider import UnifiedCandidateProvider
 from services.strategy.engine import StrategyEngine
 from services.strategy.external_selection import ExternalStrategySelectionStore
 from services.strategy.selection_store import StrategySelectionStore
 from services.trade_state import OrderStateStore
-from vnpy.event import EventEngine
-from vnpy.trader.engine import MainEngine
-from vnpy.trader.event import EVENT_ORDER, EVENT_TRADE
-from vnpy_futu import FutuGateway
+
+
 
 
 @dataclass(frozen=True)
@@ -48,19 +50,28 @@ class LiveTaskConfig:
     limit_price_buffer_pct: float = 0.0
     reconciliation_required: bool = True
     reconciliation_max_age_minutes: int = 60
+    reconciliation_filename: str = "futu_live_position_reconcile.json"
     strategy_selection_enabled: bool = True
     approval_required: bool = True
     approval_env_var_name: str = "VNPY_LIVE_APPROVED"
     live_submit_enabled: bool = False
     env_var_name: str = "VNPY_LIVE_SUBMIT"
+    gateway_name: str = "FUTU"
+    gateway_env: str = "REAL"
+    gateway_password_env_var_name: str = "FUTU_TRADE_UNLOCK_PASSWORD"
+    gateway_connect_wait_seconds: float = 2.0
+
 
 
 class LiveTradingPipeline:
     def __init__(self, repo_root: Path, config: LiveTaskConfig, *, live_submit: bool = False):
         self.repo_root = repo_root
         self.config = config
-        self.live_submit = bool(live_submit and config.live_submit_enabled and os.environ.get(config.env_var_name) == "YES")
+        self.live_submit_requested = bool(live_submit)
+        self.live_submit_block_reasons = self._live_submit_block_reasons(live_submit)
+        self.live_submit = bool(live_submit and not self.live_submit_block_reasons)
         self.report_path = repo_root / "state" / "runs" / config.report_filename
+
         self.quote_client = FutuQuoteClient()
         self.account_provider = FutuAccountProvider()
         self.strategy_engine = StrategyEngine(enable_strategy_selection=config.strategy_selection_enabled)
@@ -70,14 +81,16 @@ class LiveTradingPipeline:
         self.external_selection_store = ExternalStrategySelectionStore(repo_root)
         self.selection_store = StrategySelectionStore(repo_root / "state" / "runs" / "strategy_selection")
         limits_path = repo_root / "configs" / "risk" / "live_risk_limits.yaml"
-        limits = load_yaml(limits_path).get("limits", {}) if limits_path.exists() else {}
+        limits = self._load_simple_limits(limits_path) if limits_path.exists() else {}
+
         if config.max_order_value is not None:
             limits = {**limits, "max_order_value": config.max_order_value}
         self.live_gate = LiveExecutionGate(SubmitPrecheck(), LiveRiskGuard(limits))
         self.reconciliation_guard = ReconciliationGuard(
-            repo_root / "state" / "runs" / "futu_sim_position_reconcile.json",
+            repo_root / "state" / "runs" / config.reconciliation_filename,
             max_age_minutes=config.reconciliation_max_age_minutes,
             fail_closed=True,
+
         ) if config.reconciliation_required else None
         self.event_engine: EventEngine | None = None
         self.main_engine: MainEngine | None = None
@@ -99,9 +112,12 @@ class LiveTradingPipeline:
         report = {
             "task": self.config.task_name,
             "market": self.config.market,
-            "live_submit_requested": self.live_submit,
+            "live_submit_requested": self.live_submit_requested,
+            "live_submit_effective": self.live_submit,
             "live_submit_enabled": self.config.live_submit_enabled,
+            "live_submit_block_reasons": self.live_submit_block_reasons,
             "env_var_required": self.config.env_var_name,
+
             "risk_config": {
                 "budget_per_trade": self.config.budget_per_trade,
                 "max_order_value": self.config.max_order_value,
@@ -110,7 +126,11 @@ class LiveTradingPipeline:
                 "limit_price_buffer_pct": self.config.limit_price_buffer_pct,
                 "approval_required": self.config.approval_required,
                 "approval_env_var_required": self.config.approval_env_var_name,
+                "reconciliation_file": self.config.reconciliation_filename,
+                "gateway_name": self.config.gateway_name,
+                "gateway_env": self.config.gateway_env,
             },
+
             "account_status": account_summary.status,
             "account_message": account_summary.message,
             "selected": [{k: v for k, v in row.items() if k != "order_intent"} for row in selected],
@@ -123,26 +143,82 @@ class LiveTradingPipeline:
         return report
 
     def _build_executor(self) -> VnpyExecutor:
+        from vnpy.event import EventEngine
+        from vnpy.trader.engine import MainEngine
+        from vnpy.trader.event import EVENT_ORDER, EVENT_TRADE
+        from vnpy_futu import FutuGateway
+
         self.event_engine = EventEngine()
+
         self.main_engine = MainEngine(self.event_engine)
-        self.main_engine.add_gateway(FutuGateway)
+        self.main_engine.add_gateway(FutuGateway, self.config.gateway_name)
+
         self.event_recorder = VnpyEventRecorder(self.repo_root / "state" / "runs")
         self.event_recorder.register(self.event_engine)
         self.gateway_event_bridge = VnpyGatewayEventBridge(self.repo_root / "state" / "runs")
         self.event_engine.register(EVENT_ORDER, lambda event: self.gateway_event_bridge.order_event_to_state(event.data))
         self.event_engine.register(EVENT_TRADE, lambda event: self.gateway_event_bridge.trade_event_to_state(event.data))
         futu_market = "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else "CN"
-        self.main_engine.connect({"密码": "", "地址": "127.0.0.1", "端口": 11111, "市场": futu_market, "环境": "真实"}, "FUTU")
+        opend = OpenDConfig()
+        self.main_engine.connect({
+            "密码": os.environ.get(self.config.gateway_password_env_var_name, ""),
+            "地址": opend.host,
+            "端口": opend.port,
+            "市场": futu_market,
+            "环境": self.config.gateway_env,
+        }, self.config.gateway_name)
+        if self.config.gateway_connect_wait_seconds > 0:
+            time.sleep(float(self.config.gateway_connect_wait_seconds))
         return VnpyExecutor(
             self.repo_root / "state" / "runs",
             mode="live_submit",
             reconciliation_guard=self.reconciliation_guard,
             main_engine=self.main_engine,
-            gateway_name="FUTU",
+            gateway_name=self.config.gateway_name,
             explicit_submit=True,
         )
 
+
+    def _load_simple_limits(self, path: Path) -> dict[str, float | int | str]:
+        limits: dict[str, float | int | str] = {}
+        in_limits = False
+        for raw_line in path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line == "limits:":
+                in_limits = True
+                continue
+            if not in_limits or ":" not in line:
+                continue
+            key, value = line.split(":", 1)
+            value = value.strip()
+            try:
+                number = float(value)
+                limits[key.strip()] = int(number) if number.is_integer() else number
+            except ValueError:
+                limits[key.strip()] = value
+        return limits
+
+    def _live_submit_block_reasons(self, live_submit: bool) -> list[str]:
+
+        if not live_submit:
+            return []
+        reasons: list[str] = []
+        if not self.config.live_submit_enabled:
+            reasons.append("VNPY_LIVE_CONFIG is not YES")
+        if os.environ.get(self.config.env_var_name) != "YES":
+            reasons.append(f"{self.config.env_var_name} is not YES")
+        if self.config.approval_required and os.environ.get(self.config.approval_env_var_name) != "YES":
+            reasons.append(f"{self.config.approval_env_var_name} is not YES")
+        if self.config.gateway_env.upper() == "REAL" and os.environ.get("FUTU_TRADE_ENV", "").upper() != "REAL":
+            reasons.append("FUTU_TRADE_ENV is not REAL")
+        if self.config.gateway_env.upper() == "REAL" and not os.environ.get(self.config.gateway_password_env_var_name):
+            reasons.append(f"{self.config.gateway_password_env_var_name} is missing")
+        return reasons
+
     def _get_quote_rows(self, codes: list[str]) -> list[dict[str, Any]]:
+
         if not codes:
             return []
         return self.quote_client.get_snapshot(codes)

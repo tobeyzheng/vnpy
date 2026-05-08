@@ -402,7 +402,9 @@ created
 - `state/runs/us_futu_sim_session_report.json`
 - `state/runs/us_futu_sim_session_state.json`
 - `state/runs/futu_sim_position_reconcile.json`
+- `state/runs/futu_live_position_reconcile.json`
 - `state/runs/orders/<request_id>.json`
+
 - `state/runs/vnpy_gateway_events_YYYYMMDD.jsonl`
 
 ### 简报 / 汇总
@@ -510,7 +512,8 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 
 - Futu SIM session 继续抽象成统一参数化 session pipeline。
 - Futu SIM session 增强成交回报轮询与撤单超时处理。
-- `VnpyExecutor` 的 `sim explicit-submit` 模式默认仍需关闭。
+- `VnpyExecutor` 的 `sim explicit-submit` / `live_submit` 模式默认仍需关闭，只有三重环境开关、审批、REAL 环境和 live reconciliation 同时满足才可提交。
+
 - 订单持久化幂等去重继续强化。
 - Futu SIM 与本地账本自动修复策略。
 - 动态 candidate 历史化。
@@ -563,8 +566,10 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 - `execution/vnpy_bridge/event_recorder.py`
 - `services/execution_guard/reconciliation.py`
 - `scripts/run_healthcheck.py`
+- `scripts/reconcile_hk_live_positions.py`
 
 ## 16. 关键结论
+
 
 - 当前本地模拟交易入口：`scripts/run_hk_sim_task.py`、`scripts/run_us_sim_task.py`。
 - 当前 Futu SIM 账户会话入口：`scripts/run_hk_futu_sim_session.py`、`scripts/run_us_futu_sim_session.py`。

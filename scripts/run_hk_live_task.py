@@ -21,8 +21,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-selected", type=int, default=3)
     parser.add_argument("--max-candidates", type=int, default=30)
     parser.add_argument("--reconciliation-max-age", type=int, default=60)
+    parser.add_argument("--reconciliation-file", default="futu_live_position_reconcile.json")
     parser.add_argument("--limit-price-buffer-pct", type=float, default=0.0)
+    parser.add_argument("--gateway-connect-wait", type=float, default=2.0)
     parser.add_argument("--no-approval-required", action="store_true")
+
     return parser
 
 
@@ -42,9 +45,12 @@ def main() -> None:
         max_selected=args.max_selected,
         max_order_value=args.max_order_value,
         reconciliation_max_age_minutes=args.reconciliation_max_age,
+        reconciliation_filename=args.reconciliation_file,
         limit_price_buffer_pct=args.limit_price_buffer_pct,
         approval_required=not args.no_approval_required,
         live_submit_enabled=os.environ.get("VNPY_LIVE_CONFIG") == "YES",
+        gateway_connect_wait_seconds=args.gateway_connect_wait,
+
     )
     pipeline = LiveTradingPipeline(REPO_ROOT, config, live_submit=args.live_submit)
     report = pipeline.run()
