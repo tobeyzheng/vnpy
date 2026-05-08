@@ -2,12 +2,9 @@
   "task": "classic_multifactor_NVDA_US",
   "market": "us",
   "live_submit_requested": true,
-  "live_submit_effective": false,
+  "live_submit_effective": true,
   "live_submit_enabled": true,
-  "live_submit_block_reasons": [
-    "FUTU_TRADE_ENV is not REAL",
-    "FUTU_TRADE_UNLOCK_PASSWORD is missing"
-  ],
+  "live_submit_block_reasons": [],
   "env_var_required": "VNPY_LIVE_SUBMIT",
   "risk_config": {
     "budget_per_trade": 3000.0,
@@ -27,7 +24,7 @@
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 215.0545,
+      "price": 214.76,
       "task_score": 87.79,
       "raw_score": 0.7179,
       "allow_trade": false,

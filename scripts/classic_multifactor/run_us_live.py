@@ -28,6 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit-price-buffer-pct", type=float, default=0.0)
     parser.add_argument("--no-approval-required", action="store_true")
     parser.add_argument("--simulate", action="store_true", help="使用富途模拟账户环境（SIMULATE）而非实盘环境（REAL）")
+    parser.add_argument("--minute-profile", action="store_true", help="使用保守分钟级降频参数")
     return parser
 
 
@@ -61,6 +62,28 @@ def main() -> None:
     # 加载classic_multifactor配置
     config_data = load_classic_multifactor_config(args.config)
     setting = config_data.get("setting", {})
+
+    # 如果启用分钟级配置，覆盖部分参数
+    if args.minute_profile:
+        setting.update({
+            "fast_window": 6,
+            "slow_window": 24,
+            "momentum_window": 12,
+            "atr_window": 14,
+            "signal_interval_minutes": 5,
+            "confirm_bars": 1,
+            "entry_score": 0.66,
+            "min_volume_ratio": 0.8,
+            "min_atr_pct": 0.0012,
+            "min_trend_score": 0.55,
+            "max_intraday_trades": 4,
+            "entry_cooldown_minutes": 30,
+            "min_hold_minutes": 20,
+            "no_new_entry_after": "15:30",
+            "stop_atr": 1.5,
+            "take_profit_atr": 2.5,
+            "trailing_atr": 2.0,
+        })
 
     # 注册策略
     register_classic_multifactor_strategy()
@@ -96,7 +119,9 @@ def main() -> None:
         "raw_score": 0.8,  # 默认高分，确保被选中
         "signals": [{"score": 0.8}],
         "rationale": f"classic_multifactor策略标的: {args.symbol}",
-        "strategy_selection": {"strategy_id": "classic_multifactor_cta", "allow_trade": True}
+        "strategy_selection": {"strategy_id": "classic_multifactor_cta", "allow_trade": True},
+        "minute_profile": args.minute_profile,
+        "strategy_config": setting
     }
 
     # 保存候选池到文件
