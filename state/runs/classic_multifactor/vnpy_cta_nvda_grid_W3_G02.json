@@ -7,7 +7,7 @@
   "interval": "1m",
   "start": "2026-02-08T00:00:00",
   "end": "2026-03-07T00:00:00",
-  "elapsed_sec": 1.22,
+  "elapsed_sec": 1.2,
   "setting": {
     "fast_window": 6,
     "slow_window": 24,
