@@ -36,7 +36,10 @@ class FutuSdkClient:
         self.expect_trd_env = (expect_trd_env or "").upper() or None
         self.expect_acc_type = (expect_acc_type or "").upper() or None
         self.expect_market = (expect_market or "").upper() or None
-        self.expect_last4 = (expect_last4 or self.account_last4 or "").strip() or None
+        # expect_last4 is strictly optional hardening for strict selection:
+        # only honor it when explicitly provided by the caller; never fall back to
+        # account_last4 here, otherwise strict mode would silently filter by 6219.
+        self.expect_last4 = (expect_last4 or "").strip() or None
         try:
             import futu  # type: ignore
             self._futu = futu
@@ -114,15 +117,26 @@ class FutuSdkClient:
         }
 
     def _pick_account_strict(self, accounts_df):
-        """Live-strict selection: must find exactly one account that satisfies
-        trd_env / acc_type / market auth / ACTIVE status / last4 constraints."""
+        """Live-strict selection by OpenD-returned triple (trd_env + acc_type + acc_status=ACTIVE).
+
+        Required filters (always applied when configured):
+          - trd_env  == self.expect_trd_env (e.g. REAL)
+          - acc_type == self.expect_acc_type (e.g. MARGIN)
+          - acc_status == ACTIVE (DISABLED/other statuses are rejected)
+          - expect_market in trdmarket_auth (if expect_market configured)
+
+        Optional hardening:
+          - If self.expect_last4 is explicitly set (non-empty), also require last4 to match.
+            When not set, last4 is NOT required — selection is driven purely by the triple.
+
+        Exactly-one match required; 0 or >1 matches both raise FutuLiveAccountMismatchError.
+        """
         records = accounts_df.to_dict(orient="records") if hasattr(accounts_df, "to_dict") else []
         if not records:
             raise FutuLiveAccountMismatchError("no accounts returned from OpenD")
 
-        expect_last4 = self.expect_last4 or self.account_last4
-        if not expect_last4:
-            raise FutuLiveAccountMismatchError("live-strict requires expect_last4 (FUTU_ACCOUNT_LAST4) to be set")
+        # last4 is now an optional hardening condition; only apply when explicitly provided.
+        expect_last4 = (self.expect_last4 or "").strip() or None
 
         matches: list[tuple[dict[str, Any], str]] = []
         rejections: list[dict[str, Any]] = []
@@ -139,9 +153,13 @@ class FutuSdkClient:
                 auth = [str(x).upper() for x in (row.get("trdmarket_auth") or [])]
                 if auth and self.expect_market not in auth:
                     reasons.append(f"market {self.expect_market} not in trdmarket_auth")
-            matched_last4, matched_field = self._row_matches_last4(row, expect_last4)
-            if not matched_last4:
-                reasons.append(f"last4!={expect_last4}")
+            matched_field = "triple"
+            if expect_last4:
+                matched_last4, last4_field = self._row_matches_last4(row, expect_last4)
+                if not matched_last4:
+                    reasons.append(f"last4!={expect_last4}")
+                else:
+                    matched_field = last4_field
             if reasons:
                 brief = self._row_brief(row)
                 brief["reject_reasons"] = reasons
@@ -156,13 +174,14 @@ class FutuSdkClient:
             raise FutuLiveAccountMismatchError(
                 f"no account matches strict criteria (expect trd_env={self.expect_trd_env},"
                 f" acc_type={self.expect_acc_type}, market={self.expect_market},"
-                f" last4={expect_last4}); candidates={rejections}"
+                f" acc_status=ACTIVE, last4={expect_last4}); candidates={rejections}"
             )
         # multiple matches -> ambiguous, refuse to proceed
         ambiguous = [self._row_brief(r) for r, _ in matches]
         raise FutuLiveAccountMismatchError(
-            f"multiple accounts matched strict criteria (expect last4={expect_last4},"
-            f" trd_env={self.expect_trd_env}); matched={ambiguous}"
+            f"multiple accounts matched strict criteria (expect trd_env={self.expect_trd_env},"
+            f" acc_type={self.expect_acc_type}, market={self.expect_market},"
+            f" acc_status=ACTIVE, last4={expect_last4}); matched={ambiguous}"
         )
 
     def _resolve_trd_env(self, row: dict[str, Any]):
