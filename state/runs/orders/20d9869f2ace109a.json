@@ -1,0 +1,58 @@
+{
+  "request_id": "20d9869f2ace109a",
+  "symbol": "NVDA.US",
+  "market": "us",
+  "side": "BUY",
+  "qty": 2,
+  "status": "submitted",
+  "price": 215.6,
+  "filled_qty": 0,
+  "avg_fill_price": null,
+  "broker_order_id": "FUTU.FH1C7D051E776E8000",
+  "strategy_id": "raw_score_timing_v1",
+  "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+  "notes": [
+    "executor_mode:live_submit",
+    "executor_risk_checked",
+    "explicit_submit_approved",
+    "sending_to_vnpy_gateway",
+    "sent_to_vnpy_gateway",
+    "broker_order:SUBMITTING"
+  ],
+  "snapshots": {
+    "signal": {
+      "strategy_selection": {
+        "strategy_id": "trend_following",
+        "allow_trade": true,
+        "confidence": 0.78,
+        "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+        "source": "rules",
+        "risk_flags": [],
+        "metadata": {}
+      },
+      "score": 0.7293
+    },
+    "risk": {
+      "total_nav": 164838.6437,
+      "cash": -199508.89,
+      "buying_power": 61809.1177,
+      "market_exposure_pct": 0.836449,
+      "symbol_exposure_pct": 0.010463,
+      "daily_new_pct": 0.015701,
+      "current_drawdown_pct": 0.0003,
+      "position_count": 10,
+      "market_existing_value": 137879.18,
+      "symbol_existing_value": 1293.48
+    },
+    "events": [
+      {
+        "vt_orderid": "FUTU.FH1C7D051E776E8000"
+      },
+      {
+        "event_type": "order",
+        "status": "SUBMITTING",
+        "traded": 0
+      }
+    ]
+  }
+}

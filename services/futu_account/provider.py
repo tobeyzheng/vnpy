@@ -36,6 +36,55 @@ class FutuAccountProvider:
             expect_last4=self.expect_last4,
         )
 
+    def get_today_trades(self, symbol: str | None = None) -> list[datetime]:
+        """获取今日成交记录的时间戳列表。
+
+        Args:
+            symbol: 可选，指定标的符号，如不指定则返回所有标的的成交记录
+
+        Returns:
+            今日成交记录的时间戳列表，按时间升序排列
+        """
+        sdk = self._build_sdk()
+        try:
+            # 获取账户快照中的订单信息
+            snapshot = sdk.account_snapshot()
+            orders = snapshot.get("orders", [])
+
+            today_trades = []
+            today = datetime.now().date()
+
+            for order in orders:
+                # 检查订单状态是否为成交状态
+                order_status = str(order.get("order_status", "")).upper()
+                if order_status not in ("FILLED", "PART_FILLED"):
+                    continue
+
+                # 检查标的符号匹配
+                order_symbol = str(order.get("code", ""))
+                if symbol and order_symbol != symbol:
+                    continue
+
+                # 尝试从订单信息中提取成交时间
+                # Futu订单可能包含成交时间字段，如"trade_time"或"update_time"
+                trade_time_str = order.get("trade_time") or order.get("update_time")
+                if trade_time_str:
+                    try:
+                        trade_time = datetime.fromisoformat(str(trade_time_str))
+                        if trade_time.date() == today:
+                            today_trades.append(trade_time)
+                    except (ValueError, TypeError):
+                        continue
+
+            # 按时间排序
+            today_trades.sort()
+            return today_trades
+
+        except Exception as e:
+            # 如果获取失败，返回空列表
+            print(f"获取今日成交记录失败: {e}")
+            return []
+
     def get_summary(self) -> FutuAccountSummary:
         probe = OpenDClient().probe()
         if not probe.reachable:

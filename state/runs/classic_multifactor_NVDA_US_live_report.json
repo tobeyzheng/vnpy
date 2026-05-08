@@ -24,9 +24,9 @@
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 215.5,
-      "task_score": 94.01,
-      "raw_score": 0.729,
+      "price": 215.2,
+      "task_score": 94.07,
+      "raw_score": 0.7282,
       "allow_trade": true,
       "target_position_pct": 0.18,
       "strategy_selection": {
@@ -40,24 +40,26 @@
       },
       "external_strategy_selection": null,
       "qty": 2,
-      "order_value": 431.0,
+      "order_value": 430.4,
       "order_value_limit": 1000.0,
       "sizing_status": "ok",
       "risk_context": {
-        "total_nav": 164694.0873,
-        "cash": -189335.59,
-        "buying_power": 70254.8901,
-        "market_exposure_pct": 0.896214,
-        "symbol_exposure_pct": 0.002617,
-        "daily_new_pct": 0.0,
-        "current_drawdown_pct": 0.0,
+        "total_nav": 164941.9947,
+        "cash": -209701.98,
+        "buying_power": 53246.2317,
+        "market_exposure_pct": 0.843895,
+        "symbol_exposure_pct": 0.018249,
+        "daily_new_pct": 0.026148,
+        "current_drawdown_pct": 0.0028,
         "position_count": 10,
-        "market_existing_value": 147601.15,
-        "symbol_existing_value": 0.0
+        "market_existing_value": 139193.72,
+        "symbol_existing_value": 2579.64
       },
       "live_gate": {
-        "allowed": true,
-        "reasons": []
+        "allowed": false,
+        "reasons": [
+          "market exposure exceeds limit 0.95"
+        ]
       },
       "idempotency": {
         "allowed": true,
@@ -65,58 +67,5 @@
       }
     }
   ],
-  "order_states": [
-    {
-      "request_id": "2bfdeb17cbd20de4",
-      "symbol": "NVDA.US",
-      "market": "us",
-      "side": "BUY",
-      "qty": 2,
-      "status": "submitted",
-      "price": 215.5,
-      "filled_qty": 0,
-      "avg_fill_price": null,
-      "broker_order_id": "FUTU.FH1C7D01A35D1FA000",
-      "strategy_id": "raw_score_timing_v1",
-      "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
-      "notes": [
-        "executor_mode:live_submit",
-        "executor_risk_checked",
-        "explicit_submit_approved",
-        "sending_to_vnpy_gateway",
-        "sent_to_vnpy_gateway"
-      ],
-      "snapshots": {
-        "signal": {
-          "strategy_selection": {
-            "strategy_id": "trend_following",
-            "allow_trade": true,
-            "confidence": 0.78,
-            "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
-            "source": "rules",
-            "risk_flags": [],
-            "metadata": {}
-          },
-          "score": 0.729
-        },
-        "risk": {
-          "total_nav": 164694.0873,
-          "cash": -189335.59,
-          "buying_power": 70254.8901,
-          "market_exposure_pct": 0.896214,
-          "symbol_exposure_pct": 0.002617,
-          "daily_new_pct": 0.0,
-          "current_drawdown_pct": 0.0,
-          "position_count": 10,
-          "market_existing_value": 147601.15,
-          "symbol_existing_value": 0.0
-        },
-        "events": [
-          {
-            "vt_orderid": "FUTU.FH1C7D01A35D1FA000"
-          }
-        ]
-      }
-    }
-  ]
+  "order_states": []
 }

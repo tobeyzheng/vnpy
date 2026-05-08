@@ -29,7 +29,7 @@ from services.strategy.engine import StrategyEngine
 from services.strategy.external_selection import ExternalStrategySelectionStore
 from services.strategy.selection_store import StrategySelectionStore
 from services.trade_state import OrderStateStore
-
+from scripts.classic_multifactor.minute_guard import MinuteTradeGuard, MinuteTradeGuardConfig
 
 
 
@@ -90,6 +90,17 @@ class LiveTradingPipeline:
         if config.max_order_value is not None:
             limits = {**limits, "max_order_value": config.max_order_value}
         self.live_gate = LiveExecutionGate(SubmitPrecheck(), LiveRiskGuard(limits))
+
+        # 创建minute_guard实例
+        self.minute_guard = MinuteTradeGuard(
+            MinuteTradeGuardConfig(
+                max_intraday_trades=limits.get("max_intraday_trades", 4),
+                entry_cooldown_minutes=limits.get("entry_cooldown_minutes", 30),
+                min_hold_minutes=limits.get("min_hold_minutes", 20),
+                no_new_entry_after=limits.get("no_new_entry_after", "15:30"),
+            )
+        )
+
         self.reconciliation_guard = ReconciliationGuard(
             repo_root / "state" / "runs" / config.reconciliation_filename,
             max_age_minutes=config.reconciliation_max_age_minutes,
@@ -118,6 +129,33 @@ class LiveTradingPipeline:
             expect_market=expect_market or None,
             expect_last4=None,
         )
+
+    def _sync_today_trades(self, symbol: str) -> list[datetime]:
+        """同步今日成交记录。
+
+        Args:
+            symbol: 交易标的符号
+
+        Returns:
+            今日成交记录的时间戳列表
+        """
+        try:
+            # 从Futu平台获取今日成交记录
+            today_trades = self.account_provider.get_today_trades(symbol)
+
+            # 记录同步结果
+            print(f"[sync_today_trades] 同步到 {len(today_trades)} 笔今日成交记录")
+            if today_trades:
+                for i, trade_time in enumerate(today_trades[:5]):  # 只显示前5笔
+                    print(f"  [{i+1}] {trade_time.strftime('%H:%M:%S')}")
+                if len(today_trades) > 5:
+                    print(f"  ... 还有 {len(today_trades) - 5} 笔成交记录")
+
+            return today_trades
+
+        except Exception as e:
+            print(f"[sync_today_trades] 同步失败: {e}")
+            return []
 
     def run(self) -> dict[str, Any]:
         # Plan C: live-strict account selection — abort before anything else if mismatch.
@@ -309,11 +347,16 @@ class LiveTradingPipeline:
 
     def _build_candidate_pool(self, candidates: list[dict[str, Any]], quote_map: dict[str, dict[str, Any]], account_summary: Any) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
+
+        # 同步今日成交记录
+        today_trades = self._sync_today_trades(candidates[0]["symbol"] if candidates else "")
+
         for candidate in candidates:
             symbol = candidate["symbol"]
             quote = quote_map.get(symbol)
             if not quote:
                 continue
+
             external_selection = self.external_selection_store.load_latest(self.config.market, symbol)
             evaluation = self.strategy_engine.evaluate_candidate(
                 candidate=candidate,
@@ -324,14 +367,17 @@ class LiveTradingPipeline:
             )
             strategy_selection = evaluation.metadata.get("strategy_selection", {})
             self.selection_store.append(self.config.market, {"symbol": symbol, "market": self.config.market, "strategy_selection": strategy_selection, "raw_score": evaluation.raw_score, "task_score": evaluation.task_score})
+
             price = self._normalize_limit_price(float(quote.get("price", quote.get("last_price")) or 0))
             qty = self._calc_qty(price, evaluation.signal.target_position_pct)
             order_value = self._order_value(qty, price)
             risk_context = self.risk_context_builder.build(account_summary, symbol=symbol, order_value=order_value)
             side = "BUY" if evaluation.signal.direction == "long" and evaluation.signal.allow_trade else ""
+
             gate_result = None
             idem_result = None
             intent = self._build_intent(symbol, side, qty, price, evaluation, risk_context.to_dict()) if side and qty > 0 else None
+
             if intent:
                 live_request = LiveOrderRequest(
                     request_id=intent.request_id,
@@ -347,21 +393,33 @@ class LiveTradingPipeline:
                     source="live_pipeline",
                     mode="live" if self.live_submit else "paper",
                 )
-                gate_result = self.live_gate.evaluate(
-                    live_request,
-                    mode="live" if self.live_submit else "paper",
-                    signal_age_seconds=0,
-                    market_existing_pct=risk_context.market_exposure_pct,
-                    daily_new_pct=risk_context.daily_new_pct,
-                    current_drawdown_pct=risk_context.current_drawdown_pct,
-                    account_status=account_summary.status,
-                    approval_status=self._approval_status(),
-                    market_existing_value=risk_context.symbol_existing_value,
-                    budget_per_trade=float(self.config.budget_per_trade or 0.0),
-                )
+
+                # 使用同步的今日成交记录进行minute_guard检查
+                now = datetime.now()
+                minute_guard_result = self.minute_guard.can_enter(now, trade_times=today_trades, last_trade_at=None)
+
+                if not minute_guard_result.allowed:
+                    # minute_guard检查失败，不允许交易
+                    gate_result = LiveGateResult(allowed=False, reasons=[minute_guard_result.reason])
+                else:
+                    # minute_guard检查通过，继续其他检查
+                    gate_result = self.live_gate.evaluate(
+                        live_request,
+                        mode="live" if self.live_submit else "paper",
+                        signal_age_seconds=0,
+                        market_existing_pct=risk_context.market_exposure_pct,
+                        daily_new_pct=risk_context.daily_new_pct,
+                        current_drawdown_pct=risk_context.current_drawdown_pct,
+                        account_status=account_summary.status,
+                        approval_status=self._approval_status(),
+                        market_existing_value=risk_context.symbol_existing_value,
+                        budget_per_trade=float(self.config.budget_per_trade or 0.0),
+                    )
+
                 idem_result = self.idempotency_guard.evaluate(intent.request_id)
                 if not idem_result.allowed or not gate_result.allowed:
                     intent = None
+
             rows.append({
                 "symbol": symbol,
                 "name": candidate.get("name"),
@@ -380,7 +438,10 @@ class LiveTradingPipeline:
                 "live_gate": gate_result.__dict__ if gate_result else None,
                 "idempotency": idem_result.__dict__ if idem_result else None,
                 "order_intent": intent,
+                "today_trades_count": len(today_trades),  # 记录今日成交次数
+                "minute_guard_result": minute_guard_result.__dict__ if intent else None,  # 记录minute_guard检查结果
             })
+
         return rows
 
     def _build_intent(self, symbol: str, side: str, qty: int, price: float, evaluation: Any, risk_snapshot: dict[str, Any] | None = None) -> OrderIntent:

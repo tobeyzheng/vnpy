@@ -1,0 +1,26 @@
+{
+  "request_id": "FUTU.FH1C7D02CC5A6E8000",
+  "symbol": "NVDA.SMART",
+  "market": "SMART",
+  "side": "BUY",
+  "qty": 2,
+  "status": "submitted",
+  "price": 215.61,
+  "filled_qty": 0,
+  "avg_fill_price": null,
+  "broker_order_id": "FUTU.FH1C7D02CC5A6E8000",
+  "strategy_id": "vnpy_gateway_event",
+  "reason": "order_event",
+  "notes": [
+    "broker_order:SUBMITTING"
+  ],
+  "snapshots": {
+    "events": [
+      {
+        "event_type": "order",
+        "status": "SUBMITTING",
+        "traded": 0
+      }
+    ]
+  }
+}

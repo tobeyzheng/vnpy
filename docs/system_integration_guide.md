@@ -200,7 +200,68 @@ created
 - `VnpyExecutor` paper dry-run 会写入 `state/runs/orders/<request_id>.json`。
 - `HealthcheckService` 会统计订单状态数量。
 
-## 7. vn.py / Futu 执行桥接
+## 7. 风控与执行限制
+
+### 7.1 max_intraday_trades限制失效问题与修复
+
+#### 问题描述
+在`run_loop.py`每5分钟启动新进程的架构下，`max_intraday_trades`限制失效，导致实际成交次数超过配置限制。
+
+#### 根本原因
+- `run_loop.py`每5分钟启动一个新的`run.py`进程
+- 每个进程都从零初始化自己的`trade_times`列表
+- `minute_guard`只能看到当前进程内的交易记录
+- 前序进程的交易记录不会传递给后续进程
+
+#### 解决方案：账户同步机制
+已实现账户同步方案，在每次`run.py`启动时从Futu平台同步实际成交次数：
+
+1. **FutuAccountProvider新增方法**：
+   - `get_today_trades(symbol)`：从Futu平台获取今日成交记录的时间戳列表
+
+2. **LiveTradingPipeline集成minute_guard**：
+   - 在`_build_candidate_pool`方法中同步今日成交记录
+   - 在交易决策前使用同步的成交记录进行`minute_guard`检查
+   - 确保跨进程状态一致性
+
+3. **执行流程**：
+   ```
+   run_loop.py (进程A) → run.py → 同步今日成交记录 → minute_guard检查 → 交易决策
+   run_loop.py (进程B) → run.py → 同步今日成交记录 → minute_guard检查 → 交易决策
+   ```
+
+#### 配置示例
+```yaml
+# configs/risk/live_risk_limits.yaml
+max_intraday_trades: 4           # 当日最大交易次数
+entry_cooldown_minutes: 30       # 入场冷却时间（分钟）
+min_hold_minutes: 20             # 最小持仓时间（分钟）
+no_new_entry_after: "15:30"      # 禁止新入场时间
+```
+
+#### 验证方法
+- 检查`state/runs/`目录下的报告文件
+- 查看`today_trades_count`字段确认同步的成交次数
+- 检查`minute_guard_result`字段确认限制检查结果
+
+### 7.2 其他风控限制
+
+#### 单笔订单限制
+- `max_order_value`：单笔订单最大金额
+- `max_single_position_pct`：单标的最大持仓比例
+- `max_daily_new_position_pct`：当日新增持仓比例限制
+
+#### 账户级限制
+- `max_market_exposure_pct`：市场总暴露比例
+- `max_drawdown_pct`：最大回撤限制
+- `max_signal_age_seconds`：信号有效期限制
+
+#### 执行检查
+- `OrderIdempotencyGuard`：订单幂等性检查，防止重复提交
+- `ReconciliationGuard`：对账检查，确保账户状态一致
+- `SubmitPrecheck`：提交前检查，验证订单参数合法性
+
+## 8. vn.py / Futu 执行桥接
 
 ### 现有 draft 桥接
 
@@ -254,7 +315,7 @@ created
 
 当前没有直接修改 `vnpy_futu/futu_gateway.py`，避免影响网关原生行为。
 
-## 8. reconciliation 与执行阻断
+## 9. reconciliation 与执行阻断
 
 ### 对账脚本
 
@@ -286,7 +347,7 @@ created
 - `scripts/run_us_futu_sim_session.py`
 - `services/healthcheck/checks.py`
 
-## 9. 回测相关文件
+## 10. 回测相关文件
 
 ### 单标的 CTA 回测
 
@@ -321,7 +382,7 @@ created
 - 输出：`state/runs/backtest_scaffold_report.json`
 - Alpha 尝试版：`scripts/run_vnpy_alpha_backtest.py`
 
-## 10. Knot Agent 模块位置
+## 11. Knot Agent 模块位置
 
 ### 评估适配层
 
@@ -340,7 +401,7 @@ created
 - Prompt 设计：`docs/knot_agent_prompt_design.md`
 - 远程批量集成：`docs/remote_knot_batch_integration.md`
 
-## 11. 健康检查 / daily brief / 告警
+## 12. 健康检查 / daily brief / 告警
 
 ### 健康检查服务
 
@@ -378,7 +439,7 @@ created
 - `state/runs/healthcheck.json`
 - `state/runs/portfolio_brief.json`
 
-## 12. 当前运行产物 / 状态文件
+## 13. 当前运行产物 / 状态文件
 
 ### Candidate / Knot
 
@@ -420,7 +481,7 @@ created
 - `state/runs/vnpy_portfolio_backtest_report.json`
 - `state/runs/shared_cash_portfolio_backtest_report.json`
 
-## 13. 当前系统结构概览
+## 14. 当前系统结构概览
 
 ### 盘前研究链
 
@@ -488,7 +549,7 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 -> daily brief / alerts
 ```
 
-## 14. 当前接入完成度
+## 15. 当前接入完成度
 
 ### 已完成
 
@@ -523,7 +584,7 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 - 行业/策略/市场暴露归因。
 - 真正组合再平衡。
 
-## 15. 最小接入建议
+## 16. 最小接入建议
 
 ### 只接交易主流程
 
@@ -568,7 +629,7 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 - `scripts/run_healthcheck.py`
 - `scripts/reconcile_hk_live_positions.py`
 
-## 16. 关键结论
+## 17. 关键结论
 
 
 - 当前本地模拟交易入口：`scripts/run_hk_sim_task.py`、`scripts/run_us_sim_task.py`。
