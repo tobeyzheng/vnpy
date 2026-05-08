@@ -1,0 +1,18 @@
+[
+  {
+    "symbol": "NVDA.US",
+    "market": "us",
+    "name": "NVDA",
+    "raw_score": 0.8,
+    "signals": [
+      {
+        "score": 0.8
+      }
+    ],
+    "rationale": "classic_multifactor策略标的: NVDA.US",
+    "strategy_selection": {
+      "strategy_id": "classic_multifactor_cta",
+      "allow_trade": true
+    }
+  }
+]

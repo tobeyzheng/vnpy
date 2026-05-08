@@ -103,7 +103,7 @@ class LiveTradingPipeline:
         quote_rows = self._get_quote_rows(codes)
         quote_map = self._build_symbol_map(quote_rows, "code")
         account_summary = self.account_provider.get_summary()
-        pool = self._build_candidate_pool(candidates, quote_map, account_summary.status)
+        pool = self._build_candidate_pool(candidates, quote_map, account_summary)
         pool.sort(key=lambda row: row["task_score"], reverse=True)
         selected = pool[: max(self.config.max_selected, 0)]
 
