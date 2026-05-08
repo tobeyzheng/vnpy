@@ -24,9 +24,9 @@
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 215.43,
+      "price": 215.4599,
       "task_score": 94.02,
-      "raw_score": 0.7288,
+      "raw_score": 0.7289,
       "allow_trade": true,
       "target_position_pct": 0.18,
       "strategy_selection": {
@@ -40,24 +40,26 @@
       },
       "external_strategy_selection": null,
       "qty": 2,
-      "order_value": 430.86,
+      "order_value": 430.9198,
       "order_value_limit": 1000.0,
       "sizing_status": "ok",
       "risk_context": {
-        "total_nav": 164733.5529,
-        "cash": -189334.84,
-        "buying_power": 70289.5789,
-        "market_exposure_pct": 0.896029,
-        "symbol_exposure_pct": 0.002615,
+        "total_nav": 164634.9369,
+        "cash": -189332.83,
+        "buying_power": 70215.2623,
+        "market_exposure_pct": 0.896488,
+        "symbol_exposure_pct": 0.002617,
         "daily_new_pct": 0.0,
-        "current_drawdown_pct": 0.0761,
+        "current_drawdown_pct": 0.0825,
         "position_count": 10,
-        "market_existing_value": 147606.1,
+        "market_existing_value": 147593.3,
         "symbol_existing_value": 0.0
       },
       "live_gate": {
-        "allowed": true,
-        "reasons": []
+        "allowed": false,
+        "reasons": [
+          "drawdown stop triggered at 0.0825"
+        ]
       },
       "idempotency": {
         "allowed": true,
@@ -65,62 +67,5 @@
       }
     }
   ],
-  "order_states": [
-    {
-      "request_id": "dd1dee45e4352ff7",
-      "symbol": "NVDA.US",
-      "market": "us",
-      "side": "BUY",
-      "qty": 2,
-      "status": "rejected",
-      "price": 215.43,
-      "filled_qty": 0,
-      "avg_fill_price": null,
-      "broker_order_id": null,
-      "strategy_id": "raw_score_timing_v1",
-      "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
-      "notes": [
-        "executor_mode:live_submit",
-        "reconciliation_blocked"
-      ],
-      "snapshots": {
-        "signal": {
-          "strategy_selection": {
-            "strategy_id": "trend_following",
-            "allow_trade": true,
-            "confidence": 0.78,
-            "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
-            "source": "rules",
-            "risk_flags": [],
-            "metadata": {}
-          },
-          "score": 0.7288
-        },
-        "risk": {
-          "total_nav": 164733.5529,
-          "cash": -189334.84,
-          "buying_power": 70289.5789,
-          "market_exposure_pct": 0.896029,
-          "symbol_exposure_pct": 0.002615,
-          "daily_new_pct": 0.0,
-          "current_drawdown_pct": 0.0761,
-          "position_count": 10,
-          "market_existing_value": 147606.1,
-          "symbol_existing_value": 0.0
-        },
-        "events": [
-          {
-            "reconciliation": {
-              "allowed": false,
-              "reasons": [
-                "reconciliation file missing"
-              ],
-              "blocking_level": "block",
-              "diff_symbols": []
-            }
-          }
-        ]
-      }
-    }
-  ]
+  "order_states": []
 }
