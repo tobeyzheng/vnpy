@@ -18,7 +18,7 @@ from scripts.classic_multifactor.data import VnpyBarRepository, parse_us_symbol
 
 SYMBOL = "NVDA.US"
 INTERVAL = "1m"
-CAPITAL = 20000.0
+CAPITAL = 5000.0
 RATE = 0.0003
 SLIPPAGE = 0.05
 SIZE = 1
@@ -40,7 +40,7 @@ BASE_SETTING: dict[str, Any] = {
     "momentum_window": 12,
     "atr_window": 14,
     "exit_score": 0.46,
-    "max_order_value": 5000.0,
+    "max_order_value": 1250.0,
     "capital": CAPITAL,
     "confirm_bars": 1,
     "min_volume_ratio": 0.8,
