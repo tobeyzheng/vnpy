@@ -1,0 +1,27 @@
+{
+  "portfolio_name": "us_tech",
+  "market": "us",
+  "symbols": [
+    {
+      "symbol": "NVDA.US",
+      "config": "nvda_g09.json",
+      "budget_per_trade": 3000.0,
+      "max_order_value": 1000.0
+    }
+  ],
+  "shared_options": {
+    "max_candidates": 1,
+    "max_selected": 4,
+    "reconciliation_max_age": 60,
+    "limit_price_buffer_pct": 0.0,
+    "no_approval_required": false,
+    "simulate": true,
+    "minute_profile": false,
+    "live_submit": false
+  },
+  "execution": {
+    "concurrency": 1,
+    "per_symbol_timeout": 180,
+    "on_symbol_error": "continue"
+  }
+}
