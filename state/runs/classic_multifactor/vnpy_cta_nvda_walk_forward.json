@@ -1,0 +1,850 @@
+{
+  "symbol": "NVDA.US",
+  "interval": "1m",
+  "windows_available": [
+    "W1",
+    "W2",
+    "W3"
+  ],
+  "windows_requested": [
+    "W1",
+    "W2",
+    "W3"
+  ],
+  "rank_key": "stability_score (= mean_rdd / (1 + std_rdd))",
+  "combos_total": 16,
+  "ranked": [
+    {
+      "tag": "G09",
+      "signal_interval_minutes": 12,
+      "entry_score": 0.66,
+      "coverage": 3,
+      "mean_rdd": 0.617232,
+      "min_rdd": -0.521659,
+      "std_rdd": 1.174328,
+      "stability_score": 0.283873,
+      "mean_total_return": 0.014141,
+      "mean_sharpe": 0.293234,
+      "mean_max_ddpercent": -1.213398,
+      "mean_trades": 63.333333,
+      "mean_win_rate_pair": 0.503633,
+      "mean_pl_ratio_pair": 1.5515,
+      "mean_holding_minutes": 145.770006,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 0.13988984408869518,
+          "total_return": 0.1930431492500162,
+          "sharpe_ratio": 0.5220123982659118,
+          "max_ddpercent": -1.3799654328560116,
+          "total_trade_count": "82",
+          "win_rate_pair": 0.5168,
+          "profit_loss_ratio_pair": 1.5039,
+          "avg_holding_minutes": 96.525743
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.5216587173185392,
+          "total_return": -0.9843404973093661,
+          "sharpe_ratio": -2.937904953588419,
+          "max_ddpercent": -1.8869434452646185,
+          "total_trade_count": "60",
+          "win_rate_pair": 0.3697,
+          "profit_loss_ratio_pair": 1.5826,
+          "avg_holding_minutes": 278.459394
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 2.2334651639489786,
+          "total_return": 0.8337196721683204,
+          "sharpe_ratio": 3.2955950249525667,
+          "max_ddpercent": -0.3732852813760591,
+          "total_trade_count": "48",
+          "win_rate_pair": 0.6244,
+          "profit_loss_ratio_pair": 1.568,
+          "avg_holding_minutes": 62.324881
+        }
+      }
+    },
+    {
+      "tag": "G12",
+      "signal_interval_minutes": 12,
+      "entry_score": 0.72,
+      "coverage": 3,
+      "mean_rdd": 0.327404,
+      "min_rdd": -0.559975,
+      "std_rdd": 0.928229,
+      "stability_score": 0.169795,
+      "mean_total_return": -0.036816,
+      "mean_sharpe": 0.027613,
+      "mean_max_ddpercent": -1.195121,
+      "mean_trades": 60.666667,
+      "mean_win_rate_pair": 0.482933,
+      "mean_pl_ratio_pair": 1.6165,
+      "mean_holding_minutes": 153.775526,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.06666110542548376,
+          "total_return": -0.07897726855000675,
+          "sharpe_ratio": -0.2591989364846819,
+          "max_ddpercent": -1.1847578591130694,
+          "total_trade_count": "76",
+          "win_rate_pair": 0.5037,
+          "profit_loss_ratio_pair": 1.4531,
+          "avg_holding_minutes": 74.458824
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.5599749990778354,
+          "total_return": -1.005321032209372,
+          "sharpe_ratio": -3.1062411479476135,
+          "max_ddpercent": -1.7952962790569769,
+          "total_trade_count": "60",
+          "win_rate_pair": 0.3358,
+          "profit_loss_ratio_pair": 1.8057,
+          "avg_holding_minutes": 270.076364
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.608846907807021,
+          "total_return": 0.9738499208103324,
+          "sharpe_ratio": 3.4482788958828827,
+          "max_ddpercent": -0.6053092535310043,
+          "total_trade_count": "46",
+          "win_rate_pair": 0.6093,
+          "profit_loss_ratio_pair": 1.5907,
+          "avg_holding_minutes": 116.791391
+        }
+      }
+    },
+    {
+      "tag": "G14",
+      "signal_interval_minutes": 15,
+      "entry_score": 0.68,
+      "coverage": 3,
+      "mean_rdd": 0.30009,
+      "min_rdd": -0.43616,
+      "std_rdd": 0.936462,
+      "stability_score": 0.154968,
+      "mean_total_return": -0.033154,
+      "mean_sharpe": -0.145902,
+      "mean_max_ddpercent": -1.113066,
+      "mean_trades": 53.666667,
+      "mean_win_rate_pair": 0.505033,
+      "mean_pl_ratio_pair": 1.380133,
+      "mean_holding_minutes": 270.540056,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.2851441547223423,
+          "total_return": -0.27391419125000205,
+          "sharpe_ratio": -0.9834512284450725,
+          "max_ddpercent": -0.9606165397874792,
+          "total_trade_count": "70",
+          "win_rate_pair": 0.5191,
+          "profit_loss_ratio_pair": 1.2056,
+          "avg_holding_minutes": 258.15759
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.4361601529930285,
+          "total_return": -0.7805674155663245,
+          "sharpe_ratio": -2.864166853180959,
+          "max_ddpercent": -1.7896348628133412,
+          "total_trade_count": "47",
+          "win_rate_pair": 0.3081,
+          "profit_loss_ratio_pair": 1.7976,
+          "avg_holding_minutes": 371.484992
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.6215747712662307,
+          "total_return": 0.9550201565398764,
+          "sharpe_ratio": 3.4099111742634807,
+          "max_ddpercent": -0.5889461118059544,
+          "total_trade_count": "44",
+          "win_rate_pair": 0.6879,
+          "profit_loss_ratio_pair": 1.1372,
+          "avg_holding_minutes": 181.977586
+        }
+      }
+    },
+    {
+      "tag": "G13",
+      "signal_interval_minutes": 15,
+      "entry_score": 0.66,
+      "coverage": 3,
+      "mean_rdd": 0.295376,
+      "min_rdd": -0.458819,
+      "std_rdd": 0.974753,
+      "stability_score": 0.149576,
+      "mean_total_return": -0.027361,
+      "mean_sharpe": -0.143301,
+      "mean_max_ddpercent": -1.127015,
+      "mean_trades": 53.666667,
+      "mean_win_rate_pair": 0.519567,
+      "mean_pl_ratio_pair": 1.3377,
+      "mean_holding_minutes": 270.030249,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.4588192900598976,
+          "total_return": -0.5703761201499957,
+          "sharpe_ratio": -2.132419291394488,
+          "max_ddpercent": -1.2431389274752043,
+          "total_trade_count": "70",
+          "win_rate_pair": 0.5191,
+          "profit_loss_ratio_pair": 1.0823,
+          "avg_holding_minutes": 255.821553
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.3268297073753765,
+          "total_return": -0.5046189437163284,
+          "sharpe_ratio": -1.866540275996266,
+          "max_ddpercent": -1.543981260971342,
+          "total_trade_count": "47",
+          "win_rate_pair": 0.3517,
+          "profit_loss_ratio_pair": 1.753,
+          "avg_holding_minutes": 371.886435
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.671776477533047,
+          "total_return": 0.9929117213020255,
+          "sharpe_ratio": 3.5690566388762357,
+          "max_ddpercent": -0.5939261226878927,
+          "total_trade_count": "44",
+          "win_rate_pair": 0.6879,
+          "profit_loss_ratio_pair": 1.1778,
+          "avg_holding_minutes": 182.382759
+        }
+      }
+    },
+    {
+      "tag": "G11",
+      "signal_interval_minutes": 12,
+      "entry_score": 0.7,
+      "coverage": 3,
+      "mean_rdd": 0.271239,
+      "min_rdd": -0.508276,
+      "std_rdd": 0.890325,
+      "stability_score": 0.143488,
+      "mean_total_return": -0.097613,
+      "mean_sharpe": -0.138883,
+      "mean_max_ddpercent": -1.28168,
+      "mean_trades": 62.0,
+      "mean_win_rate_pair": 0.4859,
+      "mean_pl_ratio_pair": 1.5455,
+      "mean_holding_minutes": 155.663523,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.19532322385458528,
+          "total_return": -0.2717417935500066,
+          "sharpe_ratio": -0.8306118616866178,
+          "max_ddpercent": -1.391241595276523,
+          "total_trade_count": "80",
+          "win_rate_pair": 0.4787,
+          "profit_loss_ratio_pair": 1.4992,
+          "avg_holding_minutes": 71.560976
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.5082760468886389,
+          "total_return": -0.939543304809376,
+          "sharpe_ratio": -2.811024903658703,
+          "max_ddpercent": -1.848490226050778,
+          "total_trade_count": "60",
+          "win_rate_pair": 0.3697,
+          "profit_loss_ratio_pair": 1.6235,
+          "avg_holding_minutes": 278.459394
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.5173166394070987,
+          "total_return": 0.9184458023696829,
+          "sharpe_ratio": 3.2249876109393187,
+          "max_ddpercent": -0.6053092535310043,
+          "total_trade_count": "46",
+          "win_rate_pair": 0.6093,
+          "profit_loss_ratio_pair": 1.5138,
+          "avg_holding_minutes": 116.970199
+        }
+      }
+    },
+    {
+      "tag": "G15",
+      "signal_interval_minutes": 15,
+      "entry_score": 0.7,
+      "coverage": 3,
+      "mean_rdd": 0.212888,
+      "min_rdd": -0.501394,
+      "std_rdd": 1.009068,
+      "stability_score": 0.105964,
+      "mean_total_return": -0.234537,
+      "mean_sharpe": -0.886129,
+      "mean_max_ddpercent": -1.179279,
+      "mean_trades": 51.0,
+      "mean_win_rate_pair": 0.493933,
+      "mean_pl_ratio_pair": 1.394267,
+      "mean_holding_minutes": 315.036008,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.5013944964474295,
+          "total_return": -0.6531681772500075,
+          "sharpe_ratio": -2.0662985672745497,
+          "max_ddpercent": -1.302703124741002,
+          "total_trade_count": "70",
+          "win_rate_pair": 0.4913,
+          "profit_loss_ratio_pair": 1.1568,
+          "avg_holding_minutes": 291.281576
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.49986611798720515,
+          "total_return": -0.8680516529663174,
+          "sharpe_ratio": -3.3052730373245787,
+          "max_ddpercent": -1.7365682964504037,
+          "total_trade_count": "47",
+          "win_rate_pair": 0.2638,
+          "profit_loss_ratio_pair": 2.0937,
+          "avg_holding_minutes": 360.515008
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.6399247000524213,
+          "total_return": 0.8176079674793391,
+          "sharpe_ratio": 2.713185270106525,
+          "max_ddpercent": -0.4985643349680651,
+          "total_trade_count": "36",
+          "win_rate_pair": 0.7267,
+          "profit_loss_ratio_pair": 0.9323,
+          "avg_holding_minutes": 293.311441
+        }
+      }
+    },
+    {
+      "tag": "G10",
+      "signal_interval_minutes": 12,
+      "entry_score": 0.68,
+      "coverage": 3,
+      "mean_rdd": 0.126862,
+      "min_rdd": -0.521953,
+      "std_rdd": 0.539518,
+      "stability_score": 0.082404,
+      "mean_total_return": -0.121623,
+      "mean_sharpe": -0.215289,
+      "mean_max_ddpercent": -1.296099,
+      "mean_trades": 62.666667,
+      "mean_win_rate_pair": 0.490367,
+      "mean_pl_ratio_pair": 1.493967,
+      "mean_holding_minutes": 162.843262,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 0.10356423497114246,
+          "total_return": 0.14298587284999886,
+          "sharpe_ratio": 0.385456753296044,
+          "max_ddpercent": -1.3806491487127868,
+          "total_trade_count": "82",
+          "win_rate_pair": 0.4921,
+          "profit_loss_ratio_pair": 1.6353,
+          "avg_holding_minutes": 96.141584
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.5219528303457346,
+          "total_return": -0.9923587203093831,
+          "sharpe_ratio": -2.9595834838463575,
+          "max_ddpercent": -1.9012421479773525,
+          "total_trade_count": "60",
+          "win_rate_pair": 0.3697,
+          "profit_loss_ratio_pair": 1.5756,
+          "avg_holding_minutes": 278.459394
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 0.7989738718674988,
+          "total_return": 0.4845027253761902,
+          "sharpe_ratio": 1.9282603561847302,
+          "max_ddpercent": -0.6064062198225924,
+          "total_trade_count": "46",
+          "win_rate_pair": 0.6093,
+          "profit_loss_ratio_pair": 1.271,
+          "avg_holding_minutes": 113.928808
+        }
+      }
+    },
+    {
+      "tag": "G16",
+      "signal_interval_minutes": 15,
+      "entry_score": 0.72,
+      "coverage": 3,
+      "mean_rdd": 0.071984,
+      "min_rdd": -0.639665,
+      "std_rdd": 0.670648,
+      "stability_score": 0.043087,
+      "mean_total_return": -0.204728,
+      "mean_sharpe": -0.864876,
+      "mean_max_ddpercent": -1.016653,
+      "mean_trades": 48.666667,
+      "mean_win_rate_pair": 0.490333,
+      "mean_pl_ratio_pair": 1.393833,
+      "mean_holding_minutes": 325.560953,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.11516494306852411,
+          "total_return": -0.1067810289500093,
+          "sharpe_ratio": -0.37242957358763357,
+          "max_ddpercent": -0.9272008139358319,
+          "total_trade_count": "64",
+          "win_rate_pair": 0.5367,
+          "profit_loss_ratio_pair": 1.1539,
+          "avg_holding_minutes": 317.026582
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.6396647999820597,
+          "total_return": -1.0200577262663324,
+          "sharpe_ratio": -3.8964670338706404,
+          "max_ddpercent": -1.5946754085810901,
+          "total_trade_count": "46",
+          "win_rate_pair": 0.2634,
+          "profit_loss_ratio_pair": 2.1961,
+          "avg_holding_minutes": 358.753943
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": 0.9707810900403044,
+          "total_return": 0.5126539890359272,
+          "sharpe_ratio": 1.6742689044747325,
+          "max_ddpercent": -0.5280840287223179,
+          "total_trade_count": "36",
+          "win_rate_pair": 0.6709,
+          "profit_loss_ratio_pair": 0.8315,
+          "avg_holding_minutes": 300.902335
+        }
+      }
+    },
+    {
+      "tag": "G06",
+      "signal_interval_minutes": 10,
+      "entry_score": 0.68,
+      "coverage": 3,
+      "mean_rdd": 0.002421,
+      "min_rdd": -1.0,
+      "std_rdd": 1.349229,
+      "stability_score": 0.001031,
+      "mean_total_return": -0.243928,
+      "mean_sharpe": -2.092065,
+      "mean_max_ddpercent": -1.180472,
+      "mean_trades": 62.666667,
+      "mean_win_rate_pair": 0.375433,
+      "mean_pl_ratio_pair": 1.914167,
+      "mean_holding_minutes": 148.600632,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.9096877331181006,
+          "total_return": 1.7483420447500064,
+          "sharpe_ratio": 4.100847296275128,
+          "max_ddpercent": -0.9155120046225296,
+          "total_trade_count": "80",
+          "win_rate_pair": 0.5278,
+          "profit_loss_ratio_pair": 2.1008,
+          "avg_holding_minutes": 195.964611
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.9024240438487064,
+          "total_return": -1.3482118838946233,
+          "sharpe_ratio": -6.092055429060602,
+          "max_ddpercent": -1.4939893203030108,
+          "total_trade_count": "58",
+          "win_rate_pair": 0.2794,
+          "profit_loss_ratio_pair": 1.9509,
+          "avg_holding_minutes": 96.941103
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -1.0000000000000024,
+          "total_return": -1.131915076193457,
+          "sharpe_ratio": -4.284988199668872,
+          "max_ddpercent": -1.1319150761934544,
+          "total_trade_count": "50",
+          "win_rate_pair": 0.3191,
+          "profit_loss_ratio_pair": 1.6908,
+          "avg_holding_minutes": 152.896183
+        }
+      }
+    },
+    {
+      "tag": "G07",
+      "signal_interval_minutes": 10,
+      "entry_score": 0.7,
+      "coverage": 3,
+      "mean_rdd": -0.072636,
+      "min_rdd": -0.911665,
+      "std_rdd": 1.174009,
+      "stability_score": -0.033411,
+      "mean_total_return": -0.193762,
+      "mean_sharpe": -1.824347,
+      "mean_max_ddpercent": -1.082767,
+      "mean_trades": 60.666667,
+      "mean_win_rate_pair": 0.3884,
+      "mean_pl_ratio_pair": 1.829167,
+      "mean_holding_minutes": 218.647622,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.587631896339826,
+          "total_return": 1.501458409199996,
+          "sharpe_ratio": 3.5127153196930307,
+          "max_ddpercent": -0.9457219980661155,
+          "total_trade_count": "80",
+          "win_rate_pair": 0.5278,
+          "profit_loss_ratio_pair": 1.9332,
+          "avg_holding_minutes": 199.235592
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.9116651387964512,
+          "total_return": -1.2569458671446432,
+          "sharpe_ratio": -5.8285872802943794,
+          "max_ddpercent": -1.3787363513800908,
+          "total_trade_count": "56",
+          "win_rate_pair": 0.2896,
+          "profit_loss_ratio_pair": 1.8675,
+          "avg_holding_minutes": 293.928571
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.8938751032725611,
+          "total_return": -0.8257993663100538,
+          "sharpe_ratio": -3.157169277992928,
+          "max_ddpercent": -0.9238420035268063,
+          "total_trade_count": "46",
+          "win_rate_pair": 0.3478,
+          "profit_loss_ratio_pair": 1.6868,
+          "avg_holding_minutes": 162.778702
+        }
+      }
+    },
+    {
+      "tag": "G05",
+      "signal_interval_minutes": 10,
+      "entry_score": 0.66,
+      "coverage": 3,
+      "mean_rdd": -0.101423,
+      "min_rdd": -0.957118,
+      "std_rdd": 1.168995,
+      "stability_score": -0.04676,
+      "mean_total_return": -0.209044,
+      "mean_sharpe": -1.880676,
+      "mean_max_ddpercent": -1.137048,
+      "mean_trades": 64.0,
+      "mean_win_rate_pair": 0.381067,
+      "mean_pl_ratio_pair": 1.9512,
+      "mean_holding_minutes": 148.367841,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.5514401859450995,
+          "total_return": 1.5761319133499985,
+          "sharpe_ratio": 3.659060783916671,
+          "max_ddpercent": -1.0159153589217218,
+          "total_trade_count": "80",
+          "win_rate_pair": 0.5278,
+          "profit_loss_ratio_pair": 2.0042,
+          "avg_holding_minutes": 204.867543
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.8985903582492961,
+          "total_return": -1.370314432894626,
+          "sharpe_ratio": -6.140736000764435,
+          "max_ddpercent": -1.5249600892272865,
+          "total_trade_count": "60",
+          "win_rate_pair": 0.2703,
+          "profit_loss_ratio_pair": 2.0511,
+          "avg_holding_minutes": 95.404848
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.9571184862373595,
+          "total_return": -0.8329508554683396,
+          "sharpe_ratio": -3.160351927477135,
+          "max_ddpercent": -0.8702693213489692,
+          "total_trade_count": "52",
+          "win_rate_pair": 0.3451,
+          "profit_loss_ratio_pair": 1.7983,
+          "avg_holding_minutes": 144.831131
+        }
+      }
+    },
+    {
+      "tag": "G08",
+      "signal_interval_minutes": 10,
+      "entry_score": 0.72,
+      "coverage": 3,
+      "mean_rdd": -0.115002,
+      "min_rdd": -0.931394,
+      "std_rdd": 1.124104,
+      "stability_score": -0.054141,
+      "mean_total_return": -0.389754,
+      "mean_sharpe": -2.554192,
+      "mean_max_ddpercent": -1.17404,
+      "mean_trades": 59.333333,
+      "mean_win_rate_pair": 0.377767,
+      "mean_pl_ratio_pair": 1.7315,
+      "mean_holding_minutes": 224.582241,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 1.4745241814986876,
+          "total_return": 1.270676105449997,
+          "sharpe_ratio": 3.1927100847740624,
+          "max_ddpercent": -0.8617533177099193,
+          "total_trade_count": "78",
+          "win_rate_pair": 0.5166,
+          "profit_loss_ratio_pair": 1.915,
+          "avg_holding_minutes": 209.616424
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.9313944332927057,
+          "total_return": -1.661531425194629,
+          "sharpe_ratio": -7.847516825276593,
+          "max_ddpercent": -1.7839181401597082,
+          "total_trade_count": "56",
+          "win_rate_pair": 0.2532,
+          "profit_loss_ratio_pair": 1.6879,
+          "avg_holding_minutes": 295.031169
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.8881364162173342,
+          "total_return": -0.7784055678330293,
+          "sharpe_ratio": -3.007768886225928,
+          "max_ddpercent": -0.8764482050497827,
+          "total_trade_count": "44",
+          "win_rate_pair": 0.3635,
+          "profit_loss_ratio_pair": 1.5916,
+          "avg_holding_minutes": 169.09913
+        }
+      }
+    },
+    {
+      "tag": "G03",
+      "signal_interval_minutes": 8,
+      "entry_score": 0.7,
+      "coverage": 3,
+      "mean_rdd": -0.603674,
+      "min_rdd": -1.094314,
+      "std_rdd": 0.51632,
+      "stability_score": -0.398118,
+      "mean_total_return": -0.978181,
+      "mean_sharpe": -4.644247,
+      "mean_max_ddpercent": -1.226017,
+      "mean_trades": 66.666667,
+      "mean_win_rate_pair": 0.3732,
+      "mean_pl_ratio_pair": 1.5201,
+      "mean_holding_minutes": 143.876805,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 0.10997639097231827,
+          "total_return": 0.07331062480000483,
+          "sharpe_ratio": 0.24039382191149677,
+          "max_ddpercent": -0.6666032968699397,
+          "total_trade_count": "86",
+          "win_rate_pair": 0.5151,
+          "profit_loss_ratio_pair": 1.5098,
+          "avg_holding_minutes": 33.000943
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -1.0943139901991195,
+          "total_return": -2.119433460212239,
+          "sharpe_ratio": -10.64217658065684,
+          "max_ddpercent": -1.936769043614795,
+          "total_trade_count": "62",
+          "win_rate_pair": 0.2585,
+          "profit_loss_ratio_pair": 1.3416,
+          "avg_holding_minutes": 302.749706
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.8266852202847522,
+          "total_return": -0.8884201560981686,
+          "sharpe_ratio": -3.5309585932536733,
+          "max_ddpercent": -1.0746776817809223,
+          "total_trade_count": "52",
+          "win_rate_pair": 0.346,
+          "profit_loss_ratio_pair": 1.7089,
+          "avg_holding_minutes": 95.879765
+        }
+      }
+    },
+    {
+      "tag": "G04",
+      "signal_interval_minutes": 8,
+      "entry_score": 0.72,
+      "coverage": 3,
+      "mean_rdd": -0.619892,
+      "min_rdd": -1.099345,
+      "std_rdd": 0.497853,
+      "stability_score": -0.413854,
+      "mean_total_return": -0.95584,
+      "mean_sharpe": -4.559191,
+      "mean_max_ddpercent": -1.193938,
+      "mean_trades": 65.666667,
+      "mean_win_rate_pair": 0.367533,
+      "mean_pl_ratio_pair": 1.4818,
+      "mean_holding_minutes": 150.582458,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": 0.06635476839920142,
+          "total_return": 0.044235174799989174,
+          "sharpe_ratio": 0.1461301863019218,
+          "max_ddpercent": -0.6666465103737977,
+          "total_trade_count": "86",
+          "win_rate_pair": 0.5151,
+          "profit_loss_ratio_pair": 1.5074,
+          "avg_holding_minutes": 34.714151
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -1.0993451218478176,
+          "total_return": -2.023334292712242,
+          "sharpe_ratio": -10.292744207035277,
+          "max_ddpercent": -1.8404905361396895,
+          "total_trade_count": "59",
+          "win_rate_pair": 0.2415,
+          "profit_loss_ratio_pair": 1.2291,
+          "avg_holding_minutes": 321.153459
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.8266852202847522,
+          "total_return": -0.8884201560981686,
+          "sharpe_ratio": -3.5309585932536733,
+          "max_ddpercent": -1.0746776817809223,
+          "total_trade_count": "52",
+          "win_rate_pair": 0.346,
+          "profit_loss_ratio_pair": 1.7089,
+          "avg_holding_minutes": 95.879765
+        }
+      }
+    },
+    {
+      "tag": "G01",
+      "signal_interval_minutes": 8,
+      "entry_score": 0.66,
+      "coverage": 3,
+      "mean_rdd": -0.766212,
+      "min_rdd": -1.119563,
+      "std_rdd": 0.41803,
+      "stability_score": -0.540336,
+      "mean_total_return": -1.099776,
+      "mean_sharpe": -5.347546,
+      "mean_max_ddpercent": -1.218944,
+      "mean_trades": 72.666667,
+      "mean_win_rate_pair": 0.345233,
+      "mean_pl_ratio_pair": 1.713667,
+      "mean_holding_minutes": 121.747268,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.17907268815006958,
+          "total_return": -0.12792685500000456,
+          "sharpe_ratio": -0.41018540972200773,
+          "max_ddpercent": -0.7143850707864344,
+          "total_trade_count": "88",
+          "win_rate_pair": 0.4788,
+          "profit_loss_ratio_pair": 1.6334,
+          "avg_holding_minutes": 30.398524
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -1.1195626305598931,
+          "total_return": -2.1438958935122376,
+          "sharpe_ratio": -11.636582645781633,
+          "max_ddpercent": -1.9149405624945481,
+          "total_trade_count": "68",
+          "win_rate_pair": 0.2358,
+          "profit_loss_ratio_pair": 1.5774,
+          "avg_holding_minutes": 250.357985
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.999999999999995,
+          "total_return": -1.0275062735202067,
+          "sharpe_ratio": -3.995871017572986,
+          "max_ddpercent": -1.0275062735202118,
+          "total_trade_count": "62",
+          "win_rate_pair": 0.3211,
+          "profit_loss_ratio_pair": 1.9302,
+          "avg_holding_minutes": 84.485294
+        }
+      }
+    },
+    {
+      "tag": "G02",
+      "signal_interval_minutes": 8,
+      "entry_score": 0.68,
+      "coverage": 3,
+      "mean_rdd": -0.785165,
+      "min_rdd": -1.127278,
+      "std_rdd": 0.363595,
+      "stability_score": -0.575805,
+      "mean_total_return": -1.132245,
+      "mean_sharpe": -5.337162,
+      "mean_max_ddpercent": -1.247834,
+      "mean_trades": 70.0,
+      "mean_win_rate_pair": 0.347667,
+      "mean_pl_ratio_pair": 1.627367,
+      "mean_holding_minutes": 125.334644,
+      "per_window": {
+        "W1": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.2816611356421619,
+          "total_return": -0.20001842115001667,
+          "sharpe_ratio": -0.6397895315368897,
+          "max_ddpercent": -0.7101385169593696,
+          "total_trade_count": "88",
+          "win_rate_pair": 0.4792,
+          "profit_loss_ratio_pair": 1.5936,
+          "avg_holding_minutes": 30.056325
+        },
+        "W2": {
+          "status": "ok",
+          "return_drawdown_ratio": -1.1272782870444433,
+          "total_return": -2.030168202212246,
+          "sharpe_ratio": -10.701952891161886,
+          "max_ddpercent": -1.8009467808832245,
+          "total_trade_count": "66",
+          "win_rate_pair": 0.2431,
+          "profit_loss_ratio_pair": 1.5997,
+          "avg_holding_minutes": 255.81989
+        },
+        "W3": {
+          "status": "ok",
+          "return_drawdown_ratio": -0.9465541982634667,
+          "total_return": -1.1665494032319867,
+          "sharpe_ratio": -4.669742310293997,
+          "max_ddpercent": -1.23241691323341,
+          "total_trade_count": "56",
+          "win_rate_pair": 0.3207,
+          "profit_loss_ratio_pair": 1.6888,
+          "avg_holding_minutes": 90.127717
+        }
+      }
+    }
+  ]
+}
