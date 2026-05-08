@@ -2,9 +2,11 @@
   "task": "classic_multifactor_NVDA_US",
   "market": "us",
   "live_submit_requested": true,
-  "live_submit_effective": true,
+  "live_submit_effective": false,
   "live_submit_enabled": true,
-  "live_submit_block_reasons": [],
+  "live_submit_block_reasons": [
+    "FUTU_ACCOUNT_LAST4 is empty (required by live-strict)"
+  ],
   "env_var_required": "VNPY_LIVE_SUBMIT",
   "risk_config": {
     "budget_per_trade": 3000.0,
@@ -19,12 +21,12 @@
     "gateway_env": "REAL"
   },
   "account_status": "connected",
-  "account_message": "ok; picked_by=trd_env; acc_id=3119706; env=SIMULATE",
+  "account_message": "ok; picked_by=strict:uni_card_num; acc_id=281756477904458164; env=REAL; acc_type=MARGIN; auth=['HK', 'US', 'HKCC', 'HKFUND', 'USFUND', 'JP']; uni_last4=6219",
   "selected": [
     {
       "symbol": "NVDA.US",
       "name": "NVIDIA",
-      "price": 215.87,
+      "price": 215.7799,
       "task_score": 87.79,
       "raw_score": 0.7179,
       "allow_trade": false,
@@ -46,14 +48,14 @@
       "order_value_limit": 1000.0,
       "sizing_status": "target_size_too_small",
       "risk_context": {
-        "total_nav": 999843.194,
-        "cash": 985943.194,
-        "buying_power": 985943.194,
-        "market_exposure_pct": 0.013902,
+        "total_nav": 165018.7415,
+        "cash": -189336.12,
+        "buying_power": 70553.8357,
+        "market_exposure_pct": 0.894702,
         "symbol_exposure_pct": 0.0,
-        "daily_new_pct": 0.003823,
-        "current_drawdown_pct": 0.0086,
-        "position_count": 1
+        "daily_new_pct": 0.023166,
+        "current_drawdown_pct": 0.0761,
+        "position_count": 10
       },
       "live_gate": null,
       "idempotency": null

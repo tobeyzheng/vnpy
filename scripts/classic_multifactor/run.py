@@ -123,6 +123,7 @@ def run_live_mode(args) -> None:
 
     # 配置实盘任务
     gateway_env = "SIMULATE" if args.simulate else "REAL"
+    live_account_strict = not args.simulate  # Plan C: REAL 路径强制严格账户校验
     config = LiveTaskConfig(
         market="us",
         task_name=f"classic_multifactor_{args.symbol.replace('.', '_')}",
@@ -142,6 +143,7 @@ def run_live_mode(args) -> None:
         live_submit_enabled=os.environ.get("VNPY_LIVE_CONFIG") == "YES",
         env_var_name="VNPY_LIVE_SUBMIT",
         gateway_env=gateway_env,
+        live_account_strict=live_account_strict,
     )
 
     # 创建候选池（单标的）

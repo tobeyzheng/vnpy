@@ -60,6 +60,10 @@ class LiveTaskConfig:
     gateway_env: str = "REAL"
     gateway_password_env_var_name: str = "FUTU_TRADE_UNLOCK_PASSWORD"
     gateway_connect_wait_seconds: float = 2.0
+    # live-strict account selection (Plan C)
+    live_account_strict: bool = False
+    expected_acc_type: str = "MARGIN"
+    expected_last4_env_var: str = "FUTU_ACCOUNT_LAST4"
 
 
 
@@ -73,7 +77,7 @@ class LiveTradingPipeline:
         self.report_path = repo_root / "state" / "runs" / config.report_filename
 
         self.quote_client = FutuQuoteClient()
-        self.account_provider = FutuAccountProvider()
+        self.account_provider = self._build_account_provider()
         self.strategy_engine = StrategyEngine(enable_strategy_selection=config.strategy_selection_enabled)
         self.order_store = OrderStateStore(repo_root / "state" / "runs" / "orders")
         self.idempotency_guard = OrderIdempotencyGuard(self.order_store)
@@ -97,12 +101,66 @@ class LiveTradingPipeline:
         self.event_recorder: VnpyEventRecorder | None = None
         self.gateway_event_bridge: VnpyGatewayEventBridge | None = None
 
+    def _build_account_provider(self) -> FutuAccountProvider:
+        """Build FutuAccountProvider with strict live-account selection when configured."""
+        if not self.config.live_account_strict:
+            return FutuAccountProvider()
+        expect_market = "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else ""
+        expect_last4 = os.environ.get(self.config.expected_last4_env_var, "")
+        return FutuAccountProvider(
+            live_strict=True,
+            expect_trd_env=(self.config.gateway_env or "").upper() or "REAL",
+            expect_acc_type=(self.config.expected_acc_type or "").upper() or None,
+            expect_market=expect_market or None,
+            expect_last4=expect_last4 or None,
+        )
+
     def run(self) -> dict[str, Any]:
+        # Plan C: live-strict account selection — abort before anything else if mismatch.
+        account_summary = self.account_provider.get_summary()
+        if account_summary.status == "live_account_mismatch":
+            self.live_submit = False
+            if "live account mismatch" not in ",".join(self.live_submit_block_reasons):
+                self.live_submit_block_reasons = list(self.live_submit_block_reasons) + [
+                    f"live account mismatch: {account_summary.message}"
+                ]
+            report = {
+                "task": self.config.task_name,
+                "market": self.config.market,
+                "live_submit_requested": self.live_submit_requested,
+                "live_submit_effective": False,
+                "live_submit_enabled": self.config.live_submit_enabled,
+                "live_submit_block_reasons": self.live_submit_block_reasons,
+                "env_var_required": self.config.env_var_name,
+                "risk_config": {
+                    "budget_per_trade": self.config.budget_per_trade,
+                    "max_order_value": self.config.max_order_value,
+                    "max_selected": self.config.max_selected,
+                    "reconciliation_max_age_minutes": self.config.reconciliation_max_age_minutes,
+                    "limit_price_buffer_pct": self.config.limit_price_buffer_pct,
+                    "approval_required": self.config.approval_required,
+                    "approval_env_var_required": self.config.approval_env_var_name,
+                    "reconciliation_file": self.config.reconciliation_filename,
+                    "gateway_name": self.config.gateway_name,
+                    "gateway_env": self.config.gateway_env,
+                    "live_account_strict": self.config.live_account_strict,
+                    "expected_acc_type": self.config.expected_acc_type,
+                    "expected_last4": os.environ.get(self.config.expected_last4_env_var, ""),
+                    "expected_market": "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else "",
+                },
+                "account_status": account_summary.status,
+                "account_message": account_summary.message,
+                "selected": [],
+                "order_states": [],
+            }
+            self.report_path.parent.mkdir(parents=True, exist_ok=True)
+            self.report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+            return report
+
         candidates = UnifiedCandidateProvider(self.repo_root).load(self.config.market)[: max(self.config.max_candidates, 0)]
         codes = [c["symbol"] for c in candidates]
         quote_rows = self._get_quote_rows(codes)
         quote_map = self._build_symbol_map(quote_rows, "code")
-        account_summary = self.account_provider.get_summary()
         pool = self._build_candidate_pool(candidates, quote_map, account_summary)
         pool.sort(key=lambda row: row["task_score"], reverse=True)
         selected = pool[: max(self.config.max_selected, 0)]
@@ -215,6 +273,10 @@ class LiveTradingPipeline:
             reasons.append("FUTU_TRADE_ENV is not REAL")
         if self.config.gateway_env.upper() == "REAL" and not os.environ.get(self.config.gateway_password_env_var_name):
             reasons.append(f"{self.config.gateway_password_env_var_name} is missing")
+        if self.config.live_account_strict and self.config.gateway_env.upper() == "REAL":
+            last4 = os.environ.get(self.config.expected_last4_env_var, "").strip()
+            if not last4:
+                reasons.append(f"{self.config.expected_last4_env_var} is empty (required by live-strict)")
         return reasons
 
     def _get_quote_rows(self, codes: list[str]) -> list[dict[str, Any]]:

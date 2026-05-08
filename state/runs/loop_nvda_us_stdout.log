@@ -1,0 +1,73 @@
+nohup: ignoring input
+[loop] symbol=NVDA.US interval=300s session(BJ)=22:30->05:00 daily_loss_limit=$200.0 live_submit=False simulate=True dry_run_loop=False
+[loop] iter=1 ts=2026-05-08T23:05:30.640038+08:00 cmd=/usr/bin/python3 /projects/vnpy/scripts/classic_multifactor/run.py live --symbol NVDA.US --config nvda_g09.json --budget-per-trade 3000.0 --max-order-value 1000.0 --max-candidates 1 --max-selected 4 --reconciliation-max-age 60 --limit-price-buffer-pct 0.0 --simulate --minute-profile
+2026-05-08 23:05:31,130 | 2557367 | 139838453139264 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458532543181916242(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f2e2f787bd0>
+2026-05-08 23:05:31,213 | 2557367 | 139836332689088 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+2026-05-08 23:05:31,219 | 2557367 | 139838453139264 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458532543560181857(2) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f2e31fbdb50>
+2026-05-08 23:05:31,925 | 2557367 | 139836332689088 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(2) reason=CallClose
+/projects/vnpy/state/runs/classic_multifactor_NVDA_US_live_report.json
+{
+  "task": "classic_multifactor_NVDA_US",
+  "market": "us",
+  "live_submit_requested": false,
+  "live_submit_effective": false,
+  "live_submit_enabled": true,
+  "live_submit_block_reasons": [],
+  "env_var_required": "VNPY_LIVE_SUBMIT",
+  "risk_config": {
+    "budget_per_trade": 3000.0,
+    "max_order_value": 1000.0,
+    "max_selected": 4,
+    "reconciliation_max_age_minutes": 60,
+    "limit_price_buffer_pct": 0.0,
+    "approval_required": true,
+    "approval_env_var_required": "VNPY_LIVE_APPROVED",
+    "reconciliation_file": "futu_live_position_reconcile.json",
+    "gateway_name": "FUTU",
+    "gateway_env": "SIMULATE"
+  },
+  "account_status": "connected",
+  "account_message": "ok; picked_by=trd_env; acc_id=3119706; env=SIMULATE",
+  "selected": [
+    {
+      "symbol": "NVDA.US",
+      "name": "NVIDIA",
+      "price": 216.085,
+      "task_score": 87.79,
+      "raw_score": 0.7179,
+      "allow_trade": false,
+      "target_position_pct": 0.0,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.68,
+        "reason": "入场条件不足，先观察",
+        "source": "timing_fallback",
+        "risk_flags": [],
+        "metadata": {
+          "invalidator": "等待更多确认信号"
+        }
+      },
+      "external_strategy_selection": null,
+      "qty": 0,
+      "order_value": 0.0,
+      "order_value_limit": 1000.0,
+      "sizing_status": "target_size_too_small",
+      "risk_context": {
+        "total_nav": 999843.194,
+        "cash": 985943.194,
+        "buying_power": 985943.194,
+        "market_exposure_pct": 0.013902,
+        "symbol_exposure_pct": 0.0,
+        "daily_new_pct": 0.003823,
+        "current_drawdown_pct": 0.0086,
+        "position_count": 1
+      },
+      "live_gate": null,
+      "idempotency": null
+    }
+  ],
+  "order_states": []
+}
+[loop] iter=1 exit=0 timed_out=False initial_nav=999843.194 current_nav=999843.194 realized_loss_usd=0.0 tripped=False
+[loop] exit
