@@ -94,6 +94,7 @@ class LiveTradingPipeline:
             repo_root / "state" / "runs" / config.reconciliation_filename,
             max_age_minutes=config.reconciliation_max_age_minutes,
             fail_closed=True,
+            cold_start_sentinel=repo_root / "state" / "runs" / ".reconciliation_ever_generated",
 
         ) if config.reconciliation_required else None
         self.event_engine: EventEngine | None = None

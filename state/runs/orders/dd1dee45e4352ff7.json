@@ -1,0 +1,56 @@
+{
+  "request_id": "dd1dee45e4352ff7",
+  "symbol": "NVDA.US",
+  "market": "us",
+  "side": "BUY",
+  "qty": 2,
+  "status": "rejected",
+  "price": 215.43,
+  "filled_qty": 0,
+  "avg_fill_price": null,
+  "broker_order_id": null,
+  "strategy_id": "raw_score_timing_v1",
+  "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+  "notes": [
+    "executor_mode:live_submit",
+    "reconciliation_blocked"
+  ],
+  "snapshots": {
+    "signal": {
+      "strategy_selection": {
+        "strategy_id": "trend_following",
+        "allow_trade": true,
+        "confidence": 0.78,
+        "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+        "source": "rules",
+        "risk_flags": [],
+        "metadata": {}
+      },
+      "score": 0.7288
+    },
+    "risk": {
+      "total_nav": 164733.5529,
+      "cash": -189334.84,
+      "buying_power": 70289.5789,
+      "market_exposure_pct": 0.896029,
+      "symbol_exposure_pct": 0.002615,
+      "daily_new_pct": 0.0,
+      "current_drawdown_pct": 0.0761,
+      "position_count": 10,
+      "market_existing_value": 147606.1,
+      "symbol_existing_value": 0.0
+    },
+    "events": [
+      {
+        "reconciliation": {
+          "allowed": false,
+          "reasons": [
+            "reconciliation file missing"
+          ],
+          "blocking_level": "block",
+          "diff_symbols": []
+        }
+      }
+    ]
+  }
+}

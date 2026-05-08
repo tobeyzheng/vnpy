@@ -16,13 +16,31 @@ class ReconciliationDecision:
 
 
 class ReconciliationGuard:
-    def __init__(self, path: str | Path, *, max_age_minutes: int = 60, fail_closed: bool = True):
+    def __init__(
+        self,
+        path: str | Path,
+        *,
+        max_age_minutes: int = 60,
+        fail_closed: bool = True,
+        cold_start_sentinel: str | Path | None = None,
+    ):
         self.path = Path(path)
         self.max_age_minutes = max_age_minutes
         self.fail_closed = fail_closed
+        self.cold_start_sentinel = Path(cold_start_sentinel) if cold_start_sentinel else None
 
     def evaluate(self, *, side: str | None = None, symbol: str | None = None) -> ReconciliationDecision:
         if not self.path.exists():
+            # Cold-start exemption: if a sentinel path is configured and has never
+            # been created, treat this as first-time bootstrap and allow with warn.
+            # Once the reconciliation file has ever been produced (sentinel exists),
+            # a missing file must block under fail_closed semantics.
+            if self.fail_closed and self.cold_start_sentinel is not None and not self.cold_start_sentinel.exists():
+                return ReconciliationDecision(
+                    True,
+                    ["cold start: no reconciliation yet"],
+                    "warn",
+                )
             if self.fail_closed:
                 return ReconciliationDecision(False, ["reconciliation file missing"], "block")
             return ReconciliationDecision(True, ["reconciliation file missing"], "warn")
@@ -33,6 +51,8 @@ class ReconciliationGuard:
             reasons.append("reconciliation file stale")
 
         data = json.loads(self.path.read_text(encoding="utf-8"))
+        # File exists → record the sentinel so subsequent missing-file cases block.
+        self._touch_sentinel()
         if not data.get("success", False):
             reasons.append(f"reconciliation source failed: {data.get('message')}")
 
@@ -59,6 +79,17 @@ class ReconciliationGuard:
         except OSError:
             return True
         return datetime.now() - mtime > timedelta(minutes=self.max_age_minutes)
+
+    def _touch_sentinel(self) -> None:
+        if self.cold_start_sentinel is None:
+            return
+        try:
+            self.cold_start_sentinel.parent.mkdir(parents=True, exist_ok=True)
+            if not self.cold_start_sentinel.exists():
+                self.cold_start_sentinel.write_text("", encoding="utf-8")
+        except OSError:
+            # Sentinel write failure must not break the guard; fall back silently.
+            pass
 
     def to_dict(self, decision: ReconciliationDecision) -> dict[str, Any]:
         return {
