@@ -660,3 +660,88 @@
 }
 [loop] iter=1 exit=0 timed_out=False env=REAL acct_last4=6219 initial_nav=164842.3688 current_nav=164879.496 realized_loss_usd=0.0 tripped=False
 [loop] exit
+[loop] symbol=NVDA.US interval=300s session(BJ)=22:30->05:00 daily_loss_limit=$200.0 live_submit=True simulate=False dry_run_loop=False
+[loop] iter=1 ts=2026-05-09T00:34:03.392675+08:00 cmd=/usr/bin/python3 /projects/vnpy/scripts/classic_multifactor/run.py live --symbol NVDA.US --config nvda_g09.json --budget-per-trade 3000.0 --max-order-value 1000.0 --max-candidates 1 --max-selected 4 --reconciliation-max-age 60 --limit-price-buffer-pct 0.0 --minute-profile --live-submit
+2026-05-09 00:34:03,852 | 2632816 | 139990417585984 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458554826354165001(1) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f5191438750>
+2026-05-09 00:34:04,127 | 2632816 | 139988297135808 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+2026-05-09 00:34:04,129 | 2632816 | 139990417585984 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458554827521472913(2) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f5193bfea50>
+2026-05-09 00:34:04,171 | 2632816 | 139988297135808 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(2) reason=CallClose
+2026-05-09 00:34:04.267 | INFO | MainEngine | 连接登录 -> FUTU
+2026-05-09 00:34:04,270 | 2632816 | 139990417585984 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458554828111815361(3) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f518a448910>
+2026-05-09 00:34:04.271 | INFO | FUTU | 行情接口连接成功
+2026-05-09 00:34:04,272 | 2632816 | 139990417585984 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7458554828120598026(4) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f518a3e05d0>
+2026-05-09 00:34:04.353 | INFO | FUTU | 交易接口连接成功
+/projects/vnpy/state/runs/classic_multifactor_NVDA_US_live_report.json
+{
+  "task": "classic_multifactor_NVDA_US",
+  "market": "us",
+  "live_submit_requested": true,
+  "live_submit_effective": true,
+  "live_submit_enabled": true,
+  "live_submit_block_reasons": [],
+  "env_var_required": "VNPY_LIVE_SUBMIT",
+  "risk_config": {
+    "budget_per_trade": 3000.0,
+    "max_order_value": 1000.0,
+    "max_selected": 4,
+    "reconciliation_max_age_minutes": 60,
+    "limit_price_buffer_pct": 0.0,
+    "approval_required": true,
+    "approval_env_var_required": "VNPY_LIVE_APPROVED",
+    "reconciliation_file": "futu_live_position_reconcile.json",
+    "gateway_name": "FUTU",
+    "gateway_env": "REAL"
+  },
+  "account_status": "connected",
+  "account_message": "ok; picked_by=strict:triple; acc_id=281756477904458164; env=REAL; acc_type=MARGIN; auth=['HK', 'US', 'HKCC', 'HKFUND', 'USFUND', 'JP']; uni_last4=6219",
+  "selected": [
+    {
+      "symbol": "NVDA.US",
+      "name": "NVIDIA",
+      "price": 215.902,
+      "task_score": 93.93,
+      "raw_score": 0.7301,
+      "allow_trade": true,
+      "target_position_pct": 0.18,
+      "strategy_selection": {
+        "strategy_id": "trend_following",
+        "allow_trade": true,
+        "confidence": 0.78,
+        "reason": "趋势、均线和综合评分健康，使用趋势跟踪策略",
+        "source": "rules",
+        "risk_flags": [],
+        "metadata": {}
+      },
+      "external_strategy_selection": null,
+      "qty": 2,
+      "order_value": 431.804,
+      "order_value_limit": 1000.0,
+      "sizing_status": "ok",
+      "risk_context": {
+        "total_nav": 164803.0601,
+        "cash": -189334.34,
+        "buying_power": 70351.1642,
+        "market_exposure_pct": 0.895705,
+        "symbol_exposure_pct": 0.00262,
+        "daily_new_pct": 0.0,
+        "current_drawdown_pct": 0.0761,
+        "position_count": 10
+      },
+      "live_gate": {
+        "allowed": false,
+        "reasons": [
+          "market exposure exceeds limit 0.95"
+        ]
+      },
+      "idempotency": {
+        "allowed": true,
+        "reason": "ok"
+      }
+    }
+  ],
+  "order_states": []
+}
+2026-05-09 00:34:07,330 | 2632816 | 139988297135808 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(3) reason=CallClose
+2026-05-09 00:34:07,346 | 2632816 | 139988297135808 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(4) reason=CallClose
+[loop] iter=1 exit=0 timed_out=False env=REAL acct_last4=6219 initial_nav=164842.3688 current_nav=164803.0601 realized_loss_usd=39.30869999999413 tripped=False
+[loop] exit

@@ -18,6 +18,8 @@ class LiveRiskContext:
     daily_new_pct: float
     current_drawdown_pct: float
     position_count: int
+    market_existing_value: float = 0.0
+    symbol_existing_value: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -44,6 +46,8 @@ class LiveRiskContextBuilder:
             daily_new_pct=self._pct(daily_new_value, total_nav),
             current_drawdown_pct=self._drawdown(account),
             position_count=len(account.positions),
+            market_existing_value=round(max(float(current_market_value or 0.0), 0.0), 4),
+            symbol_existing_value=round(max(float(symbol_market_value or 0.0), 0.0), 4),
         )
 
     def _total_nav(self, account: FutuAccountSummary) -> float:

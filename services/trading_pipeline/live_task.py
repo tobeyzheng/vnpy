@@ -355,6 +355,8 @@ class LiveTradingPipeline:
                     current_drawdown_pct=risk_context.current_drawdown_pct,
                     account_status=account_summary.status,
                     approval_status=self._approval_status(),
+                    market_existing_value=risk_context.market_existing_value,
+                    budget_per_trade=float(self.config.budget_per_trade or 0.0),
                 )
                 idem_result = self.idempotency_guard.evaluate(intent.request_id)
                 if not idem_result.allowed or not gate_result.allowed:

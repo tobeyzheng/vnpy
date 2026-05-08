@@ -29,6 +29,8 @@ class LiveExecutionGate:
         current_drawdown_pct: float,
         account_status: str,
         approval_status: str,
+        market_existing_value: float = 0.0,
+        budget_per_trade: float = 0.0,
     ) -> LiveGateResult:
         reasons: List[str] = []
         if approval_status != 'approved':
@@ -41,6 +43,8 @@ class LiveExecutionGate:
             current_drawdown_pct=current_drawdown_pct,
             signal_age_seconds=signal_age_seconds,
             account_status=account_status,
+            market_existing_value=market_existing_value,
+            budget_per_trade=budget_per_trade,
         )
         reasons.extend(pre.reasons)
         reasons.extend(risk.reasons)

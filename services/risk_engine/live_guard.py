@@ -26,6 +26,8 @@ class LiveRiskGuard:
         current_drawdown_pct: float = 0.0,
         signal_age_seconds: int = 0,
         account_status: str = 'connected',
+        market_existing_value: float = 0.0,
+        budget_per_trade: float = 0.0,
     ) -> LiveRiskResult:
         reasons: List[str] = []
         single_limit = float(self.limits.get('max_single_position_pct', 0.1))
@@ -37,6 +39,17 @@ class LiveRiskGuard:
         order_exposure_pct = float(order.target_position_pct if order.target_position_pct is not None else order.qty)
         max_order_value = self.limits.get('max_order_value')
 
+        # Market-exposure check uses notional amounts against budget_per_trade when provided;
+        # falls back to the pct-based check otherwise.
+        order_notional = float(order.notional or 0.0)
+        budget = float(budget_per_trade or 0.0)
+        if budget > 0:
+            market_projected_pct = (float(market_existing_value or 0.0) + max(order_notional, 0.0)) / budget
+            market_over = market_projected_pct > market_limit
+        else:
+            market_projected_pct = market_existing_pct + order_exposure_pct
+            market_over = market_projected_pct > market_limit
+
         if order.request_id in self._seen:
             reasons.append('duplicate live request detected')
         if order_exposure_pct <= 0 or not math.isfinite(order_exposure_pct):
@@ -45,7 +58,7 @@ class LiveRiskGuard:
             reasons.append(f'single position exceeds limit {single_limit}')
         if daily_new_pct + order_exposure_pct > daily_limit:
             reasons.append(f'daily new exposure exceeds limit {daily_limit}')
-        if market_existing_pct + order_exposure_pct > market_limit:
+        if market_over:
             reasons.append(f'market exposure exceeds limit {market_limit}')
         if max_order_value is not None and order.notional is not None and order.notional > float(max_order_value):
             reasons.append(f'order value exceeds limit {float(max_order_value)}')
