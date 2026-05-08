@@ -41,6 +41,18 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
     min_hold_minutes: int = 0
     no_new_entry_after: str = ""
 
+    # Market regime filter (daily-level trend + volatility gate).
+    # regime_filter_mode in {"off", "trend", "vol", "both"}.
+    # When data is insufficient (fewer than regime_trend_lookback completed
+    # days in the on-memory bar buffer) the filter fails open (allows trade)
+    # to avoid starving the strategy during warmup.
+    regime_filter_mode: str = "off"
+    regime_trend_lookback: int = 5
+    regime_ema_span: int = 20
+    regime_atr_pct_lo: float = 0.008
+    regime_atr_pct_hi: float = 0.05
+    regime_atr_days: int = 5
+
     raw_score: float = 0.0
 
     last_signal: str = ""
@@ -75,6 +87,12 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         "entry_cooldown_minutes",
         "min_hold_minutes",
         "no_new_entry_after",
+        "regime_filter_mode",
+        "regime_trend_lookback",
+        "regime_ema_span",
+        "regime_atr_pct_lo",
+        "regime_atr_pct_hi",
+        "regime_atr_days",
     ]
     variables = ["raw_score", "last_signal", "entry_price", "highest_close"]
 
@@ -86,6 +104,11 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         self.trade_times = []
         self.last_trade_at = None
         self.entry_at = None
+        # Daily aggregated OHLC buffer for regime filter.
+        # Each entry: {"date": date, "open": float, "high": float,
+        #              "low": float, "close": float, "prev_close": float|None}
+        self.daily_buf: list[dict] = []
+        self._cur_day: object | None = None
         self.model = self._build_model()
         self.minute_guard = self._build_minute_guard()
 
@@ -106,6 +129,7 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         pass
 
     def on_bar(self, bar: BarData) -> None:
+        self._update_daily_buf(bar)
         self.bars.append(bar)
         max_len = self.model.config.warmup_window + 10
         if len(self.bars) > max_len:
@@ -130,6 +154,9 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         if self.pos > 0:
             self.highest_close = highest
         if decision.side == "BUY" and self.pos <= 0 and decision.target_qty > 0:
+            if not self._market_regime_ok(bar):
+                self.last_signal = "regime_blocked"
+                return
             guard = self.minute_guard.can_enter(bar.datetime, trade_times=self.trade_times, last_trade_at=self.last_trade_at)
             if not guard.allowed:
                 self.last_signal = guard.reason
@@ -207,4 +234,108 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
                 no_new_entry_after=str(self.no_new_entry_after),
             )
         )
+
+    # ------------------------------------------------------------------
+    # Market regime filter helpers
+    # ------------------------------------------------------------------
+    def _update_daily_buf(self, bar: BarData) -> None:
+        """Aggregate 1m bar into a rolling daily OHLC buffer.
+
+        Only keeps ``max_keep_days`` entries to bound memory. The last entry
+        is always the currently forming day (mutated in place until the day
+        rolls over).
+        """
+        try:
+            day = bar.datetime.date()
+        except Exception:
+            return
+
+        max_keep_days = max(
+            int(self.regime_trend_lookback),
+            int(self.regime_ema_span),
+            int(self.regime_atr_days),
+            20,
+        ) + 5
+
+        if self._cur_day != day:
+            prev_close = self.daily_buf[-1]["close"] if self.daily_buf else None
+            self.daily_buf.append(
+                {
+                    "date": day,
+                    "open": float(bar.open_price),
+                    "high": float(bar.high_price),
+                    "low": float(bar.low_price),
+                    "close": float(bar.close_price),
+                    "prev_close": prev_close,
+                }
+            )
+            self._cur_day = day
+            if len(self.daily_buf) > max_keep_days:
+                self.daily_buf = self.daily_buf[-max_keep_days:]
+        else:
+            cur = self.daily_buf[-1]
+            cur["high"] = max(cur["high"], float(bar.high_price))
+            cur["low"] = min(cur["low"], float(bar.low_price))
+            cur["close"] = float(bar.close_price)
+
+    def _market_regime_ok(self, bar: BarData) -> bool:
+        """Return True if current market regime satisfies the configured gates.
+
+        Fails open (returns True) when the filter is off or there is not
+        enough daily history yet.
+        """
+        mode = (self.regime_filter_mode or "off").strip().lower()
+        if mode == "off":
+            return True
+
+        lookback = max(int(self.regime_trend_lookback), 1)
+        ema_span = max(int(self.regime_ema_span), 2)
+        atr_days = max(int(self.regime_atr_days), 1)
+        # Need at least lookback+1 completed days + 1 forming day for a
+        # meaningful EMA / ATR. Fail open if not enough.
+        need_days = max(lookback, ema_span, atr_days) + 1
+        if len(self.daily_buf) < need_days:
+            return True
+
+        closes = [d["close"] for d in self.daily_buf]
+        # EMA on closes (including today's forming close)
+        alpha = 2.0 / (ema_span + 1)
+        ema = closes[0]
+        for c in closes[1:]:
+            ema = alpha * c + (1 - alpha) * ema
+
+        last_close = closes[-1]
+        trend_ok = last_close > ema
+
+        # Daily ATR/close ratio over the last ``atr_days`` completed days
+        # (exclude the forming current day for stability).
+        tr_list: list[float] = []
+        for d in self.daily_buf[-(atr_days + 1):-1]:
+            pc = d["prev_close"]
+            hi = d["high"]
+            lo = d["low"]
+            if pc is None:
+                tr = hi - lo
+            else:
+                tr = max(hi - lo, abs(hi - pc), abs(lo - pc))
+            tr_list.append(tr)
+        if not tr_list:
+            return True
+        atr_val = sum(tr_list) / len(tr_list)
+        ref_close = self.daily_buf[-2]["close"]
+        if ref_close <= 0:
+            return True
+        atr_pct = atr_val / ref_close
+        vol_ok = (
+            float(self.regime_atr_pct_lo) <= atr_pct <= float(self.regime_atr_pct_hi)
+        )
+
+        if mode == "trend":
+            return trend_ok
+        if mode == "vol":
+            return vol_ok
+        if mode == "both":
+            return trend_ok and vol_ok
+        # Unknown mode -> fail open
+        return True
 

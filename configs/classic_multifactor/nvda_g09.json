@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "purpose": "NVDA 1m CTA strategy G09 champion setting (walk-forward rank 1 across W1/W2/W3).",
+    "source_study": "state/runs/classic_multifactor/vnpy_cta_nvda_walk_forward.json",
+    "study_windows": {
+      "W1": "2026-04-08 ~ 2026-05-07",
+      "W2": "2026-03-08 ~ 2026-04-07",
+      "W3": "2026-02-08 ~ 2026-03-07"
+    },
+    "metrics_snapshot": {
+      "mean_rdd": 0.571,
+      "min_rdd": -0.516,
+      "std_rdd": 1.10,
+      "stability_score": 0.272,
+      "mean_total_return": 0.014
+    },
+    "notes": [
+      "Intended for Futu SIM paper-trading observation only.",
+      "Real-money trading must go through additional gates (see docs/system_integration_guide.md).",
+      "regime_filter_mode is left 'off' here; swap it to 'trend'/'vol'/'both' only after regime comparison is validated."
+    ],
+    "created_at_symbol": "NVDA.US",
+    "created_at_interval": "1m",
+    "capital": 5000.0
+  },
+  "strategy_class": "ClassicMultiFactorCtaStrategy",
+  "symbol": "NVDA.US",
+  "interval": "1m",
+  "setting": {
+    "signal_interval_minutes": 12,
+    "entry_score": 0.66,
+    "exit_score": 0.46,
+    "fast_window": 6,
+    "slow_window": 24,
+    "momentum_window": 12,
+    "atr_window": 14,
+    "max_order_value": 1250.0,
+    "capital": 5000.0,
+    "confirm_bars": 1,
+    "min_volume_ratio": 0.8,
+    "min_atr_pct": 0.0012,
+    "min_trend_score": 0.55,
+    "stop_atr": 1.5,
+    "take_profit_atr": 2.5,
+    "trailing_atr": 2.0,
+    "entry_cooldown_minutes": 30,
+    "min_hold_minutes": 20,
+    "no_new_entry_after": "15:30",
+    "max_intraday_trades": 4,
+    "regime_filter_mode": "off",
+    "regime_trend_lookback": 5,
+    "regime_ema_span": 20,
+    "regime_atr_pct_lo": 0.008,
+    "regime_atr_pct_hi": 0.05,
+    "regime_atr_days": 5
+  }
+}
