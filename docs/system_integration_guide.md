@@ -309,6 +309,85 @@ no_new_entry_after: "15:30"
 - `ReconciliationGuard`：对账检查，确保账户状态一致
 - `SubmitPrecheck`：提交前检查，验证订单参数合法性
 
+### 7.3 Classic Multifactor 主线（2026-05 审计后重构）
+
+`scripts/classic_multifactor/` 是当前唯一被主动维护的 US 多因子主线，覆盖
+回测（backtest.py / CTA sweeps）、vn.py CTA 模拟、Futu SIM 与 Futu 实盘四条路径。
+审计报告（.codebuddy/plan/classic_multifactor_audit/design.md）落地后，主线内所有
+"口径分叉"都被折叠到下列单一事实来源中。
+
+#### 7.3.1 回测 → 实盘口径映射
+
+| 维度 | 单一事实来源 | 回测 | CTA 模拟 | Futu SIM | Futu 实盘 |
+| --- | --- | --- | --- | --- | --- |
+| 策略参数 / 风控阈值 | `scripts/classic_multifactor/config_schema.py::ClassicMultiFactorConfig` | from_args | from_args | from_args | from_args + from_setting |
+| minute guard | `MinuteTradeGuardConfig.from_setting(setting)` | ✓ | ✓ | ✓ | ✓ |
+| 评分 / 入场 / 出场 | `ClassicMultiFactorModel.decide_target` | 直接调用 | 直接调用 | 直接调用 | 通过 `ClassicSignalAdapter` |
+| exchange 时区 | `America/New_York`（US）/ `Asia/Hong_Kong`（HK） | ✓ | ✓ | ✓ | ✓ |
+| entry_at/entry_price/highest_close | 策略内存 / `StrategyStateStore` 文件 | 内存 | 内存 | 内存 | 跨进程 JSON |
+| today_trades | 回测 bar 自带 / 实盘 `get_today_trades` | N/A | N/A | Futu | Futu（TTL 缓存+3 次重试+fail-closed） |
+
+#### 7.3.2 跨进程状态表
+
+| 路径 | 内容 | 写入方 | 消费方 |
+| --- | --- | --- | --- |
+| `state/runs/strategy_state/<task>_<symbol>.json` | entry_at / entry_price / highest_close / last_trade_at | `LiveTradingPipeline._persist_strategy_state_from_states` | `_reconcile_strategy_state` 下一轮读取并与 Futu 持仓做 5% 偏差校准 |
+| `state/runs/candidate_inputs.dynamic.json` | 每个 symbol 的 strategy_config（+ strategy_class/market） | `run.py live`（fcntl 独占锁 + 原子替换） | `UnifiedCandidateProvider.load(market)` |
+| `state/runs/classic_multifactor_<sym>_live_report.json` | selected 行（含 today_trades_count / today_buy_notional / current_qty / entry_price / highest_close / exit_reason / classic_decision） | `LiveTradingPipeline.run_once` | `run_loop.py` breaker / `run_portfolio_loop.py` anchor |
+| `state/runs/loop_anchor_<task>.json` | 当日 NAV 锚点 + env/account/market 指纹 | `_load_or_build_anchor` | `run_loop.py` / `run_portfolio_loop.py` |
+
+#### 7.3.3 风控分层表
+
+| 层级 | 组件 | 作用 |
+| --- | --- | --- |
+| 策略内出场 | `ClassicMultiFactorModel.decide_target`（ATR stop_loss / trailing / take_profit / min_hold） | 生成 SELL 信号 + `hard_exit` 标记 |
+| minute guard | `MinuteTradeGuard.can_enter` / `can_exit` | max_intraday_trades / entry_cooldown / min_hold / no_new_entry_after；SELL `hard_exit=True` 绕过 min_hold |
+| live_gate | `LiveExecutionGate.evaluate` | approval / budget_per_trade / market_exposure / drawdown / signal_age |
+| 幂等 | `OrderIdempotencyGuard.evaluate` | `request_id = md5(task|symbol|side|exchange_date|strategy_signal_id)`；仅拦 open+filled；cancelled/rejected 可重放 |
+| 对账 | `ReconciliationGuard` | 强制存在 reconciliation 文件，过期自动阻断 |
+| loop anchor | `_loop_common._load_or_build_anchor` / portfolio 版本 | 当日亏损熔断、环境指纹不匹配自动重建 |
+
+#### 7.3.4 live 评估 → 订单路径（ClassicSignalAdapter）
+
+```
+LiveTradingPipeline._build_candidate_pool(candidate)
+  ├─ _position_qty_for_symbol(account, symbol)                # 从 Futu 读 current_qty
+  ├─ _reconcile_strategy_state(symbol, account, trades)       # 偏差 >5% 以 Futu 为准
+  ├─ _evaluate_with_classic_adapter(candidate, quote, qty, state, account)
+  │     ├─ 持仓路径：decide_target(hold, current_qty>0) → SELL / HOLD
+  │     └─ 空仓路径：decide_target(empty)                   → BUY / HOLD
+  ├─ SELL 分支 → can_exit(hard_exit=classic_decision.hard_exit) → live_gate → idempotency
+  ├─ BUY  分支 → _calc_qty → can_enter(today_trades, tz) → live_gate → idempotency
+  └─ 终态写回 StrategyStateStore（BUY filled → update_on_buy；SELL 全平 → clear_on_sell）
+```
+
+#### 7.3.5 loop 公共基础
+
+- `scripts/classic_multifactor/_loop_common.py` 提供 `parse_hhmm / in_session /
+  seconds_until / read_current_nav / extract_env_fingerprint / fingerprint_mismatch /
+  append_loop_log / install_signal_handlers / run_child / sleep_responsive`
+  及 `LoopSignalState` 数据类。
+- `run_child` 在 SIGINT/SIGTERM/超时场景都强杀残留子进程，避免 run_loop 退出后
+  孤儿 `run.py` 继续下单。
+- `sleep_responsive` 将长 sleep 切为 5 秒一块，保证外层 SIGTERM 在秒级生效。
+
+#### 7.3.6 已知缺陷登记
+
+| 需求编号 | 状态 | 说明 |
+| --- | --- | --- |
+| 需求 1 | ✅ 已修复 | 实盘评分链路已接入 `ClassicSignalAdapter`，不再硬编码 raw_score=0.8 |
+| 需求 2 | ✅ 已修复 | LiveTradingPipeline 已补全 ATR stop_loss / trailing / take_profit 的持仓出场 |
+| 需求 3 | ✅ 已修复 | `StrategyStateStore` 持久化 entry_at/entry_price/highest_close，跨进程复用 |
+| 需求 4 | ✅ 已修复 | Config 统一为 `ClassicMultiFactorConfig`；所有路径使用 `MinuteTradeGuardConfig.from_setting` + exchange 时区 |
+| 需求 5 | ✅ 已修复 | `_loop_common.py` 抽取共享代码；信号处理统一；子进程不孤儿化 |
+| 需求 6 | ✅ 已修复 | live_task 调用 `ClassicSignalAdapter`，strategy_config 由 `run.py` 注入 |
+| 需求 7 | ✅ 已修复 | `daily_new_pct` 改由 `FutuAccountProvider.get_today_trade_details` 派生，30s TTL + 3 次重试 + fail-closed |
+| 需求 8 | ✅ 已修复 | `request_id` 改为 `strategy_signal_id + exchange_date`；`candidate_inputs.dynamic.json` 写入加 `fcntl.flock` |
+| 需求 9 | ✅ 已修复 | 本节即为文档落地；后续缺陷应在此表追加行 |
+
+后续如有新发现的缺陷，请在本表追加一行，并在 `design.md / tasks.md` 中同步任务编号，避免
+再次分散到多个主线脚本里靠口径漂移掩盖。
+
 ## 8. vn.py / Futu 执行桥接
 
 ### 现有 draft 桥接

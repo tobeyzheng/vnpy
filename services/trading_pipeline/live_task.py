@@ -25,10 +25,16 @@ from services.futu_opend import OpenDConfig
 from services.risk_engine import LiveRiskGuard
 
 from services.strategy.candidate_provider import UnifiedCandidateProvider
+from services.strategy.classic_adapter import (
+    HARD_EXIT_REASONS,
+    ClassicDecision,
+    ClassicSignalAdapter,
+)
 from services.strategy.engine import StrategyEngine
 from services.strategy.external_selection import ExternalStrategySelectionStore
 from services.strategy.selection_store import StrategySelectionStore
 from services.trade_state import OrderStateStore
+from services.trade_state.strategy_state import StrategyStateStore
 from scripts.classic_multifactor.minute_guard import MinuteGuardDecision, MinuteTradeGuard, MinuteTradeGuardConfig  # noqa: F401
 
 
@@ -97,12 +103,12 @@ class LiveTradingPipeline:
         # minute_guard 的默认阈值来自 live_risk_limits.yaml；candidate 自身若带
         # strategy_config（来自 nvda_g09.json 等策略 JSON）会在 _candidate_guard()
         # 里按 candidate 维度再覆盖一次，确保研究参数真实落地到实盘。
-        self.default_minute_guard_config = MinuteTradeGuardConfig(
-            max_intraday_trades=int(limits.get("max_intraday_trades", 4) or 0),
-            entry_cooldown_minutes=int(limits.get("entry_cooldown_minutes", 30) or 0),
-            min_hold_minutes=int(limits.get("min_hold_minutes", 20) or 0),
-            no_new_entry_after=str(limits.get("no_new_entry_after", "15:30") or ""),
-        )
+        self.default_minute_guard_config = MinuteTradeGuardConfig.from_setting({
+            "max_intraday_trades": limits.get("max_intraday_trades", 4),
+            "entry_cooldown_minutes": limits.get("entry_cooldown_minutes", 30),
+            "min_hold_minutes": limits.get("min_hold_minutes", 20),
+            "no_new_entry_after": limits.get("no_new_entry_after", "15:30"),
+        })
         self.minute_guard = MinuteTradeGuard(self.default_minute_guard_config)
 
         self.reconciliation_guard = ReconciliationGuard(
@@ -116,6 +122,16 @@ class LiveTradingPipeline:
         self.main_engine: MainEngine | None = None
         self.event_recorder: VnpyEventRecorder | None = None
         self.gateway_event_bridge: VnpyGatewayEventBridge | None = None
+
+        # Strategy-level persistent state (entry_at / entry_price / highest_close /
+        # last_trade_at) survives 5-minute loop restarts. See
+        # ``services/trade_state/strategy_state.py`` and the audit requirements
+        # 2.3 / 3.x for details.
+        self.strategy_state_store = StrategyStateStore(repo_root, config.task_name)
+
+        # Classic multifactor adapter: bridges ``ClassicMultiFactorModel.decide_target``
+        # into the live scoring chain so "backtest decision == live decision".
+        self.classic_adapter = ClassicSignalAdapter(bar_loader=self._load_classic_bars)
 
     def _build_account_provider(self) -> FutuAccountProvider:
         """Build FutuAccountProvider with strict live-account selection when configured.
@@ -147,6 +163,15 @@ class LiveTradingPipeline:
         if len(today_trades) > 5:
             print(f"  ... 还有 {len(today_trades) - 5} 笔成交记录", flush=True)
         return today_trades
+
+    def _sync_today_trade_details(self, symbol: str) -> list[dict]:
+        """Detailed deal rows for ``symbol`` (price/qty/side/notional/time).
+
+        Used by the live risk context to derive today's BUY notional directly
+        from the broker's own deal flow. Any exception is re-raised so the
+        caller can fail-closed (requirement 7.4).
+        """
+        return self.account_provider.get_today_trade_details(symbol)
 
     def run(self) -> dict[str, Any]:
         # Plan C: live-strict account selection — abort before anything else if mismatch.
@@ -205,6 +230,11 @@ class LiveTradingPipeline:
             # or timeout before tearing down MainEngine; otherwise EVENT_TRADE回报会丢失，
             # 订单状态长期停留在 'submitted'，跨进程风控/minute_guard 会错判。
             states = self._wait_for_order_states(states)
+
+        # Persist strategy-level state on filled BUY / SELL so the next loop
+        # iteration reuses entry_at / entry_price / highest_close rather than
+        # resetting to zero. See requirements 2.3 / 3.1 / 3.3.
+        self._persist_strategy_state_from_states(states)
         report = {
             "task": self.config.task_name,
             "market": self.config.market,
@@ -377,31 +407,170 @@ class LiveTradingPipeline:
         if not isinstance(strategy_cfg, dict):
             return MinuteTradeGuard(cfg)
 
-        def _as_int(v, default):
-            try:
-                return int(v) if v is not None else default
-            except (TypeError, ValueError):
-                return default
-
-        override = MinuteTradeGuardConfig(
-            max_intraday_trades=_as_int(strategy_cfg.get("max_intraday_trades"), cfg.max_intraday_trades),
-            entry_cooldown_minutes=_as_int(strategy_cfg.get("entry_cooldown_minutes"), cfg.entry_cooldown_minutes),
-            min_hold_minutes=_as_int(strategy_cfg.get("min_hold_minutes"), cfg.min_hold_minutes),
-            no_new_entry_after=str(strategy_cfg.get("no_new_entry_after") or cfg.no_new_entry_after),
-        )
+        # Defaults come from live_risk_limits.yaml; any field present on the
+        # candidate's strategy_config wins. Goes through the shared factory so
+        # new fields only need to be declared in one place.
+        merged = {
+            "max_intraday_trades": cfg.max_intraday_trades,
+            "entry_cooldown_minutes": cfg.entry_cooldown_minutes,
+            "min_hold_minutes": cfg.min_hold_minutes,
+            "no_new_entry_after": cfg.no_new_entry_after,
+        }
+        for key in merged:
+            if strategy_cfg.get(key) is not None:
+                merged[key] = strategy_cfg[key]
+        override = MinuteTradeGuardConfig.from_setting(merged)
         return MinuteTradeGuard(override)
 
     def _guard_now(self) -> datetime:
         """Return the 'now' timestamp that MinuteTradeGuard should use for its
         no_new_entry_after cutoff. For US live trading this has to be the
         exchange local time (America/New_York), not Beijing local time.
+
+        Unlike the previous implementation we keep ``tzinfo`` attached so
+        downstream guards can also normalise ``trade_times`` to the same
+        exchange timezone when counting ``max_intraday_trades``.
         """
         try:
             from zoneinfo import ZoneInfo
             tz_name = self.config.no_new_entry_timezone or "America/New_York"
-            return datetime.now(ZoneInfo(tz_name)).replace(tzinfo=None)
+            return datetime.now(ZoneInfo(tz_name))
         except Exception:
             return datetime.now()
+
+    def _guard_exchange_tz(self) -> str:
+        """Exchange timezone string passed into MinuteTradeGuard.can_enter."""
+        return self.config.no_new_entry_timezone or "America/New_York"
+
+    # ------------------------------------------------------------------
+    # Classic multifactor adapter plumbing
+    # ------------------------------------------------------------------
+    def _load_classic_bars(self, vt_symbol: str, start: datetime, end: datetime) -> list[Any]:
+        """Bar loader injected into ``ClassicSignalAdapter``.
+
+        Uses ``VnpyBarRepository`` so live and backtest share the same DB
+        tables. ``fetch_futu_history=False`` because the live path is
+        time-sensitive and should rely on the already-synced local DB.
+        """
+        try:
+            from scripts.classic_multifactor.data import VnpyBarRepository
+        except Exception as exc:
+            print(f"[classic_adapter] VnpyBarRepository import failed: {exc}", flush=True)
+            return []
+        try:
+            repo = VnpyBarRepository(fetch_futu_history=False)
+            _vt, _futu, bars = repo.load_us_bars(vt_symbol, start, end, "1m")
+            return bars or []
+        except Exception as exc:
+            print(f"[classic_adapter] load_us_bars failed for {vt_symbol}: {exc}", flush=True)
+            return []
+
+    def _position_qty_for_symbol(self, account_summary: Any, symbol: str) -> tuple[int, float]:
+        """Return (qty, cost_basis) for ``symbol`` from Futu account snapshot.
+
+        Symbols are compared by their bare ticker (``NVDA`` from ``NVDA.US``
+        or ``US.NVDA``) to be resilient against gateway format differences.
+        """
+        target = symbol.replace("US.", "").replace(".US", "").upper()
+        positions = getattr(account_summary, "positions", None) or []
+        for pos in positions:
+            raw_code = str(getattr(pos, "code", "")).upper()
+            bare = raw_code.replace("US.", "").replace(".US", "")
+            if bare == target:
+                qty = int(float(getattr(pos, "qty", 0) or 0))
+                # FutuPosition does not carry cost basis in the current
+                # snapshot; callers should only trust this as a sign of
+                # "we have a position" rather than an exact entry price.
+                return qty, 0.0
+        return 0, 0.0
+
+    def _reconcile_strategy_state(
+        self,
+        symbol: str,
+        *,
+        account_summary: Any,
+        trades: list[datetime],
+    ) -> Any:
+        """Pull the persisted StrategyState and reconcile with broker data."""
+        now = self._guard_now()
+        # Roll intraday counters forward when a new exchange-local day starts.
+        self.strategy_state_store.rollover_if_new_day(symbol, now.date())
+        qty, _cost = self._position_qty_for_symbol(account_summary, symbol)
+        last_trade = max(trades) if trades else None
+        # ``qty`` is all we reliably get from FutuAccountSummary; treat
+        # cost_basis=None so reconciliation keeps local entry_price unless
+        # explicitly provided by a richer snapshot.
+        return self.strategy_state_store.reconcile_with_futu(
+            symbol,
+            futu_entry_price=None,
+            futu_qty=float(qty) if qty else None,
+            futu_last_trade_at=last_trade,
+            now=now,
+        )
+
+    def _evaluate_with_classic_adapter(
+        self,
+        *,
+        candidate: dict[str, Any],
+        quote: dict[str, Any],
+        current_qty: int,
+        state: Any,
+        account_summary: Any,
+    ) -> tuple[Any, ClassicDecision] | None:
+        """Return ``(StrategyEvaluation, ClassicDecision)`` if the candidate is
+        handled by the classic adapter, ``None`` to fall back to the generic
+        StrategyEngine path.
+        """
+        if not ClassicSignalAdapter.is_classic_candidate(candidate):
+            return None
+        equity = float(getattr(account_summary, "total_assets", 0) or 0)
+        cash = float(getattr(account_summary, "cash", 0) or 0)
+        classic = self.classic_adapter.evaluate(
+            candidate=candidate,
+            quote=quote,
+            current_qty=int(current_qty or 0),
+            entry_price=float(getattr(state, "entry_price", 0.0) or 0.0),
+            highest_close=float(getattr(state, "highest_close", 0.0) or 0.0),
+            equity=equity,
+            cash=cash,
+            now=self._guard_now(),
+        )
+        evaluation = self.classic_adapter.to_evaluation(candidate=candidate, classic=classic)
+        return evaluation, classic
+
+    def _persist_strategy_state_from_states(self, states: list[Any]) -> None:
+        """After the loop's orders settle, update ``StrategyStateStore`` based
+        on terminal order states so entry_at / entry_price survive restarts.
+        """
+        if not states:
+            return
+        now = self._guard_now()
+        for state in states:
+            status = str(getattr(state, "status", "") or "").lower()
+            side = str(getattr(state, "side", "") or "").upper()
+            symbol = str(getattr(state, "symbol", "") or "")
+            filled_qty = int(float(getattr(state, "filled_qty", 0) or 0))
+            avg_fill_price = float(getattr(state, "avg_fill_price", 0) or 0)
+            if not symbol or status not in {"filled", "partial_filled"}:
+                continue
+            if filled_qty <= 0:
+                continue
+            try:
+                if side == "BUY":
+                    self.strategy_state_store.update_on_buy(
+                        symbol,
+                        price=avg_fill_price or float(getattr(state, "price", 0) or 0),
+                        at=now,
+                        last_signal=str(getattr(state, "reason", "") or "classic_multifactor_entry"),
+                    )
+                elif side == "SELL":
+                    # Full exit -> clear; partial exit leaves state intact so
+                    # ATR trailing / highest_close keep working for remainder.
+                    target_qty = int(float(getattr(state, "qty", 0) or 0))
+                    if filled_qty >= target_qty and target_qty > 0:
+                        self.strategy_state_store.clear_on_sell(symbol, at=now)
+            except Exception as exc:
+                print(f"[strategy_state] persist failed symbol={symbol} side={side}: {exc}", flush=True)
 
     def _build_candidate_pool(self, candidates: list[dict[str, Any]], quote_map: dict[str, dict[str, Any]], account_summary: Any) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
@@ -409,17 +578,28 @@ class LiveTradingPipeline:
         # 逐 candidate 同步今日成交，避免单次查询被第一个标的绑定；失败直接 fail-closed
         # 返回空集合，由 minute_guard 把后续决策拒绝掉（配合外层的异常处理）。
         trades_by_symbol: dict[str, list[datetime]] = {}
+        trade_details_by_symbol: dict[str, list[dict]] = {}
+        buy_notional_by_symbol: dict[str, float] = {}
         trades_sync_error: dict[str, str] = {}
         for candidate in candidates:
             sym = candidate.get("symbol") or ""
             if not sym or sym in trades_by_symbol:
                 continue
             try:
-                trades_by_symbol[sym] = self._sync_today_trades(sym)
+                details = self._sync_today_trade_details(sym)
+                trade_details_by_symbol[sym] = details
+                trades_by_symbol[sym] = [row["datetime"] for row in details]
+                buy_notional_by_symbol[sym] = sum(
+                    float(row.get("notional") or 0.0)
+                    for row in details
+                    if str(row.get("side", "")).upper() == "BUY"
+                )
             except Exception as exc:
                 # 获取不到真实成交数时必须 fail-closed，避免像旧实现那样吞异常后
                 # 直接放行 minute_guard（曾导致 max_intraday_trades 失效）。
                 trades_by_symbol[sym] = []
+                trade_details_by_symbol[sym] = []
+                buy_notional_by_symbol[sym] = 0.0
                 trades_sync_error[sym] = f"{type(exc).__name__}: {exc}"
                 print(f"[sync_today_trades] symbol={sym} 失败，将强制拒绝下单: {exc}", flush=True)
 
@@ -429,22 +609,70 @@ class LiveTradingPipeline:
             if not quote:
                 continue
 
+            # Strategy-level persistent state & account reconciliation
+            # --------------------------------------------------------
+            # ``current_qty`` from Futu is the single source of truth for
+            # whether we hold the symbol right now; local ``entry_price`` /
+            # ``highest_close`` survive 5-minute loop restarts via
+            # StrategyStateStore so ATR stop-loss / trailing-stop work across
+            # process boundaries.
+            today_trades_for_state = trades_by_symbol.get(symbol, [])
+            current_qty_snapshot, _ = self._position_qty_for_symbol(account_summary, symbol)
+            state = self._reconcile_strategy_state(
+                symbol,
+                account_summary=account_summary,
+                trades=today_trades_for_state,
+            )
+
             external_selection = self.external_selection_store.load_latest(self.config.market, symbol)
-            evaluation = self.strategy_engine.evaluate_candidate(
+
+            # Try the classic adapter first so "backtest decision == live decision".
+            # Falls back to the generic StrategyEngine path for non-classic
+            # candidates (e.g. hand-picked watchlists without strategy_config).
+            classic_payload = self._evaluate_with_classic_adapter(
                 candidate=candidate,
                 quote=quote,
-                flow_divisor=self.config.flow_divisor,
-                has_event_catalyst=self._has_event_catalyst(candidate),
-                external_strategy_selection=external_selection,
+                current_qty=current_qty_snapshot,
+                state=state,
+                account_summary=account_summary,
             )
+            classic_decision: ClassicDecision | None = None
+            if classic_payload is not None:
+                evaluation, classic_decision = classic_payload
+            else:
+                evaluation = self.strategy_engine.evaluate_candidate(
+                    candidate=candidate,
+                    quote=quote,
+                    flow_divisor=self.config.flow_divisor,
+                    has_event_catalyst=self._has_event_catalyst(candidate),
+                    external_strategy_selection=external_selection,
+                )
             strategy_selection = evaluation.metadata.get("strategy_selection", {})
             self.selection_store.append(self.config.market, {"symbol": symbol, "market": self.config.market, "strategy_selection": strategy_selection, "raw_score": evaluation.raw_score, "task_score": evaluation.task_score})
 
             price = self._normalize_limit_price(float(quote.get("price", quote.get("last_price")) or 0))
-            qty = self._calc_qty(price, evaluation.signal.target_position_pct)
+            # Determine side/qty. Classic adapter can request an ATR-based SELL
+            # exit even when there is no fresh entry signal; in that case qty
+            # is the current position and ``hard_exit`` bypasses
+            # ``min_hold_minutes`` (but NOT live_gate / idempotency / today_trades).
+            side = ""
+            qty = 0
+            sell_exit = False
+            if classic_decision is not None and classic_decision.side == "SELL" and current_qty_snapshot > 0:
+                side = "SELL"
+                qty = int(current_qty_snapshot)
+                sell_exit = True
+            elif evaluation.signal.direction == "long" and evaluation.signal.allow_trade:
+                qty = self._calc_qty(price, evaluation.signal.target_position_pct)
+                side = "BUY" if qty > 0 else ""
+
             order_value = self._order_value(qty, price)
-            risk_context = self.risk_context_builder.build(account_summary, symbol=symbol, order_value=order_value)
-            side = "BUY" if evaluation.signal.direction == "long" and evaluation.signal.allow_trade else ""
+            risk_context = self.risk_context_builder.build(
+                account_summary,
+                symbol=symbol,
+                order_value=order_value,
+                today_buy_notional=buy_notional_by_symbol.get(symbol),
+            )
 
             gate_result = None
             idem_result = None
@@ -477,9 +705,27 @@ class LiveTradingPipeline:
                         allowed=False,
                         reason=f"today_trades_sync_failed:{trades_sync_error[symbol]}",
                     )
+                elif sell_exit:
+                    # SELL exits never count towards ``max_intraday_trades`` on the
+                    # entry side; only enforce ``min_hold_minutes`` via can_exit,
+                    # with hard_exit=True for ATR / stop_loss reasons.
+                    entry_at_dt: datetime | None = None
+                    if state and state.entry_at:
+                        try:
+                            entry_at_dt = datetime.fromisoformat(state.entry_at)
+                        except Exception:
+                            entry_at_dt = None
+                    minute_guard_result = symbol_guard.can_exit(
+                        now_for_guard,
+                        entry_at=entry_at_dt,
+                        hard_exit=bool(classic_decision and classic_decision.hard_exit),
+                    )
                 else:
                     minute_guard_result = symbol_guard.can_enter(
-                        now_for_guard, trade_times=today_trades, last_trade_at=last_trade_at
+                        now_for_guard,
+                        trade_times=today_trades,
+                        last_trade_at=last_trade_at,
+                        exchange_tz=self._guard_exchange_tz(),
                     )
 
                 if not minute_guard_result.allowed:
@@ -505,6 +751,8 @@ class LiveTradingPipeline:
                     intent = None
 
             today_trades_for_symbol = trades_by_symbol.get(symbol, [])
+            exit_reason = classic_decision.exit_reason if classic_decision else None
+            today_buy_notional = float(buy_notional_by_symbol.get(symbol, 0.0) or 0.0)
             rows.append({
                 "symbol": symbol,
                 "name": candidate.get("name"),
@@ -524,7 +772,13 @@ class LiveTradingPipeline:
                 "idempotency": idem_result.__dict__ if idem_result else None,
                 "order_intent": intent,
                 "today_trades_count": len(today_trades_for_symbol),
+                "today_buy_notional": round(today_buy_notional, 4),
                 "today_trades_sync_error": trades_sync_error.get(symbol),
+                "current_qty": int(current_qty_snapshot),
+                "entry_price": float(getattr(state, "entry_price", 0.0) or 0.0),
+                "highest_close": float(getattr(state, "highest_close", 0.0) or 0.0),
+                "exit_reason": exit_reason,
+                "classic_decision": classic_decision.to_dict() if classic_decision else None,
                 "minute_guard_result": (
                     asdict(minute_guard_result) if side and qty > 0 and hasattr(minute_guard_result, "__dataclass_fields__") else None
                 ),
@@ -533,7 +787,23 @@ class LiveTradingPipeline:
         return rows
 
     def _build_intent(self, symbol: str, side: str, qty: int, price: float, evaluation: Any, risk_snapshot: dict[str, Any] | None = None) -> OrderIntent:
-        request_id = hashlib.md5(f"{self.config.task_name}|{symbol}|{side}|{datetime.now().strftime('%Y%m%d%H%M')}".encode("utf-8")).hexdigest()[:16]
+        # Exchange-local date keeps two orders on the same trading day in the
+        # same idempotency bucket, while per-signal seed (strategy_signal_id)
+        # lets the strategy emit genuinely independent re-entries later in
+        # the day. Minute precision was dropped because loop iterations on a
+        # 5-minute cadence generated a fresh request_id even for the same
+        # signal, which defeated the purpose of the guard entirely.
+        exchange_date = self._guard_now().strftime("%Y%m%d")
+        classic_decision = (evaluation.metadata.get("classic_decision") or {}) if hasattr(evaluation, "metadata") else {}
+        factor = classic_decision.get("factor") or {}
+        strategy_signal_id = str(
+            factor.get("datetime")
+            or classic_decision.get("reason")
+            or evaluation.metadata.get("entry_action", "")
+            or "nosig"
+        )
+        seed = f"{self.config.task_name}|{symbol}|{side}|{exchange_date}|{strategy_signal_id}"
+        request_id = hashlib.md5(seed.encode("utf-8")).hexdigest()[:16]
         return OrderIntent(
             request_id=request_id,
             symbol=symbol,
@@ -544,7 +814,12 @@ class LiveTradingPipeline:
             price=price,
             target_position_pct=evaluation.signal.target_position_pct,
             reason=evaluation.signal.reason,
-            signal_snapshot={"strategy_selection": evaluation.metadata.get("strategy_selection", {}), "score": evaluation.signal.score},
+            signal_snapshot={
+                "strategy_selection": evaluation.metadata.get("strategy_selection", {}),
+                "score": evaluation.signal.score,
+                "strategy_signal_id": strategy_signal_id,
+                "exchange_date": exchange_date,
+            },
             risk_snapshot=risk_snapshot or {},
         )
 

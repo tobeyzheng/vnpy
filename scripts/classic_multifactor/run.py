@@ -151,16 +151,16 @@ def run_live_mode(args) -> None:
     )
 
     # 创建候选池（单标的）
+    # 不再写入 raw_score / strategy_selection.allow_trade 等硬编码字段：
+    # 实盘评分与选股完全由 LiveTradingPipeline + ClassicSignalAdapter 通过
+    # ClassicMultiFactorModel.decide_target 生成，保持"回测决策函数 = 实盘决策函数"。
     candidate = {
         "symbol": args.symbol,
         "market": "us",
         "name": args.symbol.split('.')[0],
-        "raw_score": 0.8,  # 默认高分，确保被选中
-        "signals": [{"score": 0.8}],
         "rationale": f"classic_multifactor策略标的: {args.symbol}",
-        "strategy_selection": {"strategy_id": "classic_multifactor_cta", "allow_trade": True},
         "minute_profile": args.minute_profile,
-        "strategy_config": setting
+        "strategy_config": setting,
     }
 
     # 同时写两个位置：
@@ -178,26 +178,38 @@ def run_live_mode(args) -> None:
         json.dump([candidate], f, ensure_ascii=False, indent=2)
 
     dynamic_path = runs_dir / "candidate_inputs.dynamic.json"
-    dynamic_items: list[dict[str, Any]] = []
-    if dynamic_path.exists():
+    # portfolio 模式下多个 symbol 并发执行 run.py 会出现 read-modify-write 窗口，
+    # 旧实现没有锁导致最后一个写入者覆盖前面标的的条目（曾复现"只剩一个标的"问题）。
+    # 使用 fcntl.flock 独占锁，配合原子 os.replace 保证可见性。
+    import fcntl
+    dynamic_lock_path = runs_dir / ".candidate_inputs.dynamic.json.lock"
+    with open(dynamic_lock_path, "w") as lock_fh:
+        fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX)
         try:
-            raw = json.loads(dynamic_path.read_text(encoding="utf-8"))
-            if isinstance(raw, dict) and isinstance(raw.get("items"), list):
-                dynamic_items = [row for row in raw["items"] if isinstance(row, dict)]
-            elif isinstance(raw, list):
-                dynamic_items = [row for row in raw if isinstance(row, dict)]
-        except Exception:
-            dynamic_items = []
-    # 覆盖当前 symbol 的条目，其它 symbol 保留
-    dynamic_items = [
-        row for row in dynamic_items
-        if str(row.get("symbol", "")).upper() != str(args.symbol).upper()
-    ]
-    dynamic_items.append(candidate)
-    dynamic_path.write_text(
-        json.dumps({"items": dynamic_items}, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+            dynamic_items: list[dict[str, Any]] = []
+            if dynamic_path.exists():
+                try:
+                    raw = json.loads(dynamic_path.read_text(encoding="utf-8"))
+                    if isinstance(raw, dict) and isinstance(raw.get("items"), list):
+                        dynamic_items = [row for row in raw["items"] if isinstance(row, dict)]
+                    elif isinstance(raw, list):
+                        dynamic_items = [row for row in raw if isinstance(row, dict)]
+                except Exception:
+                    dynamic_items = []
+            # 覆盖当前 symbol 的条目，其它 symbol 保留
+            dynamic_items = [
+                row for row in dynamic_items
+                if str(row.get("symbol", "")).upper() != str(args.symbol).upper()
+            ]
+            dynamic_items.append(candidate)
+            tmp_path = dynamic_path.with_suffix(dynamic_path.suffix + ".tmp")
+            tmp_path.write_text(
+                json.dumps({"items": dynamic_items}, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            os.replace(tmp_path, dynamic_path)
+        finally:
+            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_UN)
 
     # 运行实盘pipeline
     pipeline = LiveTradingPipeline(REPO_ROOT, config, live_submit=args.live_submit)

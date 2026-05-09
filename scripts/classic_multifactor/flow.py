@@ -47,12 +47,12 @@ class UsSingleSymbolClassicFlow:
         )
         self.model = ClassicMultiFactorModel(self.config)
         self.minute_guard = MinuteTradeGuard(
-            MinuteTradeGuardConfig(
-                max_intraday_trades=int(args.max_intraday_trades),
-                entry_cooldown_minutes=int(args.entry_cooldown_minutes),
-                min_hold_minutes=int(args.min_hold_minutes),
-                no_new_entry_after=str(args.no_new_entry_after),
-            )
+            MinuteTradeGuardConfig.from_setting({
+                "max_intraday_trades": args.max_intraday_trades,
+                "entry_cooldown_minutes": args.entry_cooldown_minutes,
+                "min_hold_minutes": args.min_hold_minutes,
+                "no_new_entry_after": args.no_new_entry_after,
+            })
         )
 
         self.risk_manager = ClassicOrderRiskManager(self.config, market="us")

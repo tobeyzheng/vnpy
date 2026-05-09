@@ -3,59 +3,38 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
-import signal
-import subprocess
 import sys
 import time
-from datetime import datetime, time as dtime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+# Allow ``python3 scripts/classic_multifactor/run_loop.py ...`` (bare-path
+# invocation) to still import sibling modules; without this patch sys.path
+# would not contain the repo root and ``from scripts....`` would fail.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from scripts.classic_multifactor._loop_common import (
+    LOG_DIR,
+    REPO_ROOT,
+    LoopSignalState,
+    anchor_path_for_symbol,
+    append_loop_log,
+    extract_env_fingerprint,
+    fingerprint_mismatch,
+    in_session,
+    install_signal_handlers,
+    now_bj,
+    parse_hhmm,
+    read_current_nav,
+    report_path_for,
+    run_child,
+    sleep_responsive,
+)
+
 RUN_PY = REPO_ROOT / "scripts" / "classic_multifactor" / "run.py"
-LOG_DIR = REPO_ROOT / "state" / "runs"
-
-BEIJING_TZ = timezone(timedelta(hours=8))
-
-_child_proc: subprocess.Popen | None = None
-_stop_requested = False
-
-
-def _parse_hhmm(s: str) -> dtime:
-    hh, mm = s.split(":")
-    return dtime(int(hh), int(mm))
-
-
-def _now_bj() -> datetime:
-    return datetime.now(tz=BEIJING_TZ)
-
-
-def _in_session(now: datetime, start: dtime, end: dtime) -> bool:
-    """Supports cross-midnight session window (e.g. 22:30 -> 05:00)."""
-    cur = now.timetz().replace(tzinfo=None)
-    cur_t = dtime(cur.hour, cur.minute, cur.second)
-    if start <= end:
-        return start <= cur_t < end
-    # cross midnight
-    return cur_t >= start or cur_t < end
-
-
-def _seconds_until(now: datetime, target: dtime) -> float:
-    target_dt = now.replace(hour=target.hour, minute=target.minute, second=0, microsecond=0)
-    if target_dt <= now:
-        target_dt += timedelta(days=1)
-    return (target_dt - now).total_seconds()
-
-
-def _handle_signal(signum, frame):
-    global _stop_requested
-    _stop_requested = True
-    if _child_proc is not None and _child_proc.poll() is None:
-        try:
-            _child_proc.terminate()
-        except Exception:
-            pass
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -114,83 +93,21 @@ def _build_child_cmd(args) -> list[str]:
     return cmd
 
 
-def _report_path_for(symbol: str) -> Path:
-    return REPO_ROOT / "state" / "runs" / f"classic_multifactor_{symbol.replace('.', '_')}_live_report.json"
-
-
-def _anchor_path_for(task_tag: str) -> Path:
-    return LOG_DIR / f"loop_anchor_{task_tag}.json"
-
-
-def _extract_env_fingerprint(report: dict[str, Any] | None) -> dict[str, str | None]:
-    """Extract env/account_last4/market from live report for anchor fingerprint."""
-    if not report:
-        return {"env": None, "account_last4": None, "market": None}
-    market = report.get("market")
-    env = None
-    try:
-        env = (report.get("risk_config") or {}).get("gateway_env")
-    except Exception:
-        env = None
-    account_last4 = None
-    msg = report.get("account_message") or ""
-    m = re.search(r"uni_last4=(\w+)", msg)
-    if m:
-        account_last4 = m.group(1)
-    else:
-        m2 = re.search(r"acc_id=(\d+)", msg)
-        if m2:
-            account_last4 = m2.group(1)[-4:]
-    return {"env": env, "account_last4": account_last4, "market": market}
-
-def _read_current_nav(symbol: str) -> tuple[float | None, float | None, dict[str, Any] | None]:
-    """Return (total_nav, cash, raw_report) from latest live report."""
-    path = _report_path_for(symbol)
-    if not path.exists():
-        return None, None, None
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception:
-        return None, None, None
-    selected = data.get("selected") or []
-    if not selected:
-        return None, None, data
-    rc = (selected[0] or {}).get("risk_context") or {}
-    try:
-        nav = float(rc.get("total_nav")) if rc.get("total_nav") is not None else None
-    except Exception:
-        nav = None
-    try:
-        cash = float(rc.get("cash")) if rc.get("cash") is not None else None
-    except Exception:
-        cash = None
-    return nav, cash, data
-
-
-def _fingerprint_mismatch(anchor: dict[str, Any], fp: dict[str, str | None]) -> str | None:
-    """Return a human-readable reason if anchor fingerprint disagrees with current fp, else None.
-    If either side missing a field, that field is skipped (best-effort)."""
-    for key in ("env", "account_last4", "market"):
-        a_val = anchor.get(key)
-        c_val = fp.get(key)
-        if a_val is None or c_val is None:
-            continue
-        if str(a_val) != str(c_val):
-            return f"{key}:{a_val}->{c_val}"
-    return None
-
 def _load_or_build_anchor(task_tag: str, today_str: str,
                           current_nav: float | None, current_cash: float | None,
                           fp: dict[str, str | None],
                           force_reset: bool) -> tuple[dict[str, Any] | None, bool, str | None]:
     """Load anchor for today; rebuild if missing / stale / forced / env-mismatch.
 
-    Returns (anchor, just_rebuilt, stale_reason).
-    just_rebuilt=True means the anchor was (re)created in THIS call; caller should
-    skip circuit-breaker for this iteration to avoid false trips.
+    Returns (anchor, just_rebuilt, stale_reason). When ``just_rebuilt`` is True
+    the caller must skip the circuit breaker for this iteration so a fresh
+    anchor is never tripped on its own creation.
     """
-    path = _anchor_path_for(task_tag)
+    tag = task_tag.replace("classic_multifactor_", "", 1)
+    path = anchor_path_for_symbol(tag) if not tag.startswith("classic_multifactor_") else LOG_DIR / f"loop_anchor_{task_tag}.json"
+    # Keep legacy filename shape (loop_anchor_classic_multifactor_<sym>.json):
+    path = LOG_DIR / f"loop_anchor_{task_tag}.json"
+
     anchor: dict[str, Any] | None = None
     stale_reason: str | None = None
     if path.exists() and not force_reset:
@@ -206,14 +123,14 @@ def _load_or_build_anchor(task_tag: str, today_str: str,
         stale_reason = f"date:{anchor.get('date')}->{today_str}"
         anchor = None
     if anchor is not None:
-        mismatch = _fingerprint_mismatch(anchor, fp)
+        mismatch = fingerprint_mismatch(anchor, fp)
         if mismatch is not None:
             stale_reason = f"env_mismatch:{mismatch}"
             anchor = None
     just_rebuilt = False
     if anchor is None:
         if current_nav is None:
-            return None, False, stale_reason  # cannot anchor yet
+            return None, False, stale_reason
         anchor = {
             "date": today_str,
             "initial_nav": current_nav,
@@ -221,7 +138,7 @@ def _load_or_build_anchor(task_tag: str, today_str: str,
             "env": fp.get("env"),
             "account_last4": fp.get("account_last4"),
             "market": fp.get("market"),
-            "created_ts": _now_bj().isoformat(),
+            "created_ts": now_bj().isoformat(),
         }
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(path.suffix + ".tmp")
@@ -232,23 +149,14 @@ def _load_or_build_anchor(task_tag: str, today_str: str,
     return anchor, just_rebuilt, stale_reason
 
 
-def _append_loop_log(task_tag: str, record: dict[str, Any]) -> None:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
-    date_str = _now_bj().strftime("%Y%m%d")
-    log_file = LOG_DIR / f"loop_{task_tag}_{date_str}.jsonl"
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
-
-
 def main() -> int:
-    global _child_proc
     args = build_parser().parse_args()
 
-    signal.signal(signal.SIGINT, _handle_signal)
-    signal.signal(signal.SIGTERM, _handle_signal)
+    state = LoopSignalState()
+    install_signal_handlers(state)
 
-    session_start = _parse_hhmm(args.session_start)
-    session_end = _parse_hhmm(args.session_end)
+    session_start = parse_hhmm(args.session_start)
+    session_end = parse_hhmm(args.session_end)
     task_tag = f"classic_multifactor_{args.symbol.replace('.', '_')}"
 
     print(f"[loop] symbol={args.symbol} interval={args.interval_seconds}s "
@@ -259,18 +167,17 @@ def main() -> int:
 
     iteration = 0
     entered_session_once = False
-    while not _stop_requested:
-        now = _now_bj()
+    while not state.stop_requested:
+        now = now_bj()
 
-        in_session = _in_session(now, session_start, session_end)
-        if in_session:
+        if in_session(now, session_start, session_end):
             entered_session_once = True
-        if not in_session:
+        else:
             if entered_session_once and args.exit_after_session:
                 print(f"[loop] session ended (BJ end={args.session_end}), exit-after-session requested, exit", flush=True)
                 break
-            wait_s = _seconds_until(now, session_start)
-            # 限幅一次最多睡 60s，便于尽快响应 SIGINT 与重新评估
+            from scripts.classic_multifactor._loop_common import seconds_until
+            wait_s = seconds_until(now, session_start)
             sleep_chunk = min(wait_s, 60.0)
             print(f"[loop] out-of-session now(BJ)={now.strftime('%H:%M:%S')} "
                   f"sleep {sleep_chunk:.0f}s (until {args.session_start})", flush=True)
@@ -292,27 +199,14 @@ def main() -> int:
         if args.dry_run_loop:
             exit_code = 0
         else:
-            t0 = time.time()
-            try:
-                _child_proc = subprocess.Popen(cmd, cwd=str(REPO_ROOT))
-                try:
-                    exit_code = _child_proc.wait(timeout=args.per_run_timeout)
-                except subprocess.TimeoutExpired:
-                    timed_out = True
-                    _child_proc.terminate()
-                    try:
-                        exit_code = _child_proc.wait(timeout=10)
-                    except subprocess.TimeoutExpired:
-                        _child_proc.kill()
-                        exit_code = _child_proc.wait()
-            finally:
-                duration_ms = int((time.time() - t0) * 1000)
-                _child_proc = None
+            exit_code, timed_out, duration_ms = run_child(
+                cmd, timeout=args.per_run_timeout, state=state, cwd=REPO_ROOT
+            )
 
         # circuit breaker: daily loss via NAV anchor
-        today_str = _now_bj().strftime("%Y-%m-%d")
-        cur_nav, cur_cash, cur_report = _read_current_nav(args.symbol)
-        fp = _extract_env_fingerprint(cur_report)
+        today_str = now_bj().strftime("%Y-%m-%d")
+        cur_nav, cur_cash, cur_report = read_current_nav(args.symbol)
+        fp = extract_env_fingerprint(cur_report)
         anchor, just_rebuilt, stale_reason = _load_or_build_anchor(
             task_tag, today_str, cur_nav, cur_cash, fp,
             force_reset=(args.anchor_reset and iteration == 1),
@@ -332,12 +226,12 @@ def main() -> int:
         )
 
         record = {
-            "ts": _now_bj().isoformat(),
+            "ts": now_bj().isoformat(),
             "iteration": iteration,
             "exit_code": exit_code,
             "timed_out": timed_out,
             "duration_ms": duration_ms,
-            "report_path": str(_report_path_for(args.symbol)),
+            "report_path": str(report_path_for(args.symbol)),
             "anchor_date": (anchor or {}).get("date"),
             "anchor_env": (anchor or {}).get("env"),
             "anchor_account_last4": (anchor or {}).get("account_last4"),
@@ -354,7 +248,7 @@ def main() -> int:
             "breaker_tripped": breaker_tripped,
             "dry_run_loop": args.dry_run_loop,
         }
-        _append_loop_log(task_tag, record)
+        append_loop_log(task_tag, record)
         print(f"[loop] iter={iteration} exit={exit_code} timed_out={timed_out} "
               f"env={fp.get('env')} acct_last4={fp.get('account_last4')} "
               f"initial_nav={initial_nav} current_nav={cur_nav} "
@@ -370,12 +264,7 @@ def main() -> int:
             print(f"[loop] child failed exit={exit_code}, on-error=stop", flush=True)
             break
 
-        # sleep in chunks to stay responsive to signals
-        slept = 0
-        while slept < args.interval_seconds and not _stop_requested:
-            chunk = min(5, args.interval_seconds - slept)
-            time.sleep(chunk)
-            slept += chunk
+        sleep_responsive(args.interval_seconds, state)
 
     print("[loop] exit", flush=True)
     return 0

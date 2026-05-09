@@ -1,6 +1,7 @@
 from .models import ApprovalRecord, TradeStateRecord
 from .state_machine import InvalidOrderTransition, OrderStateMachine
 from .storage import ApprovalStateStore, OrderStateStore, TradeStateStore
+from .strategy_state import StrategyState, StrategyStateStore
 
 __all__ = [
     'ApprovalRecord',
@@ -10,4 +11,6 @@ __all__ = [
     'OrderStateStore',
     'OrderStateMachine',
     'InvalidOrderTransition',
+    'StrategyState',
+    'StrategyStateStore',
 ]

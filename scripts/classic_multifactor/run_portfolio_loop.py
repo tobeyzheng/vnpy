@@ -3,58 +3,37 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
-import signal
-import subprocess
 import sys
 import time
-from datetime import datetime, time as dtime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+# Allow ``python3 scripts/classic_multifactor/run_portfolio_loop.py ...``
+# (bare-path invocation) to still import sibling modules.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from scripts.classic_multifactor._loop_common import (
+    LOG_DIR,
+    REPO_ROOT,
+    LoopSignalState,
+    anchor_path_for_portfolio,
+    append_loop_log,
+    extract_env_fingerprint,
+    fingerprint_mismatch,
+    in_session,
+    install_signal_handlers,
+    now_bj,
+    parse_hhmm,
+    read_current_nav,
+    run_child,
+    seconds_until,
+    sleep_responsive,
+)
+
 RUN_PORTFOLIO_PY = REPO_ROOT / "scripts" / "classic_multifactor" / "run_portfolio.py"
-LOG_DIR = REPO_ROOT / "state" / "runs"
 CONFIG_ROOT = REPO_ROOT / "configs" / "classic_multifactor"
-
-BEIJING_TZ = timezone(timedelta(hours=8))
-
-_child_proc: subprocess.Popen | None = None
-_stop_requested = False
-
-
-def _parse_hhmm(s: str) -> dtime:
-    hh, mm = s.split(":")
-    return dtime(int(hh), int(mm))
-
-
-def _now_bj() -> datetime:
-    return datetime.now(tz=BEIJING_TZ)
-
-
-def _in_session(now: datetime, start: dtime, end: dtime) -> bool:
-    cur = now.timetz().replace(tzinfo=None)
-    cur_t = dtime(cur.hour, cur.minute, cur.second)
-    if start <= end:
-        return start <= cur_t < end
-    return cur_t >= start or cur_t < end
-
-
-def _seconds_until(now: datetime, target: dtime) -> float:
-    target_dt = now.replace(hour=target.hour, minute=target.minute, second=0, microsecond=0)
-    if target_dt <= now:
-        target_dt += timedelta(days=1)
-    return (target_dt - now).total_seconds()
-
-
-def _handle_signal(signum, frame):
-    global _stop_requested
-    _stop_requested = True
-    if _child_proc is not None and _child_proc.poll() is None:
-        try:
-            _child_proc.terminate()
-        except Exception:
-            pass
 
 
 def _load_portfolio(path: Path) -> dict[str, Any]:
@@ -67,85 +46,15 @@ def _load_portfolio(path: Path) -> dict[str, Any]:
     return data
 
 
-def _report_path_for(symbol: str) -> Path:
-    return LOG_DIR / f"classic_multifactor_{symbol.replace('.', '_')}_live_report.json"
-
-
-def _anchor_path_for(symbol: str) -> Path:
-    tag = f"classic_multifactor_{symbol.replace('.', '_')}"
-    return LOG_DIR / f"loop_anchor_{tag}.json"
-
-
-def _portfolio_anchor_path(portfolio_name: str) -> Path:
-    return LOG_DIR / f"loop_anchor_portfolio_{portfolio_name}.json"
-
-
-def _extract_env_fingerprint(report: dict[str, Any] | None) -> dict[str, str | None]:
-    if not report:
-        return {"env": None, "account_last4": None, "market": None}
-    market = report.get("market")
-    env = None
-    try:
-        env = (report.get("risk_config") or {}).get("gateway_env")
-    except Exception:
-        env = None
-    account_last4 = None
-    msg = report.get("account_message") or ""
-    m = re.search(r"uni_last4=(\w+)", msg)
-    if m:
-        account_last4 = m.group(1)
-    else:
-        m2 = re.search(r"acc_id=(\d+)", msg)
-        if m2:
-            account_last4 = m2.group(1)[-4:]
-    return {"env": env, "account_last4": account_last4, "market": market}
-
-
-def _read_current_nav(symbol: str) -> tuple[float | None, float | None, dict[str, Any] | None]:
-    path = _report_path_for(symbol)
-    if not path.exists():
-        return None, None, None
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception:
-        return None, None, None
-    selected = data.get("selected") or []
-    if not selected:
-        return None, None, data
-    rc = (selected[0] or {}).get("risk_context") or {}
-    try:
-        nav = float(rc.get("total_nav")) if rc.get("total_nav") is not None else None
-    except Exception:
-        nav = None
-    try:
-        cash = float(rc.get("cash")) if rc.get("cash") is not None else None
-    except Exception:
-        cash = None
-    return nav, cash, data
-
-
-def _fingerprint_mismatch(anchor: dict[str, Any], fp: dict[str, str | None]) -> str | None:
-    for key in ("env", "account_last4", "market"):
-        a_val = anchor.get(key)
-        c_val = fp.get(key)
-        if a_val is None or c_val is None:
-            continue
-        if str(a_val) != str(c_val):
-            return f"{key}:{a_val}->{c_val}"
-    return None
-
-
 def _load_or_build_portfolio_anchor(portfolio_name: str, today_str: str,
                                     nav_map: dict[str, float | None],
                                     fp_map: dict[str, dict[str, str | None]],
                                     force_reset: bool) -> tuple[dict[str, Any] | None, bool, str | None]:
-    """Portfolio-level anchor: records per-symbol initial NAV and aggregate.
-
-    A portfolio anchor is built only when every symbol has a readable NAV for today;
-    otherwise returns (None, False, reason) so the caller can skip the breaker.
+    """Portfolio-level anchor: per-symbol initial NAV + aggregate. Builds only
+    when every symbol has a readable NAV today; otherwise returns
+    ``(None, False, reason)`` so the caller skips the breaker.
     """
-    path = _portfolio_anchor_path(portfolio_name)
+    path = anchor_path_for_portfolio(portfolio_name)
     anchor: dict[str, Any] | None = None
     stale_reason: str | None = None
 
@@ -167,7 +76,7 @@ def _load_or_build_portfolio_anchor(portfolio_name: str, today_str: str,
         per = anchor.get("per_symbol") or {}
         for sym, fp in fp_map.items():
             sym_anchor = per.get(sym) or {}
-            mismatch = _fingerprint_mismatch(sym_anchor, fp)
+            mismatch = fingerprint_mismatch(sym_anchor, fp)
             if mismatch is not None:
                 stale_reason = f"env_mismatch[{sym}]:{mismatch}"
                 anchor = None
@@ -175,7 +84,6 @@ def _load_or_build_portfolio_anchor(portfolio_name: str, today_str: str,
 
     just_rebuilt = False
     if anchor is None:
-        # require all symbols have nav
         missing = [sym for sym, nav in nav_map.items() if nav is None]
         if missing:
             return None, False, stale_reason or f"missing_nav:{','.join(missing)}"
@@ -194,7 +102,7 @@ def _load_or_build_portfolio_anchor(portfolio_name: str, today_str: str,
             "portfolio_name": portfolio_name,
             "aggregate_initial_nav": agg_initial,
             "per_symbol": per_symbol,
-            "created_ts": _now_bj().isoformat(),
+            "created_ts": now_bj().isoformat(),
         }
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(path.suffix + ".tmp")
@@ -206,19 +114,10 @@ def _load_or_build_portfolio_anchor(portfolio_name: str, today_str: str,
     return anchor, just_rebuilt, stale_reason
 
 
-def _append_loop_log(portfolio_name: str, record: dict[str, Any]) -> None:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
-    date_str = _now_bj().strftime("%Y%m%d")
-    log_file = LOG_DIR / f"loop_portfolio_{portfolio_name}_{date_str}.jsonl"
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
-
-
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Periodic portfolio runner (Beijing time session).")
     p.add_argument("--portfolio", required=True, help="portfolio JSON path")
 
-    # loop control
     p.add_argument("--interval-seconds", type=int, default=300)
     p.add_argument("--session-start", default="22:30", help="北京时间 HH:MM")
     p.add_argument("--session-end", default="05:00", help="北京时间 HH:MM（次日）")
@@ -232,12 +131,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="子进程（run_portfolio.py）整体失败时的处理策略")
     p.add_argument("--dry-run-loop", action="store_true")
 
-    # safety overrides passthrough
     p.add_argument("--override-simulate", action="store_true", default=False)
     p.add_argument("--override-live-submit", action="store_true", default=False)
     p.add_argument("--override-no-live-submit", action="store_true", default=False)
 
-    # circuit breakers
     p.add_argument("--daily-loss-limit", type=float, default=0.0,
                    help="portfolio 合计亏损美元上限，>0 触发熔断；0 表示关闭")
     p.add_argument("--per-symbol-loss-limit", type=float, default=0.0,
@@ -268,11 +165,10 @@ def _build_child_cmd(args) -> list[str]:
 
 
 def main() -> int:
-    global _child_proc
     args = build_parser().parse_args()
 
-    signal.signal(signal.SIGINT, _handle_signal)
-    signal.signal(signal.SIGTERM, _handle_signal)
+    state = LoopSignalState()
+    install_signal_handlers(state)
 
     portfolio_path = Path(args.portfolio)
     if not portfolio_path.is_absolute():
@@ -281,8 +177,8 @@ def main() -> int:
     portfolio_name = portfolio.get("portfolio_name") or portfolio_path.stem
     symbols = [item["symbol"] for item in portfolio.get("symbols", [])]
 
-    session_start = _parse_hhmm(args.session_start)
-    session_end = _parse_hhmm(args.session_end)
+    session_start = parse_hhmm(args.session_start)
+    session_end = parse_hhmm(args.session_end)
 
     print(f"[loop-portfolio] name={portfolio_name} symbols={symbols} "
           f"interval={args.interval_seconds}s session(BJ)={args.session_start}->{args.session_end} "
@@ -291,11 +187,11 @@ def main() -> int:
           f"dry_run_loop={args.dry_run_loop}", flush=True)
 
     iteration = 0
-    while not _stop_requested:
-        now = _now_bj()
+    while not state.stop_requested:
+        now = now_bj()
 
-        if not _in_session(now, session_start, session_end):
-            wait_s = _seconds_until(now, session_start)
+        if not in_session(now, session_start, session_end):
+            wait_s = seconds_until(now, session_start)
             sleep_chunk = min(wait_s, 60.0)
             print(f"[loop-portfolio] out-of-session now(BJ)={now.strftime('%H:%M:%S')} "
                   f"sleep {sleep_chunk:.0f}s (until {args.session_start})", flush=True)
@@ -310,36 +206,19 @@ def main() -> int:
         cmd = _build_child_cmd(args)
         print(f"[loop-portfolio] iter={iteration} ts={now.isoformat()} cmd={' '.join(cmd)}", flush=True)
 
-        exit_code: int | None = None
-        duration_ms = 0
-        timed_out = False
-        t0 = time.time()
-        try:
-            _child_proc = subprocess.Popen(cmd, cwd=str(REPO_ROOT))
-            try:
-                exit_code = _child_proc.wait(timeout=args.per_iteration_timeout)
-            except subprocess.TimeoutExpired:
-                timed_out = True
-                _child_proc.terminate()
-                try:
-                    exit_code = _child_proc.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    _child_proc.kill()
-                    exit_code = _child_proc.wait()
-        finally:
-            duration_ms = int((time.time() - t0) * 1000)
-            _child_proc = None
+        exit_code, timed_out, duration_ms = run_child(
+            cmd, timeout=args.per_iteration_timeout, state=state, cwd=REPO_ROOT
+        )
 
-        # gather per-symbol NAV & fingerprint
-        today_str = _now_bj().strftime("%Y-%m-%d")
+        today_str = now_bj().strftime("%Y-%m-%d")
         nav_map: dict[str, float | None] = {}
         cash_map: dict[str, float | None] = {}
         fp_map: dict[str, dict[str, str | None]] = {}
         for sym in symbols:
-            nav, cash, report = _read_current_nav(sym)
+            nav, cash, report = read_current_nav(sym)
             nav_map[sym] = nav
             cash_map[sym] = cash
-            fp_map[sym] = _extract_env_fingerprint(report)
+            fp_map[sym] = extract_env_fingerprint(report)
 
         anchor, just_rebuilt, stale_reason = _load_or_build_portfolio_anchor(
             portfolio_name, today_str, nav_map, fp_map,
@@ -348,7 +227,6 @@ def main() -> int:
         if stale_reason:
             print(f"[loop-portfolio] anchor stale ({stale_reason}), rebuilt={just_rebuilt}", flush=True)
 
-        # per-symbol and aggregate loss
         per_symbol_loss: dict[str, float | None] = {}
         aggregate_initial: float | None = None
         aggregate_current: float | None = None
@@ -387,7 +265,7 @@ def main() -> int:
         per_symbol_tripped = (not just_rebuilt) and bool(tripped_symbols)
 
         record = {
-            "ts": _now_bj().isoformat(),
+            "ts": now_bj().isoformat(),
             "iteration": iteration,
             "exit_code": exit_code,
             "timed_out": timed_out,
@@ -411,7 +289,7 @@ def main() -> int:
             "tripped_symbols": tripped_symbols,
             "dry_run_loop": args.dry_run_loop,
         }
-        _append_loop_log(portfolio_name, record)
+        append_loop_log(f"portfolio_{portfolio_name}", record)
 
         print(f"[loop-portfolio] iter={iteration} exit={exit_code} timed_out={timed_out} "
               f"agg_init={aggregate_initial} agg_cur={aggregate_current} agg_loss={aggregate_loss} "
@@ -432,11 +310,7 @@ def main() -> int:
             print(f"[loop-portfolio] child failed exit={exit_code}, on-error=stop", flush=True)
             break
 
-        slept = 0
-        while slept < args.interval_seconds and not _stop_requested:
-            chunk = min(5, args.interval_seconds - slept)
-            time.sleep(chunk)
-            slept += chunk
+        sleep_responsive(args.interval_seconds, state)
 
     print("[loop-portfolio] exit", flush=True)
     return 0

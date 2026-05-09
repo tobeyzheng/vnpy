@@ -157,7 +157,12 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
             if not self._market_regime_ok(bar):
                 self.last_signal = "regime_blocked"
                 return
-            guard = self.minute_guard.can_enter(bar.datetime, trade_times=self.trade_times, last_trade_at=self.last_trade_at)
+            guard = self.minute_guard.can_enter(
+                bar.datetime,
+                trade_times=self.trade_times,
+                last_trade_at=self.last_trade_at,
+                exchange_tz="America/New_York",
+            )
             if not guard.allowed:
                 self.last_signal = guard.reason
                 return
@@ -227,12 +232,12 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
 
     def _build_minute_guard(self) -> MinuteTradeGuard:
         return MinuteTradeGuard(
-            MinuteTradeGuardConfig(
-                max_intraday_trades=int(self.max_intraday_trades),
-                entry_cooldown_minutes=int(self.entry_cooldown_minutes),
-                min_hold_minutes=int(self.min_hold_minutes),
-                no_new_entry_after=str(self.no_new_entry_after),
-            )
+            MinuteTradeGuardConfig.from_setting({
+                "max_intraday_trades": self.max_intraday_trades,
+                "entry_cooldown_minutes": self.entry_cooldown_minutes,
+                "min_hold_minutes": self.min_hold_minutes,
+                "no_new_entry_after": self.no_new_entry_after,
+            })
         )
 
     # ------------------------------------------------------------------

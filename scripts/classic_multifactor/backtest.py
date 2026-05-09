@@ -86,7 +86,12 @@ class ClassicSingleSymbolBacktester:
             price = trade_bar.open_price or trade_bar.close_price
             if side in {"BUY", "SELL"} and price > 0:
                 if side == "BUY":
-                    guard = self.minute_guard.can_enter(trade_bar.datetime, trade_times=trade_times, last_trade_at=last_trade_at)
+                    guard = self.minute_guard.can_enter(
+                        trade_bar.datetime,
+                        trade_times=trade_times,
+                        last_trade_at=last_trade_at,
+                        exchange_tz="America/New_York",
+                    )
                 else:
                     hard_exit = decision.reason in {"stop_loss", "atr_stop_loss", "trailing_stop", "atr_trailing_stop", "take_profit", "atr_take_profit"}
                     guard = self.minute_guard.can_exit(trade_bar.datetime, entry_at=entry_at, hard_exit=hard_exit)

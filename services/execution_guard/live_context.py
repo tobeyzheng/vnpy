@@ -29,14 +29,27 @@ class LiveRiskContextBuilder:
     def __init__(self, order_store: OrderStateStore):
         self.order_store = order_store
 
-    def build(self, account: FutuAccountSummary, *, symbol: str = "", order_value: float = 0.0) -> LiveRiskContext:
+    def build(
+        self,
+        account: FutuAccountSummary,
+        *,
+        symbol: str = "",
+        order_value: float = 0.0,
+        today_buy_notional: float | None = None,
+    ) -> LiveRiskContext:
         total_nav = self._total_nav(account)
         cash = float(account.cash or 0.0)
         buying_power = float(account.buying_power or cash)
         current_market_value = sum(float(p.market_val or 0.0) for p in account.positions)
         symbol_market_value = sum(float(p.market_val or 0.0) for p in account.positions if self._same_symbol(p.code, symbol))
         projected_symbol_value = symbol_market_value + max(float(order_value or 0.0), 0.0)
-        daily_new_value = self._today_buy_notional()
+        # Prefer Futu-derived ``today_buy_notional`` (single source of truth
+        # from deal_list_today). Fall back to the legacy filesystem-ctime
+        # heuristic only if the caller did not supply a value.
+        if today_buy_notional is not None:
+            daily_new_value = max(float(today_buy_notional or 0.0), 0.0)
+        else:
+            daily_new_value = self._today_buy_notional()
         return LiveRiskContext(
             total_nav=round(total_nav, 4),
             cash=round(cash, 4),
