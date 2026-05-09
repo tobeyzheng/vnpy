@@ -987,11 +987,13 @@ python3 scripts/dual_run_preflight.py \
 
 - 两个工作树存在且都是 git 仓库；
 - 旧分支 HEAD 是 `classic-pre-vnpy-rewrite-v1` tag，**或** HEAD 在
-  `dual_run_init_*` 本地分支上且其首父提交（`HEAD~1`）等于
-  `classic-pre-vnpy-rewrite-v1` 所指 commit（init 分支模式，见下）；
+  `dual_run_init_*` 本地分支上且沿 first-parent 链向上能在
+  `--max-init-commits`（默认 10）步内找到 `classic-pre-vnpy-rewrite-v1`
+  所指 commit，且链上每个 commit subject 都以 `dual-run init(` 开头；
 - 新分支当前分支名为 `classic-vnpy-native-rewrite`，**或** HEAD 在
-  `dual_run_init_*` 本地分支上且其首父提交等于 `classic-vnpy-native-rewrite`
-  分支当前 tip（init 分支模式）；
+  `dual_run_init_*` 本地分支上且沿 first-parent 链向上能在
+  `--max-init-commits` 步内找到 `classic-vnpy-native-rewrite` 分支当前
+  tip，且链上每个 commit subject 都以 `dual-run init(` 开头；
 - 两边工作树 `git status --porcelain` 为空；
 - 两边使用相同 `--config` 文件（SHA256 一致），避免参数漂移；
 - 两边 `state/runs/orders/` 不存在残留挂单（status ∈ open_status 且 broker_order_id 非空）；
@@ -1000,6 +1002,11 @@ python3 scripts/dual_run_preflight.py \
 
 加 `--strict-anchor` 可关闭 init 分支放宽，要求 HEAD **必须**直接落在
 预期 tag / 分支上（用于发布前最严格的回归校验）。
+
+通过 `--max-init-commits N` 可调整 init 分支允许的最大累积深度。当链上
+出现非 `dual-run init(` 前缀的 commit（例如误把业务改动落到 init 分支），
+或链长超过 N 仍未触达 tag/branch 时，preflight 会硬失败并指出具体位置，
+防止 init 分支退化为通用工作分支。
 
 #### 关于 dual_run_init_* 本地分支的设计意图
 
@@ -1013,13 +1020,21 @@ tag 或 `classic-vnpy-native-rewrite` 分支上工作，会面临两难：
 
 解决方法：在每个双跑 worktree 上各创建一个**仅本地、无 upstream**的初始化
 分支 `dual_run_init_legacy` / `dual_run_init_vnpy_native`，把 `state/runs/`
-清空操作以一次本地 commit 落入这两个分支。要点：
+清空操作（以及后续严格受控的对齐操作，例如 `dual-run init(legacy): align
+nvda_g09.json with vnpy_native ...`）以多次本地 commit 累积在这两个分支。
+要点：
 
 - 两个 init 分支**没有 upstream**（`git branch -vv` 不应显示 `[origin/...]`），
   普通 `git push` 不会把它们推到主仓 origin。
-- 它们的首父（`HEAD~1`）必须严格等于 `classic-pre-vnpy-rewrite-v1` /
-  `classic-vnpy-native-rewrite`，preflight 会校验这一点。
-- 想恢复"原 tag/分支视角"时只需 `git checkout classic-pre-vnpy-rewrite-v1`
+- init 分支沿 first-parent 链向上必须能在 `--max-init-commits` 步内回到
+  `classic-pre-vnpy-rewrite-v1` / `classic-vnpy-native-rewrite`；preflight
+  会校验整条链。
+- 链上每个 commit 的 subject 必须以 `dual-run init(` 开头
+  （例如 `dual-run init(legacy): clear state/runs ...` /
+  `dual-run init(vnpy_native): clear state/runs ...`）；任何不符合此前缀
+  的 commit 都会导致 preflight 失败 — 这把 init 分支锁定为「严格受控的状态
+  重置/对齐快照」，不允许变成通用工作分支。
+- 想恢复“原 tag/分支视角”时只需 `git checkout classic-pre-vnpy-rewrite-v1`
   / `git checkout classic-vnpy-native-rewrite`，init 分支保留作为状态重置
   快照。
 

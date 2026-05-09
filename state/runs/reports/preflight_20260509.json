@@ -1,0 +1,211 @@
+{
+  "generated_at": "2026-05-09T07:52:24.911280+00:00",
+  "run_a": {
+    "label": "legacy",
+    "path": "/projects/dual_run/legacy",
+    "exists": true,
+    "is_git": true,
+    "head_sha": "e1dc10c6bcef6be8e2767abfb9785e0758b17460",
+    "branch_name": "dual_run_init_legacy",
+    "head_tags": [],
+    "parent_sha": "83abc78f029579dd4fc2d80609b9e75c85fc8f15",
+    "head_chain": [
+      {
+        "sha": "e1dc10c6bcef6be8e2767abfb9785e0758b17460",
+        "subject": "dual-run init(legacy): align nvda_g09.json with vnpy_native (add loop_mode field for SHA parity, legacy runtime ignores this key)"
+      },
+      {
+        "sha": "83abc78f029579dd4fc2d80609b9e75c85fc8f15",
+        "subject": "dual-run init(legacy): clear state/runs for SIM dual-run start"
+      },
+      {
+        "sha": "4d58476ce966dcd392127d19bfb57d042b99d9d0",
+        "subject": "plan: Classic Multifactor vnpy 原生化重构需求与任务清单"
+      },
+      {
+        "sha": "3655b66637dd90ce408a64dcb08d407f5f403ede",
+        "subject": "classic_multifactor: 完成审计 10 项重构（口径统一 + ATR 出场 + 跨进程状态 + Futu 成交口径 + 幂等修复 + loop 抽取）"
+      },
+      {
+        "sha": "ab4c9c849c0b1e82779e66d742cc43a95b5e4a52",
+        "subject": "fix(live): minute_guard 跨进程成交同步修复, 让 nvda_g09.json 的 max_intraday_trades/cooldown 真实生效"
+      },
+      {
+        "sha": "239f0508d0c0fc07f163344b7f0e624a4581dd0f",
+        "subject": "修复max_intraday_trades限制失效问题：实现账户同步机制"
+      },
+      {
+        "sha": "187fcddc7dea0b7348fa5d91d14019e54e0eb638",
+        "subject": "risk: per-symbol drawdown, SELL skip drawdown check"
+      },
+      {
+        "sha": "ec0f684650eb41dd90a4aa8c57c96392d9aad1c6",
+        "subject": "chore(state): 更新 loop 运行期产物"
+      },
+      {
+        "sha": "08093612e3f609f59cc5fd70e15b8e648083a0d2",
+        "subject": "feat(reconciliation): 实盘对账冷启动豁免——未产出过对账文件时首次放行，产出过则严格 block"
+      },
+      {
+        "sha": "f87c159cedcc7065dc3d2ce7caadc1aac4d454e4",
+        "subject": "live guard: market exposure 分子改为 本标的持仓金额 + order_value"
+      }
+    ],
+    "is_dirty": false,
+    "dirty_files": [],
+    "config_path": "/projects/dual_run/legacy/configs/classic_multifactor/nvda_g09.json",
+    "config_present": true,
+    "config_sha256": "939c26df3e8749937ed7f89775425d578d58c17075fa5be0b33a0777b3141880",
+    "orders_residual": 0,
+    "orders_residual_sample": [],
+    "python_version": "3.11.6",
+    "disk_free_gb": 47.96
+  },
+  "run_b": {
+    "label": "vnpy_native",
+    "path": "/projects/dual_run/vnpy_native",
+    "exists": true,
+    "is_git": true,
+    "head_sha": "e85580c6d108fe0f2b1e01c198a252aa69056194",
+    "branch_name": "dual_run_init_vnpy_native",
+    "head_tags": [],
+    "parent_sha": "458acf71f9da87c16f33a9c3604db69d15130c9a",
+    "head_chain": [
+      {
+        "sha": "e85580c6d108fe0f2b1e01c198a252aa69056194",
+        "subject": "dual-run init(vnpy_native): clear state/runs for SIM dual-run start"
+      },
+      {
+        "sha": "458acf71f9da87c16f33a9c3604db69d15130c9a",
+        "subject": "docs(integration): §18 补充 strict-rids/markdown/OmsEventRecorder stats，新增双跑 preflight 自查脚本"
+      },
+      {
+        "sha": "7a91b39d581a8a41721dbc7809df1429878dfc11",
+        "subject": "feat(oms+diff): SIM双跑期补强 — recorder cancel/reject + diff strict-rids/markdown + Task8清单"
+      },
+      {
+        "sha": "5eb8cb09bc505999c781b0ca08a2100f8958e278",
+        "subject": "feat(trade_state): Task 6/7 - OmsEventRecorder + diff_dual_run + dual-run runbook"
+      },
+      {
+        "sha": "e587c0147fe5b5ae9323d902d55141cba64f6c0e",
+        "subject": "S3a/S3b Task 4/5: 新增 classic_multifactor 分钟与日线常驻入口"
+      },
+      {
+        "sha": "5e2e9461c1ff053bc3b07144f9f648deac891e88",
+        "subject": "S2 Task 3.1/3.2: FutuAccountProvider 接入 OmsEngine；live_task 事件化启动"
+      },
+      {
+        "sha": "10a8d4ad080f1cd826ca81a91146f1ad9bbce77b",
+        "subject": "feat(cta_backtest): 接入 vnpy 原生 OptimizationSetting，支持 bf/ga 扫参与 JSON 配置"
+      },
+      {
+        "sha": "c4bfc97e92bcb3c51621f14d68edab7d596210e8",
+        "subject": "S0 cleanup(1.3): 清理 scripts/ 顶层 HK/Knot/多市场报告/旧回测脚手架共 33 个文件"
+      },
+      {
+        "sha": "fea33ace88d0919a8abc8ef2b538edeb3b48526e",
+        "subject": "S0 cleanup(1.2): 删除 scripts/classic_multifactor/ 下 18 个旧回测/循环/入口脚本"
+      },
+      {
+        "sha": "4d58476ce966dcd392127d19bfb57d042b99d9d0",
+        "subject": "plan: Classic Multifactor vnpy 原生化重构需求与任务清单"
+      }
+    ],
+    "is_dirty": false,
+    "dirty_files": [],
+    "config_path": "/projects/dual_run/vnpy_native/configs/classic_multifactor/nvda_g09.json",
+    "config_present": true,
+    "config_sha256": "939c26df3e8749937ed7f89775425d578d58c17075fa5be0b33a0777b3141880",
+    "orders_residual": 0,
+    "orders_residual_sample": [],
+    "python_version": "3.11.6",
+    "disk_free_gb": 47.96
+  },
+  "checks": [
+    {
+      "name": "worktree_exists[legacy]",
+      "status": "ok",
+      "detail": "git repo at /projects/dual_run/legacy",
+      "extra": {
+        "head_sha": "e1dc10c6bcef6be8e2767abfb9785e0758b17460",
+        "branch": "dual_run_init_legacy"
+      }
+    },
+    {
+      "name": "worktree_exists[vnpy_native]",
+      "status": "ok",
+      "detail": "git repo at /projects/dual_run/vnpy_native",
+      "extra": {
+        "head_sha": "e85580c6d108fe0f2b1e01c198a252aa69056194",
+        "branch": "dual_run_init_vnpy_native"
+      }
+    },
+    {
+      "name": "expected_tag_a",
+      "status": "fail",
+      "detail": "HEAD of run-a is not at tag 'classic-pre-vnpy-rewrite-v1'; current tags=(none), branch=dual_run_init_legacy",
+      "extra": {}
+    },
+    {
+      "name": "expected_branch_b",
+      "status": "fail",
+      "detail": "run-b not on 'classic-vnpy-native-rewrite'; current branch=dual_run_init_vnpy_native",
+      "extra": {}
+    },
+    {
+      "name": "worktree_clean[legacy]",
+      "status": "ok",
+      "detail": "git status clean",
+      "extra": {}
+    },
+    {
+      "name": "worktree_clean[vnpy_native]",
+      "status": "ok",
+      "detail": "git status clean",
+      "extra": {}
+    },
+    {
+      "name": "config_sha256_match",
+      "status": "ok",
+      "detail": "sha256=939c26df3e8749937ed7f89775425d578d58c17075fa5be0b33a0777b3141880",
+      "extra": {}
+    },
+    {
+      "name": "orders_no_residual[legacy]",
+      "status": "ok",
+      "detail": "no open submitted orders carried over",
+      "extra": {}
+    },
+    {
+      "name": "orders_no_residual[vnpy_native]",
+      "status": "ok",
+      "detail": "no open submitted orders carried over",
+      "extra": {}
+    },
+    {
+      "name": "python_major_minor_match",
+      "status": "ok",
+      "detail": "both on Python 3.11 (a=3.11.6, b=3.11.6)",
+      "extra": {}
+    },
+    {
+      "name": "disk_free[legacy]",
+      "status": "ok",
+      "detail": "47.96 GB free (>= 1.0 GB)",
+      "extra": {}
+    },
+    {
+      "name": "disk_free[vnpy_native]",
+      "status": "ok",
+      "detail": "47.96 GB free (>= 1.0 GB)",
+      "extra": {}
+    }
+  ],
+  "totals": {
+    "checks": 12,
+    "ok": 10,
+    "warn": 0,
+    "fail": 2
+  }
+}

@@ -60,6 +60,16 @@ _OPEN_STATUS = {
 
 _DEFAULT_MIN_DISK_GB = 1.0
 
+# Cap how far we walk first-parent history when validating an init branch.
+# Two init commits are expected today (clear state/runs, align config); 10
+# is a generous ceiling that still rejects accidentally deep histories.
+_DEFAULT_MAX_INIT_COMMITS = 10
+
+# A commit on a ``dual_run_init_*`` branch is only accepted if its subject
+# starts with one of these prefixes. Templates also include the worktree
+# label so legacy/vnpy_native histories cannot accidentally cross-pollute.
+_INIT_SUBJECT_PREFIXES = ("dual-run init(",)
+
 
 # ---------------------------------------------------------------------------
 # Result model
@@ -83,6 +93,10 @@ class WorktreeReport:
     branch_name: str | None = None
     head_tags: list[str] = field(default_factory=list)
     parent_sha: str | None = None  # HEAD~1 (first parent), used for init-branch base check
+    # Full first-parent chain of commit metadata starting at HEAD and walking
+    # backwards (HEAD inclusive). Each entry is {"sha": str, "subject": str}.
+    # Populated up to ``_DEFAULT_MAX_INIT_COMMITS`` commits to cap memory.
+    head_chain: list[dict[str, str]] = field(default_factory=list)
     is_dirty: bool = False
     dirty_files: list[str] = field(default_factory=list)
     config_path: Path | None = None
@@ -168,6 +182,29 @@ def probe_worktree(label: str, root: Path, config_relpath: str | None) -> Worktr
     if rc == 0 and parent_sha:
         rep.parent_sha = parent_sha
 
+    # Walk the first-parent chain so the caller can validate every commit
+    # between HEAD and the expected anchor (tag / branch tip).
+    rc, log_out, _ = _run(
+        [
+            "git",
+            "log",
+            f"-n{_DEFAULT_MAX_INIT_COMMITS}",
+            "--first-parent",
+            "--pretty=format:%H%x09%s",
+            "HEAD",
+        ],
+        root,
+    )
+    if rc == 0 and log_out:
+        for line in log_out.splitlines():
+            if "\t" not in line:
+                continue
+            sha_part, subject_part = line.split("\t", 1)
+            sha_part = sha_part.strip()
+            subject_part = subject_part.strip()
+            if sha_part:
+                rep.head_chain.append({"sha": sha_part, "subject": subject_part})
+
     rc, dirty, _ = _run(["git", "status", "--porcelain"], root)
     if rc == 0:
         lines = [line for line in dirty.splitlines() if line.strip()]
@@ -244,6 +281,66 @@ def _is_dual_run_init_branch(branch: str | None, label: str) -> bool:
     return branch.startswith("dual_run_init_")
 
 
+def _is_init_commit_subject(subject: str) -> bool:
+    """True if ``subject`` looks like a legitimate dual-run init commit.
+
+    We only allow commits authored on the init branch whose subject
+    starts with the documented prefix (e.g. ``dual-run init(legacy):``).
+    Anything else on the init branch is treated as drift and the anchor
+    check fails — this keeps the init branch a *bounded, auditable*
+    extension of the immutable tag/branch.
+    """
+    if not subject:
+        return False
+    s = subject.strip()
+    return any(s.startswith(prefix) for prefix in _INIT_SUBJECT_PREFIXES)
+
+
+def _validate_init_chain(
+    rep: WorktreeReport,
+    anchor_sha: str,
+    max_init_commits: int,
+) -> tuple[bool, str, list[dict[str, str]]]:
+    """Walk ``rep.head_chain`` looking for ``anchor_sha``.
+
+    Returns a tuple ``(ok, detail, init_commits)`` where:
+
+    * ``ok`` — True if the anchor was found within the configured depth
+      AND every commit walked through (HEAD inclusive, anchor exclusive)
+      passes :func:`_is_init_commit_subject`.
+    * ``detail`` — human readable summary, listing the offending commit
+      when validation fails so the operator can locate it quickly.
+    * ``init_commits`` — the list of commit dicts that sit *above* the
+      anchor on the init branch (empty if anchor == HEAD).
+    """
+    if not rep.head_chain:
+        return False, "first-parent chain unavailable (git log returned nothing)", []
+
+    init_commits: list[dict[str, str]] = []
+    for idx, entry in enumerate(rep.head_chain):
+        sha = entry.get("sha", "")
+        subject = entry.get("subject", "")
+        if sha == anchor_sha:
+            return True, (
+                f"anchor reached after {len(init_commits)} init commit(s) "
+                f"(depth={idx})"
+            ), init_commits
+        if not _is_init_commit_subject(subject):
+            return False, (
+                f"commit {sha[:12]} on init branch is not a dual-run init commit "
+                f"(subject: {subject!r}); refuse to accept anchor"
+            ), init_commits
+        init_commits.append(entry)
+        if idx + 1 >= max_init_commits:
+            break
+
+    return False, (
+        f"anchor {anchor_sha[:12]} not reached within {max_init_commits} "
+        f"first-parent commits from HEAD; init branch may be too deep or "
+        f"diverged from the expected tag/branch"
+    ), init_commits
+
+
 def evaluate_checks(
     rep_a: WorktreeReport,
     rep_b: WorktreeReport,
@@ -252,6 +349,7 @@ def evaluate_checks(
     expected_branch_b: str | None,
     min_disk_gb: float,
     allow_init_branch: bool = True,
+    max_init_commits: int = _DEFAULT_MAX_INIT_COMMITS,
 ) -> list[CheckResult]:
     checks: list[CheckResult] = []
 
@@ -297,30 +395,51 @@ def evaluate_checks(
             allow_init_branch
             and rep_a.is_git
             and _is_dual_run_init_branch(rep_a.branch_name, rep_a.label)
-            and rep_a.parent_sha
             and rep_a.path is not None
         ):
             tag_sha = _resolve_ref_sha(expected_tag_a, rep_a.path)
-            if tag_sha and tag_sha == rep_a.parent_sha:
-                checks.append(CheckResult(
-                    name="expected_tag_a",
-                    status="ok",
-                    detail=(
-                        f"HEAD on init branch '{rep_a.branch_name}' "
-                        f"based on tag '{expected_tag_a}' (parent={tag_sha[:12]})"
-                    ),
-                    extra={"via_init_branch": True, "base_sha": tag_sha},
-                ))
-            else:
+            if not tag_sha:
                 checks.append(CheckResult(
                     name="expected_tag_a",
                     status="fail",
                     detail=(
-                        f"HEAD on init branch '{rep_a.branch_name}' but its "
-                        f"parent {rep_a.parent_sha} does not match tag "
-                        f"'{expected_tag_a}' (resolved={tag_sha})"
+                        f"cannot resolve tag '{expected_tag_a}' inside "
+                        f"{rep_a.path}"
                     ),
                 ))
+            else:
+                ok, detail, init_commits = _validate_init_chain(
+                    rep_a, tag_sha, max_init_commits,
+                )
+                if ok:
+                    checks.append(CheckResult(
+                        name="expected_tag_a",
+                        status="ok",
+                        detail=(
+                            f"HEAD on init branch '{rep_a.branch_name}' "
+                            f"based on tag '{expected_tag_a}' "
+                            f"({len(init_commits)} init commit(s) above tag)"
+                        ),
+                        extra={
+                            "via_init_branch": True,
+                            "base_sha": tag_sha,
+                            "init_commits": init_commits,
+                            "chain_detail": detail,
+                        },
+                    ))
+                else:
+                    checks.append(CheckResult(
+                        name="expected_tag_a",
+                        status="fail",
+                        detail=(
+                            f"HEAD on init branch '{rep_a.branch_name}' but "
+                            f"chain to tag '{expected_tag_a}' invalid: {detail}"
+                        ),
+                        extra={
+                            "base_sha": tag_sha,
+                            "init_commits": init_commits,
+                        },
+                    ))
         else:
             checks.append(CheckResult(
                 name="expected_tag_a",
@@ -350,30 +469,51 @@ def evaluate_checks(
             allow_init_branch
             and rep_b.is_git
             and _is_dual_run_init_branch(rep_b.branch_name, rep_b.label)
-            and rep_b.parent_sha
             and rep_b.path is not None
         ):
             branch_sha = _resolve_ref_sha(expected_branch_b, rep_b.path)
-            if branch_sha and branch_sha == rep_b.parent_sha:
-                checks.append(CheckResult(
-                    name="expected_branch_b",
-                    status="ok",
-                    detail=(
-                        f"HEAD on init branch '{rep_b.branch_name}' "
-                        f"based on '{expected_branch_b}' (parent={branch_sha[:12]})"
-                    ),
-                    extra={"via_init_branch": True, "base_sha": branch_sha},
-                ))
-            else:
+            if not branch_sha:
                 checks.append(CheckResult(
                     name="expected_branch_b",
                     status="fail",
                     detail=(
-                        f"HEAD on init branch '{rep_b.branch_name}' but its "
-                        f"parent {rep_b.parent_sha} does not match branch "
-                        f"'{expected_branch_b}' (resolved={branch_sha})"
+                        f"cannot resolve branch '{expected_branch_b}' inside "
+                        f"{rep_b.path}"
                     ),
                 ))
+            else:
+                ok, detail, init_commits = _validate_init_chain(
+                    rep_b, branch_sha, max_init_commits,
+                )
+                if ok:
+                    checks.append(CheckResult(
+                        name="expected_branch_b",
+                        status="ok",
+                        detail=(
+                            f"HEAD on init branch '{rep_b.branch_name}' "
+                            f"based on '{expected_branch_b}' "
+                            f"({len(init_commits)} init commit(s) above branch)"
+                        ),
+                        extra={
+                            "via_init_branch": True,
+                            "base_sha": branch_sha,
+                            "init_commits": init_commits,
+                            "chain_detail": detail,
+                        },
+                    ))
+                else:
+                    checks.append(CheckResult(
+                        name="expected_branch_b",
+                        status="fail",
+                        detail=(
+                            f"HEAD on init branch '{rep_b.branch_name}' but "
+                            f"chain to '{expected_branch_b}' invalid: {detail}"
+                        ),
+                        extra={
+                            "base_sha": branch_sha,
+                            "init_commits": init_commits,
+                        },
+                    ))
         else:
             checks.append(CheckResult(
                 name="expected_branch_b",
@@ -533,6 +673,9 @@ def build_parser() -> argparse.ArgumentParser:
                    action="store_false",
                    help="Disable init-branch acceptance: require HEAD exactly on "
                         "the expected tag/branch")
+    p.add_argument("--max-init-commits", type=int, default=_DEFAULT_MAX_INIT_COMMITS,
+                   help="Maximum number of dual-run-init commits allowed above "
+                        "the expected tag/branch (default: %(default)s)")
     p.add_argument("--output", type=Path, default=None,
                    help="JSON output path; defaults to "
                         "state/runs/reports/preflight_<YYYYMMDD>.json under cwd")
@@ -559,6 +702,7 @@ def main() -> int:
         expected_branch_b=expected_branch_b,
         min_disk_gb=args.min_disk_gb,
         allow_init_branch=args.allow_init_branch,
+        max_init_commits=args.max_init_commits,
     )
 
     fails = [c for c in checks if c.status == "fail"]
@@ -607,6 +751,12 @@ def main() -> int:
         for c in checks:
             icon = {"ok": "✅", "warn": "⚠️", "fail": "❌"}.get(c.status, "❓")
             print(f" {icon} {c.name:<32} {c.detail}")
+            init_commits = (c.extra or {}).get("init_commits") if isinstance(c.extra, dict) else None
+            if init_commits:
+                for entry in init_commits:
+                    sha = str(entry.get("sha", ""))[:12]
+                    subject = str(entry.get("subject", ""))
+                    print(f"      ↳ init commit {sha}  {subject}")
         if output_path:
             print(f"--\nfull report: {output_path}")
 
