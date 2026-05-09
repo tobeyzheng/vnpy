@@ -1041,3 +1041,56 @@ nvda_g09.json with vnpy_native ...`）以多次本地 commit 累积在这两个�
 报告同时输出到 stdout（带 ✅/❌ 标记）和 `state/runs/reports/preflight_$(date +%Y%m%d).json`，
 方便审计。
 
+### 18.10 双跑启动模板
+
+`scripts/launch_dual_run.sh` 把 §18.2 ~ §18.4 的「跑 preflight → 起两侧 SIM
+会话 → 结束后跑 diff」流程脚本化，作为开盘前一键模板，**默认 dry-run**：
+
+- 不带 `--execute`：仅打印解析后的两侧命令、运行 preflight、退出 0。
+  这一步**不**启动任何会话，**不**连 OpenD，**不**改 `state/runs/orders/`。
+- 带 `--execute`：先跑 preflight；任一项 fail → 拒绝启动；preflight 全绿
+  后弹出交互提示，操作员必须键入字面字符串 `START DUAL RUN` 才会真正起
+  两个 `nohup` 后台进程（如系统装有 tmux 可手动改用 tmux 起会话）。
+- 即使 `--execute` 通过，启动命令**不**含 `--live-submit`，**不** export
+  `VNPY_LIVE_*` 环境变量；两侧仍是应用层 dry-run。任何真实下单仍受
+  `--live-submit` + `VNPY_LIVE_CONFIG=YES` + `VNPY_LIVE_SUBMIT=YES`
+  + `VNPY_LIVE_APPROVED=YES` 四重硬开关守护，不能由本模板绕过。
+
+入参（默认值见 `--help`）：
+
+```
+scripts/launch_dual_run.sh \
+    --run-a /projects/dual_run/legacy \
+    --run-b /projects/dual_run/vnpy_native \
+    --config configs/classic_multifactor/nvda_g09.json \
+    --symbol-a NVDA \
+    --legacy-config-name nvda_g09.json \
+    --session-end-bj 04:00 \
+    --session-end-et 16:00
+    # add --execute to actually launch (still requires interactive confirm)
+```
+
+两侧入口默认：
+
+| 侧 | 入口脚本（worktree 内） | 备注 |
+|---|---|---|
+| legacy（A） | `scripts/classic_multifactor/run_loop.py` | `--symbol`+`--config <filename>`；`--session-end` 是北京时间 |
+| vnpy_native（B） | `scripts/classic_multifactor/run_intraday_loop.py` | `--config <relpath>`；`--session-end` 默认 ET |
+
+启动后产物（路径写在各自 worktree 内，避免污染主仓）：
+
+- `${RUN_A}/state/runs/reports/run_<UTC>.log`、`...run_<UTC>.pid`
+- `${RUN_B}/state/runs/reports/run_<UTC>.log`、`...run_<UTC>.pid`
+- 主仓审计日志：`state/runs/reports/launch_dual_run_<UTC>.log`
+
+收盘后建议立即跑 §18.4 / §18.4a 的 diff：
+
+```
+python3 scripts/diff_dual_run.py \
+    --run-a /projects/dual_run/legacy \
+    --run-b /projects/dual_run/vnpy_native \
+    --strict-rids --markdown
+```
+
+停止双跑：手动 `kill <pid_a> <pid_b>`（pid 文件路径如上）。
+
