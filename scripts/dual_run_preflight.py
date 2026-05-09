@@ -22,8 +22,8 @@ Usage
 ::
 
     python3 scripts/dual_run_preflight.py \\
-        --run-a /data/dual_run/legacy \\
-        --run-b /data/dual_run/vnpy_native \\
+        --run-a /projects/dual_run/legacy \\
+        --run-b /projects/dual_run/vnpy_native \\
         --expected-tag-a classic-pre-vnpy-rewrite-v1 \\
         --expected-branch-b classic-vnpy-native-rewrite \\
         --config configs/classic_multifactor/nvda_g09.json
@@ -82,6 +82,7 @@ class WorktreeReport:
     head_sha: str | None = None
     branch_name: str | None = None
     head_tags: list[str] = field(default_factory=list)
+    parent_sha: str | None = None  # HEAD~1 (first parent), used for init-branch base check
     is_dirty: bool = False
     dirty_files: list[str] = field(default_factory=list)
     config_path: Path | None = None
@@ -163,6 +164,10 @@ def probe_worktree(label: str, root: Path, config_relpath: str | None) -> Worktr
     if rc == 0 and tags:
         rep.head_tags = [t.strip() for t in tags.splitlines() if t.strip()]
 
+    rc, parent_sha, _ = _run(["git", "rev-parse", "HEAD~1"], root)
+    if rc == 0 and parent_sha:
+        rep.parent_sha = parent_sha
+
     rc, dirty, _ = _run(["git", "status", "--porcelain"], root)
     if rc == 0:
         lines = [line for line in dirty.splitlines() if line.strip()]
@@ -211,6 +216,34 @@ def probe_worktree(label: str, root: Path, config_relpath: str | None) -> Worktr
 # Check engine
 # ---------------------------------------------------------------------------
 
+def _resolve_ref_sha(ref: str, root: Path) -> str | None:
+    """Resolve a tag / branch / SHA to a full commit SHA inside ``root``.
+
+    Returns None if the ref cannot be resolved (caller decides whether
+    that is fatal). Tries the ref verbatim, then the common remote alias
+    ``origin/<ref>`` so this works on freshly-cloned worktrees that have
+    not yet created a local tracking branch.
+    """
+    for candidate in (ref, f"origin/{ref}"):
+        rc, sha, _ = _run(["git", "rev-parse", "--verify", f"{candidate}^{{commit}}"], root)
+        if rc == 0 and sha:
+            return sha
+    return None
+
+
+def _is_dual_run_init_branch(branch: str | None, label: str) -> bool:
+    """Return True if ``branch`` is a recognised dual-run init branch.
+
+    Naming convention (see §18.9 of system_integration_guide.md):
+    ``dual_run_init_<label>`` or any branch starting with
+    ``dual_run_init_``. The ``label`` parameter is accepted for symmetry
+    with future stricter naming but the prefix match is enough today.
+    """
+    if not branch:
+        return False
+    return branch.startswith("dual_run_init_")
+
+
 def evaluate_checks(
     rep_a: WorktreeReport,
     rep_b: WorktreeReport,
@@ -218,6 +251,7 @@ def evaluate_checks(
     expected_tag_a: str | None,
     expected_branch_b: str | None,
     min_disk_gb: float,
+    allow_init_branch: bool = True,
 ) -> list[CheckResult]:
     checks: list[CheckResult] = []
 
@@ -244,6 +278,14 @@ def evaluate_checks(
             ))
 
     # 2. Expected git anchor for run A (tag).
+    #
+    # Accepts either:
+    #   (a) HEAD directly on the expected tag, or
+    #   (b) HEAD on a ``dual_run_init_*`` local branch whose first parent
+    #       (HEAD~1) resolves to the same commit as the expected tag.
+    #       This supports the workflow where ``state/runs/`` is wiped via
+    #       a one-shot local commit on top of the immutable tag, without
+    #       leaving the worktree dirty (see §18.9).
     if expected_tag_a:
         if expected_tag_a in rep_a.head_tags:
             checks.append(CheckResult(
@@ -251,6 +293,34 @@ def evaluate_checks(
                 status="ok",
                 detail=f"HEAD points at tag '{expected_tag_a}'",
             ))
+        elif (
+            allow_init_branch
+            and rep_a.is_git
+            and _is_dual_run_init_branch(rep_a.branch_name, rep_a.label)
+            and rep_a.parent_sha
+            and rep_a.path is not None
+        ):
+            tag_sha = _resolve_ref_sha(expected_tag_a, rep_a.path)
+            if tag_sha and tag_sha == rep_a.parent_sha:
+                checks.append(CheckResult(
+                    name="expected_tag_a",
+                    status="ok",
+                    detail=(
+                        f"HEAD on init branch '{rep_a.branch_name}' "
+                        f"based on tag '{expected_tag_a}' (parent={tag_sha[:12]})"
+                    ),
+                    extra={"via_init_branch": True, "base_sha": tag_sha},
+                ))
+            else:
+                checks.append(CheckResult(
+                    name="expected_tag_a",
+                    status="fail",
+                    detail=(
+                        f"HEAD on init branch '{rep_a.branch_name}' but its "
+                        f"parent {rep_a.parent_sha} does not match tag "
+                        f"'{expected_tag_a}' (resolved={tag_sha})"
+                    ),
+                ))
         else:
             checks.append(CheckResult(
                 name="expected_tag_a",
@@ -263,6 +333,12 @@ def evaluate_checks(
             ))
 
     # 3. Expected branch for run B.
+    #
+    # Accepts either:
+    #   (a) HEAD on the expected branch directly, or
+    #   (b) HEAD on a ``dual_run_init_*`` local branch whose first parent
+    #       (HEAD~1) is the tip of the expected branch (resolved as the
+    #       branch ref, falling back to ``origin/<branch>``).
     if expected_branch_b:
         if rep_b.branch_name == expected_branch_b:
             checks.append(CheckResult(
@@ -270,6 +346,34 @@ def evaluate_checks(
                 status="ok",
                 detail=f"run-b on branch '{expected_branch_b}'",
             ))
+        elif (
+            allow_init_branch
+            and rep_b.is_git
+            and _is_dual_run_init_branch(rep_b.branch_name, rep_b.label)
+            and rep_b.parent_sha
+            and rep_b.path is not None
+        ):
+            branch_sha = _resolve_ref_sha(expected_branch_b, rep_b.path)
+            if branch_sha and branch_sha == rep_b.parent_sha:
+                checks.append(CheckResult(
+                    name="expected_branch_b",
+                    status="ok",
+                    detail=(
+                        f"HEAD on init branch '{rep_b.branch_name}' "
+                        f"based on '{expected_branch_b}' (parent={branch_sha[:12]})"
+                    ),
+                    extra={"via_init_branch": True, "base_sha": branch_sha},
+                ))
+            else:
+                checks.append(CheckResult(
+                    name="expected_branch_b",
+                    status="fail",
+                    detail=(
+                        f"HEAD on init branch '{rep_b.branch_name}' but its "
+                        f"parent {rep_b.parent_sha} does not match branch "
+                        f"'{expected_branch_b}' (resolved={branch_sha})"
+                    ),
+                ))
         else:
             checks.append(CheckResult(
                 name="expected_branch_b",
@@ -408,9 +512,9 @@ def build_parser() -> argparse.ArgumentParser:
         description="Read-only preflight self-check before launching a SIM dual-run.",
     )
     p.add_argument("--run-a", required=True, type=Path,
-                   help="Path to legacy worktree (e.g. /data/dual_run/legacy)")
+                   help="Path to legacy worktree (e.g. /projects/dual_run/legacy)")
     p.add_argument("--run-b", required=True, type=Path,
-                   help="Path to vnpy-native worktree (e.g. /data/dual_run/vnpy_native)")
+                   help="Path to vnpy-native worktree (e.g. /projects/dual_run/vnpy_native)")
     p.add_argument("--name-a", type=str, default="legacy")
     p.add_argument("--name-b", type=str, default="vnpy_native")
     p.add_argument("--expected-tag-a", type=str, default="classic-pre-vnpy-rewrite-v1",
@@ -421,6 +525,14 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Relative path to the strategy config; checked in BOTH worktrees")
     p.add_argument("--min-disk-gb", type=float, default=_DEFAULT_MIN_DISK_GB,
                    help="Minimum free disk space in GB for each worktree")
+    p.add_argument("--allow-init-branch", dest="allow_init_branch",
+                   action="store_true", default=True,
+                   help="Accept HEAD on a 'dual_run_init_*' branch whose parent "
+                        "matches the expected tag/branch (default: enabled)")
+    p.add_argument("--strict-anchor", dest="allow_init_branch",
+                   action="store_false",
+                   help="Disable init-branch acceptance: require HEAD exactly on "
+                        "the expected tag/branch")
     p.add_argument("--output", type=Path, default=None,
                    help="JSON output path; defaults to "
                         "state/runs/reports/preflight_<YYYYMMDD>.json under cwd")
@@ -446,6 +558,7 @@ def main() -> int:
         expected_tag_a=expected_tag_a,
         expected_branch_b=expected_branch_b,
         min_disk_gb=args.min_disk_gb,
+        allow_init_branch=args.allow_init_branch,
     )
 
     fails = [c for c in checks if c.status == "fail"]

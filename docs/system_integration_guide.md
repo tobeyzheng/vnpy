@@ -790,7 +790,7 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 为避免两个进程互相覆盖 `state/runs/` 与 `OrderStateStore`，使用两套独立工作区：
 
 ```
-/data/dual_run/
+/projects/dual_run/
 ├─ legacy/                                  # tag classic-pre-vnpy-rewrite-v1 检出
 │  └─ state/runs/
 │     ├─ classic_multifactor_NVDA_US_live_report.json
@@ -811,7 +811,7 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 旧分支（legacy）：
 
 ```
-cd /data/dual_run/legacy
+cd /projects/dual_run/legacy
 git checkout classic-pre-vnpy-rewrite-v1
 python3 scripts/classic_multifactor/run_loop.py \
     --config configs/classic_multifactor/nvda_g09.json \
@@ -821,7 +821,7 @@ python3 scripts/classic_multifactor/run_loop.py \
 新分支（vnpy_native）：
 
 ```
-cd /data/dual_run/vnpy_native
+cd /projects/dual_run/vnpy_native
 git checkout classic-vnpy-native-rewrite
 python3 scripts/classic_multifactor/run_intraday_loop.py \
     --config configs/classic_multifactor/nvda_g09.json \
@@ -833,8 +833,8 @@ python3 scripts/classic_multifactor/run_intraday_loop.py \
 
 ```
 python3 scripts/diff_dual_run.py \
-    --run-a /data/dual_run/legacy/state/runs \
-    --run-b /data/dual_run/vnpy_native/state/runs \
+    --run-a /projects/dual_run/legacy/state/runs \
+    --run-b /projects/dual_run/vnpy_native/state/runs \
     --report-filename-a classic_multifactor_NVDA_US_live_report.json \
     --report-filename-b classic_multifactor_intraday_report.json \
     --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
@@ -865,8 +865,8 @@ uuid 部分会让两次重启的 request_id 不同；故双跑场景下该指标
 
 ```
 python3 scripts/diff_dual_run.py \
-    --run-a /data/dual_run/legacy/state/runs \
-    --run-b /data/dual_run/vnpy_native/state/runs \
+    --run-a /projects/dual_run/legacy/state/runs \
+    --run-b /projects/dual_run/vnpy_native/state/runs \
     --report-filename-a classic_multifactor_NVDA_US_live_report.json \
     --report-filename-b classic_multifactor_intraday_report.json \
     --strict-rids \
@@ -884,8 +884,8 @@ python3 scripts/diff_dual_run.py \
 
 ```
 python3 scripts/diff_dual_run.py \
-    --run-a /data/dual_run/legacy/state/runs \
-    --run-b /data/dual_run/vnpy_native/state/runs \
+    --run-a /projects/dual_run/legacy/state/runs \
+    --run-b /projects/dual_run/vnpy_native/state/runs \
     --report-filename-a classic_multifactor_NVDA_US_live_report.json \
     --report-filename-b classic_multifactor_intraday_report.json \
     --strict-rids \
@@ -976,8 +976,8 @@ OmsEventRecorder 处理的关键边缘场景（已有单测覆盖）：
 
 ```
 python3 scripts/dual_run_preflight.py \
-    --run-a /data/dual_run/legacy \
-    --run-b /data/dual_run/vnpy_native \
+    --run-a /projects/dual_run/legacy \
+    --run-b /projects/dual_run/vnpy_native \
     --expected-tag-a classic-pre-vnpy-rewrite-v1 \
     --expected-branch-b classic-vnpy-native-rewrite \
     --config configs/classic_multifactor/nvda_g09.json
@@ -986,13 +986,42 @@ python3 scripts/dual_run_preflight.py \
 检查项（任一失败即 exit 1）：
 
 - 两个工作树存在且都是 git 仓库；
-- 旧分支 HEAD 是 `classic-pre-vnpy-rewrite-v1` tag（不是 detached / dirty）；
-- 新分支当前分支名为 `classic-vnpy-native-rewrite`；
+- 旧分支 HEAD 是 `classic-pre-vnpy-rewrite-v1` tag，**或** HEAD 在
+  `dual_run_init_*` 本地分支上且其首父提交（`HEAD~1`）等于
+  `classic-pre-vnpy-rewrite-v1` 所指 commit（init 分支模式，见下）；
+- 新分支当前分支名为 `classic-vnpy-native-rewrite`，**或** HEAD 在
+  `dual_run_init_*` 本地分支上且其首父提交等于 `classic-vnpy-native-rewrite`
+  分支当前 tip（init 分支模式）；
 - 两边工作树 `git status --porcelain` 为空；
 - 两边使用相同 `--config` 文件（SHA256 一致），避免参数漂移；
 - 两边 `state/runs/orders/` 不存在残留挂单（status ∈ open_status 且 broker_order_id 非空）；
 - Python 版本一致（`major.minor`）；
 - 磁盘剩余空间 ≥ 1 GB（双跑当日 events.jsonl 与订单 JSON 写入空间）。
+
+加 `--strict-anchor` 可关闭 init 分支放宽，要求 HEAD **必须**直接落在
+预期 tag / 分支上（用于发布前最严格的回归校验）。
+
+#### 关于 dual_run_init_* 本地分支的设计意图
+
+主仓 `state/runs/` 下的历史产物（旧 task 报告、订单 JSON、event jsonl 等）
+是 git 跟踪文件。新建双跑工作树时，如果直接在 `classic-pre-vnpy-rewrite-v1`
+tag 或 `classic-vnpy-native-rewrite` 分支上工作，会面临两难：
+
+1. 不清空 `state/runs/`：旧产物会污染当日双跑的状态读取与对比；
+2. 直接 `rm -rf state/runs/*`：工作树立即变脏（`git status` 输出 100+ 条
+   `D ...`），preflight 第 4 项「工作树干净」检查必然失败。
+
+解决方法：在每个双跑 worktree 上各创建一个**仅本地、无 upstream**的初始化
+分支 `dual_run_init_legacy` / `dual_run_init_vnpy_native`，把 `state/runs/`
+清空操作以一次本地 commit 落入这两个分支。要点：
+
+- 两个 init 分支**没有 upstream**（`git branch -vv` 不应显示 `[origin/...]`），
+  普通 `git push` 不会把它们推到主仓 origin。
+- 它们的首父（`HEAD~1`）必须严格等于 `classic-pre-vnpy-rewrite-v1` /
+  `classic-vnpy-native-rewrite`，preflight 会校验这一点。
+- 想恢复"原 tag/分支视角"时只需 `git checkout classic-pre-vnpy-rewrite-v1`
+  / `git checkout classic-vnpy-native-rewrite`，init 分支保留作为状态重置
+  快照。
 
 报告同时输出到 stdout（带 ✅/❌ 标记）和 `state/runs/reports/preflight_$(date +%Y%m%d).json`，
 方便审计。
