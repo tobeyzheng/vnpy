@@ -138,9 +138,14 @@ class LiveTradingPipeline:
 
         Identity check is fully delegated to OpenD-reported trd_env + acc_type + market;
         FUTU_ACCOUNT_LAST4 is no longer consulted here.
+
+        ``events_log_path`` is always wired to ``state/runs/events.jsonl`` so
+        OmsEngine-stale fallbacks (requirement R3) leave an audit trail next
+        to the task report.
         """
+        events_log_path = self.repo_root / "state" / "runs" / "events.jsonl"
         if not self.config.live_account_strict:
-            return FutuAccountProvider()
+            return FutuAccountProvider(events_log_path=events_log_path)
         expect_market = "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else ""
         return FutuAccountProvider(
             live_strict=True,
@@ -148,6 +153,7 @@ class LiveTradingPipeline:
             expect_acc_type=(self.config.expected_acc_type or "").upper() or None,
             expect_market=expect_market or None,
             expect_last4=None,
+            events_log_path=events_log_path,
         )
 
     def _sync_today_trades(self, symbol: str) -> list[datetime]:
@@ -174,6 +180,14 @@ class LiveTradingPipeline:
         return self.account_provider.get_today_trade_details(symbol)
 
     def run(self) -> dict[str, Any]:
+        # S2 Task 3.2 — start MainEngine + FutuGateway FIRST so the account
+        # provider reads from the OmsEngine cache (fed by EVENT_ACCOUNT /
+        # POSITION / ORDER / TRADE pushes) instead of spawning a parallel
+        # OpenSecTradeContext via the SDK path. When the gateway cannot come
+        # up (e.g. OpenD unreachable) we silently fall back to SDK polling so
+        # dry-runs and CI remain operable.
+        self._start_main_engine_if_needed()
+
         # Plan C: live-strict account selection — abort before anything else if mismatch.
         account_summary = self.account_provider.get_summary()
         if account_summary.status == "live_account_mismatch":
@@ -268,34 +282,101 @@ class LiveTradingPipeline:
             self.main_engine.close()
         return report
 
+    def _start_main_engine_if_needed(self) -> bool:
+        """Bring up EventEngine + MainEngine + FutuGateway early in run().
+
+        This must happen BEFORE ``account_provider.get_summary()`` so the
+        provider's OMS path has account / position snapshots to read. Any
+        failure is logged and swallowed — the provider will transparently
+        fall back to SDK polling.
+
+        Idempotent: repeat calls are no-ops once ``self.main_engine`` is set.
+        Returns True when a MainEngine is live (either just started or from a
+        previous call), False when gateway bring-up failed.
+        """
+        if self.main_engine is not None:
+            return True
+        try:
+            from vnpy.event import EventEngine
+            from vnpy.trader.engine import MainEngine
+            from vnpy.trader.event import EVENT_ORDER, EVENT_TRADE
+            from vnpy_futu import FutuGateway
+        except Exception as exc:  # pragma: no cover - vnpy always present here
+            print(f"[live_task] vnpy import failed, SDK fallback only: {exc}", flush=True)
+            return False
+
+        try:
+            self.event_engine = EventEngine()
+            self.main_engine = MainEngine(self.event_engine)
+            self.main_engine.add_gateway(FutuGateway, self.config.gateway_name)
+
+            self.event_recorder = VnpyEventRecorder(self.repo_root / "state" / "runs")
+            self.event_recorder.register(self.event_engine)
+            self.gateway_event_bridge = VnpyGatewayEventBridge(self.repo_root / "state" / "runs")
+            self.event_engine.register(
+                EVENT_ORDER,
+                lambda event: self.gateway_event_bridge.order_event_to_state(event.data),
+            )
+            self.event_engine.register(
+                EVENT_TRADE,
+                lambda event: self.gateway_event_bridge.trade_event_to_state(event.data),
+            )
+
+            # Attach the provider to the OmsEngine so is_oms_fresh() flips
+            # true as soon as the first EVENT_ACCOUNT / POSITION push lands.
+            # EVENT_ACCOUNT / EVENT_POSITION / EVENT_ORDER / EVENT_TRADE
+            # registrations are handled inside attach_main_engine().
+            self.account_provider.attach_main_engine(self.main_engine)
+
+            futu_market = (
+                "US" if self.config.market == "us"
+                else "HK" if self.config.market == "hong_kong"
+                else "CN"
+            )
+            opend = OpenDConfig()
+            self.main_engine.connect({
+                "密码": os.environ.get(self.config.gateway_password_env_var_name, ""),
+                "地址": opend.host,
+                "端口": opend.port,
+                "市场": futu_market,
+                "环境": self.config.gateway_env,
+            }, self.config.gateway_name)
+            if self.config.gateway_connect_wait_seconds > 0:
+                time.sleep(float(self.config.gateway_connect_wait_seconds))
+            self._executor_state_store = self.order_store  # alias for _wait_for_order_states
+            return True
+        except Exception as exc:
+            print(f"[live_task] MainEngine bring-up failed: {exc}; SDK fallback only", flush=True)
+            # Tear down partial state; detach provider so is_oms_fresh() returns False.
+            try:
+                self.account_provider.detach_main_engine()
+            except Exception:
+                pass
+            if self.main_engine is not None:
+                try:
+                    self.main_engine.close()
+                except Exception:
+                    pass
+            self.main_engine = None
+            self.event_engine = None
+            self.event_recorder = None
+            self.gateway_event_bridge = None
+            return False
+
     def _build_executor(self) -> VnpyExecutor:
-        from vnpy.event import EventEngine
-        from vnpy.trader.engine import MainEngine
-        from vnpy.trader.event import EVENT_ORDER, EVENT_TRADE
-        from vnpy_futu import FutuGateway
+        """Construct the VnpyExecutor. Requires MainEngine already started.
 
-        self.event_engine = EventEngine()
-
-        self.main_engine = MainEngine(self.event_engine)
-        self.main_engine.add_gateway(FutuGateway, self.config.gateway_name)
-
-        self.event_recorder = VnpyEventRecorder(self.repo_root / "state" / "runs")
-        self.event_recorder.register(self.event_engine)
-        self.gateway_event_bridge = VnpyGatewayEventBridge(self.repo_root / "state" / "runs")
-        self.event_engine.register(EVENT_ORDER, lambda event: self.gateway_event_bridge.order_event_to_state(event.data))
-        self.event_engine.register(EVENT_TRADE, lambda event: self.gateway_event_bridge.trade_event_to_state(event.data))
-        futu_market = "US" if self.config.market == "us" else "HK" if self.config.market == "hong_kong" else "CN"
-        opend = OpenDConfig()
-        self.main_engine.connect({
-            "密码": os.environ.get(self.config.gateway_password_env_var_name, ""),
-            "地址": opend.host,
-            "端口": opend.port,
-            "市场": futu_market,
-            "环境": self.config.gateway_env,
-        }, self.config.gateway_name)
-        if self.config.gateway_connect_wait_seconds > 0:
-            time.sleep(float(self.config.gateway_connect_wait_seconds))
-        self._executor_state_store = self.order_store  # alias used by _wait_for_order_states
+        ``_start_main_engine_if_needed`` is called from ``run()`` before any
+        executor is needed, so this method assumes ``self.main_engine`` is
+        populated. Defensive re-start is still attempted in case the caller
+        reached here without the normal run() path (e.g. a future test).
+        """
+        if self.main_engine is None:
+            started = self._start_main_engine_if_needed()
+            if not started:
+                raise RuntimeError(
+                    "MainEngine bring-up failed; cannot build live executor"
+                )
         return VnpyExecutor(
             self.repo_root / "state" / "runs",
             mode="live_submit",
