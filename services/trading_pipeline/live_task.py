@@ -17,7 +17,7 @@ from services.common import OrderIntent
 
 from services.execution_guard.idempotency import OrderIdempotencyGuard
 from services.execution_guard.live_context import LiveRiskContextBuilder
-from services.execution_guard.live_gate import LiveExecutionGate
+from services.execution_guard.live_gate import LiveExecutionGate, LiveGateResult
 from services.execution_guard.precheck import SubmitPrecheck
 from services.execution_guard.reconciliation import ReconciliationGuard
 from services.futu_account import FutuAccountProvider, FutuQuoteClient
@@ -29,7 +29,7 @@ from services.strategy.engine import StrategyEngine
 from services.strategy.external_selection import ExternalStrategySelectionStore
 from services.strategy.selection_store import StrategySelectionStore
 from services.trade_state import OrderStateStore
-from scripts.classic_multifactor.minute_guard import MinuteTradeGuard, MinuteTradeGuardConfig
+from scripts.classic_multifactor.minute_guard import MinuteGuardDecision, MinuteTradeGuard, MinuteTradeGuardConfig  # noqa: F401
 
 
 
@@ -60,6 +60,8 @@ class LiveTaskConfig:
     gateway_env: str = "REAL"
     gateway_password_env_var_name: str = "FUTU_TRADE_UNLOCK_PASSWORD"
     gateway_connect_wait_seconds: float = 2.0
+    order_finalize_timeout_seconds: float = 30.0
+    no_new_entry_timezone: str = "America/New_York"
     # live-strict account selection (Plan C)
     live_account_strict: bool = False
     expected_acc_type: str = "MARGIN"
@@ -92,14 +94,16 @@ class LiveTradingPipeline:
         self.live_gate = LiveExecutionGate(SubmitPrecheck(), LiveRiskGuard(limits))
 
         # 创建minute_guard实例
-        self.minute_guard = MinuteTradeGuard(
-            MinuteTradeGuardConfig(
-                max_intraday_trades=limits.get("max_intraday_trades", 4),
-                entry_cooldown_minutes=limits.get("entry_cooldown_minutes", 30),
-                min_hold_minutes=limits.get("min_hold_minutes", 20),
-                no_new_entry_after=limits.get("no_new_entry_after", "15:30"),
-            )
+        # minute_guard 的默认阈值来自 live_risk_limits.yaml；candidate 自身若带
+        # strategy_config（来自 nvda_g09.json 等策略 JSON）会在 _candidate_guard()
+        # 里按 candidate 维度再覆盖一次，确保研究参数真实落地到实盘。
+        self.default_minute_guard_config = MinuteTradeGuardConfig(
+            max_intraday_trades=int(limits.get("max_intraday_trades", 4) or 0),
+            entry_cooldown_minutes=int(limits.get("entry_cooldown_minutes", 30) or 0),
+            min_hold_minutes=int(limits.get("min_hold_minutes", 20) or 0),
+            no_new_entry_after=str(limits.get("no_new_entry_after", "15:30") or ""),
         )
+        self.minute_guard = MinuteTradeGuard(self.default_minute_guard_config)
 
         self.reconciliation_guard = ReconciliationGuard(
             repo_root / "state" / "runs" / config.reconciliation_filename,
@@ -131,31 +135,18 @@ class LiveTradingPipeline:
         )
 
     def _sync_today_trades(self, symbol: str) -> list[datetime]:
-        """同步今日成交记录。
+        """同步 Futu 账户今日真实成交记录（按标的过滤）。
 
-        Args:
-            symbol: 交易标的符号
-
-        Returns:
-            今日成交记录的时间戳列表
+        Returns: 升序的 datetime 列表。任何异常都向上抛出，由调用方
+        决定是降级放行还是 fail-closed。
         """
-        try:
-            # 从Futu平台获取今日成交记录
-            today_trades = self.account_provider.get_today_trades(symbol)
-
-            # 记录同步结果
-            print(f"[sync_today_trades] 同步到 {len(today_trades)} 笔今日成交记录")
-            if today_trades:
-                for i, trade_time in enumerate(today_trades[:5]):  # 只显示前5笔
-                    print(f"  [{i+1}] {trade_time.strftime('%H:%M:%S')}")
-                if len(today_trades) > 5:
-                    print(f"  ... 还有 {len(today_trades) - 5} 笔成交记录")
-
-            return today_trades
-
-        except Exception as e:
-            print(f"[sync_today_trades] 同步失败: {e}")
-            return []
+        today_trades = self.account_provider.get_today_trades(symbol)
+        print(f"[sync_today_trades] symbol={symbol} 同步到 {len(today_trades)} 笔今日成交", flush=True)
+        for i, trade_time in enumerate(today_trades[:5]):
+            print(f"  [{i+1}] {trade_time.strftime('%H:%M:%S')}", flush=True)
+        if len(today_trades) > 5:
+            print(f"  ... 还有 {len(today_trades) - 5} 笔成交记录", flush=True)
+        return today_trades
 
     def run(self) -> dict[str, Any]:
         # Plan C: live-strict account selection — abort before anything else if mismatch.
@@ -209,6 +200,11 @@ class LiveTradingPipeline:
 
         executor = self._build_executor() if self.live_submit else VnpyExecutor(self.repo_root / "state" / "runs", mode="paper")
         states = [executor.execute_intent(row["order_intent"]) for row in selected if row.get("order_intent")]
+        if self.live_submit and states:
+            # Wait for broker-side order status to reach terminal (filled/cancelled/rejected)
+            # or timeout before tearing down MainEngine; otherwise EVENT_TRADE回报会丢失，
+            # 订单状态长期停留在 'submitted'，跨进程风控/minute_guard 会错判。
+            states = self._wait_for_order_states(states)
         report = {
             "task": self.config.task_name,
             "market": self.config.market,
@@ -269,6 +265,7 @@ class LiveTradingPipeline:
         }, self.config.gateway_name)
         if self.config.gateway_connect_wait_seconds > 0:
             time.sleep(float(self.config.gateway_connect_wait_seconds))
+        self._executor_state_store = self.order_store  # alias used by _wait_for_order_states
         return VnpyExecutor(
             self.repo_root / "state" / "runs",
             mode="live_submit",
@@ -278,6 +275,32 @@ class LiveTradingPipeline:
             explicit_submit=True,
         )
 
+
+    def _wait_for_order_states(self, states: list[Any]) -> list[Any]:
+        """Poll OrderStateStore until every order reaches a terminal status, or timeout.
+
+        Terminal statuses: filled / cancelled / rejected / failed / reconciled / expired.
+        This is what makes EVENT_TRADE/EVENT_ORDER回报 actually get reflected in
+        the report and the local state store before MainEngine.close() is called.
+        """
+        terminal = {"filled", "cancelled", "rejected", "failed", "reconciled", "expired"}
+        timeout = max(float(self.config.order_finalize_timeout_seconds or 0.0), 0.0)
+        deadline = time.time() + timeout if timeout > 0 else None
+        ids = [s.request_id for s in states if getattr(s, "request_id", None)]
+        refreshed: dict[str, Any] = {s.request_id: s for s in states}
+        while deadline is None or time.time() < deadline:
+            all_done = True
+            for rid in ids:
+                latest = self.order_store.load(rid)
+                if latest is not None:
+                    refreshed[rid] = latest
+                status = getattr(refreshed[rid], "status", "")
+                if status not in terminal:
+                    all_done = False
+            if all_done:
+                break
+            time.sleep(0.5)
+        return [refreshed[s.request_id] for s in states]
 
     def _load_simple_limits(self, path: Path) -> dict[str, float | int | str]:
         limits: dict[str, float | int | str] = {}
@@ -345,11 +368,60 @@ class LiveTradingPipeline:
             return code
         return code
 
+    def _candidate_guard(self, candidate: dict[str, Any]) -> MinuteTradeGuard:
+        """Build a per-candidate MinuteTradeGuard, overriding defaults with
+        strategy_config fields carried on the candidate (e.g. nvda_g09.json).
+        """
+        cfg = self.default_minute_guard_config
+        strategy_cfg = candidate.get("strategy_config") or {}
+        if not isinstance(strategy_cfg, dict):
+            return MinuteTradeGuard(cfg)
+
+        def _as_int(v, default):
+            try:
+                return int(v) if v is not None else default
+            except (TypeError, ValueError):
+                return default
+
+        override = MinuteTradeGuardConfig(
+            max_intraday_trades=_as_int(strategy_cfg.get("max_intraday_trades"), cfg.max_intraday_trades),
+            entry_cooldown_minutes=_as_int(strategy_cfg.get("entry_cooldown_minutes"), cfg.entry_cooldown_minutes),
+            min_hold_minutes=_as_int(strategy_cfg.get("min_hold_minutes"), cfg.min_hold_minutes),
+            no_new_entry_after=str(strategy_cfg.get("no_new_entry_after") or cfg.no_new_entry_after),
+        )
+        return MinuteTradeGuard(override)
+
+    def _guard_now(self) -> datetime:
+        """Return the 'now' timestamp that MinuteTradeGuard should use for its
+        no_new_entry_after cutoff. For US live trading this has to be the
+        exchange local time (America/New_York), not Beijing local time.
+        """
+        try:
+            from zoneinfo import ZoneInfo
+            tz_name = self.config.no_new_entry_timezone or "America/New_York"
+            return datetime.now(ZoneInfo(tz_name)).replace(tzinfo=None)
+        except Exception:
+            return datetime.now()
+
     def _build_candidate_pool(self, candidates: list[dict[str, Any]], quote_map: dict[str, dict[str, Any]], account_summary: Any) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
 
-        # 同步今日成交记录
-        today_trades = self._sync_today_trades(candidates[0]["symbol"] if candidates else "")
+        # 逐 candidate 同步今日成交，避免单次查询被第一个标的绑定；失败直接 fail-closed
+        # 返回空集合，由 minute_guard 把后续决策拒绝掉（配合外层的异常处理）。
+        trades_by_symbol: dict[str, list[datetime]] = {}
+        trades_sync_error: dict[str, str] = {}
+        for candidate in candidates:
+            sym = candidate.get("symbol") or ""
+            if not sym or sym in trades_by_symbol:
+                continue
+            try:
+                trades_by_symbol[sym] = self._sync_today_trades(sym)
+            except Exception as exc:
+                # 获取不到真实成交数时必须 fail-closed，避免像旧实现那样吞异常后
+                # 直接放行 minute_guard（曾导致 max_intraday_trades 失效）。
+                trades_by_symbol[sym] = []
+                trades_sync_error[sym] = f"{type(exc).__name__}: {exc}"
+                print(f"[sync_today_trades] symbol={sym} 失败，将强制拒绝下单: {exc}", flush=True)
 
         for candidate in candidates:
             symbol = candidate["symbol"]
@@ -394,13 +466,25 @@ class LiveTradingPipeline:
                     mode="live" if self.live_submit else "paper",
                 )
 
-                # 使用同步的今日成交记录进行minute_guard检查
-                now = datetime.now()
-                minute_guard_result = self.minute_guard.can_enter(now, trade_times=today_trades, last_trade_at=None)
+                # 按 candidate 构造 minute_guard，让 nvda_g09.json 等策略 JSON 里的
+                # max_intraday_trades/entry_cooldown/min_hold/no_new_entry_after 真实生效。
+                today_trades = trades_by_symbol.get(symbol, [])
+                last_trade_at = max(today_trades) if today_trades else None
+                now_for_guard = self._guard_now()
+                symbol_guard = self._candidate_guard(candidate)
+                if symbol in trades_sync_error:
+                    minute_guard_result = MinuteGuardDecision(
+                        allowed=False,
+                        reason=f"today_trades_sync_failed:{trades_sync_error[symbol]}",
+                    )
+                else:
+                    minute_guard_result = symbol_guard.can_enter(
+                        now_for_guard, trade_times=today_trades, last_trade_at=last_trade_at
+                    )
 
                 if not minute_guard_result.allowed:
                     # minute_guard检查失败，不允许交易
-                    gate_result = LiveGateResult(allowed=False, reasons=[minute_guard_result.reason])
+                    gate_result = LiveGateResult(allowed=False, reasons=[f"minute_guard:{minute_guard_result.reason}"])
                 else:
                     # minute_guard检查通过，继续其他检查
                     gate_result = self.live_gate.evaluate(
@@ -420,6 +504,7 @@ class LiveTradingPipeline:
                 if not idem_result.allowed or not gate_result.allowed:
                     intent = None
 
+            today_trades_for_symbol = trades_by_symbol.get(symbol, [])
             rows.append({
                 "symbol": symbol,
                 "name": candidate.get("name"),
@@ -438,8 +523,11 @@ class LiveTradingPipeline:
                 "live_gate": gate_result.__dict__ if gate_result else None,
                 "idempotency": idem_result.__dict__ if idem_result else None,
                 "order_intent": intent,
-                "today_trades_count": len(today_trades),  # 记录今日成交次数
-                "minute_guard_result": minute_guard_result.__dict__ if intent else None,  # 记录minute_guard检查结果
+                "today_trades_count": len(today_trades_for_symbol),
+                "today_trades_sync_error": trades_sync_error.get(symbol),
+                "minute_guard_result": (
+                    asdict(minute_guard_result) if side and qty > 0 and hasattr(minute_guard_result, "__dataclass_fields__") else None
+                ),
             })
 
         return rows

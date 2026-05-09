@@ -62,9 +62,17 @@ class LiveRiskContextBuilder:
         for state in self.order_store.list():
             path = self.order_store.root / f"{state.request_id}.json"
             try:
-                if path.stat().st_mtime_ns and date.fromtimestamp(path.stat().st_mtime) != today:
-                    continue
+                st = path.stat()
             except OSError:
+                continue
+            # Prefer birth/ctime (creation time) over mtime: an order placed yesterday
+            # whose status keeps mutating today (fills, reconciles) would otherwise
+            # be mis-counted toward today's notional.
+            created_ts = getattr(st, "st_birthtime", None) or st.st_ctime or st.st_mtime
+            try:
+                if date.fromtimestamp(created_ts) != today:
+                    continue
+            except (OSError, ValueError, OverflowError):
                 continue
             if state.side == "BUY" and state.status in {"approved", "submitting", "submitted", "partial_filled", "filled"}:
                 total += max(float(state.qty or 0), 0.0) * max(float(state.price or 0.0), 0.0)

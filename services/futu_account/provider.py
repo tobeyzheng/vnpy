@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import List
 
 from services.futu_opend import OpenDClient
@@ -37,53 +38,76 @@ class FutuAccountProvider:
         )
 
     def get_today_trades(self, symbol: str | None = None) -> list[datetime]:
-        """获取今日成交记录的时间戳列表。
+        """获取今日成交记录的时间戳列表（基于 Futu deal_list_query 成交流水）。
 
         Args:
-            symbol: 可选，指定标的符号，如不指定则返回所有标的的成交记录
+            symbol: 可选标的符号，支持 "NVDA.US" / "US.NVDA" / "NVDA" 三种格式；
+                    为空或 None 时返回当前账户今日全部成交记录。
 
         Returns:
-            今日成交记录的时间戳列表，按时间升序排列
+            今日成交记录的 datetime 列表，按时间升序排列。
+            出现异常时抛出，由调用方决定是否降级。
         """
         sdk = self._build_sdk()
+        deals = sdk.deal_list_today()
+        today = datetime.now().date()
+        want = self._normalize_symbol_key(symbol) if symbol else None
+
+        trade_times: list[datetime] = []
+        for row in deals:
+            code = str(row.get("code", ""))
+            if want and self._normalize_symbol_key(code) != want:
+                continue
+            create_time_str = (
+                row.get("create_time")
+                or row.get("deal_time")
+                or row.get("update_time")
+                or row.get("updated_time")
+            )
+            if not create_time_str:
+                continue
+            parsed = self._parse_futu_datetime(str(create_time_str))
+            if parsed is None:
+                continue
+            if parsed.date() != today:
+                continue
+            trade_times.append(parsed)
+
+        trade_times.sort()
+        return trade_times
+
+    @staticmethod
+    def _normalize_symbol_key(symbol: str) -> str:
+        """Normalize symbol/code to a comparable key.
+
+        Accepts 'NVDA.US' (pipeline format), 'US.NVDA' (futu format) and bare 'NVDA'.
+        """
+        text = str(symbol or "").upper().strip()
+        if not text:
+            return ""
+        if "." in text:
+            left, right = text.split(".", 1)
+            # market prefix form: US.NVDA / HK.00700
+            if left in {"US", "HK", "SH", "SZ", "SHA", "SHE"}:
+                return right
+            # symbol.market form: NVDA.US
+            return left
+        return text
+
+    @staticmethod
+    def _parse_futu_datetime(text: str) -> datetime | None:
+        """Parse Futu deal/order time strings. Futu uses '%Y-%m-%d %H:%M:%S'."""
+        if not text:
+            return None
+        for fmt in ("%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S"):
+            try:
+                return datetime.strptime(text, fmt)
+            except ValueError:
+                continue
         try:
-            # 获取账户快照中的订单信息
-            snapshot = sdk.account_snapshot()
-            orders = snapshot.get("orders", [])
-
-            today_trades = []
-            today = datetime.now().date()
-
-            for order in orders:
-                # 检查订单状态是否为成交状态
-                order_status = str(order.get("order_status", "")).upper()
-                if order_status not in ("FILLED", "PART_FILLED"):
-                    continue
-
-                # 检查标的符号匹配
-                order_symbol = str(order.get("code", ""))
-                if symbol and order_symbol != symbol:
-                    continue
-
-                # 尝试从订单信息中提取成交时间
-                # Futu订单可能包含成交时间字段，如"trade_time"或"update_time"
-                trade_time_str = order.get("trade_time") or order.get("update_time")
-                if trade_time_str:
-                    try:
-                        trade_time = datetime.fromisoformat(str(trade_time_str))
-                        if trade_time.date() == today:
-                            today_trades.append(trade_time)
-                    except (ValueError, TypeError):
-                        continue
-
-            # 按时间排序
-            today_trades.sort()
-            return today_trades
-
-        except Exception as e:
-            # 如果获取失败，返回空列表
-            print(f"获取今日成交记录失败: {e}")
-            return []
+            return datetime.fromisoformat(text)
+        except ValueError:
+            return None
 
     def get_summary(self) -> FutuAccountSummary:
         probe = OpenDClient().probe()

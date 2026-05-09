@@ -213,36 +213,84 @@ created
 - `minute_guard`只能看到当前进程内的交易记录
 - 前序进程的交易记录不会传递给后续进程
 
-#### 解决方案：账户同步机制
-已实现账户同步方案，在每次`run.py`启动时从Futu平台同步实际成交次数：
+#### 解决方案：账户同步机制（2026-05-09 全面修复）
+在每次`run.py`启动时从 Futu 账户拉取**真实成交流水**来驱动 minute_guard；
+相比旧方案最大的差别是：**不再使用进程内持久化状态**，也不再依赖订单状态机的快照，
+而是把 Futu 账户当作跨进程的唯一事实来源。
 
-1. **FutuAccountProvider新增方法**：
-   - `get_today_trades(symbol)`：从Futu平台获取今日成交记录的时间戳列表
+1. **FutuSdkClient 新增 `deal_list_today()`**
+   - 直接调用 `deal_list_query(trd_env, acc_id)`（Futu 默认只返回当日成交）
+   - 字段 `create_time` 为 Futu 官方成交时间（`'%Y-%m-%d %H:%M:%S'`）
+   - 跟订单状态机解耦，不受 `submitted`→`filled` 回报延迟影响
 
-2. **LiveTradingPipeline集成minute_guard**：
-   - 在`_build_candidate_pool`方法中同步今日成交记录
-   - 在交易决策前使用同步的成交记录进行`minute_guard`检查
-   - 确保跨进程状态一致性
+2. **FutuAccountProvider.get_today_trades(symbol)**
+   - 通过 `_normalize_symbol_key()` 统一 `NVDA.US` / `US.NVDA` / `NVDA`
+   - 异常向上抛出（之前旧实现吞异常导致 minute_guard 静默失效）
 
-3. **执行流程**：
+3. **LiveTradingPipeline 集成**
+   - 按 candidate 逐标的同步（不再只按第一个标的）
+   - `last_trade_at` 自动取 `max(today_trades)`（修复了 cooldown 永远不触发的 bug）
+   - 同步失败 → `fail-closed`，拒绝下单并写入 `today_trades_sync_error`
+   - `no_new_entry_after` 使用交易所时区（`America/New_York` / `Asia/Hong_Kong`）而非北京时间
+
+4. **研究参数真实落地**
+   - `run.py` 会把 `nvda_g09.json` 的 `setting` 作为 `candidate["strategy_config"]`
+     同时写入 `state/runs/candidate_inputs.dynamic.json`（`UnifiedCandidateProvider` 真正读取的位置）
+   - `LiveTradingPipeline._candidate_guard()` 会基于 `candidate["strategy_config"]` 按
+     candidate 维度覆盖默认的 `MinuteTradeGuardConfig`；策略 JSON 里的
+     `max_intraday_trades/entry_cooldown_minutes/min_hold_minutes/no_new_entry_after`
+     会真实生效到实盘路径（而不是被 `configs/risk/live_risk_limits.yaml` 的全局默认值淹没）
+   - `--minute-profile` 改为 `setdefault` 语义：**仅在 JSON 未提供对应字段时**填入默认值，
+     不再无脑覆盖 JSON 冠军参数
+
+5. **执行流程**
    ```
-   run_loop.py (进程A) → run.py → 同步今日成交记录 → minute_guard检查 → 交易决策
-   run_loop.py (进程B) → run.py → 同步今日成交记录 → minute_guard检查 → 交易决策
+   run.py
+     → 读 configs/classic_multifactor/<config>.json
+     → 把 setting 作为 strategy_config 写入 candidate_inputs.dynamic.json
+     → LiveTradingPipeline.run()
+       → UnifiedCandidateProvider.load("us")            # 读到 strategy_config
+       → 逐 candidate 调用 FutuAccountProvider.get_today_trades(symbol)
+       → _candidate_guard(candidate) 按 JSON 覆盖阈值
+       → MinuteTradeGuard.can_enter(now_ny, trades, max(trades))
+       → LiveExecutionGate（approval / risk / drawdown / exposure）
+       → VnpyExecutor.execute_intent → MainEngine.send_order
+       → _wait_for_order_states（轮询到 filled/rejected/cancelled 或 30s 超时）
+       → MainEngine.close()
    ```
 
 #### 配置示例
+```json
+// configs/classic_multifactor/nvda_g09.json
+"setting": {
+    "max_intraday_trades": 4,
+    "entry_cooldown_minutes": 30,
+    "min_hold_minutes": 20,
+    "no_new_entry_after": "15:30"
+}
+```
 ```yaml
-# configs/risk/live_risk_limits.yaml
-max_intraday_trades: 4           # 当日最大交易次数
-entry_cooldown_minutes: 30       # 入场冷却时间（分钟）
-min_hold_minutes: 20             # 最小持仓时间（分钟）
-no_new_entry_after: "15:30"      # 禁止新入场时间
+# configs/risk/live_risk_limits.yaml  —— 仅作全局默认
+max_intraday_trades: 4
+entry_cooldown_minutes: 30
+min_hold_minutes: 20
+no_new_entry_after: "15:30"
 ```
 
 #### 验证方法
-- 检查`state/runs/`目录下的报告文件
-- 查看`today_trades_count`字段确认同步的成交次数
-- 检查`minute_guard_result`字段确认限制检查结果
+- 检查 `state/runs/classic_multifactor_*_live_report.json`：
+  - `selected[*].today_trades_count` —— Futu 真实返回的当日成交笔数
+  - `selected[*].today_trades_sync_error` —— 同步失败原因（非空则 minute_guard 会 fail-closed）
+  - `selected[*].minute_guard_result` —— 反映 `{allowed, reason}`
+  - `selected[*].live_gate.reasons` —— 会包含 `minute_guard:max_intraday_trades_reached` 等前缀
+
+#### 相关改动（2026-05-09）
+- `services/futu_account/sdk_client.py`: 新增 `deal_list_today()`
+- `services/futu_account/provider.py`: 补 `datetime` import, 改 `get_today_trades` 用 deal_list, 新增 symbol 归一化
+- `services/trading_pipeline/live_task.py`: 逐 candidate 同步, `_candidate_guard`, `_guard_now`, `_wait_for_order_states`
+- `services/execution_guard/live_context.py`: 用 ctime 代替 mtime 判断今日买入通量
+- `scripts/classic_multifactor/run.py`: `--minute-profile` 改 `setdefault`, 同步写 `candidate_inputs.dynamic.json`
+- `scripts/classic_multifactor/run_loop.py`: 新增 `--exit-after-session` 开关
 
 ### 7.2 其他风控限制
 

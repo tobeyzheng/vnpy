@@ -96,9 +96,11 @@ def run_live_mode(args) -> None:
     config_data = load_classic_multifactor_config(args.config)
     setting = config_data.get("setting", {})
 
-    # 如果启用分钟级配置，覆盖部分参数
+    # 如果启用分钟级配置，仅在 json 未提供对应字段时填入默认值，
+    # 避免把 nvda_g09.json 等策略 JSON 里已调优过的冠军参数（如 signal_interval_minutes=12,
+    # entry_score=0.66, max_intraday_trades=4 等）被硬编码默认值覆盖。
     if args.minute_profile:
-        setting.update({
+        minute_defaults = {
             "fast_window": 6,
             "slow_window": 24,
             "momentum_window": 12,
@@ -116,7 +118,9 @@ def run_live_mode(args) -> None:
             "stop_atr": 1.5,
             "take_profit_atr": 2.5,
             "trailing_atr": 2.0,
-        })
+        }
+        for k, v in minute_defaults.items():
+            setting.setdefault(k, v)
 
     # 注册策略
     register_classic_multifactor_strategy()
@@ -159,13 +163,41 @@ def run_live_mode(args) -> None:
         "strategy_config": setting
     }
 
-    # 保存候选池到文件
-    candidates_dir = REPO_ROOT / "state" / "runs" / "candidate_inputs"
-    candidates_dir.mkdir(parents=True, exist_ok=True)
+    # 同时写两个位置：
+    # 1) candidate_inputs/ 下的归档文件（便于追溯每个 symbol 的独立候选快照）
+    # 2) candidate_inputs.dynamic.json —— 真正被 UnifiedCandidateProvider 消费的文件，
+    #    否则 strategy_config（来自 nvda_g09.json）永远不会被 live_task 读取。
+    #    为了安全，这里只覆盖与当前 symbol 相同 symbol 的条目，其它标的保留。
+    runs_dir = REPO_ROOT / "state" / "runs"
+    runs_dir.mkdir(parents=True, exist_ok=True)
 
+    candidates_dir = runs_dir / "candidate_inputs"
+    candidates_dir.mkdir(parents=True, exist_ok=True)
     candidate_file = candidates_dir / f"classic_multifactor_{args.symbol.replace('.', '_')}.json"
     with open(candidate_file, 'w', encoding='utf-8') as f:
         json.dump([candidate], f, ensure_ascii=False, indent=2)
+
+    dynamic_path = runs_dir / "candidate_inputs.dynamic.json"
+    dynamic_items: list[dict[str, Any]] = []
+    if dynamic_path.exists():
+        try:
+            raw = json.loads(dynamic_path.read_text(encoding="utf-8"))
+            if isinstance(raw, dict) and isinstance(raw.get("items"), list):
+                dynamic_items = [row for row in raw["items"] if isinstance(row, dict)]
+            elif isinstance(raw, list):
+                dynamic_items = [row for row in raw if isinstance(row, dict)]
+        except Exception:
+            dynamic_items = []
+    # 覆盖当前 symbol 的条目，其它 symbol 保留
+    dynamic_items = [
+        row for row in dynamic_items
+        if str(row.get("symbol", "")).upper() != str(args.symbol).upper()
+    ]
+    dynamic_items.append(candidate)
+    dynamic_path.write_text(
+        json.dumps({"items": dynamic_items}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
     # 运行实盘pipeline
     pipeline = LiveTradingPipeline(REPO_ROOT, config, live_submit=args.live_submit)

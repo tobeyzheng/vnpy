@@ -257,3 +257,40 @@ class FutuSdkClient:
             }
         finally:
             ctx.close()
+
+    def deal_list_today(self) -> list[dict[str, Any]]:
+        """Return today's deal records (actual fills) for the selected account.
+
+        Uses futu deal_list_query which only returns current-day deals by default,
+        so this method reliably reflects the real intraday fill count and is safe
+        to use for min_guard / max_intraday_trades enforcement.
+        """
+        if self._futu is None:
+            raise RuntimeError(self._import_error or "futu sdk unavailable")
+        futu = self._futu
+        ctx = futu.OpenSecTradeContext(host=self.config.host, port=self.config.port)
+        try:
+            ret, accounts = ctx.get_acc_list()
+            if ret != futu.RET_OK:
+                raise RuntimeError(str(accounts))
+            if getattr(accounts, "empty", True):
+                if self.live_strict:
+                    raise FutuLiveAccountMismatchError("OpenD returned empty account list in live-strict mode")
+                return []
+            if self.live_strict:
+                row, _picked_by, _records = self._pick_account_strict(accounts)
+            else:
+                row, _picked_by, _records = self._pick_account(accounts)
+            if row is None:
+                return []
+            acc_id = int(row.get("acc_id") or row.get("sim_acc_id") or row.get("real_acc_id"))
+            trd_env = self._resolve_trd_env(row)
+            ret, deals = ctx.deal_list_query(trd_env=trd_env, acc_id=acc_id, refresh_cache=True)
+            if ret != futu.RET_OK:
+                raise RuntimeError(f"deal_list_query failed: {deals}")
+            if hasattr(deals, "to_dict"):
+                return deals.to_dict(orient="records")
+            return []
+        finally:
+            ctx.close()
+

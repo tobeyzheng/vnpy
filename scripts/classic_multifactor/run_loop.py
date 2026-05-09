@@ -82,6 +82,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--per-run-timeout", type=int, default=180)
     p.add_argument("--on-error", choices=["continue", "stop"], default="continue")
     p.add_argument("--dry-run-loop", action="store_true", help="只打印调度节拍，不启动子进程")
+    p.add_argument("--exit-after-session", action="store_true",
+                   help="会话结束后直接退出 loop（默认会持续等待下一个会话）")
 
     # daily circuit breaker
     p.add_argument("--daily-loss-limit", type=float, default=200.0,
@@ -256,10 +258,17 @@ def main() -> int:
           f"dry_run_loop={args.dry_run_loop}", flush=True)
 
     iteration = 0
+    entered_session_once = False
     while not _stop_requested:
         now = _now_bj()
 
-        if not _in_session(now, session_start, session_end):
+        in_session = _in_session(now, session_start, session_end)
+        if in_session:
+            entered_session_once = True
+        if not in_session:
+            if entered_session_once and args.exit_after_session:
+                print(f"[loop] session ended (BJ end={args.session_end}), exit-after-session requested, exit", flush=True)
+                break
             wait_s = _seconds_until(now, session_start)
             # 限幅一次最多睡 60s，便于尽快响应 SIGINT 与重新评估
             sleep_chunk = min(wait_s, 60.0)
