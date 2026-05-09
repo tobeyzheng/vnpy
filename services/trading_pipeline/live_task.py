@@ -14,6 +14,7 @@ from typing import Any
 from execution.live_bridge.models import LiveOrderRequest
 from execution.vnpy_bridge import VnpyEventRecorder, VnpyExecutor, VnpyGatewayEventBridge
 from services.common import OrderIntent
+from services.common.config_loader import load_yaml_limits_block
 
 from services.execution_guard.idempotency import OrderIdempotencyGuard
 from services.execution_guard.live_context import LiveRiskContextBuilder
@@ -414,25 +415,9 @@ class LiveTradingPipeline:
         return [refreshed[s.request_id] for s in states]
 
     def _load_simple_limits(self, path: Path) -> dict[str, float | int | str]:
-        limits: dict[str, float | int | str] = {}
-        in_limits = False
-        for raw_line in path.read_text(encoding="utf-8").splitlines():
-            line = raw_line.strip()
-            if not line or line.startswith("#"):
-                continue
-            if line == "limits:":
-                in_limits = True
-                continue
-            if not in_limits or ":" not in line:
-                continue
-            key, value = line.split(":", 1)
-            value = value.strip()
-            try:
-                number = float(value)
-                limits[key.strip()] = int(number) if number.is_integer() else number
-            except ValueError:
-                limits[key.strip()] = value
-        return limits
+        # C2/R5: delegate to the shared parser in services/common so we have
+        # exactly one definition of how live_risk_limits.yaml is read.
+        return load_yaml_limits_block(path)
 
     def _live_submit_block_reasons(self, live_submit: bool) -> list[str]:
 

@@ -1,3 +1,21 @@
+"""Multi-market SIM trading pipeline (legacy main-line entry).
+
+.. deprecated:: 2026-05
+    The classic-multifactor main-line is moving to
+    ``scripts/classic_multifactor/run_intraday_loop.py`` (intraday) and
+    ``scripts/classic_multifactor/run_daily_rebalance.py`` (daily). Those
+    runners share a single :class:`ClassicMultiFactorCtaStrategy` instance,
+    a unified four-stage :class:`ExecutionGuardPipeline`, and the vnpy
+    ``MainEngine`` lifecycle.
+
+    This module is retained for historical fallback and for the existing
+    ``scripts/run_us_sim_task.py`` legacy path. New SIM development should
+    flow through the new mainline (see project rule 3 and Task 8 / R1b).
+
+    The default behaviour is unchanged; to opt into the new mainline pass
+    ``--use-vnpy-mainline`` to ``scripts/run_us_sim_task.py``.
+"""
+
 from __future__ import annotations
 
 import json

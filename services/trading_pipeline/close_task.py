@@ -1,3 +1,16 @@
+"""SIM close-out pipeline (legacy main-line entry).
+
+.. deprecated:: 2026-05
+    Pairs with :mod:`services.trading_pipeline.sim_task`. The new
+    classic-multifactor main-line handles position lifecycle inside the
+    strategy's own :meth:`on_bar` hook plus the four-stage execution
+    guard pipeline (see ``scripts/classic_multifactor/run_intraday_loop.py``);
+    no separate close-out script is currently emitted on that path.
+
+    Retained for historical fallback via ``scripts/run_us_sim_close.py``.
+    See project rule 3 and Task 8 / R1b.
+"""
+
 from __future__ import annotations
 
 import json
