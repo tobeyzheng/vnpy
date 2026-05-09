@@ -44,6 +44,23 @@ A metric ``m`` is considered ``OK`` when::
 Defaults: ``abs_tol = 2``, ``rel_tol = 0.02``. Both can be overridden
 per-metric via ``--abs-tol`` / ``--rel-tol`` (key=value form).
 
+Strict business-key mode
+------------------------
+``--strict-rids`` activates a stricter ``request_ids`` comparison: instead
+of relying on raw ``request_id`` strings (which embed a per-process uuid
+and therefore *always* differ between A and B), the script groups
+orders by the business 5-tuple
+``(strategy_id, market, symbol, side, qty, price-bucket-2dp)``. Two
+orders are considered equivalent if and only if all five fields match,
+with ``price`` rounded to 2 decimal places. Pairs with a missing
+counterpart in the other run are reported as ``only_a`` / ``only_b``
+business intents (these *are* real divergences and should investigate).
+
+Markdown summary
+----------------
+Pass ``--markdown <path.md>`` to additionally emit a Github-friendly
+summary table for PR / changelog inclusion.
+
 The script never writes to brokerage state and never connects to
 OpenD — it is a pure file diff. Safe to run unattended.
 """
@@ -91,6 +108,11 @@ class RunMetrics:
     blocked_by_gate: dict[str, int] = field(default_factory=dict)
     request_ids: set[str] = field(default_factory=set, repr=False)
     samples: dict[str, Any] = field(default_factory=dict)
+    # Business-key tuples for --strict-rids mode. Each tuple is
+    # (strategy_id, market, symbol, side, qty, price_bucket).
+    business_keys: list[tuple[str, str, str, str, int, str]] = field(
+        default_factory=list, repr=False
+    )
 
 
 def _safe_load_json(path: Path) -> dict[str, Any] | None:
@@ -172,6 +194,7 @@ def _scan_orders(orders_dir: Path) -> dict[str, Any]:
         "orders_failed_residual": 0,
         "request_ids": set(),
         "broker_orderids": set(),
+        "business_keys": [],
     }
     if not orders_dir.exists():
         return out
@@ -206,6 +229,23 @@ def _scan_orders(orders_dir: Path) -> dict[str, Any]:
                 out["orders_open_residual"] += 1
         elif status in failed_status:
             out["orders_failed_residual"] += 1
+        # Business 5-tuple for --strict-rids mode. Price is bucketed to
+        # 2 decimal places to absorb the per-order limit-price jitter
+        # that is identical across A/B in classic_multifactor.
+        strategy_id = str(data.get("strategy_id") or "").strip()
+        market = str(data.get("market") or "").strip()
+        symbol = str(data.get("symbol") or "").strip()
+        side = str(data.get("side") or "").strip()
+        qty = int(data.get("qty") or 0)
+        price = data.get("price")
+        try:
+            price_bucket = f"{float(price):.2f}" if price is not None else "-"
+        except (TypeError, ValueError):
+            price_bucket = "-"
+        if strategy_id and symbol and side and qty:
+            out["business_keys"].append(
+                (strategy_id, market, symbol, side, qty, price_bucket)
+            )
     return out
 
 
@@ -270,6 +310,7 @@ def collect_run_metrics(
     rm.metrics["orders_failed_residual"] = float(orders_summary["orders_failed_residual"])
     rm.request_ids.update(orders_summary["request_ids"])
     rm.metrics["unique_request_ids"] = float(len(rm.request_ids))
+    rm.business_keys = list(orders_summary["business_keys"])
     rm.samples["orders_total"] = orders_summary["orders_total"]
     rm.samples["broker_orderids_count"] = len(orders_summary["broker_orderids"])
 
@@ -369,6 +410,54 @@ def _diff_request_ids(a: RunMetrics, b: RunMetrics) -> dict[str, Any]:
     }
 
 
+def _diff_business_keys(a: RunMetrics, b: RunMetrics) -> dict[str, Any]:
+    """Compare two runs by business 5-tuple multiset semantics.
+
+    Each tuple is ``(strategy_id, market, symbol, side, qty, price_bucket)``.
+    Multiplicities matter — if A submitted the same intent twice but B
+    only once, the duplicated tuple shows up in ``only_a`` once. This
+    catches both "missing intent in B" and "extra intent in B" cases
+    that the raw uuid-based ``--request-ids`` diff cannot detect.
+    """
+
+    from collections import Counter
+
+    counter_a = Counter(a.business_keys)
+    counter_b = Counter(b.business_keys)
+    only_a = counter_a - counter_b
+    only_b = counter_b - counter_a
+    common = counter_a & counter_b
+
+    def _format(counter: Counter) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
+        for key, count in sorted(counter.items()):
+            strategy_id, market, symbol, side, qty, price_bucket = key
+            items.append(
+                {
+                    "strategy_id": strategy_id,
+                    "market": market,
+                    "symbol": symbol,
+                    "side": side,
+                    "qty": qty,
+                    "price_bucket": price_bucket,
+                    "count": count,
+                }
+            )
+        return items
+
+    return {
+        "common_unique_count": len(common),
+        "common_total_count": int(sum(common.values())),
+        "only_a_unique_count": len(only_a),
+        "only_a_total_count": int(sum(only_a.values())),
+        "only_b_unique_count": len(only_b),
+        "only_b_total_count": int(sum(only_b.values())),
+        # Cap samples so the JSON stays manageable.
+        "only_a_sample": _format(only_a)[:20],
+        "only_b_sample": _format(only_b)[:20],
+    }
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -416,6 +505,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--print-summary", action="store_true", default=True)
     p.add_argument("--no-print-summary", dest="print_summary", action="store_false")
+    p.add_argument(
+        "--strict-rids",
+        action="store_true",
+        default=False,
+        help=(
+            "Compare orders by business 5-tuple (strategy_id,market,"
+            "symbol,side,qty,price_bucket) instead of uuid request_ids. "
+            "Any only_a / only_b tuples become a HARD failure."
+        ),
+    )
+    p.add_argument(
+        "--markdown",
+        type=Path,
+        default=None,
+        help="Optional path to write a Github-friendly markdown summary.",
+    )
     return p
 
 
@@ -440,6 +545,9 @@ def main() -> int:
     deltas = _diff_metrics(rm_a, rm_b, abs_tol, rel_tol)
     gate_diff = _diff_blocked_by_gate(rm_a, rm_b)
     rid_diff = _diff_request_ids(rm_a, rm_b)
+    biz_diff: dict[str, Any] | None = None
+    if args.strict_rids:
+        biz_diff = _diff_business_keys(rm_a, rm_b)
 
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -465,6 +573,8 @@ def main() -> int:
         "blocked_by_gate": gate_diff,
         "request_ids": rid_diff,
     }
+    if biz_diff is not None:
+        summary["business_keys"] = biz_diff
 
     failures = [d for d in deltas if d.status == "fail"]
     warnings = [d for d in deltas if d.status == "warn"]
@@ -478,10 +588,21 @@ def main() -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    # Optional markdown report.
+    if args.markdown is not None:
+        md = _render_markdown(summary, deltas)
+        args.markdown.parent.mkdir(parents=True, exist_ok=True)
+        args.markdown.write_text(md, encoding="utf-8")
+
     if args.print_summary:
         _print_summary(summary, deltas)
 
-    if failures:
+    # Strict-rids divergence is treated as a HARD failure.
+    biz_fail = bool(
+        biz_diff
+        and (biz_diff["only_a_total_count"] > 0 or biz_diff["only_b_total_count"] > 0)
+    )
+    if failures or biz_fail:
         return 1
     if warnings:
         return 0  # warnings don't fail the run by default
@@ -517,6 +638,118 @@ def _print_summary(summary: dict[str, Any], deltas: list[MetricDelta]) -> None:
             print(f"{mark} {gate:<24} a={info['a']:<5} b={info['b']:<5} d={info['delta']:+d}")
     rid = summary["request_ids"]
     print(f"-- request_ids: common={rid['common_count']} only_a={rid['only_a_count']} only_b={rid['only_b_count']}")
+    biz = summary.get("business_keys")
+    if biz:
+        print(
+            "-- business_keys (strict-rids):"
+            f" common_unique={biz['common_unique_count']}"
+            f" only_a={biz['only_a_unique_count']}/{biz['only_a_total_count']}"
+            f" only_b={biz['only_b_unique_count']}/{biz['only_b_total_count']}"
+        )
+        for sample in biz["only_a_sample"][:5]:
+            print(f"   only_a: {sample}")
+        for sample in biz["only_b_sample"][:5]:
+            print(f"   only_b: {sample}")
+
+
+def _render_markdown(summary: dict[str, Any], deltas: list[MetricDelta]) -> str:
+    """Render the diff as a Github-flavoured markdown report.
+
+    The output is intentionally compact — a single H2, a totals line, a
+    metric table and (optionally) a strict-rids divergence table.
+    """
+
+    a_name = summary["run_a"]["name"]
+    b_name = summary["run_b"]["name"]
+    totals = summary["totals"]
+    biz = summary.get("business_keys")
+
+    overall = "✅ PASS"
+    if totals["fail"] > 0:
+        overall = "❌ FAIL"
+    elif biz and (biz["only_a_total_count"] > 0 or biz["only_b_total_count"] > 0):
+        overall = "❌ FAIL (strict-rids)"
+    elif totals["warn"] > 0:
+        overall = "⚠️ WARN"
+
+    lines: list[str] = []
+    lines.append(f"## Dual-run diff — {a_name} vs {b_name}")
+    lines.append("")
+    lines.append(f"- generated_at: `{summary['generated_at']}`")
+    lines.append(f"- run_a state_root: `{summary['run_a']['state_root']}`")
+    lines.append(f"- run_b state_root: `{summary['run_b']['state_root']}`")
+    lines.append(
+        f"- totals: **{overall}** · ok={totals['ok']} · warn={totals['warn']} · fail={totals['fail']}"
+    )
+    lines.append("")
+
+    lines.append("### Metric deltas")
+    lines.append("")
+    lines.append("| metric | a | b | delta | rel | severity | status |")
+    lines.append("|---|---:|---:|---:|---:|---|---|")
+    for d in deltas:
+        icon = {"ok": "✅", "warn": "⚠️", "fail": "❌"}.get(d.status, "❓")
+        lines.append(
+            f"| `{d.metric}` | {d.a:.2f} | {d.b:.2f} | {d.delta:+.2f} | "
+            f"{d.rel_delta:.1%} | {d.severity} | {icon} {d.status} |"
+        )
+    lines.append("")
+
+    if summary.get("blocked_by_gate"):
+        lines.append("### Blocked by gate")
+        lines.append("")
+        lines.append("| gate | a | b | delta |")
+        lines.append("|---|---:|---:|---:|")
+        for gate, info in summary["blocked_by_gate"].items():
+            lines.append(
+                f"| `{gate}` | {info['a']} | {info['b']} | {info['delta']:+d} |"
+            )
+        lines.append("")
+
+    rid = summary["request_ids"]
+    lines.append("### Request IDs (uuid-level)")
+    lines.append("")
+    lines.append(
+        f"- common: **{rid['common_count']}** · only_a: {rid['only_a_count']} · only_b: {rid['only_b_count']}"
+    )
+    lines.append("")
+    lines.append(
+        "> Note: a non-zero only_a/only_b at the uuid level is **expected** "
+        "because each process generates its own request_id. Use `--strict-rids` "
+        "to compare by business 5-tuple instead."
+    )
+    lines.append("")
+
+    if biz:
+        lines.append("### Business keys (strict-rids 5-tuple)")
+        lines.append("")
+        lines.append(
+            f"- common (unique/total): **{biz['common_unique_count']} / {biz['common_total_count']}**"
+        )
+        lines.append(
+            f"- only_a (unique/total): **{biz['only_a_unique_count']} / {biz['only_a_total_count']}**"
+        )
+        lines.append(
+            f"- only_b (unique/total): **{biz['only_b_unique_count']} / {biz['only_b_total_count']}**"
+        )
+        if biz["only_a_sample"] or biz["only_b_sample"]:
+            lines.append("")
+            lines.append("| run | strategy_id | market | symbol | side | qty | price | n |")
+            lines.append("|---|---|---|---|---|---:|---:|---:|")
+            for s in biz["only_a_sample"]:
+                lines.append(
+                    f"| only_a | `{s['strategy_id']}` | {s['market']} | {s['symbol']} | "
+                    f"{s['side']} | {s['qty']} | {s['price_bucket']} | {s['count']} |"
+                )
+            for s in biz["only_b_sample"]:
+                lines.append(
+                    f"| only_b | `{s['strategy_id']}` | {s['market']} | {s['symbol']} | "
+                    f"{s['side']} | {s['qty']} | {s['price_bucket']} | {s['count']} |"
+                )
+        lines.append("")
+
+    return "\n".join(lines).rstrip() + "\n"
+
 
 
 if __name__ == "__main__":

@@ -67,9 +67,43 @@ from .storage import OrderStateStore
 # overwrite a ``filled`` state).
 _TERMINAL_OR_FILLED = {"filled", "cancelled", "rejected", "expired", "failed", "reconciled"}
 
+# Broker status text fragments that unambiguously indicate a terminal-negative
+# outcome. The default :func:`OrderStateMachine._map_broker_status` ordering
+# treats ``filled_qty > 0`` as ``partial_filled`` even when the broker actually
+# tells us the order was cancelled with a partial fill in flight (a common
+# scenario on Futu when the user/strategy issues cancel_order while a partial
+# trade is already in the pipeline). To avoid losing that signal we pre-route
+# such pushes to ``cancelled`` / ``rejected`` here.
+_CANCEL_HINTS = ("CANCEL", "CXL", "已撤", "撤单", "撤销")
+_REJECT_HINTS = ("REJECT", "FAILED", "FAIL", "已拒", "拒单")
+_EXPIRE_HINTS = ("EXPIRE", "已失效", "超时")
+
 
 def _utc_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _classify_broker_status(text: str) -> str | None:
+    """Return ``"cancelled"`` / ``"rejected"`` / ``"expired"`` for unambiguous
+    terminal-negative pushes; otherwise ``None``.
+
+    The check is intentionally case-insensitive and tolerant of mixed
+    Chinese/English broker labels (Futu emits both depending on locale).
+    """
+
+    if not text:
+        return None
+    upper = text.upper()
+    for hint in _CANCEL_HINTS:
+        if hint in upper or hint in text:
+            return "cancelled"
+    for hint in _REJECT_HINTS:
+        if hint in upper or hint in text:
+            return "rejected"
+    for hint in _EXPIRE_HINTS:
+        if hint in upper or hint in text:
+            return "expired"
+    return None
 
 
 def _coerce_status_str(value: Any) -> str:
@@ -149,6 +183,9 @@ class OmsEventRecorder:
             "invalid_transitions": 0,
             "applied_orders": 0,
             "applied_trades": 0,
+            "forced_cancelled": 0,
+            "forced_rejected": 0,
+            "forced_expired": 0,
         }
 
         self._main_engine = None  # type: ignore[assignment]
@@ -333,6 +370,8 @@ class OmsEventRecorder:
     def _apply_order_payload(
         self, vt_orderid: str, request_id: str, payload: dict[str, Any]
     ) -> None:
+        from dataclasses import replace as _replace
+
         with self._lock:
             state = self.store.load(request_id)
             if state is None:
@@ -342,17 +381,22 @@ class OmsEventRecorder:
                 self.stats["invalid_transitions"] += 1
                 return
 
+            # Detect terminal-negative pushes BEFORE the bridge below: a
+            # rejection right after ``approved`` must NOT first walk
+            # through ``submitted`` (the broker is telling us the order
+            # was never accepted in the first place).
+            terminal_neg = _classify_broker_status(payload["status_text"])
+
             # Bridge approved -> submitted so subsequent broker statuses
             # have a legal predecessor (the pre-trade pipeline stops at
-            # ``approved``; the state machine forbids approved -> filled
-            # directly). Always stamp broker_order_id when we first see it.
+            # ``approved``; the state machine forbids approved -> filled,
+            # approved -> cancelled and approved -> rejected directly).
+            # Always stamp broker_order_id when we first see it.
             if state.status == "approved":
                 try:
                     state = self._machine.transition(
                         state, "submitted", note=f"oms_recorder:bridge:{vt_orderid}"
                     )
-                    from dataclasses import replace as _replace
-
                     state = _replace(state, broker_order_id=vt_orderid)
                     self.store.save(state)
                 except InvalidOrderTransition:
@@ -366,22 +410,66 @@ class OmsEventRecorder:
                 self._record_snapshot(state, "order_status_late_push", payload)
                 return
 
+            # Pre-route terminal-negative pushes that the default mapper
+            # would otherwise classify as ``partial_filled`` (because
+            # filled_qty > 0). The state machine allows submitted /
+            # partial_filled / cancel_requested -> cancelled, so the
+            # forced transition is legal once we are past ``approved``.
+            forced_status: str | None = None
+            if terminal_neg in {"cancelled", "rejected", "expired"}:
+                # filled_qty must NEVER regress: keep whichever is higher
+                # between the broker's reported traded and our persisted
+                # state.filled_qty (idempotent re-delivery protection).
+                effective_filled = max(int(state.filled_qty), int(payload["traded"]))
+                forced_status = terminal_neg
+            else:
+                effective_filled = int(payload["traded"])
+
             try:
-                next_state = self._machine.apply_broker_order(
-                    state,
-                    broker_order_id=vt_orderid,
-                    broker_status=payload["status_text"],
-                    filled_qty=int(payload["traded"]),
-                    avg_fill_price=payload.get("price"),
-                    snapshot={
-                        "source": "EVENT_ORDER",
-                        "ts": _utc_iso(),
-                        "vt_orderid": vt_orderid,
-                        "status": payload["status_text"],
-                        "traded": payload["traded"],
-                        "volume": payload["volume"],
-                    },
-                )
+                if forced_status is not None:
+                    next_state = self._machine.transition(
+                        state,
+                        forced_status,  # type: ignore[arg-type]
+                        note=f"oms_recorder:forced:{payload['status_text']}",
+                        snapshot={
+                            "source": "EVENT_ORDER",
+                            "ts": _utc_iso(),
+                            "vt_orderid": vt_orderid,
+                            "status": payload["status_text"],
+                            "traded": payload["traded"],
+                            "volume": payload["volume"],
+                            "forced": forced_status,
+                        },
+                    )
+                    next_state = _replace(
+                        next_state,
+                        broker_order_id=vt_orderid,
+                        filled_qty=max(next_state.filled_qty, effective_filled),
+                        avg_fill_price=(
+                            payload.get("price")
+                            if payload.get("price") is not None
+                            else next_state.avg_fill_price
+                        ),
+                    )
+                    self.stats[f"forced_{forced_status}"] = (
+                        self.stats.get(f"forced_{forced_status}", 0) + 1
+                    )
+                else:
+                    next_state = self._machine.apply_broker_order(
+                        state,
+                        broker_order_id=vt_orderid,
+                        broker_status=payload["status_text"],
+                        filled_qty=effective_filled,
+                        avg_fill_price=payload.get("price"),
+                        snapshot={
+                            "source": "EVENT_ORDER",
+                            "ts": _utc_iso(),
+                            "vt_orderid": vt_orderid,
+                            "status": payload["status_text"],
+                            "traded": payload["traded"],
+                            "volume": payload["volume"],
+                        },
+                    )
             except InvalidOrderTransition:
                 # Out-of-order push: log as snapshot but don't mutate status.
                 self.stats["invalid_transitions"] += 1
@@ -398,7 +486,8 @@ class OmsEventRecorder:
                 "request_id": request_id,
                 "vt_orderid": vt_orderid,
                 "status": payload["status_text"],
-                "filled_qty": int(payload["traded"]),
+                "resolved_status": next_state.status,
+                "filled_qty": int(next_state.filled_qty),
                 "qty": int(payload["volume"]),
             }
         )

@@ -299,6 +299,150 @@ class OmsEventRecorderTests(unittest.TestCase):
             f"unexpected events: {events}",
         )
 
+    # ---- Scenario 4: cancel / reject paths -------------------------------
+    def test_approved_then_rejected_directly(self) -> None:
+        """Broker rejects an order immediately after submission. The
+        recorder must move the OrderState to ``rejected`` even though
+        the project-side pipeline only reached ``approved`` (no bridge
+        through ``submitted`` is required because approved->rejected is
+        a legal direct edge)."""
+        request_id = "req_rej_001"
+        _approved_state(self.store, request_id, qty=100)
+        recorder = self._make_recorder()
+        recorder.register_request("FUTU.RJ1", request_id)
+
+        self.fake_engine.fire(
+            "eOrder.",
+            FakeOrderPush("FUTU.RJ1", "RJ1", "REJECTED", volume=100, traded=0),
+        )
+        state = self.store.load(request_id)
+        assert state is not None
+        self.assertEqual(state.status, "rejected")
+        self.assertEqual(state.filled_qty, 0)
+        self.assertEqual(recorder.stats["forced_rejected"], 1)
+
+    def test_partial_fill_then_cancel_routes_to_cancelled(self) -> None:
+        """User cancels a working order after a partial fill. Even though
+        ``traded > 0`` would normally route to ``partial_filled``, the
+        recorder must honour the cancel signal and end up in ``cancelled``
+        with ``filled_qty`` preserved at the partial amount."""
+        request_id = "req_cxl_001"
+        _approved_state(self.store, request_id, qty=100)
+        recorder = self._make_recorder()
+        recorder.register_request("FUTU.CXL1", request_id)
+
+        # Step 1: a partial trade fills 30 of 100.
+        self.fake_engine.fire(
+            "eTrade.",
+            FakeTradePush("FUTU.CXL1", "FUTU.CXL1.T1", "T1", volume=30, price=200.0),
+        )
+        state = self.store.load(request_id)
+        assert state is not None
+        self.assertEqual(state.status, "partial_filled")
+        self.assertEqual(state.filled_qty, 30)
+
+        # Step 2: broker reports cancellation with traded=30.
+        self.fake_engine.fire(
+            "eOrder.",
+            FakeOrderPush("FUTU.CXL1", "CXL1", "CANCELLED", volume=100, traded=30),
+        )
+        state = self.store.load(request_id)
+        assert state is not None
+        self.assertEqual(state.status, "cancelled")
+        # filled_qty must NOT regress.
+        self.assertEqual(state.filled_qty, 30)
+        self.assertEqual(recorder.stats["forced_cancelled"], 1)
+
+    def test_chinese_cancel_label_is_classified(self) -> None:
+        """Futu emits ``"已撤单"`` / ``"撤单"`` in Chinese locales. The
+        recorder must classify these as cancelled even though the default
+        state machine matcher is case-insensitive English-only."""
+        request_id = "req_cxl_zh"
+        _approved_state(self.store, request_id, qty=50)
+        recorder = self._make_recorder()
+        recorder.register_request("FUTU.ZH1", request_id)
+
+        self.fake_engine.fire(
+            "eOrder.",
+            FakeOrderPush("FUTU.ZH1", "ZH1", "已撤单", volume=50, traded=0),
+        )
+        state = self.store.load(request_id)
+        assert state is not None
+        self.assertEqual(state.status, "cancelled")
+        self.assertEqual(recorder.stats["forced_cancelled"], 1)
+
+    def test_approved_then_cancelled_bridges_through_submitted(self) -> None:
+        """``approved -> cancelled`` is NOT a legal direct edge in
+        ALLOWED_TRANSITIONS. The recorder must bridge through ``submitted``
+        first and then transition to ``cancelled`` so the audit trail is
+        legal."""
+        request_id = "req_cxl_pre"
+        _approved_state(self.store, request_id, qty=20)
+        recorder = self._make_recorder()
+        recorder.register_request("FUTU.CXL2", request_id)
+
+        self.fake_engine.fire(
+            "eOrder.",
+            FakeOrderPush("FUTU.CXL2", "CXL2", "CANCELLED", volume=20, traded=0),
+        )
+        state = self.store.load(request_id)
+        assert state is not None
+        self.assertEqual(state.status, "cancelled")
+        # The bridge note should be recorded in notes.
+        bridge_notes = [n for n in state.notes if "bridge" in n]
+        self.assertTrue(bridge_notes, f"expected bridge note, got notes={state.notes}")
+
+    def test_late_cancel_after_filled_is_recorded_as_snapshot_only(self) -> None:
+        """A stray CANCELLED push arriving after the order is fully filled
+        must NOT regress the OrderState. It is recorded as a late_events
+        snapshot for audit only."""
+        request_id = "req_late_cxl"
+        _approved_state(self.store, request_id, qty=10)
+        recorder = self._make_recorder()
+        recorder.register_request("FUTU.LC1", request_id)
+
+        self.fake_engine.fire(
+            "eTrade.",
+            FakeTradePush("FUTU.LC1", "FUTU.LC1.T1", "T1", volume=10, price=50.0),
+        )
+        self.assertEqual(self.store.load(request_id).status, "filled")  # type: ignore[union-attr]
+
+        # Stray cancel push (e.g. broker replay).
+        self.fake_engine.fire(
+            "eOrder.",
+            FakeOrderPush("FUTU.LC1", "LC1", "CANCELLED", volume=10, traded=10),
+        )
+        state = self.store.load(request_id)
+        assert state is not None
+        self.assertEqual(state.status, "filled")
+        self.assertEqual(state.filled_qty, 10)
+        # Snapshot is recorded.
+        late = state.snapshots.get("late_events", [])
+        self.assertTrue(
+            any(e.get("label") == "order_status_late_push" for e in late),
+            f"expected late_push snapshot, got {late}",
+        )
+
+    def test_duplicate_cancel_pushes_are_deduped(self) -> None:
+        """Same vt_orderid + same broker status text + same traded must
+        be deduped, preventing the stats counter from double-counting a
+        replayed cancellation."""
+        request_id = "req_cxl_dup"
+        _approved_state(self.store, request_id, qty=80)
+        recorder = self._make_recorder()
+        recorder.register_request("FUTU.DUP1", request_id)
+
+        push = FakeOrderPush("FUTU.DUP1", "DUP1", "CANCELLED", volume=80, traded=0)
+        self.fake_engine.fire("eOrder.", push)
+        self.fake_engine.fire("eOrder.", push)
+        self.fake_engine.fire("eOrder.", push)
+
+        self.assertEqual(self.store.load(request_id).status, "cancelled")  # type: ignore[union-attr]
+        # Forced counter must only increment once because dedup happens
+        # before _apply_order_payload is reached.
+        self.assertEqual(recorder.stats["forced_cancelled"], 1)
+        self.assertEqual(recorder.stats["order_dedup_skips"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()
