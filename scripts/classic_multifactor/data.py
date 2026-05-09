@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,12 @@ from vnpy.trader.database import get_database
 from vnpy.trader.object import BarData
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+# Futu request_history_kline single-call cap; 1m intervals on long ranges
+# easily exceed this and require pagination via ``page_req_key``.
+_FUTU_PAGE_MAX = 1000
+# Soft sleep between paginated calls to avoid Futu QPS limit (low-cost req).
+_FUTU_PAGE_SLEEP = 0.4
 
 
 def parse_us_symbol(symbol: str) -> tuple[str, str, str]:
@@ -103,11 +110,40 @@ class VnpyBarRepository:
         vnpy_interval = self.to_vnpy_interval(interval)
         bars = self.db.load_bar_data(code, exchange, vnpy_interval, start, end)
         bars.sort(key=lambda bar: bar.datetime)
-        if bars or not self.fetch_futu_history:
+
+        # No need / not allowed to fetch from Futu: return whatever DB has.
+        if not self.fetch_futu_history:
             return vt_symbol, futu_code, bars
-        bars = self.fetch_futu_bars(vt_symbol, futu_code, start, end, interval)
-        if bars:
-            self.db.save_bar_data(bars, stream=False)
+
+        # Compute coverage gaps so partial DB hits still trigger Futu fetch.
+        # We only refill the [start, db_min) and (db_max, end] segments.
+        gaps: list[tuple[datetime, datetime]] = []
+        if not bars:
+            gaps.append((start, end))
+        else:
+            # vnpy DB returns tz-aware datetimes; CLI dates are tz-naive.
+            # Compare on date-only to avoid tz arithmetic mismatch.
+            db_min_d = bars[0].datetime.date()
+            db_max_d = bars[-1].datetime.date()
+            start_d = start.date()
+            end_d = end.date()
+            if (db_min_d - start_d).days >= 1:
+                gaps.append((start, datetime.combine(db_min_d - timedelta(days=1), datetime.min.time())))
+            if (end_d - db_max_d).days >= 1:
+                gaps.append((datetime.combine(db_max_d + timedelta(days=1), datetime.min.time()), end))
+
+        fetched: list[BarData] = []
+        for g_start, g_end in gaps:
+            chunk = self.fetch_futu_bars(vt_symbol, futu_code, g_start, g_end, interval)
+            if chunk:
+                fetched.extend(chunk)
+
+        if fetched:
+            self.db.save_bar_data(fetched, stream=False)
+            # Reload from DB after persisting to get a clean, deduped, sorted view.
+            bars = self.db.load_bar_data(code, exchange, vnpy_interval, start, end)
+            bars.sort(key=lambda bar: bar.datetime)
+
         return vt_symbol, futu_code, bars
 
     def to_vnpy_interval(self, interval: str) -> Interval:
@@ -127,7 +163,13 @@ class VnpyBarRepository:
         raise ValueError(f"unsupported futu interval: {interval}; supported: 1d, 1m")
 
     def fetch_futu_bars(self, vt_symbol: str, futu_code: str, start: datetime, end: datetime, interval: str = "1d") -> list[BarData]:
+        """Fetch bars from Futu OpenD with pagination.
 
+        Futu's ``request_history_kline`` caps each call at ~1000 rows (see
+        ``_FUTU_PAGE_MAX``). For 1m intervals over a multi-day range the
+        result is truncated unless we follow ``page_req_key`` until it
+        becomes ``None``. Returns the merged, time-sorted list of bars.
+        """
         try:
             import futu  # type: ignore
         except Exception:
@@ -135,37 +177,43 @@ class VnpyBarRepository:
         code, exchange_name = vt_symbol.split(".", 1)
         config = OpenDConfig()
         ctx = futu.OpenQuoteContext(host=config.host, port=config.port)
+        ktype = self.to_futu_ktype(futu, interval)
+        vnpy_interval = self.to_vnpy_interval(interval)
+        bars: list[BarData] = []
         try:
-            ret, data, _ = ctx.request_history_kline(
-                futu_code,
-                start=start.strftime("%Y-%m-%d"),
-                end=end.strftime("%Y-%m-%d"),
-                ktype=self.to_futu_ktype(futu, interval),
-                max_count=1000,
-
-            )
-            if ret != futu.RET_OK:
-                return []
-            rows = data.to_dict("records") if hasattr(data, "to_dict") else []
-            bars: list[BarData] = []
-            for row in rows:
-                bars.append(
-                    BarData(
-                        symbol=code,
-                        exchange=Exchange(exchange_name),
-                        datetime=datetime.fromisoformat(str(row["time_key"])),
-                        interval=self.to_vnpy_interval(interval),
-
-                        volume=safe_float(row.get("volume")),
-                        turnover=safe_float(row.get("turnover")),
-                        open_interest=0,
-                        open_price=safe_float(row.get("open")),
-                        high_price=safe_float(row.get("high")),
-                        low_price=safe_float(row.get("low")),
-                        close_price=safe_float(row.get("close")),
-                        gateway_name="FUTU",
-                    )
+            page_req_key: Any = None
+            while True:
+                ret, data, page_req_key = ctx.request_history_kline(
+                    futu_code,
+                    start=start.strftime("%Y-%m-%d"),
+                    end=end.strftime("%Y-%m-%d"),
+                    ktype=ktype,
+                    max_count=_FUTU_PAGE_MAX,
+                    page_req_key=page_req_key,
                 )
+                if ret != futu.RET_OK:
+                    break
+                rows = data.to_dict("records") if hasattr(data, "to_dict") else []
+                for row in rows:
+                    bars.append(
+                        BarData(
+                            symbol=code,
+                            exchange=Exchange(exchange_name),
+                            datetime=datetime.fromisoformat(str(row["time_key"])),
+                            interval=vnpy_interval,
+                            volume=safe_float(row.get("volume")),
+                            turnover=safe_float(row.get("turnover")),
+                            open_interest=0,
+                            open_price=safe_float(row.get("open")),
+                            high_price=safe_float(row.get("high")),
+                            low_price=safe_float(row.get("low")),
+                            close_price=safe_float(row.get("close")),
+                            gateway_name="FUTU",
+                        )
+                    )
+                if not page_req_key:
+                    break
+                time.sleep(_FUTU_PAGE_SLEEP)
             bars.sort(key=lambda bar: bar.datetime)
             return bars
         finally:
