@@ -858,6 +858,75 @@ python3 scripts/diff_dual_run.py \
 uuid 部分会让两次重启的 request_id 不同；故双跑场景下该指标只看**数量**对齐，不看
 集合相等。`only_a` / `only_b` 计数差≤2 视为正常）。
 
+### 18.4a `--strict-rids` 业务键严格对账（推荐）
+
+由于 `request_id` 内嵌 uuid，A/B 之间的原始 `request_id` 字符串集合**永远**不会
+相等。`--strict-rids` 模式按业务 5-tuple 重做对账，绕过 uuid 噪声：
+
+```
+python3 scripts/diff_dual_run.py \
+    --run-a /data/dual_run/legacy/state/runs \
+    --run-b /data/dual_run/vnpy_native/state/runs \
+    --report-filename-a classic_multifactor_NVDA_US_live_report.json \
+    --report-filename-b classic_multifactor_intraday_report.json \
+    --strict-rids \
+    --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
+```
+
+业务等价键：`(strategy_id, market, symbol, side, qty, price_bucket)`，其中
+`price_bucket` 是 `f"{price:.2f}"`（2 位小数桶）。基于 `Counter` 的多重集对比，
+能识别"A 提交了同一意图 2 次而 B 只有 1 次"这类纯 uuid 模式无法识别的发散。
+
+**`--strict-rids` 出现 `only_a > 0` 或 `only_b > 0` 即视为 hard fail（exit 1）**，
+比默认的 uuid 集合对账更严格。
+
+### 18.4b `--markdown` 输出（PR/日志友好）
+
+```
+python3 scripts/diff_dual_run.py \
+    --run-a /data/dual_run/legacy/state/runs \
+    --run-b /data/dual_run/vnpy_native/state/runs \
+    --report-filename-a classic_multifactor_NVDA_US_live_report.json \
+    --report-filename-b classic_multifactor_intraday_report.json \
+    --strict-rids \
+    --markdown state/runs/reports/dual_run_diff_$(date +%Y%m%d).md \
+    --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
+```
+
+输出文件含 4 张表：metric deltas、blocked_by_gate、request_ids、business_keys。
+建议每日把生成的 `.md` 文件直接贴进双跑日志或 PR 评论，方便复核。
+
+### 18.4c OmsEventRecorder 的 cancel / reject 路径与 stats 字段
+
+`services/trade_state/oms_recorder.py` 在 SIM 双跑期间的关键观测项（保存在
+`OmsEventRecorder.stats` dict 里，可被守护脚本或后续 diff 工具读取）：
+
+| stats 字段 | 含义 | 异常阈值（建议） |
+| --- | --- | --- |
+| `order_events` / `trade_events` | 累计接收的 EVENT_ORDER / EVENT_TRADE 数量 | 应与 broker 回报数量基本一致 |
+| `applied_orders` / `applied_trades` | 真正落到 OrderStateStore 的事件数量 | 与上一项差应仅由 dedup / orphan 解释 |
+| `order_dedup_skips` / `trade_dedup_skips` | 重复推送被去重的次数 | 大量增长说明 OpenD 重连频繁，应排查网络 |
+| `orphan_orders` / `orphan_trades` | EVENT 早于 `register_request` 到达，缓存待回放 | 单日 > 5 视为异常，需检查下单/绑定时序 |
+| `forced_cancelled` | 因 `traded > 0 + status=CANCELLED` 强制路由到 `cancelled`（避免被误判为 `partial_filled`） | 该计数 > 0 说明确实发生了部分撤单 |
+| `forced_rejected` | broker 直接拒单（包括 `approved → rejected` bridge 路径） | 出现一次必须人工核查 risk_engine 是否前置漏挡 |
+| `forced_expired` | 订单过期（broker 端超时） | 限价单常见，市价单出现需排查参数 |
+| `invalid_transitions` | 触发 `InvalidOrderTransition` 后被吞的事件数 | **必须为 0**；非 0 说明状态机/事件路径有 bug，立即暂停双跑 |
+
+OmsEventRecorder 处理的关键边缘场景（已有单测覆盖）：
+
+1. **EVENT_TRADE 早于 EVENT_ORDER**：通过 `_orphan_trades` 缓存，`register_request`
+   触发时回放。
+2. **`approved → cancelled` / `approved → rejected`**：状态机不允许直接跳转，
+   recorder 内部会先 bridge 到 `submitted` 再转终态，notes 中可见
+   `oms_recorder:bridge:<vt_orderid>` 痕迹。
+3. **partial_filled 后被撤单**：传统 `_map_broker_status` 因 `filled_qty>0`
+   会误判为 `partial_filled`，recorder 通过 `_classify_broker_status` 提前识别
+   中英文 cancel 关键字（`CANCEL`/`CXL`/`已撤`/`撤单`/`撤销`）并强制路由。
+4. **撤单回报里 `traded < state.filled_qty`**：用 `max(state.filled_qty,
+   payload.traded)` 防止 `filled_qty` 倒退。
+5. **重启恢复**：`_rebuild_index_from_disk` 从所有 `OrderState.broker_order_id`
+   字段重建 `vt_orderid → request_id` 映射，让重启后的 recorder 立刻可用。
+
 ### 18.5 通过条件（5 日累计）
 
 - 任意一日 hard 指标出现 `fail` → 整个双跑视为失败，必须回到代码层定位差异。
@@ -885,4 +954,46 @@ uuid 部分会让两次重启的 request_id 不同；故双跑场景下该指标
   清理都需用户事前确认。本 runbook 提供命令模板但不替代确认动作。
 - **规则 3**：双跑期间不允许 `services/trading_pipeline/live_task.py` 删除（Task 8）；
   待双跑通过 + 冷启动反向验证 OK 后才进入二轮清理。
+
+### 18.8 Task 8 清理清单入口
+
+双跑通过后再执行的二轮清理（删除 `live_task.py`、清理 `services/futu_account/`
+轮询 dead code、回收 S0 1.4 推迟的 services/ 子包等）已盘点在：
+
+```
+.codebuddy/plan/vnpy_wheel_reinvent_audit/task8_cleanup_checklist.md
+```
+
+清单是**只读盘点**，未删任何文件。包含：执行前置条件（5 日双跑通过 + 用户
+确认 + 工作树干净 + 回滚 tag）、6 个推荐执行批次（T8-B1 ~ T8-B6）、依赖簇
+风险登记。每个批次需用户单独确认才能执行（项目规则 2）。
+
+### 18.9 双跑前置自查工具
+
+`scripts/dual_run_preflight.py` 把双跑启动前的人工 checklist 自动化（**纯只读，
+不连 OpenD、不下单、不写状态**）。建议每日开盘前执行一次，作为启动 SIM 会话
+前的最后一道闸门：
+
+```
+python3 scripts/dual_run_preflight.py \
+    --run-a /data/dual_run/legacy \
+    --run-b /data/dual_run/vnpy_native \
+    --expected-tag-a classic-pre-vnpy-rewrite-v1 \
+    --expected-branch-b classic-vnpy-native-rewrite \
+    --config configs/classic_multifactor/nvda_g09.json
+```
+
+检查项（任一失败即 exit 1）：
+
+- 两个工作树存在且都是 git 仓库；
+- 旧分支 HEAD 是 `classic-pre-vnpy-rewrite-v1` tag（不是 detached / dirty）；
+- 新分支当前分支名为 `classic-vnpy-native-rewrite`；
+- 两边工作树 `git status --porcelain` 为空；
+- 两边使用相同 `--config` 文件（SHA256 一致），避免参数漂移；
+- 两边 `state/runs/orders/` 不存在残留挂单（status ∈ open_status 且 broker_order_id 非空）；
+- Python 版本一致（`major.minor`）；
+- 磁盘剩余空间 ≥ 1 GB（双跑当日 events.jsonl 与订单 JSON 写入空间）。
+
+报告同时输出到 stdout（带 ✅/❌ 标记）和 `state/runs/reports/preflight_$(date +%Y%m%d).json`，
+方便审计。
 
