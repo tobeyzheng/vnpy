@@ -1,0 +1,56 @@
+{
+  "python_runtime": "3.11.6",
+  "opend_reachable": true,
+  "opend_message": "connected",
+  "sdk_available": true,
+  "sdk_message": "ok",
+  "readonly_account_status": "connected",
+  "readonly_account_message": "ok; picked_by=trd_env; acc_id=3119706; env=SIMULATE; acc_type=CASH; auth=['HK']; uni_last4=N/A",
+  "readonly_account_env": "SIMULATE",
+  "readonly_position_count": 1,
+  "readonly_order_count": 0,
+  "reconciliation": {
+    "allowed": true,
+    "reasons": [
+      "reconciliation file missing"
+    ],
+    "blocking_level": "warn",
+    "diff_symbols": []
+  },
+  "sim_reconciliation": {
+    "allowed": true,
+    "reasons": [
+      "reconciliation file stale",
+      "qty mismatch: 01810.HK",
+      "qty mismatch: 09868.HK",
+      "qty mismatch: 09988.HK"
+    ],
+    "blocking_level": "warn",
+    "diff_symbols": [
+      "01810.HK",
+      "09868.HK",
+      "09988.HK"
+    ]
+  },
+  "live_reconciliation": {
+    "allowed": true,
+    "reasons": [
+      "reconciliation file missing"
+    ],
+    "blocking_level": "warn",
+    "diff_symbols": []
+  },
+  "order_state_total_count": 15,
+  "order_state_open_count": 10,
+  "order_state_failed_count": 1,
+  "paper_submit_enabled": true,
+  "sim_submit_enabled": false,
+  "live_submit_enabled": false,
+  "alerts": [
+    {
+      "level": "medium",
+      "message": "failed order states exist"
+    }
+  ],
+  "status": "ok"
+}

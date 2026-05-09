@@ -15,14 +15,6 @@ HOST = '11.166.102.120'
 PORT = 8765
 
 TASKS: dict[str, dict[str, Any]] = {
-    'hk_sim_task': {
-        'name': '港股盘中任务',
-        'cmd': ['bash', '-lc', 'cd /root/.openclaw/workspace/projects/vnpy && PYTHONPATH=. /usr/bin/python3 scripts/run_hk_sim_task.py'],
-    },
-    'hk_sim_close': {
-        'name': '港股收盘任务',
-        'cmd': ['bash', '-lc', 'cd /root/.openclaw/workspace/projects/vnpy && PYTHONPATH=. /usr/bin/python3 scripts/run_hk_sim_close.py'],
-    },
     'us_sim_task': {
         'name': '美股盘中任务',
         'cmd': ['bash', '-lc', 'cd /root/.openclaw/workspace/projects/vnpy && PYTHONPATH=. /usr/bin/python3 scripts/run_us_sim_task.py'],
@@ -30,14 +22,6 @@ TASKS: dict[str, dict[str, Any]] = {
     'us_sim_close': {
         'name': '美股收盘任务',
         'cmd': ['bash', '-lc', 'cd /root/.openclaw/workspace/projects/vnpy && PYTHONPATH=. /usr/bin/python3 scripts/run_us_sim_close.py'],
-    },
-    'knot_intraday': {
-        'name': 'Knot 盘中决策',
-        'cmd': ['bash', '-lc', 'cd /root/.openclaw/workspace/projects/vnpy && PYTHONPATH=. /usr/bin/python3 scripts/run_intraday_knot_decision.py'],
-    },
-    'knot_refresh_hk': {
-        'name': 'Knot 港股刷新',
-        'cmd': ['bash', '-lc', 'cd /root/.openclaw/workspace/projects/vnpy && PYTHONPATH=. /usr/bin/python3 scripts/run_knot_agent_hk_refresh.py'],
     },
 }
 
