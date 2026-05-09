@@ -316,4 +316,134 @@ __all__ = [
     "setting_from_args",
     "setting_from_json",
     "setting_to_model_and_guard",
+    "INTRADAY_ONLY_FIELDS",
+    "DAILY_ONLY_FIELDS",
+    "LoopModeValidationError",
+    "validate_loop_mode",
+    "resolve_loop_mode",
 ]
+
+
+# ---------------------------------------------------------------------------
+# loop_mode routing (intraday / daily)
+# ---------------------------------------------------------------------------
+
+# Intraday-only knobs. When a config is tagged ``loop_mode=daily`` any of
+# these present with a *non-default / non-empty* value triggers a schema
+# rejection to keep the two runners from sharing semantics.
+INTRADAY_ONLY_FIELDS: frozenset[str] = frozenset({
+    "max_intraday_trades",
+    "entry_cooldown_minutes",
+    "min_hold_minutes",
+    "no_new_entry_after",
+    "signal_interval_minutes",
+})
+
+# Daily-only knobs. These are not part of ``ClassicMultiFactorConfig`` and
+# are read purely by ``scripts/classic_multifactor/run_daily_rebalance.py``.
+# Presence on an ``intraday`` config is a schema error.
+DAILY_ONLY_FIELDS: frozenset[str] = frozenset({
+    "rebalance_time",
+    "max_daily_turnover",
+    "target_positions",
+    "daily_new_pct_limit",
+})
+
+
+class LoopModeValidationError(ValueError):
+    """Raised when a config mixes intraday/daily-only fields or mismatches the runner."""
+
+
+def resolve_loop_mode(payload: Mapping[str, Any] | None) -> str:
+    """Return the canonical loop_mode from a full config payload.
+
+    Accepts either the top-level JSON object (``{"loop_mode": "...",
+    "setting": {...}}``) or a flat setting dict. Defaults to ``"intraday"``
+    when absent — preserves backwards compatibility with legacy NVDA_G09
+    configs which predate the field.
+    """
+    if not payload:
+        return "intraday"
+    data = dict(payload)
+    value = data.get("loop_mode")
+    if value is None and isinstance(data.get("setting"), Mapping):
+        value = data["setting"].get("loop_mode")
+    if not value:
+        return "intraday"
+    text = str(value).strip().lower()
+    if text not in ("intraday", "daily"):
+        raise LoopModeValidationError(
+            f"loop_mode must be 'intraday' or 'daily', got {value!r}"
+        )
+    return text
+
+
+def _field_is_set(setting: Mapping[str, Any], key: str) -> bool:
+    if key not in setting:
+        return False
+    value = setting[key]
+    if value is None:
+        return False
+    if isinstance(value, (int, float)) and value == 0:
+        return False
+    if isinstance(value, str) and value.strip() == "":
+        return False
+    if isinstance(value, (list, dict)) and len(value) == 0:
+        return False
+    return True
+
+
+def validate_loop_mode(
+    payload: Mapping[str, Any],
+    expected_mode: str,
+    *,
+    config_path: str | Path | None = None,
+) -> str:
+    """Validate ``payload`` against ``expected_mode`` ('intraday' | 'daily').
+
+    Raises :class:`LoopModeValidationError` when:
+
+    * ``loop_mode`` is present but does not match ``expected_mode``;
+    * the payload carries non-empty fields belonging to the *opposite* mode.
+
+    Returns the resolved ``loop_mode`` string on success.
+    """
+    if expected_mode not in ("intraday", "daily"):
+        raise LoopModeValidationError(
+            f"expected_mode must be 'intraday' or 'daily', got {expected_mode!r}"
+        )
+
+    resolved = resolve_loop_mode(payload)
+    if resolved != expected_mode:
+        raise LoopModeValidationError(
+            f"loop_mode mismatch: runner expects {expected_mode!r} but config "
+            f"declares {resolved!r} ({config_path or '<inline>'})"
+        )
+
+    # Flatten the setting for field-presence check.
+    data = dict(payload)
+    if isinstance(data.get("setting"), Mapping):
+        flat: dict[str, Any] = dict(data["setting"])
+    else:
+        flat = dict(data)
+    # Also consider top-level daily fields (they're allowed at top-level).
+    for k in DAILY_ONLY_FIELDS:
+        if k in data and k not in flat:
+            flat[k] = data[k]
+
+    if expected_mode == "daily":
+        leaked = [k for k in INTRADAY_ONLY_FIELDS if _field_is_set(flat, k)]
+        if leaked:
+            raise LoopModeValidationError(
+                f"daily config must not set intraday-only fields: {sorted(leaked)} "
+                f"({config_path or '<inline>'})"
+            )
+    else:  # intraday
+        leaked = [k for k in DAILY_ONLY_FIELDS if _field_is_set(flat, k)]
+        if leaked:
+            raise LoopModeValidationError(
+                f"intraday config must not set daily-only fields: {sorted(leaked)} "
+                f"({config_path or '<inline>'})"
+            )
+
+    return resolved

@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "purpose": "Skeleton example of a classic_multifactor daily-rebalance config (S3b).",
+    "status": "skeleton — no real backtest baseline yet (Task 7 / S5 will produce one)",
+    "notes": [
+      "loop_mode MUST be 'daily'; intraday-only fields (max_intraday_trades, entry_cooldown_minutes, min_hold_minutes, no_new_entry_after, signal_interval_minutes) are rejected by config_schema.validate_loop_mode.",
+      "rebalance_time uses the runner's --session-tz (default America/New_York) and triggers a single one-shot pass per day.",
+      "max_daily_turnover bounds daily_new_pct in the LiveRiskGuard.",
+      "target_positions is a free-form mapping consumed by run_daily_rebalance.py; for the current skeleton it is just a single-symbol pass-through and only one symbol is rebalanced per run."
+    ],
+    "created_at_symbol": "NVDA.US",
+    "created_at_interval": "1d",
+    "capital": 5000.0
+  },
+  "strategy_class": "ClassicMultiFactorCtaStrategy",
+  "symbol": "NVDA.US",
+  "interval": "1d",
+  "loop_mode": "daily",
+  "rebalance_time": "16:05",
+  "max_daily_turnover": 0.30,
+  "daily_new_pct_limit": 0.20,
+  "target_positions": {
+    "NVDA.US": 0.20
+  },
+  "setting": {
+    "fast_window": 10,
+    "slow_window": 60,
+    "momentum_window": 20,
+    "atr_window": 14,
+    "entry_score": 0.62,
+    "exit_score": 0.46,
+    "stop_loss_pct": 0.08,
+    "take_profit_pct": 0.22,
+    "trailing_stop_pct": 0.12,
+    "max_position_pct": 0.35,
+    "max_order_value": 1500.0,
+    "capital": 5000.0,
+    "confirm_bars": 1,
+    "min_volume_ratio": 0.0,
+    "min_atr_pct": 0.0,
+    "min_trend_score": 0.55,
+    "regime_filter_mode": "off"
+  }
+}

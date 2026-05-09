@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, Protocol
+
 from vnpy.trader.object import BarData, OrderData, TickData, TradeData
 from vnpy_ctastrategy import CtaTemplate, StopOrder
 
@@ -7,11 +9,39 @@ from scripts.classic_multifactor.minute_guard import MinuteTradeGuard, MinuteTra
 from scripts.classic_multifactor.model import ClassicMultiFactorConfig, ClassicMultiFactorModel
 
 
+class ExecutionHook(Protocol):
+    """Pre-trade gate protocol plugged into the CTA strategy.
+
+    ``approve_buy`` / ``approve_sell`` are called right before ``self.buy`` /
+    ``self.sell``. Returning ``(False, reason)`` cancels the order; the
+    strategy will set ``last_signal = f"hook_blocked:{reason}"`` and skip the
+    bar. ``on_order_submitted`` is invoked after a successful ``buy/sell``
+    with the resulting ``vt_orderids`` so the hook can register the order
+    state for idempotency tracking.
+    """
+
+    def approve_buy(self, bar: BarData, qty: int, price: float) -> tuple[bool, str]: ...
+    def approve_sell(self, bar: BarData, qty: int, price: float) -> tuple[bool, str]: ...
+    def on_order_submitted(
+        self,
+        bar: BarData,
+        side: str,
+        qty: int,
+        price: float,
+        vt_orderids: list[str],
+    ) -> None: ...
+
 
 class ClassicMultiFactorCtaStrategy(CtaTemplate):
     """vn.py CTA template adapter for the no-LLM classic multi-factor model."""
 
     author = "CodeBuddy"
+
+    # Optional external pre-trade gate plugged in by the live runner
+    # (``scripts/classic_multifactor/run_intraday_loop.py`` or
+    # ``run_daily_rebalance.py``). Defaults to ``None`` so backtest /
+    # ``cta_backtest.py`` keep the original behaviour with zero edits.
+    execution_hook: Any = None
 
     fast_window: int = 10
     slow_window: int = 60
@@ -167,16 +197,40 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
                 self.last_signal = guard.reason
                 return
             qty = max(int(decision.target_qty), int(self.fixed_size))
-            vt_orderids = self.buy(bar.close_price * (1 + self.price_add), qty)
+            price = bar.close_price * (1 + self.price_add)
+            if self.execution_hook is not None:
+                allowed, reason = self.execution_hook.approve_buy(bar, qty, price)
+                if not allowed:
+                    self.last_signal = f"hook_blocked:{reason}"
+                    return
+            vt_orderids = self.buy(price, qty)
             self.active_orderids.update(vt_orderids)
+            if self.execution_hook is not None:
+                try:
+                    self.execution_hook.on_order_submitted(bar, "BUY", qty, price, list(vt_orderids))
+                except Exception:
+                    # Hook bookkeeping failure must never break the strategy loop.
+                    pass
         elif decision.side == "SELL" and self.pos > 0:
             hard_exit = decision.reason in {"stop_loss", "atr_stop_loss", "trailing_stop", "atr_trailing_stop", "take_profit", "atr_take_profit"}
             guard = self.minute_guard.can_exit(bar.datetime, entry_at=self.entry_at, hard_exit=hard_exit)
             if not guard.allowed:
                 self.last_signal = guard.reason
                 return
-            vt_orderids = self.sell(bar.close_price * (1 - self.price_add), abs(self.pos))
+            qty = abs(int(self.pos))
+            price = bar.close_price * (1 - self.price_add)
+            if self.execution_hook is not None:
+                allowed, reason = self.execution_hook.approve_sell(bar, qty, price)
+                if not allowed:
+                    self.last_signal = f"hook_blocked:{reason}"
+                    return
+            vt_orderids = self.sell(price, qty)
             self.active_orderids.update(vt_orderids)
+            if self.execution_hook is not None:
+                try:
+                    self.execution_hook.on_order_submitted(bar, "SELL", qty, price, list(vt_orderids))
+                except Exception:
+                    pass
 
 
     def on_trade(self, trade: TradeData) -> None:

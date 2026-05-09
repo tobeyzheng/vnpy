@@ -26,6 +26,7 @@
   "strategy_class": "ClassicMultiFactorCtaStrategy",
   "symbol": "NVDA.US",
   "interval": "1m",
+  "loop_mode": "intraday",
   "setting": {
     "signal_interval_minutes": 12,
     "entry_score": 0.66,
