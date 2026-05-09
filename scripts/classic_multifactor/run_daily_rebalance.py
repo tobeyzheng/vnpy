@@ -67,7 +67,7 @@ from services.execution_guard.idempotency import OrderIdempotencyGuard
 from services.execution_guard.reconciliation import ReconciliationGuard
 from services.futu_account import FutuAccountProvider
 from services.risk_engine import LiveRiskGuard
-from services.trade_state import OrderStateStore
+from services.trade_state import OmsEventRecorder, OrderStateStore
 
 
 # ---------------------------------------------------------------------------
@@ -185,6 +185,7 @@ class DailyRebalanceRunner:
         self._strategy_instance: ClassicMultiFactorCtaStrategy | None = None
         self._pipeline: ExecutionGuardPipeline | None = None
         self._account_provider: FutuAccountProvider | None = None
+        self._oms_recorder: OmsEventRecorder | None = None
         self._bars_consumed = 0
 
     @staticmethod
@@ -291,6 +292,7 @@ class DailyRebalanceRunner:
             loop_mode="daily",
             live_submit=self.live_submit,
             exchange_tz=self.args.session_tz,
+            oms_recorder=self._oms_recorder,
         )
 
     # ------------------------------------------------------------------
@@ -341,6 +343,14 @@ class DailyRebalanceRunner:
             events_log_path=self.events_log_path,
         )
 
+        # Attach OmsEngine event recorder (Task 6 / S4) so EVENT_ORDER /
+        # EVENT_TRADE pushes drive post-submit state transitions.
+        self._oms_recorder = OmsEventRecorder(
+            OrderStateStore(self.orders_root),
+            events_log_path=self.events_log_path,
+        )
+        self._oms_recorder.attach(self._main_engine)
+
         self._connect_gateway()
 
         assert self._cta_engine is not None
@@ -389,6 +399,11 @@ class DailyRebalanceRunner:
         if self._account_provider is not None:
             try:
                 self._account_provider.detach_main_engine()
+            except Exception:
+                pass
+        if self._oms_recorder is not None:
+            try:
+                self._oms_recorder.detach()
             except Exception:
                 pass
         if self._main_engine is not None:

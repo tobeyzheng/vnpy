@@ -39,7 +39,7 @@ from services.common import OrderIntent
 from services.execution_guard.idempotency import OrderIdempotencyGuard
 from services.execution_guard.reconciliation import ReconciliationGuard
 from services.risk_engine import LiveRiskGuard
-from services.trade_state import OrderStateStore
+from services.trade_state import OmsEventRecorder, OrderStateStore
 from services.trade_state.state_machine import OrderStateMachine
 from vnpy.trader.object import BarData
 
@@ -128,6 +128,7 @@ class ExecutionGuardPipeline:
         last_trade_provider=lambda: None,
         entry_at_provider=lambda: None,
         exchange_tz: str = "America/New_York",
+        oms_recorder: "OmsEventRecorder | None" = None,
     ):
         self.idempotency = idempotency
         self.reconciliation = reconciliation
@@ -144,9 +145,16 @@ class ExecutionGuardPipeline:
         self.last_trade_provider = last_trade_provider
         self.entry_at_provider = entry_at_provider
         self.exchange_tz = exchange_tz
+        self.oms_recorder = oms_recorder
         self._machine = OrderStateMachine()
         self.approved_count = 0
         self.blocked_by_gate: dict[str, int] = {}
+        # Last approved request_id (set by ``_approve``); consumed by
+        # ``on_order_submitted`` to bind vt_orderid -> request_id in the
+        # OmsEventRecorder. We use last-approved instead of (side, qty)
+        # matching because CtaTemplate.buy() returns vt_orderids without
+        # carrying the project request_id through.
+        self._last_approved_request_id: str | None = None
 
     # ------------------------------------------------------------------
     # ExecutionHook protocol
@@ -166,9 +174,27 @@ class ExecutionGuardPipeline:
         vt_orderids: list[str],
     ) -> None:
         # Record broker-level vt_orderids against the last accepted request so
-        # reconciliation can later map order fills back to requests. We only
-        # log here; the OmsEngine EVENT_ORDER path is the source of truth for
-        # state transitions (see Task 6 — to be wired in S4).
+        # reconciliation can later map order fills back to requests, and bind
+        # them in the OmsEventRecorder so subsequent EVENT_ORDER / EVENT_TRADE
+        # pushes for this order can mutate the persisted OrderState.
+        request_id = self._last_approved_request_id
+        if self.oms_recorder is not None and request_id:
+            for vt_orderid in vt_orderids:
+                if vt_orderid:
+                    self.oms_recorder.register_request(vt_orderid, request_id)
+        # Stamp broker_order_id onto the approved OrderState so a restart
+        # picks up the binding even if the recorder index is empty.
+        if request_id and vt_orderids:
+            try:
+                state = self.order_store.load(request_id)
+                if state is not None and not state.broker_order_id:
+                    from dataclasses import replace as _replace
+
+                    self.order_store.save(
+                        _replace(state, broker_order_id=str(vt_orderids[0]))
+                    )
+            except Exception:
+                pass
         self._append_event(
             {
                 "ts": _utc_iso(),
@@ -180,6 +206,7 @@ class ExecutionGuardPipeline:
                 "vt_symbol": bar.vt_symbol,
                 "strategy_id": self.strategy_id,
                 "loop_mode": self.loop_mode,
+                "request_id": request_id,
             }
         )
 
@@ -301,6 +328,7 @@ class ExecutionGuardPipeline:
         state = self._machine.transition(state, "risk_checked", note="pipeline:live_risk_ok")
         state = self._machine.transition(state, "approved", note="pipeline:approved")
         self.order_store.save(state)
+        self._last_approved_request_id = request_id
 
         self.approved_count += 1
         self._append_event(

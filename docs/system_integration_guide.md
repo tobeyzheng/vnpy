@@ -772,3 +772,117 @@ OpenDClient / FutuSdkClient / FutuAccountProvider
 - 当前 daily brief 入口：`scripts/run_portfolio_brief.py`。
 
 系统已经从“脚本堆叠”推进到“pipeline + strategy engine + order state + reconciliation + healthcheck + Futu SIM session + live gate”的结构。下一阶段重点应是统一 HK/US session pipeline、成交回报轮询、撤单超时、订单幂等和组合级实盘风控。
+
+## 18. vnpy 原生重构 — 双跑对账 Runbook（Task 7 / S5）
+
+> 适用分支：`classic-vnpy-native-rewrite`
+> 旧分支冻结 tag：`classic-pre-vnpy-rewrite-v1`
+
+### 18.1 背景
+
+新分支以 vn.py 原生 `MainEngine + EventEngine + CtaEngine + OmsEngine` 取代旧分支的手写
+`LiveTradingPipeline` 轮询路径。为了确保新分支的成交笔数 / 成交价格 / 拦截分布 / 幂等命中
+与旧分支基线无显著偏差，在 Task 8 删除 `services/trading_pipeline/live_task.py` 之前，
+**必须先完成 ≥ 5 个 SIM 交易日的双跑对账**（项目规则 2、需求 7.1）。
+
+### 18.2 双跑工作区布局
+
+为避免两个进程互相覆盖 `state/runs/` 与 `OrderStateStore`，使用两套独立工作区：
+
+```
+/data/dual_run/
+├─ legacy/                                  # tag classic-pre-vnpy-rewrite-v1 检出
+│  └─ state/runs/
+│     ├─ classic_multifactor_NVDA_US_live_report.json
+│     ├─ orders/<request_id>.json
+│     └─ loop_anchor_classic_multifactor_NVDA_US.json
+└─ vnpy_native/                             # 新分支 classic-vnpy-native-rewrite
+   └─ state/runs/
+      ├─ classic_multifactor_intraday_report.json
+      ├─ orders/<request_id>.json
+      └─ events.jsonl
+```
+
+两套工作区都使用同一份配置 `configs/classic_multifactor/nvda_g09.json`
+（旧分支需要 `loop_mode: intraday` 字段，schema 校验已加入）。
+
+### 18.3 启动命令（每日 SIM 开盘前由人工确认后执行）
+
+旧分支（legacy）：
+
+```
+cd /data/dual_run/legacy
+git checkout classic-pre-vnpy-rewrite-v1
+python3 scripts/classic_multifactor/run_loop.py \
+    --config configs/classic_multifactor/nvda_g09.json \
+    --session-end 16:00 --exit-after-session
+```
+
+新分支（vnpy_native）：
+
+```
+cd /data/dual_run/vnpy_native
+git checkout classic-vnpy-native-rewrite
+python3 scripts/classic_multifactor/run_intraday_loop.py \
+    --config configs/classic_multifactor/nvda_g09.json \
+    --session-end 16:00 --exit-after-session
+# dry-run by default; --live-submit 必须配合 VNPY_LIVE_CONFIG/SUBMIT/APPROVED=YES
+```
+
+### 18.4 日终对账（每个 SIM 交易日收盘后由人工触发）
+
+```
+python3 scripts/diff_dual_run.py \
+    --run-a /data/dual_run/legacy/state/runs \
+    --run-b /data/dual_run/vnpy_native/state/runs \
+    --report-filename-a classic_multifactor_NVDA_US_live_report.json \
+    --report-filename-b classic_multifactor_intraday_report.json \
+    --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
+```
+
+`scripts/diff_dual_run.py` 会从三类源里抽取归一化指标（双源 DB 配置）：
+
+1. `state/runs/<report-filename>` 聚合计数；
+2. `state/runs/orders/*.json` 的 `OrderState`（成交真值，新旧分支共用 schema）；
+3. `state/runs/events.jsonl`（仅新分支；可选）。
+
+并按以下分级输出：
+
+| 类别 | 指标 | 容差 | 失败时影响 |
+| --- | --- | --- | --- |
+| **hard** | `submitted_count` / `filled_qty_total` / `unique_request_ids` | abs ≤ 2 或 rel ≤ 2% | exit 1 |
+| **soft** | `approved_count` / `filled_notional_total` / `events_*` / `orders_*_residual` | abs ≤ 2 或 rel ≤ 2% | warning |
+
+`unique_request_ids`：A/B 同一交易日同一信号必须生成相同的 `request_id`
+（新分支 `_build_request_id` 使用 `(strategy_id, side, vt_symbol, bar_ts, uuid_hex[:6])`，
+uuid 部分会让两次重启的 request_id 不同；故双跑场景下该指标只看**数量**对齐，不看
+集合相等。`only_a` / `only_b` 计数差≤2 视为正常）。
+
+### 18.5 通过条件（5 日累计）
+
+- 任意一日 hard 指标出现 `fail` → 整个双跑视为失败，必须回到代码层定位差异。
+- 5 日 soft 指标累计 `warn` 数量 ≤ 5 视为可接受。
+- 5 日内任何一日 `orders_open_residual > 0`（即非 `filled` / `cancelled` / `rejected` 的
+  挂单残留）必须人工核查 `orders/*.json` 的 `notes` 字段 + `events.jsonl` 时间线。
+
+### 18.6 冷启动反向验证（第 6 日）
+
+通过前 5 日双跑后，执行一次冷启动反向验证：
+
+1. 在新分支 `vnpy_native` 工作区清空 `state/runs/orders/`；
+2. 启动 `run_intraday_loop.py`，盘中等待第一笔买入完成；
+3. 重启进程；
+4. 重启后 `OmsEventRecorder._rebuild_index_from_disk` 应能从持久化的 OrderState
+   恢复 `vt_orderid → request_id` 映射，使得后续 `EVENT_TRADE` 不进入 orphan 队列；
+5. `MinuteTradeGuard` 通过 `OmsEngine.get_all_trades()` 读出当日已成交记录，
+   `max_intraday_trades` 计数应包含重启前的下单。
+
+满足以上，记录在 `state/runs/reports/cold_start_validation_<date>.json` 后即可申请合并。
+
+### 18.7 与项目规则的关系
+
+- **规则 2**：每次启动 SIM 会话、每次 `--live-submit`、每次 `state/runs/orders/`
+  清理都需用户事前确认。本 runbook 提供命令模板但不替代确认动作。
+- **规则 3**：双跑期间不允许 `services/trading_pipeline/live_task.py` 删除（Task 8）；
+  待双跑通过 + 冷启动反向验证 OK 后才进入二轮清理。
+
