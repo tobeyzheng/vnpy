@@ -25,6 +25,46 @@ def parse_us_symbol(symbol: str) -> tuple[str, str, str]:
     return f"{code}.US", f"{code}.SMART", f"US.{code}"
 
 
+def parse_hk_symbol(symbol: str) -> tuple[str, str, str]:
+    """Normalise HK ticker into (input_form, vt_symbol, futu_code).
+
+    Accepts forms: ``700``, ``0700``, ``00700``, ``HK.00700``,
+    ``0700.HK``, ``00700.HK``, ``00700.SEHK`` (case-insensitive).
+    Output is always zero-padded to 5 digits (Futu/SEHK convention),
+    e.g. vt_symbol=``00700.SEHK`` and futu_code=``HK.00700``.
+    """
+    text = symbol.strip().upper()
+    if text.startswith("HK."):
+        code = text.replace("HK.", "", 1)
+    elif text.endswith(".HK"):
+        code = text.replace(".HK", "")
+    elif text.endswith(".SEHK"):
+        code = text.replace(".SEHK", "")
+    else:
+        code = text
+    code = code.lstrip("0") or "0"
+    code = code.zfill(5)
+    return f"{code}.HK", f"{code}.SEHK", f"HK.{code}"
+
+
+def parse_symbol(symbol: str) -> tuple[str, str, str, str]:
+    """Dispatch by market suffix. Returns (market, input_form, vt_symbol, futu_code).
+
+    market is ``"hk"`` or ``"us"``.
+    """
+    text = symbol.strip().upper()
+    is_hk = (
+        text.startswith("HK.")
+        or text.endswith(".HK")
+        or text.endswith(".SEHK")
+    )
+    if is_hk:
+        input_form, vt_symbol, futu_code = parse_hk_symbol(symbol)
+        return "hk", input_form, vt_symbol, futu_code
+    input_form, vt_symbol, futu_code = parse_us_symbol(symbol)
+    return "us", input_form, vt_symbol, futu_code
+
+
 def safe_float(value: Any, default: float = 0.0) -> float:
     try:
         return float(value)
@@ -41,6 +81,23 @@ class VnpyBarRepository:
 
     def load_us_bars(self, symbol: str, start: datetime, end: datetime, interval: str = "1d") -> tuple[str, str, list[BarData]]:
         _us_symbol, vt_symbol, futu_code = parse_us_symbol(symbol)
+        return self._load_bars_impl(vt_symbol, futu_code, start, end, interval)
+
+    def load_us_daily(self, symbol: str, start: datetime, end: datetime) -> tuple[str, str, list[BarData]]:
+        return self.load_us_bars(symbol, start, end, "1d")
+
+    def load_hk_bars(self, symbol: str, start: datetime, end: datetime, interval: str = "1d") -> tuple[str, str, list[BarData]]:
+        _hk_symbol, vt_symbol, futu_code = parse_hk_symbol(symbol)
+        return self._load_bars_impl(vt_symbol, futu_code, start, end, interval)
+
+    def load_bars(self, symbol: str, start: datetime, end: datetime, interval: str = "1d") -> tuple[str, str, list[BarData]]:
+        """Market-aware loader. Dispatches by suffix to US/HK pipelines."""
+        market, _input_form, vt_symbol, futu_code = parse_symbol(symbol)
+        if market == "hk":
+            return self.load_hk_bars(symbol, start, end, interval)
+        return self.load_us_bars(symbol, start, end, interval)
+
+    def _load_bars_impl(self, vt_symbol: str, futu_code: str, start: datetime, end: datetime, interval: str) -> tuple[str, str, list[BarData]]:
         code, exchange_name = vt_symbol.split(".", 1)
         exchange = Exchange(exchange_name)
         vnpy_interval = self.to_vnpy_interval(interval)
@@ -52,9 +109,6 @@ class VnpyBarRepository:
         if bars:
             self.db.save_bar_data(bars, stream=False)
         return vt_symbol, futu_code, bars
-
-    def load_us_daily(self, symbol: str, start: datetime, end: datetime) -> tuple[str, str, list[BarData]]:
-        return self.load_us_bars(symbol, start, end, "1d")
 
     def to_vnpy_interval(self, interval: str) -> Interval:
         text = str(interval).lower()

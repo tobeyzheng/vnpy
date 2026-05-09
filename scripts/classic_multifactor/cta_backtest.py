@@ -39,13 +39,25 @@ class ClassicCtaBacktestRunner:
         pricetick: float,
         setting: dict[str, Any],
     ) -> tuple[dict[str, Any], Any]:
+        # vnpy BacktestingEngine.load_data uses (end - start).days as denominator;
+        # any difference < 1 day yields 0 -> ZeroDivisionError. Normalise by
+        # ensuring effective_end is at least start + 1 day for single-day intent.
+        from datetime import timedelta as _td
+        effective_end = end
+        if effective_end <= start:
+            effective_end = start + _td(days=1)
+        elif (effective_end - start).days < 1:
+            effective_end = start + _td(days=1)
+        elif effective_end.hour == 0 and effective_end.minute == 0 and effective_end.second == 0:
+            effective_end = effective_end.replace(hour=23, minute=59, second=59)
+
         engine = BacktestingEngine()
         engine.set_parameters(
             vt_symbol=vt_symbol,
             interval=Interval.MINUTE if interval == "1m" else Interval.DAILY,
 
             start=start,
-            end=end,
+            end=effective_end,
             rate=rate,
             slippage=slippage,
             size=size,
@@ -62,7 +74,7 @@ class ClassicCtaBacktestRunner:
                 "message": "vn.py CTA backtest ran but no result was produced",
                 "vt_symbol": vt_symbol,
                 "start": start.isoformat(),
-                "end": end.isoformat(),
+                "end": effective_end.isoformat(),
             }, engine
         stats = engine.calculate_statistics(df=df, output=False)
         stats = {"status": "ok", "engine": "vnpy_cta_backtesting", **stats}
@@ -316,7 +328,7 @@ def _resolve_runtime(args: argparse.Namespace, config: dict[str, Any]) -> dict[s
     sentinels, we give precedence to JSON config for symbol/interval/capital/
     dates when present.
     """
-    from scripts.classic_multifactor.data import parse_us_symbol
+    from scripts.classic_multifactor.data import parse_symbol
 
     symbol = config.get("symbol") or args.symbol
     interval = config.get("interval") or args.interval
@@ -332,10 +344,11 @@ def _resolve_runtime(args: argparse.Namespace, config: dict[str, Any]) -> dict[s
 
     capital = float(config.get("_meta", {}).get("capital") or config.get("capital") or args.capital)
 
-    _symbol, vt_symbol, _futu_code = parse_us_symbol(symbol)
+    market, _input_form, vt_symbol, _futu_code = parse_symbol(symbol)
 
     return {
         "symbol": symbol,
+        "market": market,
         "vt_symbol": vt_symbol,
         "interval": interval,
         "start": datetime.fromisoformat(start_str),
@@ -352,7 +365,7 @@ def _run_single(args: argparse.Namespace, config: dict[str, Any]) -> None:
     # Ensure capital is consistent in the strategy setting.
     setting.setdefault("capital", rt["capital"])
 
-    VnpyBarRepository(fetch_futu_history=True).load_us_bars(
+    VnpyBarRepository(fetch_futu_history=True).load_bars(
         rt["symbol"], rt["start"], rt["end"], rt["interval"]
     )
 
@@ -401,7 +414,7 @@ def _run_sweep(args: argparse.Namespace, config: dict[str, Any]) -> None:
     sweep_space = {k: list(v) for k, v in opt_setting.params.items()}
 
     # Preload bars once; vnpy sub-processes will reload via database.
-    VnpyBarRepository(fetch_futu_history=True).load_us_bars(
+    VnpyBarRepository(fetch_futu_history=True).load_bars(
         rt["symbol"], rt["start"], rt["end"], rt["interval"]
     )
 
