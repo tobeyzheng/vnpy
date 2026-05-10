@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 from services.evaluation_hub import EvaluationHub
+from scripts.classic_multifactor.cta_backtest import ClassicCtaBacktestRunner, build_opt_setting
+from scripts.classic_multifactor.data import parse_symbol
 from vnpy_llm.base import beijing_now_isoformat
 from services.evaluation_hub.artifact_store import ArtifactStore
 from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
@@ -37,6 +40,12 @@ class QuantWorkflowService:
         "backtest": ("healthcheck", "candidate_framework", "backtest"),
         "readiness": ("healthcheck", "candidate_framework", "backtest", "readiness"),
     }
+    MARKET_ALIASES = {
+        "hk": "hong_kong",
+        "hongkong": "hong_kong",
+        "hong_kong": "hong_kong",
+        "us": "us",
+    }
 
     def __init__(self, repo_root: Path, *, allow_remote_checks: bool = False):
         self.repo_root = Path(repo_root)
@@ -47,6 +56,30 @@ class QuantWorkflowService:
         self.candidate_selector = BeginnerCandidateSelector(self.candidate_framework, self.hub)
         self.store = ArtifactStore(self.repo_root)
         self.candidate_preparation = CandidateInputPreparationService(self.repo_root)
+
+    def _normalize_market(self, market: Any) -> str:
+        value = str(market or "").strip().lower()
+        return self.MARKET_ALIASES.get(value, value)
+
+    def _normalize_preferred_markets(self, preferred_markets: list[str] | None) -> list[str]:
+        normalized = [self._normalize_market(market) for market in (preferred_markets or [])]
+        return [market for market in dict.fromkeys(normalized) if market]
+
+    def _is_backtest_target_candidate(self, observation: Any) -> bool:
+        if not observation.meta.get("backtest_ready"):
+            return False
+        if observation.selected_as != "validate_only":
+            return True
+        return self._normalize_market(getattr(observation, "market", "")) == "hong_kong"
+
+    def _backtest_target_reason(self, observation: Any) -> str:
+        if not observation.meta.get("backtest_ready"):
+            return "Trading cadence is still pending review."
+        if observation.selected_as != "validate_only":
+            return "Selected observation is promoted beyond validation-only and can enter backtest evidence review."
+        if self._normalize_market(getattr(observation, "market", "")) == "hong_kong":
+            return "Hong Kong validate-only names with a concrete daily/minute cadence still enter the evidence-only backtest stage."
+        return "Validation-only names stay outside the backtest target set until they are promoted."
 
     def run(
         self,
@@ -61,10 +94,20 @@ class QuantWorkflowService:
         prepare_candidates: bool = False,
         prepare_include_market_data: bool = False,
         prepare_knot_runtime: str = "auto",
+        auto_execute_backtests: bool = False,
+        backtest_optimize_mode: str = "ga",
+        backtest_start: str | None = None,
+        backtest_end: str | None = None,
+        backtest_rate: float = 0.0003,
+        backtest_slippage: float = 0.05,
+        backtest_size: int = 1,
+        backtest_pricetick: float = 0.01,
+        backtest_top_n: int = 20,
+        backtest_workers: int | None = None,
     ) -> dict[str, Any]:
         started_at = beijing_now_isoformat()
         profile = dict(profile or {})
-        preferred_markets = list(preferred_markets or [])
+        preferred_markets = self._normalize_preferred_markets(preferred_markets)
         requested_steps = list(self._resolve_requested_steps(mode=mode, stage=stage))
         steps: list[WorkflowStepResult] = []
         warnings: list[str] = []
@@ -133,7 +176,10 @@ class QuantWorkflowService:
         if "candidate_framework" in requested_steps or "backtest" in requested_steps or "readiness" in requested_steps:
             candidate_rows = UnifiedCandidateProvider(self.repo_root).load()
             if preferred_markets:
-                candidate_rows = [row for row in candidate_rows if row.get("market") in set(preferred_markets)]
+                preferred_market_set = set(preferred_markets)
+                candidate_rows = [
+                    row for row in candidate_rows if self._normalize_market(row.get("market")) in preferred_market_set
+                ]
             candidate_artifact = self.candidate_selector.build_candidate_artifact(
                 rows=candidate_rows,
                 preferred_markets=preferred_markets,
@@ -147,6 +193,8 @@ class QuantWorkflowService:
                     "selected_as": item.selected_as,
                     "trading_level": item.meta.get("trading_level"),
                     "backtest_ready": bool(item.meta.get("backtest_ready")),
+                    "backtest_target_eligible": self._is_backtest_target_candidate(item),
+                    "backtest_target_reason": self._backtest_target_reason(item),
                     "trading_level_reasons": list(item.meta.get("trading_level_reasons") or []),
                 }
                 for item in observations
@@ -462,9 +510,7 @@ class QuantWorkflowService:
         preferred_markets: list[str],
         task_type: str,
     ) -> PlanningArtifact:
-        backtest_targets = [
-            item for item in observations if item.selected_as != "validate_only" and item.meta.get("backtest_ready")
-        ]
+        backtest_targets = [item for item in observations if self._is_backtest_target_candidate(item)]
         entries = [self._collect_backtest_entry(item) for item in backtest_targets]
         ok_count = sum(1 for item in entries if item.get("status") == "ok")
         missing_count = sum(1 for item in entries if item.get("status") != "ok")

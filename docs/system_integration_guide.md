@@ -115,13 +115,15 @@
 3. **`candidate_framework`**
    - 读取本地候选输入
    - 从候选输入里筛出观察标
+   - `preferred_market` 当前会先做别名归一化：例如 CLI 传入 `hk` / `hongkong` 时，内部统一按 `hong_kong` 过滤本地候选
    - 为每个观察标输出 `trading_level=daily|minute|needs_review`
-   - 同时落盘 `backtest_targets`、交易级别理由、数据充分性与是否可直接进入回测
+   - 同时落盘 `backtest_targets`、交易级别理由、数据充分性、`backtest_target_eligible` / `backtest_target_reason` 与是否可直接进入回测
 4. **`backtest`**
    - 读取本地 `state/runs/classic_multifactor/vnpy_cta_backtest_report.json` 以及 `*sweep*.json`
    - 按观察标整合历史回测证据、样本区间、关键绩效指标和最优参数
    - 日频候选默认使用日级参数搜索空间；分钟级候选默认使用分钟级参数搜索空间
    - 当前阶段保持 evidence-only：只整理本地回测与优化产物，不自动执行新的回测命令
+   - 对港股 `hong_kong` 候选，若 `selected_as=validate_only` 但本地规则已给出明确 `daily|minute` cadence，则仍允许进入 evidence-only `backtest` 目标集合，便于先整理历史证据再决定是否升级
 5. **`readiness`**
    - 汇总 `healthcheck`、观察标和回测证据
    - 对 `simulation` 与 `live` 使用不同的门禁项

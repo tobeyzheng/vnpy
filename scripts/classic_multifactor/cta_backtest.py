@@ -202,6 +202,7 @@ def dump_sweep_results(
     output_path: Path,
     mode: str,
     target: str,
+    symbol: str,
     vt_symbol: str,
     interval: str,
     start: datetime,
@@ -214,6 +215,7 @@ def dump_sweep_results(
     # vnpy returns ``list[tuple]`` where each tuple is
     # ``(setting_dict, target_value, statistics_dict)``.
     normalized: list[dict[str, Any]] = []
+    ranking: list[dict[str, Any]] = []
     for rank, item in enumerate(results[:top_n], start=1):
         params: Any = None
         target_value: Any = None
@@ -225,12 +227,20 @@ def dump_sweep_results(
                 stats = item[2]
         except Exception:
             params = str(item)
-        normalized.append(
+        row = {
+            "rank": rank,
+            "params": params,
+            "target_value": target_value,
+            "stats": stats,
+        }
+        normalized.append(row)
+        ranking.append(
             {
+                "symbol": symbol,
                 "rank": rank,
                 "params": params,
                 "target_value": target_value,
-                "stats": stats,
+                "stats_summary": stats,
             }
         )
 
@@ -239,6 +249,7 @@ def dump_sweep_results(
         "engine": "vnpy_cta_backtesting",
         "mode": mode,
         "target": target,
+        "symbol": symbol,
         "vt_symbol": vt_symbol,
         "interval": interval,
         "start": start.isoformat(),
@@ -248,6 +259,8 @@ def dump_sweep_results(
         "total_combinations": len(results),
         "top_n": top_n,
         "top_results": normalized,
+        "per_symbol_best": ranking[:1],
+        "global_ranking": ranking,
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

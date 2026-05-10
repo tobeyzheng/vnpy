@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-11**：修复 `quant_workflow` 的港股市场别名过滤与 HK backtest target 规则
+  - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：`quant_workflow` 当前会先把 `preferred_market` 中的 `hk` / `hongkong` 统一归一化为 `hong_kong`，避免港股候选在 market 精确匹配阶段被整体过滤为空；同时 `candidate_framework` artifact 现在会额外记录 `backtest_target_eligible` 与 `backtest_target_reason`，并允许港股 `validate_only` 但已被规则层赋予 `daily|minute` cadence 的 observation 进入 evidence-only `backtest` 证据整理，便于先复用本地回测产物，再由后续 readiness 决定是否升级。
+
 - **2026-05-11**：`quant_workflow` 重构为五阶段主链路
   - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[run_quant_workflow.py](/projects/vnpy/scripts/quant_workflow/run_quant_workflow.py)、[candidate_framework.py](/projects/vnpy/services/evaluation_hub/candidate_framework.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)、[quant-workflow-refactor.md](/projects/vnpy/.codebuddy/task_list/quant-workflow-refactor.md)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

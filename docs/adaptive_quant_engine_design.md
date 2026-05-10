@@ -195,12 +195,15 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 
 - **`candidate_framework`**
   - 从候选输入中筛出观察标
+  - `preferred_market` 在 workflow 内会先做别名归一化，当前会把 `hk` / `hongkong` 统一映射到 `hong_kong`
   - 输出 `selected_as`、`trading_level`、`trading_level_reasons`、`backtest_ready`
+  - 同时会为每个 observation 记录 `backtest_target_eligible` 与 `backtest_target_reason`，便于解释它是否进入下一阶段的回测证据整理
   - 当前 `trading_level` 至少包括：`daily`、`minute`、`needs_review`
 - **`backtest`**
   - 复用本地 `vnpy_cta_backtest_report.json` 和 `*sweep*.json`
   - 对每个观察标记录：交易级别、推荐数据粒度、参数搜索空间、最佳参数、绩效指标、样本区间与本地路径
   - 当前阶段仍然是 evidence-only，不会自动执行新的回测任务
+  - 对港股 `hong_kong` 候选，若仍处于 `validate_only`，但 cadence 已被规则层判定为 `daily` 或 `minute`，则允许先进入 evidence-only `backtest` 证据整理；是否升级到更高阶段仍由 readiness 与后续门禁决定
 - **`readiness`**
   - 把 `healthcheck`、观察标交易级别和回测证据合并成 readiness checklist
   - `simulation` 与 `live` 使用不同门槛：`live` 额外要求 `preflight`、`dual_run_diff`、live report schema、approval switches、reconciliation 等证据

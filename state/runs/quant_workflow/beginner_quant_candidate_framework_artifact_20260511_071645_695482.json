@@ -1,0 +1,577 @@
+{
+  "artifact_type": "beginner_candidate_framework",
+  "title": "Beginner Candidate Framework",
+  "generated_at": "2026-05-11T07:16:45.694643+08:00",
+  "version": "v1",
+  "assumptions": [
+    {
+      "name": "candidate_scope",
+      "value": "hong_kong",
+      "reason": "Keep the first review universe small and aligned with the preferred market set."
+    },
+    {
+      "name": "selection_method",
+      "value": "rules_plus_explanation_gate",
+      "reason": "A symbol can be downgraded when explanation quality, liquidity comfort, or data completeness is not strong enough."
+    },
+    {
+      "name": "research_attachment",
+      "value": "missing",
+      "reason": "The candidate framework is stronger when it can reuse the same evidence and risk language as the research artifact."
+    }
+  ],
+  "knowledge_sections": [],
+  "research_findings": [
+    {
+      "topic": "candidate_framework",
+      "conclusion": "The current beginner candidate framework produced 0 watchlist names, 0 observe-only names, and 4 validate-only names.",
+      "evidence_level": "mid",
+      "source_kind": "local_candidate_rules",
+      "confidence": 0.76,
+      "verification_status": "verified",
+      "invalidation_conditions": [
+        "If candidate inputs or risk notes change materially, regenerate the candidate framework before using it in planning."
+      ],
+      "references": []
+    }
+  ],
+  "research_conclusions": [
+    "The current beginner candidate framework produced 0 watchlist names, 0 observe-only names, and 4 validate-only names."
+  ],
+  "execution_suggestions": [
+    "Use 00981.HK as a validation-only example and do not promote it before cadence evidence improves.",
+    "Use 01347.HK as a validation-only example and do not promote it before cadence evidence improves.",
+    "Use 09992.HK as a validation-only example and do not promote it before cadence evidence improves.",
+    "Use 00772.HK as a validation-only example and do not promote it before cadence evidence improves.",
+    "Keep validate-only names in a research queue until liquidity, volatility, and thesis checks are refreshed.",
+    "Keep the candidate review universe aligned with the preferred markets until the routine is stable.",
+    "Attach the latest beginner research artifact so candidate explanations can reuse the same evidence language."
+  ],
+  "risk_prompts": [
+    "00981.HK is not yet a beginner_watchlist symbol; keep it in observation or validation mode.",
+    "波动较大且受政策预期影响",
+    "High volatility or narrative-driven price action can make execution and review harder for a beginner.",
+    "01347.HK is not yet a beginner_watchlist symbol; keep it in observation or validation mode.",
+    "波动偏大",
+    "Minute-level candidates need tighter execution and liquidity discipline than daily candidates.",
+    "09992.HK is not yet a beginner_watchlist symbol; keep it in observation or validation mode.",
+    "估值偏高",
+    "00772.HK is not yet a beginner_watchlist symbol; keep it in observation or validation mode.",
+    "量能波动"
+  ],
+  "invalidation_conditions": [
+    "If the local candidate feed no longer contains stable score, rationale, or signal data, regenerate the candidate framework before reuse.",
+    "If the watchlist starts depending on names without explainable thesis notes, downgrade them to observe_only or validate_only.",
+    "If liquidity or volatility checks are stale, do not promote the symbol toward simulation planning."
+  ],
+  "evidence_items": [],
+  "conflicts": [],
+  "candidate_observations": [
+    {
+      "symbol": "00981.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 74.85,
+      "reasons": [
+        "半导体主线共振增强",
+        "芯片主线偏强",
+        "snapshot change -4.43%; turnover 7803020446",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: ai_compute"
+      ],
+      "primary_risks": [
+        "波动较大且受政策预期影响",
+        "High volatility or narrative-driven price action can make execution and review harder for a beginner."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Use a daily-bar review schedule and confirm the thesis can survive overnight or multi-day holding.",
+        "Review whether recent volatility makes the name unsuitable for a beginner-sized position."
+      ],
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "回调再买",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "daily",
+        "trading_level_reasons": [
+          "Daily cadence is the conservative default when intraday evidence is not explicit."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "quality_growth",
+          "research_priority",
+          "defensive_baseline",
+          "ai_compute"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "风险过高或资金条件不足，阻断交易。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "01347.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 73.75,
+      "reasons": [
+        "半导体链有交易弹性，适合事件驱动观察",
+        "snapshot change -7.50%; turnover 7243010326",
+        "未满足明确开仓模式，先观察。",
+        "Theme bucket: ai_compute",
+        "Suggested trading level: minute"
+      ],
+      "primary_risks": [
+        "波动偏大",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "观察突破",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "defensive_baseline",
+          "research_priority",
+          "quality_growth",
+          "ai_compute"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "未满足明确开仓模式，先观察。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "09992.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 66.89,
+      "reasons": [
+        "消费成长强势，趋势属性较好",
+        "snapshot change 3.64%; turnover 7187465790",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: consumer_growth",
+        "Suggested trading level: daily"
+      ],
+      "primary_risks": [
+        "估值偏高",
+        "High volatility or narrative-driven price action can make execution and review harder for a beginner."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Use a daily-bar review schedule and confirm the thesis can survive overnight or multi-day holding.",
+        "Review whether recent volatility makes the name unsuitable for a beginner-sized position."
+      ],
+      "meta": {
+        "theme": "consumer_growth",
+        "action_hint": "顺势为主",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "daily",
+        "trading_level_reasons": [
+          "Daily cadence is the conservative default when intraday evidence is not explicit."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "research_priority",
+          "quality_growth",
+          "defensive_baseline",
+          "consumer_growth"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "风险过高或资金条件不足，阻断交易。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "00772.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 65.21,
+      "reasons": [
+        "内容资产与AI叙事有补涨空间",
+        "内容与AI叙事",
+        "snapshot change 1.54%; turnover 150292574",
+        "未满足明确开仓模式，先观察。",
+        "风险过高或资金条件不足，阻断交易。"
+      ],
+      "primary_risks": [
+        "量能波动",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "观察为主",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "research_priority",
+          "quality_growth",
+          "ai_compute"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "未满足明确开仓模式，先观察。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    }
+  ],
+  "capability_map": [],
+  "capability_gaps": [],
+  "plan_phases": [],
+  "risk_budget": null,
+  "readiness": null,
+  "workflow": null,
+  "rendered_documents": [
+    {
+      "title": "Beginner Candidate Framework (markdown)",
+      "format": "markdown",
+      "body": "### Beginner Candidate Framework\n\n- Generated at: 2026-05-11T07:16:45.695321+08:00\n- Version: v1\n- Audience: beginner quant trader\n\n### What this note is trying to do\n- Explain the key ideas in plain language.\n- Tell you what to do first, what to avoid for now, and what must be verified before upgrading stages.\n- Keep research, execution advice and risk prompts separate.\n\n### Learning order\n- Understand core concepts and risk language before touching execution settings.\n- Learn the research workflow: hypothesis -> data check -> backtest -> simulation -> review.\n- Study a small candidate set and explain why each name is on the list.\n- Write a risk budget and pause rules before any simulation session.\n\n### Practice order\n- Run the read-only health check first.\n- Review research findings and evidence levels.\n- Check the watchlist or candidate observations and keep only a few names.\n- Review one backtest or validation summary before any simulation idea.\n- Move to simulation only after risk budget and readiness checklist are both clear.\n\n### Current assumptions\n- candidate_scope: hong_kong — Keep the first review universe small and aligned with the preferred market set.\n- selection_method: rules_plus_explanation_gate — A symbol can be downgraded when explanation quality, liquidity comfort, or data completeness is not strong enough.\n- research_attachment: missing — The candidate framework is stronger when it can reuse the same evidence and risk language as the research artifact.\n\n### Knowledge sections\n\n### Research conclusions\n- [mid] The current beginner candidate framework produced 0 watchlist names, 0 observe-only names, and 4 validate-only names.\n\n### Common pitfalls\n- Confusing a good story with a tested rule.\n- Looking only at return and ignoring drawdown, turnover and sample quality.\n- Adding too many correlated names and calling it diversification.\n- Letting an LLM summary replace manual review of evidence and risk controls.\n- 00981.HK is not yet a beginner_watchlist symbol; keep it in observation or validation mode.\n- 波动较大且受政策预期影响\n\n### Minimum viable start\n- One market, a small watchlist and a low-frequency review habit.\n- A written risk budget with single-position, total-exposure and pause rules.\n- At least one backtest or validation note with data-quality and cost assumptions recorded.\n- A simulation observation period before any live intent.\n- Use the top few beginner_watchlist or observe_only names as the initial review universe.\n\n### Readiness checkpoints\n- No readiness checklist has been attached yet.\n\n### What changed from the previous plan\n- No previous plan comparison was available for this run.\n\n### Personalization summary\n- No explicit personalization summary was recorded for this artifact.\n\n### Update scope\n- No scoped profile update information was recorded.\n\n### Next actions\n- Use 00981.HK as a validation-only example and do not promote it before cadence evidence improves.\n- Use 01347.HK as a validation-only example and do not promote it before cadence evidence improves.\n- Use 09992.HK as a validation-only example and do not promote it before cadence evidence improves.\n- Use 00772.HK as a validation-only example and do not promote it before cadence evidence improves.\n- Keep validate-only names in a research queue until liquidity, volatility, and thesis checks are refreshed.\n- Keep the candidate review universe aligned with the preferred markets until the routine is stable.\n- Attach the latest beginner research artifact so candidate explanations can reuse the same evidence language.\n\n### Local system boundaries\n- Execution-related stages still require explicit confirmation and should default to plan-only mode.\n",
+      "section_count": 10,
+      "version": "v1",
+      "generated_at": "2026-05-11T07:16:45.695321+08:00"
+    },
+    {
+      "title": "Beginner Candidate Framework (json)",
+      "format": "json",
+      "body": "{\n  \"title\": \"Beginner Candidate Framework\",\n  \"version\": \"v1\",\n  \"generated_at\": \"2026-05-11T07:16:45.695377+08:00\",\n  \"knowledge_sections\": [],\n  \"research_findings\": [\n    {\n      \"topic\": \"candidate_framework\",\n      \"conclusion\": \"The current beginner candidate framework produced 0 watchlist names, 0 observe-only names, and 4 validate-only names.\",\n      \"evidence_level\": \"mid\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": [\n        \"If candidate inputs or risk notes change materially, regenerate the candidate framework before using it in planning.\"\n      ]\n    }\n  ],\n  \"practice_order\": [\n    \"Run the read-only health check first.\",\n    \"Review research findings and evidence levels.\",\n    \"Check the watchlist or candidate observations and keep only a few names.\",\n    \"Review one backtest or validation summary before any simulation idea.\",\n    \"Move to simulation only after risk budget and readiness checklist are both clear.\"\n  ],\n  \"assumptions\": [\n    \"candidate_scope: hong_kong — Keep the first review universe small and aligned with the preferred market set.\",\n    \"selection_method: rules_plus_explanation_gate — A symbol can be downgraded when explanation quality, liquidity comfort, or data completeness is not strong enough.\",\n    \"research_attachment: missing — The candidate framework is stronger when it can reuse the same evidence and risk language as the research artifact.\"\n  ],\n  \"common_pitfalls\": [\n    \"Confusing a good story with a tested rule.\",\n    \"Looking only at return and ignoring drawdown, turnover and sample quality.\",\n    \"Adding too many correlated names and calling it diversification.\",\n    \"Letting an LLM summary replace manual review of evidence and risk controls.\",\n    \"00981.HK is not yet a beginner_watchlist symbol; keep it in observation or validation mode.\",\n    \"波动较大且受政策预期影响\"\n  ],\n  \"minimum_viable_start\": [\n    \"One market, a small watchlist and a low-frequency review habit.\",\n    \"A written risk budget with single-position, total-exposure and pause rules.\",\n    \"At least one backtest or validation note with data-quality and cost assumptions recorded.\",\n    \"A simulation observation period before any live intent.\",\n    \"Use the top few beginner_watchlist or observe_only names as the initial review universe.\"\n  ],\n  \"readiness\": [\n    \"No readiness checklist has been attached yet.\"\n  ],\n  \"plan_differences\": [\n    \"No previous plan comparison was available for this run.\"\n  ],\n  \"personalization_summary\": [\n    \"No explicit personalization summary was recorded for this artifact.\"\n  ],\n  \"update_scope\": [\n    \"No scoped profile update information was recorded.\"\n  ],\n  \"next_actions\": [\n    \"Use 00981.HK as a validation-only example and do not promote it before cadence evidence improves.\",\n    \"Use 01347.HK as a validation-only example and do not promote it before cadence evidence improves.\",\n    \"Use 09992.HK as a validation-only example and do not promote it before cadence evidence improves.\",\n    \"Use 00772.HK as a validation-only example and do not promote it before cadence evidence improves.\",\n    \"Keep validate-only names in a research queue until liquidity, volatility, and thesis checks are refreshed.\",\n    \"Keep the candidate review universe aligned with the preferred markets until the routine is stable.\",\n    \"Attach the latest beginner research artifact so candidate explanations can reuse the same evidence language.\"\n  ],\n  \"local_limits\": [\n    \"Execution-related stages still require explicit confirmation and should default to plan-only mode.\"\n  ]\n}\n",
+      "section_count": 9,
+      "version": "v1",
+      "generated_at": "2026-05-11T07:16:45.695377+08:00"
+    }
+  ],
+  "meta": {
+    "framework_summary": {
+      "counts": {
+        "beginner_watchlist": 0,
+        "observe_only": 0,
+        "validate_only": 4
+      },
+      "trading_level_counts": {
+        "daily": 2,
+        "minute": 2,
+        "needs_review": 0
+      },
+      "backtest_ready_count": 4,
+      "rules": {
+        "stock_pool_scope": [
+          "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+          "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+        ],
+        "liquidity_rules": [
+          "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+          "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+        ],
+        "cadence_rules": [
+          "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+          "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+          "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+        ],
+        "volatility_rules": [
+          "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+          "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+        ],
+        "diversification_rules": [
+          "Avoid stacking too many names from the same theme bucket.",
+          "Keep the watchlist short enough that each name can be reviewed manually."
+        ],
+        "exclusions": [
+          "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+          "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+        ]
+      },
+      "llm_research_pending_count": 0,
+      "low_data_quality_count": 0
+    },
+    "framework_rules": {
+      "stock_pool_scope": [
+        "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+        "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+      ],
+      "liquidity_rules": [
+        "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+        "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+      ],
+      "cadence_rules": [
+        "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+        "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+        "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+      ],
+      "volatility_rules": [
+        "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+        "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+      ],
+      "diversification_rules": [
+        "Avoid stacking too many names from the same theme bucket.",
+        "Keep the watchlist short enough that each name can be reviewed manually."
+      ],
+      "exclusions": [
+        "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+        "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+      ]
+    },
+    "preferred_markets": [
+      "hong_kong"
+    ],
+    "research_artifact_attached": false,
+    "next_step_suggestions": [
+      "Use 00981.HK as a validation-only example and do not promote it before cadence evidence improves.",
+      "Use 01347.HK as a validation-only example and do not promote it before cadence evidence improves.",
+      "Use 09992.HK as a validation-only example and do not promote it before cadence evidence improves.",
+      "Use 00772.HK as a validation-only example and do not promote it before cadence evidence improves.",
+      "Keep validate-only names in a research queue until liquidity, volatility, and thesis checks are refreshed.",
+      "Keep the candidate review universe aligned with the preferred markets until the routine is stable.",
+      "Attach the latest beginner research artifact so candidate explanations can reuse the same evidence language."
+    ],
+    "profile": {
+      "capital": null,
+      "hours_per_week": null,
+      "max_drawdown_pct": null,
+      "risk_profile": "conservative",
+      "preferred_market": "hk"
+    },
+    "task_type": "simulation",
+    "backtest_targets": [
+      {
+        "symbol": "00981.HK",
+        "market": "hong_kong",
+        "selected_as": "validate_only",
+        "trading_level": "daily",
+        "backtest_ready": true,
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Hong Kong validate-only names with a concrete daily/minute cadence still enter the evidence-only backtest stage.",
+        "trading_level_reasons": [
+          "Daily cadence is the conservative default when intraday evidence is not explicit."
+        ]
+      },
+      {
+        "symbol": "01347.HK",
+        "market": "hong_kong",
+        "selected_as": "validate_only",
+        "trading_level": "minute",
+        "backtest_ready": true,
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Hong Kong validate-only names with a concrete daily/minute cadence still enter the evidence-only backtest stage.",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ]
+      },
+      {
+        "symbol": "09992.HK",
+        "market": "hong_kong",
+        "selected_as": "validate_only",
+        "trading_level": "daily",
+        "backtest_ready": true,
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Hong Kong validate-only names with a concrete daily/minute cadence still enter the evidence-only backtest stage.",
+        "trading_level_reasons": [
+          "Daily cadence is the conservative default when intraday evidence is not explicit."
+        ]
+      },
+      {
+        "symbol": "00772.HK",
+        "market": "hong_kong",
+        "selected_as": "validate_only",
+        "trading_level": "minute",
+        "backtest_ready": true,
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Hong Kong validate-only names with a concrete daily/minute cadence still enter the evidence-only backtest stage.",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ]
+      }
+    ],
+    "confirmation_requirements": [],
+    "rendered_formats": [
+      "markdown",
+      "json"
+    ],
+    "risk_labels": [
+      "risk_prompts_present"
+    ],
+    "artifact_summary": {
+      "artifact_type": "beginner_candidate_framework",
+      "title": "Beginner Candidate Framework",
+      "generated_at": "2026-05-11T07:16:45.694643+08:00",
+      "version": "v1",
+      "knowledge_section_count": 0,
+      "research_finding_count": 1,
+      "candidate_count": 4,
+      "plan_phase_count": 0,
+      "rendered_document_count": 2,
+      "has_risk_budget": false,
+      "has_readiness": false
+    },
+    "traceability": {
+      "slug": "beginner_quant_candidate_framework",
+      "artifact_type": "beginner_candidate_framework",
+      "version": "v1",
+      "generated_at": "2026-05-11T07:16:45.694643+08:00",
+      "current_assumption_count": 3,
+      "invalidation_condition_count": 3,
+      "confirmation_requirement_count": 0,
+      "next_step_count": 7
+    }
+  }
+}

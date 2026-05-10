@@ -958,6 +958,114 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertTrue(any("backtest_report" in warning for warning in result["warnings"]))
             self.assertTrue(Path(result["workflow_report"]).exists())
 
+    def test_quant_workflow_normalizes_hk_market_alias_for_candidate_filtering(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            runs.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "00700.HK",
+                            "market": "hong_kong",
+                            "name": "Tencent",
+                            "rationale": "Platform cash flow and buyback support remain intact.",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.82,
+                            "action_hint": "daily trend review",
+                            "signals": [{"score": 0.75, "summary": "buyback support remains firm"}],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            service = QuantWorkflowService(tmp_path)
+            result = service.run(
+                profile={"preferred_market": "hk", "risk_profile": "moderate"},
+                preferred_markets=["hk"],
+                mode="stage_only",
+                stage="candidate_framework",
+                task_type="simulation",
+            )
+
+            candidate_payload = json.loads(Path(result["candidate_artifact"]).read_text(encoding="utf-8"))
+            self.assertEqual(candidate_payload["meta"]["preferred_markets"], ["hong_kong"])
+            self.assertEqual(len(candidate_payload["candidate_observations"]), 1)
+            self.assertEqual(candidate_payload["candidate_observations"][0]["market"], "hong_kong")
+            self.assertTrue(candidate_payload["meta"]["backtest_targets"][0]["backtest_target_eligible"])
+            self.assertIn("promoted beyond validation-only", candidate_payload["meta"]["backtest_targets"][0]["backtest_target_reason"])
+
+    def test_quant_workflow_backtest_includes_hk_validate_only_targets_with_explicit_cadence(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            classic = runs / "classic_multifactor"
+            runs.mkdir(parents=True)
+            classic.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "00700.HK",
+                            "market": "hong_kong",
+                            "name": "Tencent",
+                            "rationale": "Platform cash flow and buyback support remain intact.",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.67,
+                            "action_hint": "daily trend review",
+                            "signals": [{"score": 0.72, "summary": "buyback support remains firm"}],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (classic / "vnpy_cta_backtest_report.json").write_text(
+                json.dumps(
+                    {
+                        "symbol": "00700.HK",
+                        "start": "2024-01-01",
+                        "end": "2024-12-31",
+                        "stats": {
+                            "status": "ok",
+                            "start_date": "2024-01-01",
+                            "end_date": "2024-12-31",
+                            "sharpe_ratio": 1.1,
+                            "return_drawdown_ratio": 1.5,
+                            "sample_count": 260,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            service = QuantWorkflowService(tmp_path)
+            result = service.run(
+                profile={"preferred_market": "hk", "risk_profile": "moderate"},
+                preferred_markets=["hk"],
+                mode="stage_only",
+                stage="backtest",
+                task_type="simulation",
+            )
+
+            candidate_payload = json.loads(Path(result["candidate_artifact"]).read_text(encoding="utf-8"))
+            backtest_payload = json.loads(Path(result["backtest_artifact"]).read_text(encoding="utf-8"))
+            observations = {item["symbol"]: item for item in candidate_payload["candidate_observations"]}
+            targets = {item["symbol"]: item for item in candidate_payload["meta"]["backtest_targets"]}
+
+            self.assertEqual(observations["00700.HK"]["selected_as"], "validate_only")
+            self.assertEqual(observations["00700.HK"]["meta"]["trading_level"], "daily")
+            self.assertTrue(targets["00700.HK"]["backtest_target_eligible"])
+            self.assertIn("Hong Kong validate-only names", targets["00700.HK"]["backtest_target_reason"])
+            self.assertEqual(backtest_payload["meta"]["backtest_summary"]["target_count"], 1)
+            self.assertEqual(backtest_payload["meta"]["backtest_summary"]["ok_count"], 1)
+            self.assertEqual(backtest_payload["meta"]["backtest_results"][0]["symbol"], "00700.HK")
+
 
 if __name__ == "__main__":
     unittest.main()

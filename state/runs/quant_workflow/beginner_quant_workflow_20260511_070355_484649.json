@@ -1,0 +1,203 @@
+{
+  "workflow_name": "beginner_quant",
+  "mode": "stage_only",
+  "started_at": "2026-05-11T07:03:55.479770+08:00",
+  "status": "warning",
+  "steps": [
+    {
+      "step": "healthcheck",
+      "status": "ok",
+      "message": "Unified healthcheck completed and the requested local evidence is available.",
+      "outputs": [
+        "/projects/vnpy/state/runs/healthcheck.json",
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+        "/projects/vnpy/state/runs/candidate_inputs.json",
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json | /projects/vnpy/state/runs/candidate_inputs.json",
+        "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_report.json",
+        "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_report.json",
+        "/projects/vnpy/state/runs/hk_futu_sim_session_report.json",
+        "/projects/vnpy/state/runs/reports/preflight_20260509.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "task_type": "simulation",
+        "checks": {
+          "health_snapshot": {
+            "path": "/projects/vnpy/state/runs/healthcheck.json",
+            "exists": true,
+            "required": false,
+            "note": "Cached or active environment health snapshot."
+          },
+          "candidate_inputs_dynamic": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+            "exists": true,
+            "required": false,
+            "note": "Prepared dynamic candidate input artifact."
+          },
+          "candidate_inputs_static": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.json",
+            "exists": true,
+            "required": false,
+            "note": "Prepared static candidate input artifact."
+          },
+          "candidate_inputs_any": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json | /projects/vnpy/state/runs/candidate_inputs.json",
+            "exists": true,
+            "required": true,
+            "note": "Any local candidate input artifact required by candidate/backtest/readiness stages."
+          },
+          "backtest_report": {
+            "path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Local historical backtest report evidence."
+          },
+          "optimization_report": {
+            "path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Local optimization sweep report used to recover best parameters."
+          },
+          "sim_session_report": {
+            "path": "/projects/vnpy/state/runs/hk_futu_sim_session_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Latest simulation session report if simulation evidence has already been collected."
+          },
+          "sim_reconciliation": {
+            "path": "/projects/vnpy/state/runs/futu_sim_position_reconcile.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest simulation reconciliation artifact."
+          },
+          "simulation_preflight": {
+            "path": "/projects/vnpy/state/runs/reports/preflight_20260509.json",
+            "exists": true,
+            "required": false,
+            "note": "Latest simulation preflight pass/fail evidence."
+          },
+          "simulation_diff": {
+            "path": "/projects/vnpy/state/runs/reports/dual_run_diff_<date>.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest simulation dual-run or reconciliation diff evidence."
+          },
+          "live_report": {
+            "path": "/projects/vnpy/state/runs/hk_live_task_report.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest live-task report or audit schema evidence."
+          },
+          "live_reconciliation": {
+            "path": "/projects/vnpy/state/runs/futu_live_position_reconcile.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest live reconciliation evidence."
+          }
+        },
+        "blocking_reasons": [],
+        "health_status": "ok",
+        "health_source": "cached_healthcheck"
+      }
+    },
+    {
+      "step": "candidate_framework",
+      "status": "warning",
+      "message": "Selected observation targets and assigned daily/minute readiness levels from local candidate inputs.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/beginner_quant_candidate_framework_artifact_20260511_070355_483424.json"
+      ],
+      "warnings": [
+        "No candidate observations were produced from the current local inputs."
+      ],
+      "meta": {
+        "requires_confirmation": false,
+        "summary": {
+          "counts": {
+            "beginner_watchlist": 0,
+            "observe_only": 0,
+            "validate_only": 0
+          },
+          "trading_level_counts": {
+            "daily": 0,
+            "minute": 0,
+            "needs_review": 0
+          },
+          "backtest_ready_count": 0,
+          "rules": {
+            "stock_pool_scope": [
+              "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+              "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+            ],
+            "liquidity_rules": [
+              "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+              "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+            ],
+            "cadence_rules": [
+              "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+              "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+              "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+            ],
+            "volatility_rules": [
+              "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+              "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+            ],
+            "diversification_rules": [
+              "Avoid stacking too many names from the same theme bucket.",
+              "Keep the watchlist short enough that each name can be reviewed manually."
+            ],
+            "exclusions": [
+              "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+              "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+            ]
+          },
+          "llm_research_pending_count": 0,
+          "low_data_quality_count": 0
+        },
+        "backtest_targets": []
+      }
+    }
+  ],
+  "outputs": [
+    "/projects/vnpy/state/runs/quant_workflow/beginner_quant_candidate_framework_artifact_20260511_070355_483424.json"
+  ],
+  "warnings": [
+    "No candidate observations were produced from the current local inputs."
+  ],
+  "assumptions": [
+    {
+      "name": "task_type",
+      "value": "simulation",
+      "reason": "Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews."
+    },
+    {
+      "name": "preferred_markets",
+      "value": "hk",
+      "reason": "Candidate framework filtering stays aligned with the requested market subset."
+    },
+    {
+      "name": "workflow_mode",
+      "value": "conservative",
+      "reason": "Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning."
+    }
+  ],
+  "workflow_summary": {
+    "step_count": 2,
+    "output_count": 1,
+    "warning_count": 1,
+    "blocked_steps": [],
+    "confirmation_required_steps": [],
+    "warning_steps": [
+      "candidate_framework"
+    ]
+  },
+  "traceability": {
+    "slug": "beginner_quant",
+    "workflow_name": "beginner_quant",
+    "mode": "stage_only",
+    "started_at": "2026-05-11T07:03:55.479770+08:00",
+    "status": "warning",
+    "assumption_count": 3
+  }
+}
