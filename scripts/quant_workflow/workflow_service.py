@@ -239,6 +239,9 @@ class QuantWorkflowService:
                 )
                 self._append_step(steps=steps, warnings=warnings, step=validation_step)
 
+        simulation_acceptance = self._collect_simulation_acceptance(stage=stage)
+        live_evidence = self._collect_live_evidence(stage=stage)
+
         plan_artifact: PlanningArtifact | None = None
         if "planning" in requested_steps:
             previous_plan = self.store.load_previous_plan(slug="beginner_quant_plan")
@@ -257,12 +260,16 @@ class QuantWorkflowService:
                 has_risk_budget=plan_artifact.risk_budget is not None,
                 has_review_notes=True,
                 capability_gaps=[gap.capability_id for gap in capability_gaps if gap.expected_path.startswith("scripts/run_hk")],
+                simulation_acceptance=simulation_acceptance,
+                live_evidence=live_evidence,
             )
             plan_artifact.readiness = readiness
             plan_artifact.meta.setdefault("profile", profile)
             plan_artifact.meta["current_stage"] = stage
             plan_artifact.meta["workflow_mode"] = mode
             plan_artifact.meta["previous_plan_loaded"] = previous_plan is not None
+            plan_artifact.meta["simulation_acceptance"] = simulation_acceptance
+            plan_artifact.meta["live_evidence"] = live_evidence
             if previous_plan is not None:
                 plan_artifact.meta["previous_plan_generated_at"] = previous_plan.generated_at
                 plan_artifact.meta["previous_plan_version"] = previous_plan.version
@@ -293,6 +300,8 @@ class QuantWorkflowService:
                     "previous_plan_loaded": previous_plan is not None,
                     "next_step_suggestions": list(plan_artifact.meta.get("next_step_suggestions") or []),
                     "readiness_failed_items": [item.name for item in readiness.failed_items()],
+                    "simulation_acceptance": simulation_acceptance,
+                    "live_evidence": live_evidence,
                 },
             )
             self._append_step(steps=steps, warnings=warnings, step=planning_step)
@@ -418,6 +427,87 @@ class QuantWorkflowService:
             "blocking_reasons": blocking_reasons,
             "checks": checks,
         }
+
+    def _collect_simulation_acceptance(self, *, stage: str) -> dict[str, Any]:
+        reports_root = self.repo_root / "state" / "runs" / "reports"
+        preflight_files = sorted(reports_root.glob("preflight_*.json")) if reports_root.exists() else []
+        diff_files = sorted(reports_root.glob("*dual_run_diff*.json")) if reports_root.exists() else []
+
+        latest_preflight_path = preflight_files[-1] if preflight_files else None
+        latest_diff_path = diff_files[-1] if diff_files else None
+        latest_preflight = self._safe_load_json(latest_preflight_path)
+        latest_diff = self._safe_load_json(latest_diff_path)
+
+        passed_preflights = [path for path in preflight_files if self._preflight_passed(self._safe_load_json(path))]
+        passed_diffs = [path for path in diff_files if self._diff_report_passed(self._safe_load_json(path))]
+        minimums = self.readiness_gate.minimum_observation_requirements(stage)
+
+        return {
+            "required_days": int(minimums.get("minimum_simulation_days") or 0),
+            "passed_days": min(len(passed_preflights), len(passed_diffs)),
+            "history_points": max(len(preflight_files), len(diff_files)),
+            "latest_preflight_passed": self._preflight_passed(latest_preflight),
+            "latest_diff_passed": self._diff_report_passed(latest_diff),
+            "latest_preflight_path": str(latest_preflight_path) if latest_preflight_path else "",
+            "latest_report_path": str(latest_diff_path) if latest_diff_path else "",
+            "history_summary": [
+                {
+                    "preflight_reports": len(preflight_files),
+                    "preflight_passed": len(passed_preflights),
+                    "diff_reports": len(diff_files),
+                    "diff_passed": len(passed_diffs),
+                }
+            ],
+        }
+
+    def _collect_live_evidence(self, *, stage: str) -> dict[str, Any]:
+        live_report_paths = [
+            self.repo_root / "state" / "runs" / "hk_live_task_report.json",
+            self.repo_root / "state" / "runs" / "us_live_task_report.json",
+        ]
+        reconciliation_paths = [
+            self.repo_root / "state" / "runs" / "futu_live_position_reconcile.json",
+            self.repo_root / "state" / "runs" / "futu_sim_position_reconcile.json",
+        ]
+        report_path = next((path for path in live_report_paths if path.exists()), None)
+        reconciliation_path = next((path for path in reconciliation_paths if path.exists()), None)
+        report_payload = self._safe_load_json(report_path)
+
+        approval_switches_documented = False
+        if isinstance(report_payload, dict):
+            approval_switches_documented = bool(
+                report_payload.get("env_var_required")
+                and (report_payload.get("risk_config") or {}).get("approval_env_var_required")
+            )
+
+        return {
+            "report_schema_ready": report_path is not None,
+            "approval_switches_documented": approval_switches_documented,
+            "reconciliation_recent": reconciliation_path is not None,
+            "risk_guard_auditable": bool(report_path and report_payload and isinstance(report_payload.get("risk_config"), dict)),
+            "report_path": str(report_path) if report_path else "",
+            "reconciliation_path": str(reconciliation_path) if reconciliation_path else "",
+            "approval_notes": [
+                "HK/US live wrappers preserve explicit --live-submit intent and downstream VNPY_LIVE_* switches."
+            ] if stage == "live" else [],
+        }
+
+    def _safe_load_json(self, path: Path | None) -> dict[str, Any]:
+        if path is None or not path.exists():
+            return {}
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+
+    def _preflight_passed(self, payload: dict[str, Any]) -> bool:
+        totals = payload.get("totals") or {}
+        return bool(payload) and int(totals.get("fail") or 0) == 0
+
+    def _diff_report_passed(self, payload: dict[str, Any]) -> bool:
+        totals = payload.get("totals") or {}
+        business_keys = payload.get("business_keys") or {}
+        return bool(payload) and int(totals.get("fail") or 0) == 0 and int(business_keys.get("only_a_total_count") or 0) == 0 and int(business_keys.get("only_b_total_count") or 0) == 0
 
     def _build_next_step_suggestions(self, *, artifact: PlanningArtifact, stage: str) -> list[str]:
         suggestions = list(artifact.execution_suggestions)

@@ -103,6 +103,7 @@ class CandidateInputPreparationService:
                 "market_coverage": sorted(
                     set(dynamic_result.get("market_coverage", [])) | set(static_result.get("market_coverage", []))
                 ),
+                "provider_merge_policy": "symbol_merge_dynamic_preferred",
                 "total_items": int(dynamic_result.get("item_count", 0) or 0) + int(static_result.get("item_count", 0) or 0),
                 "include_market_data": bool(include_market_data),
                 "knot_runtime": str(knot_runtime or "auto"),

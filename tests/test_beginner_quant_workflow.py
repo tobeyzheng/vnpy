@@ -26,12 +26,14 @@ from scripts.quant_workflow.workflow_service import QuantWorkflowService
 
 
 class BeginnerQuantWorkflowTests(unittest.TestCase):
-    def test_capability_registry_exposes_known_gaps(self):
+    def test_capability_registry_exposes_hk_capabilities_without_gaps(self):
         registry = CapabilityRegistry()
 
         gaps = registry.capability_gaps()
 
-        self.assertTrue(any(gap.capability_id == "gap.hk_sim_task" for gap in gaps))
+        self.assertFalse(any(gap.expected_path.startswith("scripts/run_hk") for gap in gaps))
+        self.assertTrue(any(item.capability_id == "sim.hk_task" for item in registry.select_for_stage("simulation")))
+        self.assertTrue(any(item.capability_id == "live.hk_task" for item in registry.select_for_stage("live")))
         self.assertTrue(any(item.capability_id == "classic_multifactor.vnpy_backtest" for item in registry.select_for_stage("backtest")))
 
     def test_candidate_framework_downgrades_high_risk_or_unsupported_market(self):
@@ -128,6 +130,41 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         blocked, _ = gate.should_block_upgrade(checklist)
 
         self.assertFalse(blocked)
+        self.assertFalse(checklist.failed_items())
+
+    def test_readiness_gate_uses_simulation_and_live_evidence(self):
+        gate = ReadinessGateService()
+
+        checklist = gate.build_stage_checklist(
+            stage="live",
+            health_status="ok",
+            has_research_artifact=True,
+            has_backtest_metadata=True,
+            has_risk_budget=True,
+            has_review_notes=True,
+            capability_gaps=[],
+            simulation_acceptance={
+                "required_days": 40,
+                "passed_days": 40,
+                "latest_preflight_passed": True,
+                "latest_diff_passed": True,
+                "latest_preflight_path": "state/runs/reports/preflight_20260510.json",
+                "latest_report_path": "state/runs/reports/dual_run_diff_20260510.json",
+            },
+            live_evidence={
+                "report_schema_ready": True,
+                "approval_switches_documented": True,
+                "reconciliation_recent": True,
+                "risk_guard_auditable": True,
+                "report_path": "state/runs/hk_live_task_report.json",
+                "reconciliation_path": "state/runs/futu_live_position_reconcile.json",
+            },
+        )
+
+        blocked, reasons = gate.should_block_upgrade(checklist)
+
+        self.assertFalse(blocked)
+        self.assertFalse(reasons)
         self.assertFalse(checklist.failed_items())
 
     def test_plan_generator_records_profile_changes_against_previous_plan(self):
@@ -594,6 +631,101 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertIn("Personalization summary", second_plan["rendered_documents"][0]["body"])
             self.assertIn("Update scope", second_plan["rendered_documents"][0]["body"])
             self.assertIn("Next actions", second_plan["rendered_documents"][0]["body"])
+
+    def test_quant_workflow_collects_local_simulation_and_live_evidence(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            reports = runs / "reports"
+            classic = runs / "classic_multifactor"
+            runs.mkdir(parents=True)
+            reports.mkdir(parents=True)
+            classic.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "00700.HK",
+                            "market": "hong_kong",
+                            "name": "Tencent",
+                            "rationale": "Platform cash flow and buyback support remain intact.",
+                            "risk": "regulation overhang",
+                            "raw_score": 0.82,
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (classic / "vnpy_cta_backtest_report.json").write_text(
+                json.dumps(
+                    {
+                        "stats": {
+                            "start_date": "2024-01-01",
+                            "end_date": "2024-12-31",
+                            "sharpe_ratio": 1.1,
+                            "return_drawdown_ratio": 1.5,
+                            "turnover": 1.4,
+                            "sample_count": 260,
+                        },
+                        "setting": {
+                            "rate": 0.0005,
+                            "slippage": 0.0008,
+                            "liquidity_assumptions": ["HK large-cap spread review completed"],
+                        },
+                        "validation_split": {
+                            "train": "2024-01-01:2024-06-30",
+                            "validation": "2024-07-01:2024-09-30",
+                            "test": "2024-10-01:2024-12-31",
+                        },
+                        "data_quality": {"notes": ["manual bias review completed"], "bias_flags": []},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (reports / "preflight_20260510.json").write_text(
+                json.dumps({"totals": {"fail": 0, "warn": 0, "ok": 8}}),
+                encoding="utf-8",
+            )
+            (reports / "dual_run_diff_20260510.json").write_text(
+                json.dumps({"totals": {"fail": 0, "warn": 0, "ok": 8}, "business_keys": {"only_a_total_count": 0, "only_b_total_count": 0}}),
+                encoding="utf-8",
+            )
+            (runs / "hk_live_task_report.json").write_text(
+                json.dumps(
+                    {
+                        "env_var_required": "VNPY_LIVE_SUBMIT",
+                        "risk_config": {"approval_env_var_required": "VNPY_LIVE_APPROVED"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (runs / "futu_live_position_reconcile.json").write_text(
+                json.dumps({"status": "ok"}),
+                encoding="utf-8",
+            )
+
+            service = QuantWorkflowService(tmp_path)
+            result = service.run(
+                profile={"preferred_market": "hong_kong", "risk_profile": "moderate"},
+                preferred_markets=["hong_kong"],
+                mode="stage_only",
+                stage="live",
+            )
+
+            planning_steps = [step for step in result["steps"] if step["step"] == "planning"]
+            self.assertTrue(planning_steps)
+            self.assertTrue(planning_steps[0]["meta"]["simulation_acceptance"]["latest_preflight_passed"])
+            self.assertTrue(planning_steps[0]["meta"]["simulation_acceptance"]["latest_diff_passed"])
+            self.assertTrue(planning_steps[0]["meta"]["live_evidence"]["approval_switches_documented"])
+            self.assertTrue(planning_steps[0]["meta"]["live_evidence"]["reconciliation_recent"])
+
+            plan_payload = json.loads(Path(result["plan_artifact"]).read_text(encoding="utf-8"))
+            self.assertIn("simulation_acceptance", plan_payload["meta"])
+            self.assertIn("live_evidence", plan_payload["meta"])
+            self.assertTrue(plan_payload["meta"]["simulation_acceptance"]["latest_diff_passed"])
+            self.assertTrue(plan_payload["meta"]["live_evidence"]["report_schema_ready"])
 
     def test_quant_workflow_research_only_mode_limits_steps(self):
         from tempfile import TemporaryDirectory

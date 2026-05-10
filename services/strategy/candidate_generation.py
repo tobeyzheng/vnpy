@@ -127,15 +127,18 @@ class HybridCandidateGenerationService:
     ) -> tuple[list[dict[str, Any]], Counter, list[str], dict[str, Any]]:
         source_row_counts: Counter = Counter()
         warnings: list[str] = []
+        normalized_runtime = str(knot_runtime or "auto").strip().lower() or "auto"
         enrichment_meta = {
             "market_data": {
                 "enabled": bool(include_market_data),
                 "status": "skipped" if not include_market_data else "pending",
             },
             "knot": {
-                "enabled": str(knot_runtime or "auto").strip().lower() != "off",
-                "runtime_mode": str(knot_runtime or "auto").strip().lower() or "auto",
-                "status": "skipped" if str(knot_runtime or "auto").strip().lower() == "off" else "pending",
+                "enabled": normalized_runtime != "off",
+                "runtime_mode": normalized_runtime,
+                "requested_runtime_mode": normalized_runtime,
+                "deterministic_traceability": True,
+                "status": "skipped" if normalized_runtime == "off" else "pending",
             },
         }
         if not sources:

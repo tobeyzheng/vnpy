@@ -36,8 +36,8 @@
 
 - [ ] 8. 二轮清理与文档收尾（S5 后半）
   - 状态：**进行中**
-  - 已完成：`scripts/run_us_live_task.py` 已切到 `scripts/classic_multifactor/run_intraday_loop.py` 转发路径；`services/trading_pipeline/__init__.py` 已移除 `LiveTradingPipeline` / `LiveTaskConfig` 默认导出；`docs/system_integration_guide.md` 与 `docs/project_operation_log.md` 已同步本轮入口迁移与静态修复记录
-  - 未完成：`README.md` 顶部没有 migration notice；`task8_cleanup_checklist.md` 中列出的删除项尚未执行；`services/trading_pipeline/live_task.py` 仍保留为待清理历史实现
+  - 已完成：`scripts/run_us_live_task.py` 已切到 `scripts/classic_multifactor/run_intraday_loop.py` 转发路径；`services/trading_pipeline/__init__.py` 已移除 `LiveTradingPipeline` / `LiveTaskConfig` 默认导出；`docs/system_integration_guide.md` 与 `docs/project_operation_log.md` 已同步本轮入口迁移与静态修复记录；本轮已新增 `scripts/run_hk_sim_task.py`、`scripts/run_hk_futu_sim_session.py`、`scripts/run_hk_live_task.py` 顶层入口，并把 HK capability 从 `gap.*` 升级为正式 capability，同时把 readiness / workflow / candidate provider / 文档追平到新的 evidence-first 口径
+  - 未完成：`README.md` 顶部没有 migration notice；`task8_cleanup_checklist.md` 中列出的删除项尚未执行；`services/trading_pipeline/live_task.py` 仍保留为待清理历史实现；真实多日 SIM / 对账样本仍需继续累积
   - 前置条件：删除动作与更激进的清理仍应等待 Task 7 双跑通过并获得用户确认后再继续
 
 ### 当前执行焦点

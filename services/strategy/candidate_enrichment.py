@@ -262,12 +262,16 @@ class CandidateKnotEnrichmentService:
             runtimes_used.add(str(result.get("runtime") or normalized_runtime))
             self._apply_result(row, result=result, mode=mode, task_type=task_type)
 
+        actual_runtimes = sorted(runtimes_used)
         return {
             "enabled": True,
             "status": "ok",
             "source": self.source_id,
             "runtime_mode": normalized_runtime,
-            "runtimes_used": sorted(runtimes_used),
+            "requested_runtime_mode": normalized_runtime,
+            "runtimes_used": actual_runtimes,
+            "single_runtime_effective": len(actual_runtimes) <= 1,
+            "fallback_used": fallback_count > 0,
             "evaluated_rows": evaluated_rows,
             "fallback_count": fallback_count,
             "warnings": warnings,

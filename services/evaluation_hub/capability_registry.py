@@ -218,12 +218,51 @@ class CapabilityRegistry:
                 safe_by_default=False,
             ),
             CapabilityDefinition(
+                capability_id="sim.hk_task",
+                path="scripts/run_hk_sim_task.py",
+                stage="simulation",
+                description="HK SIM trading task entry using legacy pipeline or forwarding into vnpy mainline.",
+                inputs=["candidate inputs", "market quotes", "optional classic config"],
+                outputs=["state/runs/hk_sim_task_report.json", "state/runs/hk_sim_account.json"],
+                manual_checkpoints=["Review HK lot-size assumptions and selected candidates before running.", "Prefer dry-run or report review for beginner workflow."],
+                requires_confirmation=True,
+                mutates_state=True,
+                connects_remote=True,
+                safe_by_default=False,
+            ),
+            CapabilityDefinition(
+                capability_id="sim.hk_futu_session",
+                path="scripts/run_hk_futu_sim_session.py",
+                stage="simulation",
+                description="HK Futu SIM session wrapper with Hong Kong session defaults and state/report writes.",
+                inputs=["classic config", "session window", "HK report defaults"],
+                outputs=["state/runs/hk_futu_sim_session_report.json", "state/runs/events.jsonl", "state/runs/orders/*.json"],
+                manual_checkpoints=["Requires explicit user confirmation before session execution.", "Must stay in Futu SIMULATE environment only."],
+                requires_confirmation=True,
+                mutates_state=True,
+                connects_remote=True,
+                safe_by_default=False,
+            ),
+            CapabilityDefinition(
                 capability_id="live.us_task",
                 path="scripts/run_us_live_task.py",
                 stage="live",
                 description="US live-task gate; dry-run by default and guarded by explicit live switches.",
                 inputs=["candidate inputs", "budget settings", "live-submit flag", "environment switches"],
                 outputs=["state/runs/us_live_task_report.json", "state/runs/orders/*.json"],
+                manual_checkpoints=["Real execution must be explicitly approved.", "Confirm VNPY_LIVE_CONFIG/VNPY_LIVE_SUBMIT/VNPY_LIVE_APPROVED before any non-dry-run path."],
+                requires_confirmation=True,
+                mutates_state=True,
+                connects_remote=True,
+                safe_by_default=False,
+            ),
+            CapabilityDefinition(
+                capability_id="live.hk_task",
+                path="scripts/run_hk_live_task.py",
+                stage="live",
+                description="HK live-task gate; dry-run by default and guarded by explicit live switches.",
+                inputs=["candidate inputs", "budget settings", "live-submit flag", "environment switches"],
+                outputs=["state/runs/hk_live_task_report.json", "state/runs/orders/*.json"],
                 manual_checkpoints=["Real execution must be explicitly approved.", "Confirm VNPY_LIVE_CONFIG/VNPY_LIVE_SUBMIT/VNPY_LIVE_APPROVED before any non-dry-run path."],
                 requires_confirmation=True,
                 mutates_state=True,
@@ -241,45 +280,6 @@ class CapabilityRegistry:
                 requires_confirmation=True,
                 mutates_state=True,
                 connects_remote=True,
-                safe_by_default=False,
-            ),
-            CapabilityDefinition(
-                capability_id="gap.hk_sim_task",
-                path="scripts/run_hk_sim_task.py",
-                stage="simulation",
-                description="Mentioned by project conventions but currently missing in repository; treat as a capability gap.",
-                inputs=["N/A"],
-                outputs=["N/A"],
-                manual_checkpoints=["Use US-only examples or a manual HK simulation flow until this entry exists."],
-                requires_confirmation=True,
-                mutates_state=False,
-                connects_remote=False,
-                safe_by_default=False,
-            ),
-            CapabilityDefinition(
-                capability_id="gap.hk_live_task",
-                path="scripts/run_hk_live_task.py",
-                stage="live",
-                description="Mentioned by project conventions but currently missing in repository; treat as a capability gap.",
-                inputs=["N/A"],
-                outputs=["N/A"],
-                manual_checkpoints=["Do not claim HK live support in automated workflow until the entry exists."],
-                requires_confirmation=True,
-                mutates_state=False,
-                connects_remote=False,
-                safe_by_default=False,
-            ),
-            CapabilityDefinition(
-                capability_id="gap.hk_futu_session",
-                path="scripts/run_hk_futu_sim_session.py",
-                stage="simulation",
-                description="Documented in integration guide but currently missing in repository; treat as capability gap.",
-                inputs=["N/A"],
-                outputs=["N/A"],
-                manual_checkpoints=["Use alternative manual HK SIM flow until this entry exists."],
-                requires_confirmation=True,
-                mutates_state=False,
-                connects_remote=False,
                 safe_by_default=False,
             ),
         ]
@@ -315,7 +315,7 @@ class EnhancedCapabilityRegistry(CapabilityRegistry):
             },
             "simulation": {
                 "description": "模拟阶段 - 实盘模拟、执行验证、风控测试",
-                "allowed_capabilities": ["classic_multifactor.intraday_runner", "classic_multifactor.daily_runner", "sim.us_legacy_task", "sim.us_futu_session"],
+                "allowed_capabilities": ["classic_multifactor.intraday_runner", "classic_multifactor.daily_runner", "sim.us_legacy_task", "sim.us_futu_session", "sim.hk_task", "sim.hk_futu_session"],
                 "safe_by_default": False,
                 "confirmation_required": True,
                 "output_types": ["simulation_report", "execution_log", "risk_monitor"],
@@ -324,7 +324,7 @@ class EnhancedCapabilityRegistry(CapabilityRegistry):
             },
             "live": {
                 "description": "实盘阶段 - 真实交易、资金管理、持续监控",
-                "allowed_capabilities": ["live.us_task"],
+                "allowed_capabilities": ["live.us_task", "live.hk_task"],
                 "safe_by_default": False,
                 "confirmation_required": True,
                 "output_types": ["live_trading_report", "account_statement", "risk_dashboard"],
@@ -389,7 +389,6 @@ class EnhancedCapabilityRegistry(CapabilityRegistry):
         for condition in upgrade_conditions:
             checklist.append(f"✓ {condition}")
 
-        # 添加通用检查项
         if stage == "backtest":
             checklist.extend([
                 "✓ 数据质量验证完成",
@@ -447,7 +446,7 @@ class LocalScriptCapabilityMapper:
         checkpoints = []
         for capability in capabilities:
             checkpoints.extend(capability.manual_checkpoints)
-        return list(set(checkpoints))  # 去重
+        return list(set(checkpoints))
 
 
 class StageBoundaryManager:
@@ -484,7 +483,6 @@ class StageBoundaryManager:
         if not validation["valid"]:
             return validation
 
-        # 检查目标阶段的能力是否可用
         target_capabilities = self.registry.by_stage(target_stage)
         if not target_capabilities:
             return {"valid": False, "reason": f"目标阶段{target_stage}没有可用的能力"}

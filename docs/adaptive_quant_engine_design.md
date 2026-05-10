@@ -23,6 +23,7 @@
 
 ### 当前核心模块
 
+- **`scripts/run_hk_sim_task.py` / `scripts/run_hk_futu_sim_session.py` / `scripts/run_hk_live_task.py`**：新增 HK 顶层包装入口，统一把 HK `SIM` / `session` / `live` 接到 vnpy intraday 主线，并保持 preview-first / evidence-first 的安全边界。
 - **`services/strategy/candidate_scoring.py`**：定义可复用的候选评分接口、dynamic/static 混合评分模型，以及单标候选 enrich 能力。
 - **`services/strategy/candidate_enrichment.py`**：定义可复用的候选 enrich 层，负责可选接入真实市场快照与 Knot 结构化评估。
 - **`services/strategy/candidate_generation.py`**：基于评分接口生成 dynamic/static 候选 payload，也可单独评估一个候选行。
@@ -69,12 +70,13 @@
 - 会输出 `state/runs/candidate_inputs.prepare.report.json`
 - 会把 dynamic/static 统一重写为带 `schema_version`、`generated_at`、`as_of_date`、`selection_policy`、`market_counts`、`row_requirements`、`scoring_model` 与 `enrichment` 的对象格式
 - 对外时间戳当前统一写为北京时间（`Asia/Shanghai`，`+08:00`），包括 prepare report、workflow summary、artifact、renderer 和 Knot `decision_time`
+- `enrichment.knot` 当前会显式记录 `requested_runtime_mode`、`runtimes_used`、`single_runtime_effective` 与 `fallback_used`，用于追溯这次 enrich 是否保持单一 runtime、是否发生 runtime fallback
 
 当前 provider 行为要点：
 
-- 如果指定了 `market`，优先返回该市场的动态候选；如果动态没有该市场，再回退静态文件。
-- 如果没有指定 `market`，先加载全部动态候选，再补上**动态文件中不存在的 market** 对应的静态候选。
-- 这意味着当前优先级仍然是**按 market 覆盖**，不是按 symbol 精细 merge。
+- 如果指定了 `market`，会在 merged 候选池中筛选该市场；不再以“整市场是否存在于 dynamic”决定是否丢弃 static。
+- 如果没有指定 `market`，会先读 static，再把 dynamic 针对相同 `(market, symbol)` 的候选做字段级覆盖。
+- 这意味着当前优先级已经改为**按 `(market, symbol)` 精细 merge**，dynamic 对同 symbol 具有覆盖权，但不会再整市场覆盖。
 - 所有候选在返回前都会经过 `normalize_symbol()` 标准化。
 
 这点和旧文档里“主流程优先读取静态文件”的说法不同；当前实现已经是**动态文件优先**。

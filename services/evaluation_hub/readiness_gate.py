@@ -145,8 +145,12 @@ class ReadinessGateService:
         has_risk_budget: bool = False,
         has_review_notes: bool = False,
         capability_gaps: list[str] | None = None,
+        simulation_acceptance: dict[str, Any] | None = None,
+        live_evidence: dict[str, Any] | None = None,
     ) -> ReadinessChecklist:
         gaps = list(capability_gaps or [])
+        sim_evidence = self._normalize_simulation_acceptance(simulation_acceptance, stage=stage)
+        live_checks = self._normalize_live_evidence(live_evidence)
         items = [
             ReadinessCheckItem(
                 name="health_status",
@@ -196,6 +200,7 @@ class ReadinessGateService:
                     remediation="Accumulate review notes over the minimum observation window before upgrading.",
                 )
             )
+            items.extend(self._simulation_acceptance_items(sim_evidence, stage=stage))
         if stage == "live":
             items.append(
                 ReadinessCheckItem(
@@ -206,15 +211,7 @@ class ReadinessGateService:
                     remediation="Close the missing local capability gaps or keep the workflow below live stage.",
                 )
             )
-            items.append(
-                ReadinessCheckItem(
-                    name="manual_approval_path",
-                    passed=False,
-                    severity="critical",
-                    details="Live-stage planning still requires explicit manual approval, reconciliation, and local protection checks.",
-                    remediation="Keep the workflow in simulation/report mode until the manual approval path is confirmed.",
-                )
-            )
+            items.extend(self._live_evidence_items(live_checks))
         return ReadinessChecklist(stage=stage, items=items)
 
     def should_block_upgrade(self, checklist: ReadinessChecklist) -> tuple[bool, list[str]]:
@@ -229,15 +226,139 @@ class ReadinessGateService:
                 "minimum_observation_days": 10,
                 "minimum_simulation_days": 20,
                 "pass_standard": "No unresolved health/data blockers, validated backtest metadata, and a stable weekly review process.",
+                "required_artifacts": ["state/runs/reports/preflight_*.json", "state/runs/reports/*dual_run_diff*.json"],
             }
         if stage == "live":
             return {
                 "minimum_observation_days": 20,
                 "minimum_simulation_days": 40,
                 "pass_standard": "Explicit approval controls, current reconciliation, validated simulation history, and no critical readiness failures.",
+                "required_artifacts": ["state/runs/reports/preflight_*.json", "state/runs/reports/*dual_run_diff*.json", "state/runs/hk_live_task_report.json|state/runs/us_live_task_report.json"],
             }
         return {
             "minimum_observation_days": 5,
             "minimum_simulation_days": 0,
             "pass_standard": "Basic research and review structure established.",
+            "required_artifacts": [],
         }
+
+    def _normalize_simulation_acceptance(self, evidence: dict[str, Any] | None, *, stage: str) -> dict[str, Any]:
+        payload = dict(evidence or {})
+        minimums = self.minimum_observation_requirements(stage)
+        required_days = int(payload.get("required_days") or minimums.get("minimum_simulation_days") or 0)
+        passed_days = int(payload.get("passed_days") or 0)
+        history_points = int(payload.get("history_points") or 0)
+        latest_preflight_passed = bool(payload.get("latest_preflight_passed"))
+        latest_diff_passed = bool(payload.get("latest_diff_passed"))
+        return {
+            "required_days": required_days,
+            "passed_days": passed_days,
+            "history_points": history_points,
+            "latest_preflight_passed": latest_preflight_passed,
+            "latest_diff_passed": latest_diff_passed,
+            "latest_report_path": str(payload.get("latest_report_path") or ""),
+            "latest_preflight_path": str(payload.get("latest_preflight_path") or ""),
+            "history_summary": list(payload.get("history_summary") or []),
+        }
+
+    def _simulation_acceptance_items(self, evidence: dict[str, Any], *, stage: str) -> list[ReadinessCheckItem]:
+        required_days = int(evidence.get("required_days") or 0)
+        passed_days = int(evidence.get("passed_days") or 0)
+        latest_report = str(evidence.get("latest_report_path") or "")
+        latest_preflight = str(evidence.get("latest_preflight_path") or "")
+        items = [
+            ReadinessCheckItem(
+                name="simulation_acceptance_window",
+                passed=required_days <= 0 or passed_days >= required_days,
+                severity="high" if stage == "live" else "medium",
+                details=(
+                    f"Simulation acceptance should include at least {required_days} passing day(s); "
+                    f"current passing history is {passed_days} day(s)."
+                ),
+                remediation="Accumulate additional passing SIM/preflight evidence before stage upgrade.",
+            ),
+            ReadinessCheckItem(
+                name="simulation_preflight_current",
+                passed=bool(evidence.get("latest_preflight_passed")),
+                severity="high",
+                details="The latest SIM preflight report should pass before stage upgrade.",
+                remediation="Resolve worktree/config/residual-order issues until the latest preflight is green.",
+            ),
+            ReadinessCheckItem(
+                name="simulation_diff_current",
+                passed=bool(evidence.get("latest_diff_passed")),
+                severity="high",
+                details="The latest SIM reconciliation/diff report should pass before stage upgrade.",
+                remediation="Resolve dual-run or reconciliation differences before upgrade.",
+            ),
+        ]
+        if latest_report or latest_preflight:
+            items.append(
+                ReadinessCheckItem(
+                    name="simulation_artifact_traceability",
+                    passed=True,
+                    severity="low",
+                    details=f"Latest SIM evidence: diff={latest_report or 'n/a'} preflight={latest_preflight or 'n/a'}.",
+                    remediation="",
+                )
+            )
+        return items
+
+    def _normalize_live_evidence(self, evidence: dict[str, Any] | None) -> dict[str, Any]:
+        payload = dict(evidence or {})
+        return {
+            "report_schema_ready": bool(payload.get("report_schema_ready")),
+            "approval_switches_documented": bool(payload.get("approval_switches_documented")),
+            "reconciliation_recent": bool(payload.get("reconciliation_recent")),
+            "risk_guard_auditable": bool(payload.get("risk_guard_auditable")),
+            "report_path": str(payload.get("report_path") or ""),
+            "reconciliation_path": str(payload.get("reconciliation_path") or ""),
+            "approval_notes": list(payload.get("approval_notes") or []),
+        }
+
+    def _live_evidence_items(self, evidence: dict[str, Any]) -> list[ReadinessCheckItem]:
+        manual_path_ready = all(
+            [
+                evidence.get("report_schema_ready"),
+                evidence.get("approval_switches_documented"),
+                evidence.get("reconciliation_recent"),
+                evidence.get("risk_guard_auditable"),
+            ]
+        )
+        return [
+            ReadinessCheckItem(
+                name="live_report_schema",
+                passed=bool(evidence.get("report_schema_ready")),
+                severity="high",
+                details="A live report path/schema should be in place so gating and order audit evidence can be persisted.",
+                remediation="Add or validate the live-task report path and output schema before upgrade.",
+            ),
+            ReadinessCheckItem(
+                name="approval_switches_documented",
+                passed=bool(evidence.get("approval_switches_documented")),
+                severity="critical",
+                details="Live approval switches and explicit submit intent must be documented in the local workflow.",
+                remediation="Keep live in dry-run/report mode until approval switches are explicit and auditable.",
+            ),
+            ReadinessCheckItem(
+                name="reconciliation_current",
+                passed=bool(evidence.get("reconciliation_recent")),
+                severity="critical",
+                details="Live-stage planning requires a current reconciliation artifact.",
+                remediation="Refresh reconciliation evidence before stage upgrade.",
+            ),
+            ReadinessCheckItem(
+                name="risk_audit_trail",
+                passed=bool(evidence.get("risk_guard_auditable")),
+                severity="high",
+                details="Execution-guard and risk decisions should leave an auditable local trail.",
+                remediation="Ensure live report/event artifacts expose gating and risk decisions.",
+            ),
+            ReadinessCheckItem(
+                name="manual_approval_path",
+                passed=manual_path_ready,
+                severity="critical",
+                details="Live-stage planning requires explicit manual approval, reconciliation, and local protection evidence.",
+                remediation="Keep the workflow in simulation/report mode until the manual approval path is evidenced locally.",
+            ),
+        ]

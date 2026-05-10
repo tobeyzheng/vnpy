@@ -77,6 +77,9 @@
 - **`scripts/run_us_sim_task.py`**：US SIM 任务入口；默认保留 legacy SIM 路径，同时支持显式转发到 `run_intraday_loop.py` 新主线。
 - **`scripts/run_us_futu_sim_session.py`**：US Futu SIM session 入口。
 - **`scripts/run_us_live_task.py`**：US live task 顶层包装入口；当前不再直接调用 `LiveTradingPipeline`，而是转发到 `scripts/classic_multifactor/run_intraday_loop.py`。该包装层本身不连接 OpenD、不直接下单，真实提交仍需 `--live-submit` 与下游 `VNPY_LIVE_*` 硬开关同时满足。
+- **`scripts/run_hk_sim_task.py`**：HK SIM 任务入口；默认保留 legacy SIM 路径，同时支持显式转发到 `run_intraday_loop.py` 新主线，并默认注入 `Asia/Hong_Kong` 与 `hk_sim_task_report.json`。
+- **`scripts/run_hk_futu_sim_session.py`**：HK Futu SIM session 顶层包装入口；转发到主线 intraday runner，默认注入 HK 会话时区、`hk_futu_sim_session_report.json` 与 Futu `模拟` 环境。
+- **`scripts/run_hk_live_task.py`**：HK live task 顶层包装入口；只保留 `--live-submit` 意图并转发到主线 intraday runner，真实提交仍需下游 `VNPY_LIVE_*` 硬开关同时满足。
 
 ### 推荐的项目阅读顺序
 
@@ -143,10 +146,11 @@
 补充说明：
 
 - 候选输入由 `UnifiedCandidateProvider` 统一读取。
-- `candidate_inputs.dynamic.json` 的优先级高于 `candidate_inputs.json`，但当前合并规则是**按 market 覆盖**，不是按 symbol 精细合并。
+- `candidate_inputs.dynamic.json` 的优先级仍高于 `candidate_inputs.json`，但当前合并规则已经改为**按 `(market, symbol)` 精细合并**：static 先入池，dynamic 针对同一 symbol 做字段级覆盖，不再整市场覆盖。
 - `CandidateInputPreparationService` 当前会通过 `HybridCandidateGenerationService` + `CandidateScoringService` 重写 dynamic/static 候选，统一输出带 `schema_version`、`generated_at`、`as_of_date`、`market_counts`、`row_requirements`、`scoring_model`、`enrichment` 和结构化候选评分字段的对象格式，兼容 `UnifiedCandidateProvider` 的现有读取方式。
 - 候选准备、workflow summary、artifact store、renderer、Knot `decision_time` 等对外时间戳当前统一按北京时间（`Asia/Shanghai`，`+08:00`）写入，便于直接与本机时间对齐。
-- `state/runs/candidate_inputs.prepare.report.json` 会记录本轮写入目标、market 覆盖、缺失字段统计、评分模型信息、是否请求 `include_market_data` / `knot_runtime`、各目标的 enrich 元数据与 warning，便于追溯“这次 workflow 看到了什么候选池”。
+- `state/runs/candidate_inputs.prepare.report.json` 会记录本轮写入目标、market 覆盖、`provider_merge_policy=symbol_merge_dynamic_preferred`、缺失字段统计、评分模型信息、是否请求 `include_market_data` / `knot_runtime`、以及各目标的 enrich 元数据与 warning，便于追溯“这次 workflow 看到了什么候选池”。
+- `enrichment.knot` 当前会额外记录 `requested_runtime_mode`、`runtimes_used`、`single_runtime_effective` 与 `fallback_used`，用于审计这次 prepare 是否保持单一 runtime、是否发生 runtime fallback。
 - prepare 写回阶段会把候选 payload / report 中的 `NaN`、`Infinity` 等非有限数值统一清洗为 `null`；这类值通常来自 Futu snapshot 中对当前标的不适用的扩展字段。
 - `ArtifactStore` 会自动为 workflow artifact 追加 `next_step_suggestions`、`confirmation_requirements`、`artifact_summary`、`traceability`、`rendered_formats` 和 `risk_labels`。
 - `latest_index.json` 会记录每类 artifact / workflow report 的最新路径、摘要和追溯信息，方便 CLI summary 与后续回看。
@@ -168,7 +172,8 @@
 - simulation/live 相关阶段必须有 backtest metadata
 - 必须存在明确的 risk budget
 - 必须有 review notes
-- live 阶段还要求 capability gaps 被消除
+- simulation/live 阶段会读取本地 `preflight_*.json` 与 `*dual_run_diff*.json` 作为多日 SIM / 对账验收证据
+- live 阶段除 capability gaps 外，还要求本地存在 live report schema、审批硬开关证据、近期 reconciliation 产物，以及可审计的 risk guard 轨迹
 
 ### 安全边界
 
@@ -183,19 +188,15 @@
 - **LLM/Knot/外部选择结果必须先转成结构化字段，再交给本地规则层消费。**
 - **凡是带 `requires_confirmation` 的入口，都应视为人工确认后才能继续。**
 
-### 当前已知 capability gaps
+### 当前 HK execution 口径
 
-根据 `services/evaluation_hub/capability_registry.py`，以下入口仍被显式标记为缺口：
-
-- `scripts/run_hk_sim_task.py`
-- `scripts/run_hk_futu_sim_session.py`
-- `scripts/run_hk_live_task.py`
+根据 `services/evaluation_hub/capability_registry.py`，`HK SIM/HK Futu SIM session/HK live` 顶层入口已经完成注册，不再作为 `gap.*` 能力暴露。
 
 这意味着：
 
-- 当前仓库可以讨论 HK workflow、候选、研究和规划；
-- 但**不能把 HK execution 说成已经有完整自动化入口**；
-- beginner workflow 对 HK execution 仍应保持 manual / planned-only 口径。
+- 当前仓库已经具备 HK 顶层入口与 workflow/readiness 可识别能力；
+- 但**HK live 仍不能被表述为“可直接放行执行”**，因为是否可升级取决于本地 `SIM` 验收、`reconciliation`、审批硬开关和 risk audit 证据链；
+- beginner workflow 对 HK execution 仍应保持 **preview-first / evidence-first** 口径，只有在本地 readiness 证据完整时才可进入人工确认环节。
 
 ### 给协作者的最短上手建议
 
