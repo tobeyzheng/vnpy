@@ -23,11 +23,15 @@
 
 ### 当前核心模块
 
+- **`services/strategy/candidate_scoring.py`**：定义可复用的候选评分接口、dynamic/static 混合评分模型，以及单标候选 enrich 能力。
+- **`services/strategy/candidate_enrichment.py`**：定义可复用的候选 enrich 层，负责可选接入真实市场快照与 Knot 结构化评估。
+- **`services/strategy/candidate_generation.py`**：基于评分接口生成 dynamic/static 候选 payload，也可单独评估一个候选行。
+- **`services/strategy/candidate_preparation.py`**：调用生成服务重写候选输入，并补充 `row_requirements`、准备元信息和追溯报告。
 - **`services/strategy/candidate_provider.py`**：统一读取和标准化候选输入。
 - **`services/strategy/raw_score.py`**：定义 `RawScoreFeatures` 和 `RawScoreEngine`。
 - **`services/strategy/timing.py`**：定义入场和退出择时规则。
 - **`services/strategy/strategy_selector.py`**：根据结构化因子做确定性策略选择和阻断。
-- **`services/strategy/engine.py`**：把候选、行情、事件催化、外部选择结果整合成 `StrategyEvaluation`。
+- **`services/strategy/engine.py`**：把候选、行情、事件催化、外部选择结果整合成 `StrategyEvaluation`，并复用候选评分接口。
 - **`services/strategy/market_rules.py`**：给港股/美股提供基础的市场参数。
 - **`services/strategy/registry.py`**：定义当前默认 `strategy_id`、可交易动作和最低 `raw_score` 门槛。
 
@@ -35,23 +39,108 @@
 
 #### 1. Candidate input 层
 
-候选输入目前由 `UnifiedCandidateProvider` 负责读取：
+候选输入目前仍由 `UnifiedCandidateProvider` 负责读取：
 
 - 动态文件：`state/runs/candidate_inputs.dynamic.json`
 - 静态文件：`state/runs/candidate_inputs.json`
 
-当前行为要点：
+但在 provider 之前，当前已经不是“只清洗旧 JSON”，而是由一条**生成 + enrich + 收敛**链路负责产出候选：
+
+- `CandidateMarketDataService` 可选批量接入真实 Futu snapshot，并回填 `quote` / `change_pct` / `turnover` / `market_cap`
+- `CandidateKnotEnrichmentService` 可选调用 local/remote Knot runtime，并回填 `strategy_selection` / `knot_evaluation` / `knot_overlay_score|knot_research_score`
+- `CandidateScoringService` 提供可复用的 candidate scoring 接口
+  - `dynamic`：`DynamicCandidateScoreModel`
+  - `static`：`StaticCandidateScoreModel`
+- `HybridCandidateGenerationService` 基于上面的 enrich + 评分接口：
+  - 生成完整 dynamic/static payload
+  - 或单独评估一个候选 row
+- `CandidateInputPreparationService` 调用生成服务，统一写回 dynamic/static 文件，并输出准备报告
+
+对应入口保持不变，但现在可显式开启 enrich：
+
+- 可由 `scripts/quant_workflow/run_prepare_candidate_inputs.py` 独立触发
+  - `--include-market-data`
+  - `--knot-runtime off|local|remote|auto`
+  - 默认 `knot_runtime=auto`，优先尝试 remote，初始化不可用时退回 local
+- 也可由 `scripts/quant_workflow/run_quant_workflow.py --prepare-candidates` 在 workflow 前置触发
+  - `--prepare-include-market-data`
+  - `--prepare-knot-runtime off|local|remote|auto`
+  - 默认 `prepare_knot_runtime=auto`
+- 会输出 `state/runs/candidate_inputs.prepare.report.json`
+- 会把 dynamic/static 统一重写为带 `schema_version`、`generated_at`、`as_of_date`、`selection_policy`、`market_counts`、`row_requirements`、`scoring_model` 与 `enrichment` 的对象格式
+- 对外时间戳当前统一写为北京时间（`Asia/Shanghai`，`+08:00`），包括 prepare report、workflow summary、artifact、renderer 和 Knot `decision_time`
+
+当前 provider 行为要点：
 
 - 如果指定了 `market`，优先返回该市场的动态候选；如果动态没有该市场，再回退静态文件。
 - 如果没有指定 `market`，先加载全部动态候选，再补上**动态文件中不存在的 market** 对应的静态候选。
-- 这意味着当前优先级是**按 market 覆盖**，不是按 symbol 精细 merge。
+- 这意味着当前优先级仍然是**按 market 覆盖**，不是按 symbol 精细 merge。
 - 所有候选在返回前都会经过 `normalize_symbol()` 标准化。
 
 这点和旧文档里“主流程优先读取静态文件”的说法不同；当前实现已经是**动态文件优先**。
 
-#### 2. `RawScoreFeatures` 层
+当前生成/准备层会额外补齐或规范化的候选字段包括：
 
-当前 `RawScoreFeatures` 包含以下字段：
+- `candidate_type`
+- `confidence_source`
+- `generated_at`
+- `as_of_date`
+- `theme_bucket`
+- `risk_level`
+- `consensus_score`
+- `strategy_tags`
+- `strategy_votes`
+- `source_breakdown`
+- `risk_flags`
+- `explanation_summary`
+- `explanation_ready`
+- `research_note`
+- `data_completeness`
+- `max_signal_score`
+- `scoring`
+
+因此当前候选输入已经不再只是“上游随意写入的 JSON”，而是可以先经过一次本地混合评分生成，再被 workflow 和 strategy 层消费。
+
+#### 2. Candidate scoring 接口与 `RawScoreFeatures` 层
+
+当前新增了一层可复用的 candidate scoring 接口：
+
+- `CandidateScoringService.score_row(row, mode="dynamic|static")`
+- `CandidateScoringService.enrich_row(row, mode="dynamic|static")`
+- `HybridCandidateGenerationService.evaluate_single_candidate()`
+
+这层的作用是：
+
+- 把候选生成与单标评估统一到一套评分输入上
+- 给 dynamic/static 维护不同的评分模型，但共享相同接口
+- 在进入 `StrategyEngine` 前先补齐 `strategy_tags`、`source_breakdown`、`risk_flags`、`scoring` 等结构化字段
+
+当前 dynamic/static 评分模型分别是：
+
+- **dynamic**：`dynamic_hybrid_candidate_v2`
+  - `trend_score`
+  - `relative_strength_score`
+  - `flow_score`
+  - `event_score`
+  - `quality_score`
+  - `liquidity_score`
+  - `regime_fit_score`
+  - `knot_overlay_score`
+  - `risk_penalty`
+- **static**：`static_hybrid_candidate_v2`
+  - `quality_score`
+  - `stability_score`
+  - `liquidity_score`
+  - `sector_leadership_score`
+  - `trend_health_score`
+  - `valuation_score`
+  - `knot_research_score`
+  - `explanation_ready_score`
+  - `risk_penalty`
+
+`StrategyEngine.evaluate_candidate()` 现在会先调用 candidate scoring 接口 enrich 候选，再把其中一部分字段映射到 `RawScoreFeatures`。
+
+当前 `RawScoreFeatures` 仍包含以下字段：
 
 - `trend_score`
 - `momentum_score`
@@ -61,14 +150,14 @@
 - `risk_penalty`
 - `legacy_score`
 
-在 `StrategyEngine.evaluate_candidate()` 中，这些字段的当前来源是：
+在 `StrategyEngine.evaluate_candidate()` 中，这些字段的当前来源变为：
 
-- **`trend_score`**：直接复用候选输入里的旧 `raw_score`
-- **`momentum_score`**：由 `quote.change_pct` 推导
-- **`flow_score`**：由 `quote.turnover / flow_divisor` 推导
-- **`quality_score`**：取候选 `signals` 中最高分
-- **`event_score`**：`has_event_catalyst` 为真时取较高值
-- **`risk_penalty`**：当日涨跌幅过大时提高风险惩罚
+- **`trend_score`**：优先使用 enrich 后的 `trend_score`
+- **`momentum_score`**：优先使用 enrich 后的 `relative_strength_score`，并和 `quote.change_pct` 推导值做兼容
+- **`flow_score`**：优先使用 enrich 后的 `flow_score`，并和 `quote.turnover / flow_divisor` 推导值做兼容
+- **`quality_score`**：优先使用 enrich 后的 `quality_score`
+- **`event_score`**：优先使用 enrich 后的 `event_score`，若存在明确催化则提高下限
+- **`risk_penalty`**：优先使用 enrich 后的 `risk_penalty`，若当日涨跌幅过大则提高下限
 - **`legacy_score`**：保留候选原始 `raw_score` 作为兼容输入
 
 #### 3. `raw_score` 计算层
@@ -217,6 +306,7 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 ### 当前已经实现的能力
 
 - **动态候选输入优先于静态候选输入**
+- **候选输入前置准备与 schema 收敛报告**
 - **HK / US 的基础 market rule 抽象**
 - **多维 `raw_score` 计算与 legacy 分数兼容**
 - **入场择时与退出择时**
@@ -228,8 +318,13 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 
 - **动态 universe discovery 还不是这层自动完成的**
   - 当前仍依赖上游把候选写入 `state/runs/candidate_inputs.dynamic.json`
+- **当前 prepare/provider 仍按 market 粗覆盖，不是按 symbol 精细 merge**
+  - 如果 dynamic 只提供某市场的局部补丁，仍可能整体遮掉 static 的同市场候选
+- **真实市场数据与 Knot 接入已支持为可选 enrich，但默认并不自动开启**
+  - 需要显式启用 CLI / workflow 参数才会尝试请求 snapshot 或调用 Knot runtime
+  - Futu SDK 不可用、远端 Knot 未配置或 schema 校验失败时，会降级为 warning / fallback，而不是替代本地安全规则层
 - **Knot 批处理不是这层直接调度的**
-  - 这里只消费结构化结果，不直接编排远端子会话
+  - 当前更接近“逐候选结构化 enrich”，而不是完整远端批处理编排器
 - **完整的对账与订单状态机不属于这层职责**
   - 这些能力在更靠近 execution/trade_state 的层里
 - **market rule 仍然偏轻量**

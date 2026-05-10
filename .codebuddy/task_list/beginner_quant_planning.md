@@ -20,8 +20,9 @@
 - [x] 8. 实现安全边界、版本化落盘与运行汇总能力
 - [x] 9. 在 `scripts/` 下新增自动化入口模块与一键工作流脚本
   - [x] 2026-05-10 补充仓库根目录 [run.sh](/projects/vnpy/run.sh) 作为统一安全入口；默认 preview-only，显式 `--confirm` 后才执行 `check / plan / research / sim-gate / live-gate / backtest / us-sim`
+  - [x] 2026-05-10 补充候选输入前置准备链路：新增 [run_prepare_candidate_inputs.py](/projects/vnpy/scripts/quant_workflow/run_prepare_candidate_inputs.py) 与 `workflow_service` 的可选 `prepare_candidates` 集成
 - [x] 10. 补充自动化测试、回归样例与现有文档更新
 
 ### 当前执行焦点
-- 当前状态：`beginner_quant_planning` 本轮 1-10 项已全部完成，`run.sh` 安全统一入口增强已补充落地
-- 下一步：等待新的实现需求，或在后续回合继续做增强与重构
+- 当前状态：`beginner_quant_planning` 本轮 1-10 项已全部完成；候选输入链路已进一步升级为模块化 `CandidateScoringService` + `HybridCandidateGenerationService` + `CandidateMarketDataService` / `CandidateKnotEnrichmentService`，且默认 `knot_runtime` 已切到 `auto`，候选准备 / workflow / artifact / renderer 等对外时间戳已统一为北京时间；最新补充了候选 prepare 产物的非有限数值清洗，Futu snapshot 或其他 enrich 源中的 `NaN` / `Infinity` 现在统一写为 `null`，避免下游继续读取到非法 JSON
+- 下一步：如需继续增强，可优先补真实 market regime / universe 数据源、按 `symbol` 精细 merge 规则、Knot 批量调度/缓存，以及 candidate scoring 在更多 workflow / research 场景下的直接复用接口

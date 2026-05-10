@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from typing import Any, Iterable
+
+from vnpy_llm.base import beijing_now_isoformat
 
 from .hub import EvaluationHub
 from .models import (
@@ -83,7 +84,7 @@ class BeginnerResearchService:
         generated_at: str | None = None,
         version: str = "v1",
     ) -> PlanningArtifact:
-        generated_at = generated_at or datetime.now(timezone.utc).isoformat()
+        generated_at = generated_at or beijing_now_isoformat()
         references = [self.normalize_reference(item) for item in self._as_list(result.get("references"))]
         findings = [self.normalize_finding(item) for item in self._as_list(result.get("key_findings"))]
         if not findings:
@@ -150,7 +151,7 @@ class BeginnerResearchService:
         generated_at: str | None = None,
         version: str = "v1",
     ) -> PlanningArtifact:
-        generated_at = generated_at or datetime.now(timezone.utc).isoformat()
+        generated_at = generated_at or beijing_now_isoformat()
         findings = self._default_findings()
         evidence = self.hub.merge_evidence(*(section.references for section in self._default_sections()))
         return self.hub.build_planning_artifact(

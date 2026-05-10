@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -17,8 +18,10 @@ from services.evaluation_hub.doc_renderer import BeginnerExplanationRenderer
 from services.evaluation_hub.evidence_standardizer import EvidenceStandardizer
 from services.evaluation_hub.plan_generator import BeginnerPlanGenerator
 from services.evaluation_hub.readiness_gate import ReadinessGateService
+from services.strategy.candidate_preparation import CandidateInputPreparationService
 from scripts.quant_workflow import __main__ as quant_workflow_module
-from scripts.quant_workflow.run_quant_workflow import PRESET_WORKFLOWS, _cli_summary, _resolve_workflow_args
+from scripts.quant_workflow.run_prepare_candidate_inputs import build_parser as build_prepare_candidate_parser
+from scripts.quant_workflow.run_quant_workflow import PRESET_WORKFLOWS, _cli_summary, _resolve_workflow_args, build_parser as build_quant_workflow_parser
 from scripts.quant_workflow.workflow_service import QuantWorkflowService
 
 
@@ -308,6 +311,199 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertEqual(observations["AMD.US"].selected_as, "validate_only")
         self.assertGreaterEqual(framework_artifact.meta["framework_summary"]["llm_research_pending_count"], 1)
 
+    def test_candidate_preparation_service_rewrites_payload_with_metadata(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            runs.mkdir(parents=True)
+            (runs / "candidate_inputs.dynamic.json").write_text(
+                json.dumps(
+                    {
+                        "items": [
+                            {
+                                "symbol": "700.HK",
+                                "market": "hong_kong",
+                                "name": "Tencent",
+                                "rationale": "Platform cash flow and buyback support remain intact.",
+                                "risk": "regulation overhang",
+                                "raw_score": 0.82,
+                                "action_hint": "review on pullbacks",
+                                "signals": [{"score": 0.78, "summary": "trend intact"}],
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "NVDA.US",
+                            "market": "us",
+                            "name": "NVIDIA",
+                            "rationale": "AI demand remains strong.",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.88,
+                            "action_hint": "buy on pullback",
+                            "signals": [{"score": 0.9, "summary": "leadership intact"}],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            report = CandidateInputPreparationService(tmp_path).prepare(
+                as_of_date="2026-05-10",
+                include_market_data=False,
+            )
+
+            self.assertTrue(Path(report["report_path"]).exists())
+            self.assertEqual(report["summary"]["market_coverage"], ["hong_kong", "us"])
+            self.assertIn("static", report["summary"]["written_targets"])
+            self.assertIn("dynamic", report["summary"]["written_targets"])
+            self.assertFalse(report["summary"]["include_market_data"])
+            self.assertEqual(report["summary"]["knot_runtime"], "auto")
+
+            dynamic_payload = json.loads((runs / "candidate_inputs.dynamic.json").read_text(encoding="utf-8"))
+            static_payload = json.loads((runs / "candidate_inputs.json").read_text(encoding="utf-8"))
+            self.assertEqual(dynamic_payload["schema_version"], "candidate_inputs_v3")
+            self.assertEqual(static_payload["schema_version"], "candidate_inputs_v3")
+            self.assertTrue(dynamic_payload["generated_at"].endswith("+08:00"))
+            self.assertEqual(datetime.fromisoformat(dynamic_payload["generated_at"]).utcoffset().total_seconds(), 8 * 3600)
+            self.assertEqual(dynamic_payload["items"][0]["symbol"], "00700.HK")
+            self.assertTrue(dynamic_payload["items"][0]["explanation_ready"])
+            self.assertEqual(dynamic_payload["items"][0]["candidate_type"], "dynamic")
+            self.assertEqual(static_payload["items"][0]["theme_bucket"], "ai_compute")
+            self.assertIn("scoring_model", dynamic_payload)
+            self.assertIn("enrichment", dynamic_payload)
+            self.assertEqual(dynamic_payload["preparation_metadata"]["knot_runtime"], "auto")
+            self.assertGreaterEqual(static_payload["items"][0]["data_completeness"], 0.85)
+
+    def test_candidate_preparation_service_writes_strict_json_when_payload_contains_nan(self):
+        from tempfile import TemporaryDirectory
+
+        class StubGenerationService:
+            def generate(self, *, mode: str, **_: object) -> dict[str, object]:
+                return {
+                    "schema_version": "candidate_inputs_v3",
+                    "generated_at": "2026-05-10T22:00:00+08:00",
+                    "as_of_date": "2026-05-10",
+                    "mode": mode,
+                    "selection_policy": f"stub_{mode}",
+                    "scoring_model": {"model_id": "stub_model"},
+                    "enrichment": {
+                        "market_data": {
+                            "status": "ok",
+                            "nan_ratio": float("nan"),
+                        }
+                    },
+                    "item_count": 1,
+                    "market_coverage": ["us"],
+                    "market_counts": {"us": 1},
+                    "warnings": [],
+                    "items": [
+                        {
+                            "symbol": "NVDA.US",
+                            "market": "us",
+                            "name": "NVIDIA",
+                            "candidate_type": mode,
+                            "raw_score": 0.9,
+                            "rationale": "AI leadership remains intact.",
+                            "risk": "valuation sensitivity",
+                            "action_hint": "observe pullbacks",
+                            "signals": [{"score": 0.8, "summary": "trend intact"}],
+                            "selection_policy": f"stub_{mode}",
+                            "strategy_tags": ["ai_compute"],
+                            "source_breakdown": {"classic": 1.0},
+                            "quote": {
+                                "stock_owner": float("nan"),
+                                "future_position": float("inf"),
+                            },
+                        }
+                    ],
+                }
+
+        def reject_invalid_json_constant(value: str) -> None:
+            raise AssertionError(f"Unexpected JSON constant: {value}")
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            runs.mkdir(parents=True)
+            (runs / "candidate_inputs.dynamic.json").write_text(json.dumps({"items": [{"symbol": "NVDA.US"}]}), encoding="utf-8")
+            (runs / "candidate_inputs.json").write_text(json.dumps({"items": [{"symbol": "NVDA.US"}]}), encoding="utf-8")
+
+            service = CandidateInputPreparationService(tmp_path)
+            service.generation_service = StubGenerationService()
+
+            report = service.prepare(as_of_date="2026-05-10", include_market_data=False)
+
+            for path in (
+                runs / "candidate_inputs.dynamic.json",
+                runs / "candidate_inputs.json",
+                runs / "candidate_inputs.prepare.report.json",
+            ):
+                text = path.read_text(encoding="utf-8")
+                self.assertNotIn("NaN", text)
+                self.assertNotIn("Infinity", text)
+                json.loads(text, parse_constant=reject_invalid_json_constant)
+
+            dynamic_payload = json.loads((runs / "candidate_inputs.dynamic.json").read_text(encoding="utf-8"))
+            self.assertIsNone(dynamic_payload["items"][0]["quote"]["stock_owner"])
+            self.assertIsNone(dynamic_payload["items"][0]["quote"]["future_position"])
+            self.assertIsNone(dynamic_payload["enrichment"]["market_data"]["nan_ratio"])
+            self.assertIsNone(report["targets"]["dynamic"]["enrichment"]["market_data"]["nan_ratio"])
+
+    def test_quant_workflow_prepare_candidates_adds_prepare_step_and_artifact(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            runs.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "NVDA.US",
+                            "market": "us",
+                            "name": "NVIDIA",
+                            "rationale": "AI leader with large-cap liquidity",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.84,
+                            "action_hint": "observe pullbacks",
+                            "signals": [{"score": 0.82, "summary": "trend intact"}],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            service = QuantWorkflowService(tmp_path)
+            result = service.run(
+                profile={"preferred_market": "us", "risk_profile": "conservative"},
+                preferred_markets=["us"],
+                stage="research",
+                prepare_candidates=True,
+                prepare_include_market_data=True,
+            )
+
+            self.assertTrue(Path(result["candidate_prepare_report"]).exists())
+            self.assertEqual(result["steps"][0]["step"], "candidate_prepare")
+            self.assertTrue(any(step["step"] == "candidate_framework" for step in result["steps"]))
+            prepare_report = json.loads(Path(result["candidate_prepare_report"]).read_text(encoding="utf-8"))
+            self.assertIn("static", prepare_report["summary"]["written_targets"])
+            self.assertTrue(prepare_report["summary"]["include_market_data"])
+            self.assertEqual(prepare_report["summary"]["knot_runtime"], "auto")
+            self.assertTrue(result["steps"][0]["meta"]["include_market_data"])
+            self.assertEqual(result["steps"][0]["meta"]["knot_runtime"], "auto")
+            self.assertTrue(result["started_at"].endswith("+08:00"))
+            self.assertEqual(datetime.fromisoformat(result["started_at"]).utcoffset().total_seconds(), 8 * 3600)
+            self.assertIn("candidate_prepare_report", _cli_summary(result, preset="beginner_full")["artifacts"])
+
     def test_quant_workflow_service_runs_in_plan_mode(self):
         from tempfile import TemporaryDirectory
 
@@ -481,6 +677,7 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 "research_artifact": "/tmp/research.json",
                 "candidate_artifact": "/tmp/candidate.json",
                 "plan_artifact": "/tmp/plan.json",
+                "candidate_prepare_report": "/tmp/candidate_prepare_report.json",
                 "warnings": ["offline placeholder"],
             },
             preset="beginner_full",
@@ -489,7 +686,15 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertEqual(payload["preset"], "beginner_full")
         self.assertEqual(payload["workflow_summary"]["step_count"], 5)
         self.assertEqual(payload["artifacts"]["plan_artifact"], "/tmp/plan.json")
+        self.assertEqual(payload["artifacts"]["candidate_prepare_report"], "/tmp/candidate_prepare_report.json")
         self.assertEqual(payload["latest_index"], "/tmp/latest_index.json")
+
+    def test_prepare_related_cli_defaults_use_auto_knot_runtime(self):
+        workflow_args = build_quant_workflow_parser().parse_args([])
+        prepare_args = build_prepare_candidate_parser().parse_args([])
+
+        self.assertEqual(workflow_args.prepare_knot_runtime, "auto")
+        self.assertEqual(prepare_args.knot_runtime, "auto")
 
     def test_quant_workflow_module_entrypoint_reexports_main(self):
         self.assertTrue(callable(quant_workflow_module.main))

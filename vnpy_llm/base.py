@@ -3,13 +3,23 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
 
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+BEIJING_TZ = ZoneInfo("Asia/Shanghai")
 
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def beijing_now() -> datetime:
+    return datetime.now(BEIJING_TZ)
+
+
+def beijing_now_isoformat() -> str:
+    return beijing_now().isoformat()
 
 
 def parse_datetime(value: datetime | str | None, default: datetime | None = None) -> datetime:

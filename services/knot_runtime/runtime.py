@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from services.evaluation_hub.adapters import local_strategy_fallback
+from vnpy_llm.base import beijing_now_isoformat
 
 
 class KnotAgentRuntime:
@@ -21,7 +21,7 @@ class KnotAgentRuntime:
             'symbol': symbol,
             'market': market,
             'task_type': task_type,
-            'decision_time': datetime.now().isoformat(),
+            'decision_time': beijing_now_isoformat(),
             'payload': payload,
             'raw_response': json.dumps(result, ensure_ascii=False),
             'parsed': result,

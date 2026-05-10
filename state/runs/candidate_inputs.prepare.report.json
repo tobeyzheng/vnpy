@@ -1,0 +1,234 @@
+{
+  "schema_version": "candidate_prepare_report_v2",
+  "generated_at": "2026-05-10T22:29:44.616567+08:00",
+  "as_of_date": "2026-05-10",
+  "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+  "targets": {
+    "dynamic": {
+      "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+      "written": true,
+      "mode": "dynamic_generated",
+      "selection_policy": "dynamic_hybrid_market_complete_v2",
+      "scoring_model": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v2",
+        "selection_policy": "dynamic_hybrid_market_complete_v2",
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "weight": 0.22,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "weight": 0.16,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "weight": 0.14,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "weight": 0.14,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "weight": 0.1,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "weight": 0.08,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "weight": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "weight": 0.1,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "weight": 0.1,
+            "role": "penalty"
+          }
+        ]
+      },
+      "enrichment": {
+        "market_data": {
+          "enabled": true,
+          "status": "ok",
+          "source": "futu_quote_snapshot",
+          "requested_symbols": 5,
+          "snapshot_count": 5,
+          "matched_rows": 5,
+          "warnings": []
+        },
+        "knot": {
+          "enabled": true,
+          "status": "ok",
+          "source": "knot_agent",
+          "runtime_mode": "auto",
+          "runtimes_used": [
+            "remote-knot-fallback"
+          ],
+          "evaluated_rows": 5,
+          "fallback_count": 5,
+          "warnings": []
+        },
+        "warnings": []
+      },
+      "source_files": [
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json"
+      ],
+      "item_count": 5,
+      "market_coverage": [
+        "hong_kong"
+      ],
+      "market_counts": {
+        "hong_kong": 5
+      },
+      "warnings": [],
+      "missing_required_field_counts": {}
+    },
+    "static": {
+      "path": "/projects/vnpy/state/runs/candidate_inputs.json",
+      "written": true,
+      "mode": "static_generated",
+      "selection_policy": "stable_baseline_hybrid_v2",
+      "scoring_model": {
+        "mode": "static",
+        "model_id": "static_hybrid_candidate_v2",
+        "selection_policy": "stable_baseline_hybrid_v2",
+        "components": [
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "weight": 0.24,
+            "role": "positive"
+          },
+          {
+            "key": "stability_score",
+            "label": "Stability",
+            "weight": 0.18,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "weight": 0.14,
+            "role": "positive"
+          },
+          {
+            "key": "sector_leadership_score",
+            "label": "Sector Leadership",
+            "weight": 0.12,
+            "role": "positive"
+          },
+          {
+            "key": "trend_health_score",
+            "label": "Trend Health",
+            "weight": 0.1,
+            "role": "positive"
+          },
+          {
+            "key": "valuation_score",
+            "label": "Valuation",
+            "weight": 0.08,
+            "role": "positive"
+          },
+          {
+            "key": "knot_research_score",
+            "label": "Knot Research",
+            "weight": 0.08,
+            "role": "positive"
+          },
+          {
+            "key": "explanation_ready_score",
+            "label": "Explanation Ready",
+            "weight": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "weight": 0.1,
+            "role": "penalty"
+          }
+        ]
+      },
+      "enrichment": {
+        "market_data": {
+          "enabled": true,
+          "status": "ok",
+          "source": "futu_quote_snapshot",
+          "requested_symbols": 17,
+          "snapshot_count": 17,
+          "matched_rows": 17,
+          "warnings": []
+        },
+        "knot": {
+          "enabled": true,
+          "status": "ok",
+          "source": "knot_agent",
+          "runtime_mode": "auto",
+          "runtimes_used": [
+            "remote-knot-fallback"
+          ],
+          "evaluated_rows": 17,
+          "fallback_count": 17,
+          "warnings": []
+        },
+        "warnings": []
+      },
+      "source_files": [
+        "/projects/vnpy/state/runs/candidate_inputs.json"
+      ],
+      "item_count": 17,
+      "market_coverage": [
+        "a_share",
+        "hong_kong",
+        "us"
+      ],
+      "market_counts": {
+        "a_share": 3,
+        "us": 3,
+        "hong_kong": 11
+      },
+      "warnings": [],
+      "missing_required_field_counts": {}
+    }
+  },
+  "summary": {
+    "written_targets": [
+      "dynamic",
+      "static"
+    ],
+    "market_coverage": [
+      "a_share",
+      "hong_kong",
+      "us"
+    ],
+    "total_items": 22,
+    "include_market_data": true,
+    "knot_runtime": "auto",
+    "warnings": [],
+    "missing_required_field_counts": {}
+  }
+}

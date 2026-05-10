@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from datetime import datetime, timezone
 from typing import Any
+
+from vnpy_llm.base import beijing_now_isoformat
 
 from .hub import EvaluationHub
 from .models import (
@@ -28,7 +29,7 @@ class BeginnerPlanGenerator:
         version: str = "v1",
         previous_plan: PlanningArtifact | None = None,
     ) -> PlanningArtifact:
-        generated_at = generated_at or datetime.now(timezone.utc).isoformat()
+        generated_at = generated_at or beijing_now_isoformat()
         profile = self._profile_snapshot(profile or {})
         assumptions = self._assumptions(profile)
         risk_budget = self._risk_budget(profile)

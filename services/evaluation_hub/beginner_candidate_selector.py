@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from typing import Any, Iterable, Mapping
+
+from vnpy_llm.base import beijing_now_isoformat
 
 from .candidate_framework import BeginnerCandidateFramework
 from .hub import EvaluationHub
@@ -29,7 +30,7 @@ class BeginnerCandidateSelector:
         generated_at: str | None = None,
         version: str = "v1",
     ) -> PlanningArtifact:
-        generated_at = generated_at or datetime.now(timezone.utc).isoformat()
+        generated_at = generated_at or beijing_now_isoformat()
         normalized_rows = [dict(row) for row in rows if isinstance(row, Mapping)]
         row_by_symbol = {
             str(row.get("symbol") or ""): row

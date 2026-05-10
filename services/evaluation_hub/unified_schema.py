@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
+from vnpy_llm.base import beijing_now_isoformat
 
 from .models import (
     CandidateObservation,
@@ -110,7 +111,7 @@ class OrchestrationInterface:
             research_conclusions=research_findings,
             execution_suggestions=execution_suggestions,
             risk_prompts=risk_prompts,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=beijing_now_isoformat(),
             version="v1.0",
             assumptions=assumptions,
             invalidation_conditions=invalidation_conditions,
@@ -140,7 +141,7 @@ class OrchestrationInterface:
                 "confidence_score": confidence_score
             },
             "meta": {
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": beijing_now_isoformat(),
                 "schema_version": "v1.0"
             }
         }
@@ -195,7 +196,7 @@ class OrchestrationInterface:
         return {
             "artifact_type": artifact_type,
             "title": title,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": beijing_now_isoformat(),
             "version": "v1.0",
             "knowledge_sections": knowledge_sections,
             "research_findings": research_findings,

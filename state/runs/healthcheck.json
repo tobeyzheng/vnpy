@@ -20,17 +20,10 @@
   "sim_reconciliation": {
     "allowed": true,
     "reasons": [
-      "reconciliation file stale",
-      "qty mismatch: 01810.HK",
-      "qty mismatch: 09868.HK",
-      "qty mismatch: 09988.HK"
+      "reconciliation file missing"
     ],
     "blocking_level": "warn",
-    "diff_symbols": [
-      "01810.HK",
-      "09868.HK",
-      "09988.HK"
-    ]
+    "diff_symbols": []
   },
   "live_reconciliation": {
     "allowed": true,
@@ -40,17 +33,12 @@
     "blocking_level": "warn",
     "diff_symbols": []
   },
-  "order_state_total_count": 15,
+  "order_state_total_count": 14,
   "order_state_open_count": 10,
-  "order_state_failed_count": 1,
+  "order_state_failed_count": 0,
   "paper_submit_enabled": true,
   "sim_submit_enabled": false,
   "live_submit_enabled": false,
-  "alerts": [
-    {
-      "level": "medium",
-      "message": "failed order states exist"
-    }
-  ],
+  "alerts": [],
   "status": "ok"
 }

@@ -37,6 +37,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--risk-profile", default="conservative", choices=["conservative", "moderate"])
     parser.add_argument("--max-candidates", type=int, default=5)
     parser.add_argument("--summary-only", action="store_true")
+    parser.add_argument("--prepare-candidates", action="store_true")
+    parser.add_argument("--prepare-include-market-data", action="store_true")
+    parser.add_argument("--prepare-knot-runtime", choices=["off", "local", "remote", "auto"], default="auto")
     return parser
 
 
@@ -61,7 +64,7 @@ def _cli_summary(result: dict[str, object], *, preset: str) -> dict[str, object]
         "latest_index": result.get("latest_index"),
         "artifacts": {
             key: result.get(key)
-            for key in ("research_artifact", "candidate_artifact", "plan_artifact")
+            for key in ("research_artifact", "candidate_artifact", "plan_artifact", "candidate_prepare_report")
             if result.get(key)
         },
         "warnings": result.get("warnings"),
@@ -86,6 +89,9 @@ def main() -> int:
         preferred_markets=list(args.preferred_markets or []),
         max_candidates=max(int(args.max_candidates), 1),
         stage=workflow_args["stage"],
+        prepare_candidates=bool(args.prepare_candidates),
+        prepare_include_market_data=bool(args.prepare_include_market_data),
+        prepare_knot_runtime=str(args.prepare_knot_runtime or "auto"),
     )
     payload = _cli_summary(result, preset=workflow_args["preset"]) if args.summary_only else result
     print(json.dumps(payload, ensure_ascii=False, indent=2))

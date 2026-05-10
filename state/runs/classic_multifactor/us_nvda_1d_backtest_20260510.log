@@ -1,0 +1,84 @@
+============================================================
+ run.sh preview
+============================================================
+Action: backtest
+Repo root: /projects/vnpy
+Resolved command:
+  python3 /projects/vnpy/scripts/classic_multifactor/run_vnpy_cta_backtest.py --symbol NVDA.US --interval 1d --start 2024-01-01 --end 2024-12-31 --capital 5000 --fast-window 10 --slow-window 60 --momentum-window 20 --atr-window 14 --entry-score 0.62 --exit-score 0.46 --max-order-value 1500 --confirm-bars 1 --min-volume-ratio 0.0 --min-atr-pct 0.0 --min-trend-score 0.55 --output state/runs/classic_multifactor/us_nvda_1d_backtest_20260510.json
+Connects / touches:
+  - May fetch historical market data through the configured data path used by the backtest runner.
+Expected outputs or writes:
+  - state/runs/classic_multifactor/vnpy_cta_backtest_report.json unless --output overrides it
+Trading effect:
+  - Does not submit SIM or REAL orders.
+Notes:
+  - This command can refresh backtest artifacts and may take time depending on symbol, interval, and data fetch needs.
+Confirmation flag: 1
+============================================================
+2026-05-10 15:29:34,214 | 187049 | 139817938339648 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459142575696385214(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f29602f46d0>
+2026-05-10 15:29:34.287127	Start loading historical data
+2026-05-10 15:29:34.287167	Loading progress: # [0%]
+2026-05-10 15:29:34.288985	Loading progress: # [10%]
+2026-05-10 15:29:34,289 | 187049 | 139815555839680 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+2026-05-10 15:29:34.290531	Loading progress: ## [20%]
+2026-05-10 15:29:34.291914	Loading progress: ### [30%]
+2026-05-10 15:29:34.293093	Loading progress: #### [39%]
+2026-05-10 15:29:34.294154	Loading progress: ##### [49%]
+2026-05-10 15:29:34.295236	Loading progress: ###### [59%]
+2026-05-10 15:29:34.296373	Loading progress: ####### [69%]
+2026-05-10 15:29:34.297426	Loading progress: ######## [79%]
+2026-05-10 15:29:34.298278	Loading progress: ######### [89%]
+2026-05-10 15:29:34.299058	Loading progress: ########## [99%]
+2026-05-10 15:29:34.299468	Historical data loading completed, data count: 252
+2026-05-10 15:29:34.299815	Strategy initialization complete
+2026-05-10 15:29:34.299819	Start replaying historical data
+2026-05-10 15:29:34.300003	Backtesting progress: = [0%]
+2026-05-10 15:29:34.300097	Backtesting progress: == [10%]
+2026-05-10 15:29:34.302275	Backtesting progress: === [20%]
+2026-05-10 15:29:34.305559	Backtesting progress: ==== [30%]
+2026-05-10 15:29:34.309429	Backtesting progress: ===== [40%]
+2026-05-10 15:29:34.310880	Backtesting progress: ====== [50%]
+2026-05-10 15:29:34.313229	Backtesting progress: ======= [60%]
+2026-05-10 15:29:34.316660	Backtesting progress: ======== [70%]
+2026-05-10 15:29:34.319948	Backtesting progress: ========= [80%]
+2026-05-10 15:29:34.323548	Backtesting progress: ========== [90%]
+2026-05-10 15:29:34.323821	Backtesting progress: =========== [100%]
+2026-05-10 15:29:34.323828	Historical backtest complete
+2026-05-10 15:29:34.323833	Start calculating daily mark-to-market profit and loss
+2026-05-10 15:29:34.327038	The daily mark-to-market profit and loss calculation is complete
+2026-05-10 15:29:34.327066	Start calculating strategy statistical indicators
+2026-05-10 15:29:34.332090	Strategy statistical indicators calculation completed
+/projects/vnpy/state/runs/classic_multifactor/us_nvda_1d_backtest_20260510.json
+{
+  "status": "ok",
+  "engine": "vnpy_cta_backtesting",
+  "start_date": "2024-01-02",
+  "end_date": "2024-12-31",
+  "total_days": "252",
+  "profit_days": "65",
+  "loss_days": "56",
+  "capital": "5000",
+  "end_balance": 5535.270964430893,
+  "max_drawdown": -501.96157807172585,
+  "max_ddpercent": -8.85816830758963,
+  "max_drawdown_duration": "50",
+  "total_net_pnl": 535.2709644308936,
+  "daily_net_pnl": 2.1240911286940225,
+  "total_commission": 4.482708121106399,
+  "daily_commission": 0.01778852429010476,
+  "total_slippage": 6.300000000000001,
+  "daily_slippage": 0.025,
+  "total_turnover": 14942.360403687999,
+  "daily_turnover": 59.29508096701587,
+  "total_trade_count": "10",
+  "daily_trade_count": 0.03968253968253968,
+  "total_return": 10.705419288617879,
+  "annual_return": 10.195637417731314,
+  "daily_return": 0.04035817748345965,
+  "return_std": 0.615580955651225,
+  "sharpe_ratio": 1.0156685182787386,
+  "ewm_sharpe": 0.8699446060377329,
+  "return_drawdown_ratio": 1.2085364509777416,
+  "rgr_ratio": 1.5157669363522417,
+  "trade_count_runtime": 10
+}

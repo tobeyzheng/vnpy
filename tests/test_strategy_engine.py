@@ -15,3 +15,6 @@ def test_strategy_engine_candidate_output_contains_standard_signal():
     assert result.signal.strategy_id == "raw_score_timing_v1"
     assert result.signal.symbol == "NVDA.US"
     assert 0.0 <= result.raw_score <= 1.0
+    assert "candidate_scoring" in result.metadata
+    assert result.metadata["candidate_scoring"]["mode"] == "dynamic"
+    assert result.signal.metadata["candidate_scoring"]["model_id"] == "dynamic_hybrid_candidate_v2"

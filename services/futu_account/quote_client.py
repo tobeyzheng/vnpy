@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Any, List
 
 from services.futu_opend import OpenDConfig
@@ -62,6 +63,7 @@ class FutuQuoteClient:
         """
         if not isinstance(row, dict):
             return row
+        row = {key: FutuQuoteClient._sanitize_value(value) for key, value in row.items()}
         if row.get("change_pct") in (None, ""):
             change_rate = row.get("change_rate")
             if change_rate not in (None, ""):
@@ -80,3 +82,9 @@ class FutuQuoteClient:
                 except (TypeError, ValueError, ZeroDivisionError):
                     pass
         return row
+
+    @staticmethod
+    def _sanitize_value(value: Any) -> Any:
+        if isinstance(value, float):
+            return value if math.isfinite(value) else None
+        return value

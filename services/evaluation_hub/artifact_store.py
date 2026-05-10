@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, is_dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from vnpy_llm.base import beijing_now, beijing_now_isoformat
 
 from .models import PlanAssumption, PlanningArtifact, RiskBudget, WorkflowRunResult, WorkflowStepResult
 
@@ -83,7 +84,7 @@ class ArtifactStore:
         return self._planning_artifact_from_payload(payload)
 
     def _stamped_name(self, slug: str, *, suffix: str) -> str:
-        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
+        ts = beijing_now().strftime("%Y%m%d_%H%M%S_%f")
         clean = self._clean_slug(slug)
         return f"{clean}_{suffix}_{ts}.json"
 
@@ -246,5 +247,5 @@ class ArtifactStore:
         payload = self._load_latest_index()
         payload.setdefault(bucket, {})
         payload[bucket][self._clean_slug(slug)] = entry
-        payload["updated_at"] = datetime.now(timezone.utc).isoformat()
+        payload["updated_at"] = beijing_now_isoformat()
         self._write_json(self._latest_index_path(), payload)

@@ -1,0 +1,141 @@
+{
+  "artifacts": {
+    "beginner_quant_research": {
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_research_artifact_20260510_084717_338257.json",
+      "artifact_type": "beginner_quant_research",
+      "title": "Beginner Quant Research",
+      "generated_at": "2026-05-10T08:47:17.337900+00:00",
+      "version": "v1",
+      "artifact_summary": {
+        "artifact_type": "beginner_quant_research",
+        "title": "Beginner Quant Research",
+        "generated_at": "2026-05-10T08:47:17.337900+00:00",
+        "version": "v1",
+        "knowledge_section_count": 4,
+        "research_finding_count": 4,
+        "candidate_count": 0,
+        "plan_phase_count": 0,
+        "rendered_document_count": 2,
+        "has_risk_budget": false,
+        "has_readiness": false
+      },
+      "traceability": {
+        "slug": "beginner_quant_research",
+        "artifact_type": "beginner_quant_research",
+        "version": "v1",
+        "generated_at": "2026-05-10T08:47:17.337900+00:00",
+        "current_assumption_count": 3,
+        "invalidation_condition_count": 2,
+        "confirmation_requirement_count": 27,
+        "next_step_count": 4
+      },
+      "risk_labels": [
+        "risk_prompts_present",
+        "capability_gaps_present",
+        "confirmation_required"
+      ]
+    },
+    "beginner_candidate_framework": {
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_candidate_framework_artifact_20260510_084717_340619.json",
+      "artifact_type": "beginner_candidate_framework",
+      "title": "Beginner Candidate Framework",
+      "generated_at": "2026-05-10T08:47:17.340254+00:00",
+      "version": "v1",
+      "artifact_summary": {
+        "artifact_type": "beginner_candidate_framework",
+        "title": "Beginner Candidate Framework",
+        "generated_at": "2026-05-10T08:47:17.340254+00:00",
+        "version": "v1",
+        "knowledge_section_count": 0,
+        "research_finding_count": 2,
+        "candidate_count": 3,
+        "plan_phase_count": 0,
+        "rendered_document_count": 2,
+        "has_risk_budget": false,
+        "has_readiness": false
+      },
+      "traceability": {
+        "slug": "beginner_candidate_framework",
+        "artifact_type": "beginner_candidate_framework",
+        "version": "v1",
+        "generated_at": "2026-05-10T08:47:17.340254+00:00",
+        "current_assumption_count": 3,
+        "invalidation_condition_count": 3,
+        "confirmation_requirement_count": 27,
+        "next_step_count": 6
+      },
+      "risk_labels": [
+        "risk_prompts_present",
+        "capability_gaps_present",
+        "confirmation_required"
+      ]
+    },
+    "beginner_quant_plan": {
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_plan_artifact_20260510_084717_342701.json",
+      "artifact_type": "beginner_quant_plan",
+      "title": "Beginner Quant Personal Plan",
+      "generated_at": "2026-05-10T08:47:17.342495+00:00",
+      "version": "v1",
+      "artifact_summary": {
+        "artifact_type": "beginner_quant_plan",
+        "title": "Beginner Quant Personal Plan",
+        "generated_at": "2026-05-10T08:47:17.342495+00:00",
+        "version": "v1",
+        "knowledge_section_count": 0,
+        "research_finding_count": 0,
+        "candidate_count": 3,
+        "plan_phase_count": 5,
+        "rendered_document_count": 2,
+        "has_risk_budget": true,
+        "has_readiness": true
+      },
+      "traceability": {
+        "slug": "beginner_quant_plan",
+        "artifact_type": "beginner_quant_plan",
+        "version": "v1",
+        "generated_at": "2026-05-10T08:47:17.342495+00:00",
+        "current_assumption_count": 5,
+        "invalidation_condition_count": 3,
+        "confirmation_requirement_count": 27,
+        "next_step_count": 5
+      },
+      "risk_labels": [
+        "risk_prompts_present",
+        "capability_gaps_present",
+        "confirmation_required"
+      ]
+    }
+  },
+  "workflow_reports": {
+    "beginner_quant": {
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_workflow_20260510_084717_344573.json",
+      "workflow_name": "beginner_quant",
+      "mode": "plan",
+      "started_at": "2026-05-10T08:47:17.337686+00:00",
+      "status": "ok",
+      "workflow_summary": {
+        "step_count": 8,
+        "output_count": 3,
+        "warning_count": 22,
+        "blocked_steps": [],
+        "confirmation_required_steps": [
+          "execution_boundary"
+        ],
+        "warning_steps": [
+          "capability_map",
+          "backtest_validation",
+          "execution_boundary"
+        ]
+      },
+      "traceability": {
+        "slug": "beginner_quant",
+        "workflow_name": "beginner_quant",
+        "mode": "plan",
+        "started_at": "2026-05-10T08:47:17.337686+00:00",
+        "status": "ok",
+        "assumption_count": 5
+      }
+    }
+  },
+  "updated_at": "2026-05-10T08:47:17.345711+00:00"
+}

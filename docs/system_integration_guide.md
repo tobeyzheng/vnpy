@@ -55,7 +55,18 @@
   - 默认 `--workflow beginner_quant`
   - 支持 `--preset research_snapshot / simulation_gate / live_gate`
   - 支持 `--summary-only` 只输出 workflow 汇总、artifact 路径和 warning
+  - 支持可选 `--prepare-candidates`，在 `preflight` 前先重写候选输入并产出准备报告
+  - 如需在 prepare 阶段补真实行情或 Knot 结构化评估，可额外传 `--prepare-include-market-data` 与 `--prepare-knot-runtime off|local|remote|auto`
+  - 若未显式传 `--prepare-knot-runtime`，当前默认使用 `auto`：优先尝试 remote，初始化不可用时退回 local
   - 默认不会自动启动 SIM/live 脚本
+- **`scripts/quant_workflow/run_prepare_candidate_inputs.py`**：候选输入前置准备入口。
+  - 默认读取并重写 `state/runs/candidate_inputs.dynamic.json` 与 `state/runs/candidate_inputs.json`
+  - 当前会先通过 `HybridCandidateGenerationService` 生成/补齐 dynamic/static 候选，再由 `CandidateInputPreparationService` 统一写回
+  - 可选通过 `--include-market-data` 批量补 Futu snapshot 字段，通过 `--knot-runtime off|local|remote|auto` 批量补 Knot 结构化评估
+  - 若未显式传 `--knot-runtime`，当前默认使用 `auto`：优先尝试 remote，初始化不可用时退回 local
+  - 输出 `state/runs/candidate_inputs.prepare.report.json`
+  - 写回前会递归清洗非有限数值；来自 snapshot 或其他 enrich 源的 `NaN` / `Infinity` 会统一落为 `null`，保证产物保持严格 JSON
+  - 可通过 `--dynamic-source` / `--static-source` 指定替代输入源
 - **`python -m scripts.quant_workflow`**：与上面的脚本入口等价的模块入口，适合统一的一键工作流触发。
 - **`scripts/run_healthcheck.py`**：环境和账户健康检查入口，输出 `state/runs/healthcheck.json`。
 - **`scripts/run_portfolio_brief.py`**：组合摘要入口，聚合 HK/US close report 与 healthcheck，输出 `state/runs/portfolio_brief.json`。
@@ -82,24 +93,31 @@
 
 `QuantWorkflowService.run()` 目前会按下面顺序组织流程：
 
-1. **`healthcheck`**
+1. **`candidate_prepare`（可选）**
+   - 仅当显式启用 `prepare_candidates=true` 或 CLI 传入 `--prepare-candidates` 时执行
+   - 读取已有 dynamic/static 候选文件或显式来源文件
+   - 调用共享 candidate scoring / generation 接口对 dynamic/static 候选做 enrich
+   - 若显式启用 `include_market_data`，会批量请求 Futu snapshot 并把 `quote`、`change_pct`、`turnover`、`market_cap` 等字段回填到候选行
+   - 若显式启用 `knot_runtime`，会在本地评分前调用 local/remote Knot runtime，把 `strategy_selection`、`knot_evaluation`、`knot_overlay_score|knot_research_score` 等结构化字段回填到候选行
+   - 写回带 `scoring_model`、`strategy_tags`、`source_breakdown`、`risk_flags`、`enrichment` 等结构化字段的准备后候选输入，并生成准备报告
+2. **`healthcheck`**
    - 优先读取已有 `state/runs/healthcheck.json`
    - 如果本地没有缓存且仍处于计划/研究模式，则回退为 offline placeholder
-2. **`capability_map`**
+3. **`capability_map`**
    - 读取本地 capability registry
    - 汇总 stage capability、stage boundary map、available stages、已知 capability gaps
-3. **`research`**
+4. **`research`**
    - 生成 beginner research artifact
    - 由 `services/evaluation_hub/doc_renderer.py` 同时输出可读 Markdown/JSON 内容到 artifact 中
-4. **`candidate_framework`**
+5. **`candidate_framework`**
    - 读取本地候选输入
    - 生成 `beginner_watchlist` / `observe_only` / `validate_only` 三类观察结果
-5. **`backtest_validation`**
+6. **`backtest_validation`**
    - 读取本地 vn.py 回测报告
    - 标准化 sample period、fees、slippage、stability metrics、data quality notes
-6. **`planning`**
+7. **`planning`**
    - 生成个人 beginner plan、risk budget、phase/task、readiness checklist
-7. **`execution_boundary`**
+8. **`execution_boundary`**
    - 如果本地发现 simulation/live 能力入口，只输出“需要明确确认”的边界警告，不会自动执行
    - 当前设计默认保持 report-only / non-executing 口径，即使发现可用 execution capability 也只会在 workflow summary 与 warning 中暴露确认点
 
@@ -120,11 +138,16 @@
 - `state/runs/quant_workflow/*_workflow_*.json`
 - `state/runs/quant_workflow/latest_index.json`
 - `state/runs/portfolio_brief.json`
+- `state/runs/candidate_inputs.prepare.report.json`
 
 补充说明：
 
 - 候选输入由 `UnifiedCandidateProvider` 统一读取。
 - `candidate_inputs.dynamic.json` 的优先级高于 `candidate_inputs.json`，但当前合并规则是**按 market 覆盖**，不是按 symbol 精细合并。
+- `CandidateInputPreparationService` 当前会通过 `HybridCandidateGenerationService` + `CandidateScoringService` 重写 dynamic/static 候选，统一输出带 `schema_version`、`generated_at`、`as_of_date`、`market_counts`、`row_requirements`、`scoring_model`、`enrichment` 和结构化候选评分字段的对象格式，兼容 `UnifiedCandidateProvider` 的现有读取方式。
+- 候选准备、workflow summary、artifact store、renderer、Knot `decision_time` 等对外时间戳当前统一按北京时间（`Asia/Shanghai`，`+08:00`）写入，便于直接与本机时间对齐。
+- `state/runs/candidate_inputs.prepare.report.json` 会记录本轮写入目标、market 覆盖、缺失字段统计、评分模型信息、是否请求 `include_market_data` / `knot_runtime`、各目标的 enrich 元数据与 warning，便于追溯“这次 workflow 看到了什么候选池”。
+- prepare 写回阶段会把候选 payload / report 中的 `NaN`、`Infinity` 等非有限数值统一清洗为 `null`；这类值通常来自 Futu snapshot 中对当前标的不适用的扩展字段。
 - `ArtifactStore` 会自动为 workflow artifact 追加 `next_step_suggestions`、`confirmation_requirements`、`artifact_summary`、`traceability`、`rendered_formats` 和 `risk_labels`。
 - `latest_index.json` 会记录每类 artifact / workflow report 的最新路径、摘要和追溯信息，方便 CLI summary 与后续回看。
 
@@ -192,6 +215,8 @@
 ./run.sh sim-gate
 ./run.sh live-gate
 python scripts/quant_workflow/run_quant_workflow.py --preset beginner_full --summary-only
+python scripts/quant_workflow/run_quant_workflow.py --preset beginner_full --prepare-candidates --summary-only
+python scripts/quant_workflow/run_prepare_candidate_inputs.py
 python -m scripts.quant_workflow --preset research_snapshot --summary-only
 python scripts/run_healthcheck.py
 python scripts/run_portfolio_brief.py

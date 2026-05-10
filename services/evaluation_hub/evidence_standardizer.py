@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
+from vnpy_llm.base import beijing_now_isoformat
 
 from .models import (
     ConflictNote,
@@ -49,7 +50,7 @@ class EvidenceStandardizer:
         schema_preset: str = "beginner_quant"
     ) -> EvidenceStandardizationResult:
         """标准化LLM研究结果"""
-        source_time = source_time or datetime.now(timezone.utc).isoformat()
+        source_time = source_time or beijing_now_isoformat()
 
         # 提取证据项
         evidence_items = self._extract_evidence_items(llm_result)

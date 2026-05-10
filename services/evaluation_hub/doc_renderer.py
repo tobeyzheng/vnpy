@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+
+from vnpy_llm.base import beijing_now_isoformat
 
 from .models import ExplanationSection, PlanningArtifact, RenderedDocument, TerminologyItem, UnifiedOutputSchema
 from .evidence_standardizer import EvidenceStandardizer, EvidenceStandardizationResult
@@ -9,7 +10,7 @@ from .evidence_standardizer import EvidenceStandardizer, EvidenceStandardization
 
 class BeginnerExplanationRenderer:
     def render_markdown(self, artifact: PlanningArtifact, *, version: str | None = None) -> RenderedDocument:
-        generated_at = datetime.now(timezone.utc).isoformat()
+        generated_at = beijing_now_isoformat()
         version = version or artifact.version
         lines: list[str] = []
         lines.append(f"### {artifact.title}")
@@ -89,7 +90,7 @@ class BeginnerExplanationRenderer:
         )
 
     def render_json(self, artifact: PlanningArtifact, *, version: str | None = None) -> RenderedDocument:
-        generated_at = datetime.now(timezone.utc).isoformat()
+        generated_at = beijing_now_isoformat()
         version = version or artifact.version
         payload = {
             "title": artifact.title,
@@ -330,7 +331,7 @@ class QuantBeginnerDocumentRenderer:
         include_rewritten_chapters: bool = True
     ) -> RenderedDocument:
         """渲染量化入门指南"""
-        generated_at = datetime.now(timezone.utc).isoformat()
+        generated_at = beijing_now_isoformat()
         lines: list[str] = []
 
         # 标题和元信息

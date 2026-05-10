@@ -1,0 +1,851 @@
+{
+  "artifact_type": "beginner_quant_research",
+  "title": "Beginner Quant Research",
+  "generated_at": "2026-05-10T07:39:33.645764+00:00",
+  "version": "v1",
+  "assumptions": [
+    {
+      "name": "evidence_scope",
+      "value": "public_and_verifiable_only",
+      "reason": "Prefer public sources that can be revisited later."
+    },
+    {
+      "name": "default_frequency",
+      "value": "low_frequency_first",
+      "reason": "Beginners should optimise for explainability and reviewability."
+    },
+    {
+      "name": "llm_role",
+      "value": "research_assistant_only",
+      "reason": "LLM output should not bypass risk controls or directly place trades."
+    }
+  ],
+  "knowledge_sections": [
+    {
+      "title": "Core concepts",
+      "summary": "Quantitative trading means turning an idea into explicit rules, testable data assumptions and repeatable review steps.",
+      "beginner_actions": [
+        "Write down the rule in plain language before coding it.",
+        "Keep the first strategy narrow enough that you can explain every input."
+      ],
+      "avoid_for_now": [
+        "Do not start from dozens of indicators and ad-hoc parameter tuning.",
+        "Do not treat a narrative or a chatbot summary as a trade signal by itself."
+      ],
+      "examples": [
+        "A simple example is: only observe symbols with stable liquidity, positive trend and a clear invalidation level."
+      ],
+      "warnings": [
+        "If you cannot describe why a rule should stop working, you do not understand the strategy boundary yet."
+      ],
+      "terms": [
+        {
+          "term": "factor",
+          "definition": "A measurable input that may explain return differences.",
+          "example": "Momentum and quality are common factors.",
+          "common_misunderstanding": "A factor is not a guaranteed edge forever."
+        },
+        {
+          "term": "max drawdown",
+          "definition": "The largest peak-to-trough loss during a period.",
+          "example": "A strategy up 20% but down 15% along the way still has a painful drawdown.",
+          "common_misunderstanding": "High return with unmanageable drawdown is not beginner friendly."
+        },
+        {
+          "term": "turnover",
+          "definition": "How frequently the portfolio changes.",
+          "example": "Higher turnover usually means more cost and more execution sensitivity.",
+          "common_misunderstanding": "High turnover is not automatically better."
+        }
+      ],
+      "references": [
+        {
+          "title": "Fama/French Data Library",
+          "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+          "published_at": "",
+          "source_type": "academic_reference",
+          "evidence_level": "high",
+          "note": "Canonical public factor data reference."
+        },
+        {
+          "title": "AQR Insights",
+          "source_url": "https://www.aqr.com/Insights",
+          "published_at": "",
+          "source_type": "industry_research",
+          "evidence_level": "mid",
+          "note": "Public practitioner research on factor investing and implementation trade-offs."
+        }
+      ]
+    },
+    {
+      "title": "Research workflow",
+      "summary": "A safer workflow is hypothesis -> data check -> backtest -> simulation -> review, not idea -> live trade.",
+      "beginner_actions": [
+        "Record sample period, fee/slippage assumptions and what counts as a failure.",
+        "Split validation into at least development and out-of-sample review."
+      ],
+      "avoid_for_now": [
+        "Do not trust a single backtest run without checking another market regime."
+      ],
+      "examples": [
+        "A rule that looks great only in one strong trend year should stay in research or simulation."
+      ],
+      "warnings": [
+        "Missing data-quality checks can create false confidence through look-ahead bias or survivor bias."
+      ],
+      "terms": [
+        {
+          "term": "out-of-sample",
+          "definition": "A period not used to design the rule.",
+          "example": "It is the closest thing to a fair exam for the strategy.",
+          "common_misunderstanding": "Good in-sample performance does not imply good out-of-sample performance."
+        },
+        {
+          "term": "slippage",
+          "definition": "The difference between expected execution price and actual execution price.",
+          "example": "Fast intraday strategies are much more sensitive to slippage.",
+          "common_misunderstanding": "Ignoring slippage can make a fragile strategy look good."
+        }
+      ],
+      "references": [
+        {
+          "title": "Fama/French Data Library",
+          "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+          "published_at": "",
+          "source_type": "academic_reference",
+          "evidence_level": "high",
+          "note": "Canonical public factor data reference."
+        }
+      ]
+    },
+    {
+      "title": "Risk control",
+      "summary": "For beginners, position sizing, diversification and pause rules are often more important than finding one more indicator.",
+      "beginner_actions": [
+        "Define single-position and portfolio exposure limits before the first paper trade.",
+        "Limit watchlist size so you can review every name properly."
+      ],
+      "avoid_for_now": [
+        "Do not increase risk because one recent trade worked well.",
+        "Do not concentrate several highly related names into one theme bet without noticing it."
+      ],
+      "examples": [
+        "Owning several AI-chip names can look diversified by ticker count but still be one theme exposure."
+      ],
+      "warnings": [
+        "If drawdown, execution anomaly or data anomaly is triggered, the next step should usually be review, not more trading."
+      ],
+      "terms": [
+        {
+          "term": "position sizing",
+          "definition": "How much capital one idea is allowed to use.",
+          "example": "A good idea can still hurt if the size is too large.",
+          "common_misunderstanding": "Entry direction and position size are separate decisions."
+        },
+        {
+          "term": "capacity",
+          "definition": "How much money a strategy can realistically handle.",
+          "example": "A minute-level strategy on illiquid names has lower capacity than a daily large-cap strategy.",
+          "common_misunderstanding": "Capacity is not only about account size; it is also about liquidity."
+        }
+      ],
+      "references": [
+        {
+          "title": "SEC Investor Bulletin on Diversification",
+          "source_url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/diversification",
+          "published_at": "",
+          "source_type": "regulatory_guidance",
+          "evidence_level": "high",
+          "note": "Simple public guidance on concentration risk."
+        },
+        {
+          "title": "AQR Insights",
+          "source_url": "https://www.aqr.com/Insights",
+          "published_at": "",
+          "source_type": "industry_research",
+          "evidence_level": "mid",
+          "note": "Public practitioner research on factor investing and implementation trade-offs."
+        }
+      ]
+    },
+    {
+      "title": "Performance evaluation",
+      "summary": "Headline return is incomplete; you need return, drawdown, risk-adjusted return, turnover, sample size and stability together.",
+      "beginner_actions": [
+        "Review both return and the path taken to achieve it.",
+        "Keep a small scorecard for every strategy version and compare changes carefully."
+      ],
+      "avoid_for_now": [
+        "Do not upgrade a strategy just because one parameter set has the highest profit."
+      ],
+      "examples": [
+        "A slightly lower return with much smaller drawdown and lower turnover may be the better beginner choice."
+      ],
+      "warnings": [
+        "If a strategy only wins after aggressive tuning, it may be overfit rather than robust."
+      ],
+      "terms": [
+        {
+          "term": "Sharpe ratio",
+          "definition": "A rough measure of return per unit of volatility.",
+          "example": "Higher is usually better, but only when sample quality is acceptable.",
+          "common_misunderstanding": "Sharpe alone does not capture tail risk or execution friction."
+        },
+        {
+          "term": "stability",
+          "definition": "Whether results stay reasonable across periods, assets or parameter ranges.",
+          "example": "A robust rule should not collapse after a small parameter change.",
+          "common_misunderstanding": "The best single backtest number is not the same as stability."
+        }
+      ],
+      "references": [
+        {
+          "title": "AQR Insights",
+          "source_url": "https://www.aqr.com/Insights",
+          "published_at": "",
+          "source_type": "industry_research",
+          "evidence_level": "mid",
+          "note": "Public practitioner research on factor investing and implementation trade-offs."
+        }
+      ]
+    }
+  ],
+  "research_findings": [
+    {
+      "topic": "workflow",
+      "conclusion": "Beginners should prioritise evidence-backed, low-frequency and reviewable workflows over minute-level automation.",
+      "evidence_level": "high",
+      "source_kind": "curated_public_research",
+      "confidence": 0.88,
+      "verification_status": "verified",
+      "invalidation_conditions": [
+        "If the user already has proven minute-level execution infrastructure and monitoring, this may be relaxed."
+      ],
+      "references": [
+        {
+          "title": "Fama/French Data Library",
+          "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+          "published_at": "",
+          "source_type": "academic_reference",
+          "evidence_level": "high",
+          "note": "Canonical public factor data reference."
+        },
+        {
+          "title": "AQR Insights",
+          "source_url": "https://www.aqr.com/Insights",
+          "published_at": "",
+          "source_type": "industry_research",
+          "evidence_level": "mid",
+          "note": "Public practitioner research on factor investing and implementation trade-offs."
+        }
+      ]
+    },
+    {
+      "topic": "validation",
+      "conclusion": "Out-of-sample checks, transaction costs and data-quality notes are mandatory before moving beyond research or backtest summaries.",
+      "evidence_level": "high",
+      "source_kind": "curated_public_research",
+      "confidence": 0.9,
+      "verification_status": "verified",
+      "invalidation_conditions": [
+        "Missing cost or data-quality assumptions should block stage upgrades."
+      ],
+      "references": [
+        {
+          "title": "Fama/French Data Library",
+          "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+          "published_at": "",
+          "source_type": "academic_reference",
+          "evidence_level": "high",
+          "note": "Canonical public factor data reference."
+        },
+        {
+          "title": "AQR Insights",
+          "source_url": "https://www.aqr.com/Insights",
+          "published_at": "",
+          "source_type": "industry_research",
+          "evidence_level": "mid",
+          "note": "Public practitioner research on factor investing and implementation trade-offs."
+        }
+      ]
+    },
+    {
+      "topic": "llm_usage",
+      "conclusion": "LLM tools are useful for evidence summarisation and candidate explanation, but they should remain research helpers rather than execution authorities.",
+      "evidence_level": "mid",
+      "source_kind": "operational_constraint",
+      "confidence": 0.82,
+      "verification_status": "verified",
+      "invalidation_conditions": [
+        "If an LLM output bypasses rule-based screening or risk control, treat the workflow as unsafe."
+      ],
+      "references": [
+        {
+          "title": "AQR Insights",
+          "source_url": "https://www.aqr.com/Insights",
+          "published_at": "",
+          "source_type": "industry_research",
+          "evidence_level": "mid",
+          "note": "Public practitioner research on factor investing and implementation trade-offs."
+        }
+      ]
+    },
+    {
+      "topic": "risk_budget",
+      "conclusion": "A written risk budget and stop conditions should exist before the first simulation session, not after the first drawdown.",
+      "evidence_level": "mid",
+      "source_kind": "curated_public_research",
+      "confidence": 0.8,
+      "verification_status": "verified",
+      "invalidation_conditions": [
+        "If the user cannot explain the stop rule, the plan is not ready for upgrade."
+      ],
+      "references": [
+        {
+          "title": "SEC Investor Bulletin on Diversification",
+          "source_url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/diversification",
+          "published_at": "",
+          "source_type": "regulatory_guidance",
+          "evidence_level": "high",
+          "note": "Simple public guidance on concentration risk."
+        }
+      ]
+    }
+  ],
+  "research_conclusions": [
+    "Beginners should prioritise evidence-backed, low-frequency and reviewable workflows over minute-level automation.",
+    "Out-of-sample checks, transaction costs and data-quality notes are mandatory before moving beyond research or backtest summaries.",
+    "LLM tools are useful for evidence summarisation and candidate explanation, but they should remain research helpers rather than execution authorities.",
+    "A written risk budget and stop conditions should exist before the first simulation session, not after the first drawdown."
+  ],
+  "execution_suggestions": [
+    "Start from research, explanation and backtest review before any simulation step.",
+    "Use LLM results as an evidence summary, not as a direct execution instruction.",
+    "Keep a small watchlist and define pause conditions before the first paper trade."
+  ],
+  "risk_prompts": [
+    "Do not move to live trading until reconciliation, logging and approval controls are in place.",
+    "If a result depends on minute-level execution, add stricter cost and latency assumptions."
+  ],
+  "invalidation_conditions": [
+    "If you cannot explain why a rule should work, treat it as an observation idea instead of a trade rule.",
+    "If transaction costs, slippage or liquidity assumptions are missing, do not upgrade to a higher stage."
+  ],
+  "evidence_items": [
+    {
+      "title": "Fama/French Data Library",
+      "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "published_at": "",
+      "source_type": "academic_reference",
+      "evidence_level": "high",
+      "note": "Canonical public factor data reference."
+    },
+    {
+      "title": "AQR Insights",
+      "source_url": "https://www.aqr.com/Insights",
+      "published_at": "",
+      "source_type": "industry_research",
+      "evidence_level": "mid",
+      "note": "Public practitioner research on factor investing and implementation trade-offs."
+    },
+    {
+      "title": "SEC Investor Bulletin on Diversification",
+      "source_url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/diversification",
+      "published_at": "",
+      "source_type": "regulatory_guidance",
+      "evidence_level": "high",
+      "note": "Simple public guidance on concentration risk."
+    }
+  ],
+  "conflicts": [
+    {
+      "topic": "Low-frequency versus minute-level trading",
+      "viewpoints": [
+        "Low-frequency strategies are easier to explain, validate and review.",
+        "Minute-level strategies may react faster but become much more sensitive to cost, latency and operational errors."
+      ],
+      "applicability": "Minute-level trading only becomes reasonable after data quality, logging and execution constraints are already reliable.",
+      "conservative_takeaway": "For a new local system, stay with low-frequency research and simulation first."
+    },
+    {
+      "topic": "Simple robust rules versus heavy parameter tuning",
+      "viewpoints": [
+        "Simple rules are easier to audit and less likely to hide curve fitting.",
+        "More parameters may improve in-sample fit but can reduce robustness."
+      ],
+      "applicability": "Parameter tuning is useful only when the validation design is strong and the parameter surface stays stable.",
+      "conservative_takeaway": "Prefer fewer parameters and stronger validation before adding complexity."
+    }
+  ],
+  "candidate_observations": [],
+  "capability_map": [
+    {
+      "capability_id": "classic_multifactor.llm_research",
+      "path": "scripts/classic_multifactor/run_llm_research.py",
+      "stage": "research",
+      "description": "Single-topic public-web quant research artifact generator.",
+      "inputs": [
+        "llm config path",
+        "topic",
+        "context",
+        "symbol",
+        "timeframe",
+        "schema preset"
+      ],
+      "outputs": [
+        "state/runs/llm_research/*.json"
+      ],
+      "manual_checkpoints": [
+        "Review returned references and evidence level before using conclusions."
+      ],
+      "requires_confirmation": false,
+      "mutates_state": false,
+      "connects_remote": true,
+      "safe_by_default": true
+    },
+    {
+      "capability_id": "classic_multifactor.intraday_runner",
+      "path": "scripts/classic_multifactor/run_intraday_loop.py",
+      "stage": "simulation",
+      "description": "Minute-level mainline runner with four-stage execution guards and dry-run by default.",
+      "inputs": [
+        "classic config json",
+        "session window",
+        "live-submit switches"
+      ],
+      "outputs": [
+        "state/runs/classic_multifactor_intraday_report.json",
+        "state/runs/events.jsonl",
+        "state/runs/orders/*.json"
+      ],
+      "manual_checkpoints": [
+        "Requires explicit confirmation before any live-submit path.",
+        "Default beginner usage should stay in dry-run or report-only mode."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": true,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "classic_multifactor.daily_runner",
+      "path": "scripts/classic_multifactor/run_daily_rebalance.py",
+      "stage": "simulation",
+      "description": "Daily rebalance mainline runner with shared execution guards and dry-run by default.",
+      "inputs": [
+        "classic config json",
+        "rebalance time",
+        "max bars",
+        "live-submit switches"
+      ],
+      "outputs": [
+        "state/runs/classic_multifactor_daily_report.json",
+        "state/runs/events.jsonl",
+        "state/runs/orders/*.json"
+      ],
+      "manual_checkpoints": [
+        "Review target_positions and daily turnover assumptions before execution."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": true,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "classic_multifactor.vnpy_backtest",
+      "path": "scripts/classic_multifactor/run_vnpy_cta_backtest.py",
+      "stage": "backtest",
+      "description": "Official vn.py CTA backtest entry for classic multifactor strategy.",
+      "inputs": [
+        "symbol",
+        "start/end",
+        "capital",
+        "interval",
+        "fees and slippage",
+        "strategy parameters"
+      ],
+      "outputs": [
+        "state/runs/classic_multifactor/vnpy_cta_backtest_report.json"
+      ],
+      "manual_checkpoints": [
+        "Check sample period, slippage, fee assumptions and stability metrics before upgrade."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": false,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "llm.stock_analysis",
+      "path": "scripts/llm/analyze_stock_with_llm.py",
+      "stage": "research",
+      "description": "Single-stock LLM-assisted analysis helper using market context and optional technical overlays.",
+      "inputs": [
+        "symbol",
+        "timeframe",
+        "technical/capital/derivatives toggles"
+      ],
+      "outputs": [
+        "stdout analysis text"
+      ],
+      "manual_checkpoints": [
+        "Treat output as research aid only; do not bypass rule-based screening or risk review."
+      ],
+      "requires_confirmation": false,
+      "mutates_state": false,
+      "connects_remote": true,
+      "safe_by_default": true
+    },
+    {
+      "capability_id": "llm.anomaly_detector",
+      "path": "scripts/llm/anomaly_detector.py",
+      "stage": "research",
+      "description": "Aggregates technical, capital-flow and derivatives anomaly checks for a symbol.",
+      "inputs": [
+        "symbol",
+        "anomaly type flags"
+      ],
+      "outputs": [
+        "stdout anomaly snapshot"
+      ],
+      "manual_checkpoints": [
+        "Use as explanatory context; not as a direct execution signal."
+      ],
+      "requires_confirmation": false,
+      "mutates_state": false,
+      "connects_remote": true,
+      "safe_by_default": true
+    },
+    {
+      "capability_id": "llm.config",
+      "path": "scripts/llm/config.py",
+      "stage": "research",
+      "description": "LLM analysis configuration and prompt-template support module.",
+      "inputs": [
+        "market",
+        "symbol",
+        "timeframe",
+        "technical/capital toggles"
+      ],
+      "outputs": [
+        "in-memory prompt and config objects"
+      ],
+      "manual_checkpoints": [
+        "Human should confirm market and timeframe assumptions."
+      ],
+      "requires_confirmation": false,
+      "mutates_state": false,
+      "connects_remote": false,
+      "safe_by_default": true
+    },
+    {
+      "capability_id": "healthcheck.report",
+      "path": "scripts/run_healthcheck.py",
+      "stage": "research",
+      "description": "Read-only environment and account health check.",
+      "inputs": [
+        "repository root"
+      ],
+      "outputs": [
+        "state/runs/healthcheck.json"
+      ],
+      "manual_checkpoints": [
+        "Inspect alerts before enabling any execution stage."
+      ],
+      "requires_confirmation": false,
+      "mutates_state": false,
+      "connects_remote": true,
+      "safe_by_default": true
+    },
+    {
+      "capability_id": "portfolio.brief",
+      "path": "scripts/run_portfolio_brief.py",
+      "stage": "research",
+      "description": "Portfolio summary and concentration/risk brief builder.",
+      "inputs": [
+        "hk/us close reports",
+        "healthcheck report"
+      ],
+      "outputs": [
+        "state/runs/portfolio_brief.json"
+      ],
+      "manual_checkpoints": [
+        "Verify portfolio concentration and alerts before moving to simulation."
+      ],
+      "requires_confirmation": false,
+      "mutates_state": false,
+      "connects_remote": false,
+      "safe_by_default": true
+    },
+    {
+      "capability_id": "sim.us_legacy_task",
+      "path": "scripts/run_us_sim_task.py",
+      "stage": "simulation",
+      "description": "US SIM trading task entry using legacy pipeline or forwarding into vnpy mainline.",
+      "inputs": [
+        "candidate inputs",
+        "market quotes",
+        "optional classic config"
+      ],
+      "outputs": [
+        "state/runs/us_sim_task_report.json",
+        "state/runs/us_sim_account.json"
+      ],
+      "manual_checkpoints": [
+        "Review selected candidates and budget assumptions before running.",
+        "Prefer dry-run or report review for beginner workflow."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": true,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "sim.us_futu_session",
+      "path": "scripts/run_us_futu_sim_session.py",
+      "stage": "simulation",
+      "description": "US Futu SIM session loop with budget/loss constraints and state writes.",
+      "inputs": [
+        "candidate inputs",
+        "quote retries",
+        "max budget",
+        "max loss"
+      ],
+      "outputs": [
+        "state/runs/us_futu_sim_session_report.json",
+        "state/runs/us_futu_sim_session_state.json",
+        "state/runs/orders/*.json"
+      ],
+      "manual_checkpoints": [
+        "Requires explicit user confirmation before session execution.",
+        "Must stay in Futu SIMULATE environment only."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": true,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "live.us_task",
+      "path": "scripts/run_us_live_task.py",
+      "stage": "live",
+      "description": "US live-task gate; dry-run by default and guarded by explicit live switches.",
+      "inputs": [
+        "candidate inputs",
+        "budget settings",
+        "live-submit flag",
+        "environment switches"
+      ],
+      "outputs": [
+        "state/runs/us_live_task_report.json",
+        "state/runs/orders/*.json"
+      ],
+      "manual_checkpoints": [
+        "Real execution must be explicitly approved.",
+        "Confirm VNPY_LIVE_CONFIG/VNPY_LIVE_SUBMIT/VNPY_LIVE_APPROVED before any non-dry-run path."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": true,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "workflow.quant_entry",
+      "path": "scripts/quant_workflow/run_quant_workflow.py",
+      "stage": "orchestration",
+      "description": "Planned unified beginner quant workflow entry for research, planning, validation and optional simulation orchestration.",
+      "inputs": [
+        "workflow preset",
+        "market",
+        "symbol list",
+        "risk profile",
+        "execution mode"
+      ],
+      "outputs": [
+        "state/runs/quant_workflow/*.json"
+      ],
+      "manual_checkpoints": [
+        "Execution-related stages require explicit confirmation.",
+        "Beginner workflow should default to research/planning mode."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": true,
+      "connects_remote": true,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "gap.hk_sim_task",
+      "path": "scripts/run_hk_sim_task.py",
+      "stage": "simulation",
+      "description": "Mentioned by project conventions but currently missing in repository; treat as a capability gap.",
+      "inputs": [
+        "N/A"
+      ],
+      "outputs": [
+        "N/A"
+      ],
+      "manual_checkpoints": [
+        "Use US-only examples or a manual HK simulation flow until this entry exists."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": false,
+      "connects_remote": false,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "gap.hk_live_task",
+      "path": "scripts/run_hk_live_task.py",
+      "stage": "live",
+      "description": "Mentioned by project conventions but currently missing in repository; treat as a capability gap.",
+      "inputs": [
+        "N/A"
+      ],
+      "outputs": [
+        "N/A"
+      ],
+      "manual_checkpoints": [
+        "Do not claim HK live support in automated workflow until the entry exists."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": false,
+      "connects_remote": false,
+      "safe_by_default": false
+    },
+    {
+      "capability_id": "gap.hk_futu_session",
+      "path": "scripts/run_hk_futu_sim_session.py",
+      "stage": "simulation",
+      "description": "Documented in integration guide but currently missing in repository; treat as capability gap.",
+      "inputs": [
+        "N/A"
+      ],
+      "outputs": [
+        "N/A"
+      ],
+      "manual_checkpoints": [
+        "Use alternative manual HK SIM flow until this entry exists."
+      ],
+      "requires_confirmation": true,
+      "mutates_state": false,
+      "connects_remote": false,
+      "safe_by_default": false
+    }
+  ],
+  "capability_gaps": [
+    {
+      "capability_id": "gap.hk_sim_task",
+      "expected_path": "scripts/run_hk_sim_task.py",
+      "reason": "Mentioned by project conventions but currently missing in repository; treat as a capability gap.",
+      "manual_alternative": "Use US-only examples or a manual HK simulation flow until this entry exists.",
+      "suggested_next_step": "Add a dedicated entry or keep a manual alternative in the workflow."
+    },
+    {
+      "capability_id": "gap.hk_live_task",
+      "expected_path": "scripts/run_hk_live_task.py",
+      "reason": "Mentioned by project conventions but currently missing in repository; treat as a capability gap.",
+      "manual_alternative": "Do not claim HK live support in automated workflow until the entry exists.",
+      "suggested_next_step": "Add a dedicated entry or keep a manual alternative in the workflow."
+    },
+    {
+      "capability_id": "gap.hk_futu_session",
+      "expected_path": "scripts/run_hk_futu_sim_session.py",
+      "reason": "Documented in integration guide but currently missing in repository; treat as capability gap.",
+      "manual_alternative": "Use alternative manual HK SIM flow until this entry exists.",
+      "suggested_next_step": "Add a dedicated entry or keep a manual alternative in the workflow."
+    }
+  ],
+  "plan_phases": [],
+  "risk_budget": null,
+  "readiness": null,
+  "workflow": null,
+  "rendered_documents": [
+    {
+      "title": "Beginner Quant Research (markdown)",
+      "format": "markdown",
+      "body": "### Beginner Quant Research\n\n- Generated at: 2026-05-10T07:39:33.645838+00:00\n- Version: v1\n- Audience: beginner quant trader\n\n### What this note is trying to do\n- Explain the key ideas in plain language.\n- Tell you what to do first, what to avoid for now, and what must be verified before upgrading stages.\n- Keep research, execution advice and risk prompts separate.\n\n### Learning order\n- Understand core concepts and risk language before touching execution settings.\n- Learn the research workflow: hypothesis -> data check -> backtest -> simulation -> review.\n- Study a small candidate set and explain why each name is on the list.\n- Write a risk budget and pause rules before any simulation session.\n- Notice the current local capability gaps before planning a higher-risk stage.\n\n### Practice order\n- Run the read-only health check first.\n- Review research findings and evidence levels.\n- Check the watchlist or candidate observations and keep only a few names.\n- Review one backtest or validation summary before any simulation idea.\n- Move to simulation only after risk budget and readiness checklist are both clear.\n\n### Current assumptions\n- evidence_scope: public_and_verifiable_only — Prefer public sources that can be revisited later.\n- default_frequency: low_frequency_first — Beginners should optimise for explainability and reviewability.\n- llm_role: research_assistant_only — LLM output should not bypass risk controls or directly place trades.\n\n### Knowledge sections\n#### Core concepts\n- Summary: Quantitative trading means turning an idea into explicit rules, testable data assumptions and repeatable review steps.\n- What you can do now:\n  - Write down the rule in plain language before coding it.\n  - Keep the first strategy narrow enough that you can explain every input.\n- What to avoid for now:\n  - Do not start from dozens of indicators and ad-hoc parameter tuning.\n  - Do not treat a narrative or a chatbot summary as a trade signal by itself.\n- Examples:\n  - A simple example is: only observe symbols with stable liquidity, positive trend and a clear invalidation level.\n- Warnings:\n  - If you cannot describe why a rule should stop working, you do not understand the strategy boundary yet.\n- Key terms:\n  - factor: A measurable input that may explain return differences.\n    - Example: Momentum and quality are common factors.\n    - Common misunderstanding: A factor is not a guaranteed edge forever.\n  - max drawdown: The largest peak-to-trough loss during a period.\n    - Example: A strategy up 20% but down 15% along the way still has a painful drawdown.\n    - Common misunderstanding: High return with unmanageable drawdown is not beginner friendly.\n  - turnover: How frequently the portfolio changes.\n    - Example: Higher turnover usually means more cost and more execution sensitivity.\n    - Common misunderstanding: High turnover is not automatically better.\n#### Research workflow\n- Summary: A safer workflow is hypothesis -> data check -> backtest -> simulation -> review, not idea -> live trade.\n- What you can do now:\n  - Record sample period, fee/slippage assumptions and what counts as a failure.\n  - Split validation into at least development and out-of-sample review.\n- What to avoid for now:\n  - Do not trust a single backtest run without checking another market regime.\n- Examples:\n  - A rule that looks great only in one strong trend year should stay in research or simulation.\n- Warnings:\n  - Missing data-quality checks can create false confidence through look-ahead bias or survivor bias.\n- Key terms:\n  - out-of-sample: A period not used to design the rule.\n    - Example: It is the closest thing to a fair exam for the strategy.\n    - Common misunderstanding: Good in-sample performance does not imply good out-of-sample performance.\n  - slippage: The difference between expected execution price and actual execution price.\n    - Example: Fast intraday strategies are much more sensitive to slippage.\n    - Common misunderstanding: Ignoring slippage can make a fragile strategy look good.\n#### Risk control\n- Summary: For beginners, position sizing, diversification and pause rules are often more important than finding one more indicator.\n- What you can do now:\n  - Define single-position and portfolio exposure limits before the first paper trade.\n  - Limit watchlist size so you can review every name properly.\n- What to avoid for now:\n  - Do not increase risk because one recent trade worked well.\n  - Do not concentrate several highly related names into one theme bet without noticing it.\n- Examples:\n  - Owning several AI-chip names can look diversified by ticker count but still be one theme exposure.\n- Warnings:\n  - If drawdown, execution anomaly or data anomaly is triggered, the next step should usually be review, not more trading.\n- Key terms:\n  - position sizing: How much capital one idea is allowed to use.\n    - Example: A good idea can still hurt if the size is too large.\n    - Common misunderstanding: Entry direction and position size are separate decisions.\n  - capacity: How much money a strategy can realistically handle.\n    - Example: A minute-level strategy on illiquid names has lower capacity than a daily large-cap strategy.\n    - Common misunderstanding: Capacity is not only about account size; it is also about liquidity.\n#### Performance evaluation\n- Summary: Headline return is incomplete; you need return, drawdown, risk-adjusted return, turnover, sample size and stability together.\n- What you can do now:\n  - Review both return and the path taken to achieve it.\n  - Keep a small scorecard for every strategy version and compare changes carefully.\n- What to avoid for now:\n  - Do not upgrade a strategy just because one parameter set has the highest profit.\n- Examples:\n  - A slightly lower return with much smaller drawdown and lower turnover may be the better beginner choice.\n- Warnings:\n  - If a strategy only wins after aggressive tuning, it may be overfit rather than robust.\n- Key terms:\n  - Sharpe ratio: A rough measure of return per unit of volatility.\n    - Example: Higher is usually better, but only when sample quality is acceptable.\n    - Common misunderstanding: Sharpe alone does not capture tail risk or execution friction.\n  - stability: Whether results stay reasonable across periods, assets or parameter ranges.\n    - Example: A robust rule should not collapse after a small parameter change.\n    - Common misunderstanding: The best single backtest number is not the same as stability.\n\n### Research conclusions\n- [high] Beginners should prioritise evidence-backed, low-frequency and reviewable workflows over minute-level automation.\n- [high] Out-of-sample checks, transaction costs and data-quality notes are mandatory before moving beyond research or backtest summaries.\n- [mid] LLM tools are useful for evidence summarisation and candidate explanation, but they should remain research helpers rather than execution authorities.\n- [mid] A written risk budget and stop conditions should exist before the first simulation session, not after the first drawdown.\n\n### Common pitfalls\n- Confusing a good story with a tested rule.\n- Looking only at return and ignoring drawdown, turnover and sample quality.\n- Adding too many correlated names and calling it diversification.\n- Letting an LLM summary replace manual review of evidence and risk controls.\n- Do not move to live trading until reconciliation, logging and approval controls are in place.\n- If a result depends on minute-level execution, add stricter cost and latency assumptions.\n\n### Minimum viable start\n- One market, a small watchlist and a low-frequency review habit.\n- A written risk budget with single-position, total-exposure and pause rules.\n- At least one backtest or validation note with data-quality and cost assumptions recorded.\n- A simulation observation period before any live intent.\n\n### Readiness checkpoints\n- No readiness checklist has been attached yet.\n\n### What changed from the previous plan\n- No previous plan comparison was available for this run.\n\n### Personalization summary\n- No explicit personalization summary was recorded for this artifact.\n\n### Update scope\n- No scoped profile update information was recorded.\n\n### Next actions\n- Start from research, explanation and backtest review before any simulation step.\n- Use LLM results as an evidence summary, not as a direct execution instruction.\n- Keep a small watchlist and define pause conditions before the first paper trade.\n\n### Local system boundaries\n- Missing local capability: scripts/run_hk_sim_task.py -> Use US-only examples or a manual HK simulation flow until this entry exists.\n- Missing local capability: scripts/run_hk_live_task.py -> Do not claim HK live support in automated workflow until the entry exists.\n- Missing local capability: scripts/run_hk_futu_sim_session.py -> Use alternative manual HK SIM flow until this entry exists.\n- The following local entries require confirmation before execution: scripts/classic_multifactor/run_daily_rebalance.py, scripts/classic_multifactor/run_intraday_loop.py, scripts/classic_multifactor/run_vnpy_cta_backtest.py, scripts/quant_workflow/run_quant_workflow.py, scripts/run_hk_futu_sim_session.py\n",
+      "section_count": 13,
+      "version": "v1",
+      "generated_at": "2026-05-10T07:39:33.645838+00:00"
+    },
+    {
+      "title": "Beginner Quant Research (json)",
+      "format": "json",
+      "body": "{\n  \"title\": \"Beginner Quant Research\",\n  \"version\": \"v1\",\n  \"generated_at\": \"2026-05-10T07:39:33.645902+00:00\",\n  \"knowledge_sections\": [\n    {\n      \"title\": \"Core concepts\",\n      \"summary\": \"Quantitative trading means turning an idea into explicit rules, testable data assumptions and repeatable review steps.\",\n      \"beginner_actions\": [\n        \"Write down the rule in plain language before coding it.\",\n        \"Keep the first strategy narrow enough that you can explain every input.\"\n      ],\n      \"avoid_for_now\": [\n        \"Do not start from dozens of indicators and ad-hoc parameter tuning.\",\n        \"Do not treat a narrative or a chatbot summary as a trade signal by itself.\"\n      ],\n      \"examples\": [\n        \"A simple example is: only observe symbols with stable liquidity, positive trend and a clear invalidation level.\"\n      ],\n      \"warnings\": [\n        \"If you cannot describe why a rule should stop working, you do not understand the strategy boundary yet.\"\n      ],\n      \"terms\": [\n        {\n          \"term\": \"factor\",\n          \"definition\": \"A measurable input that may explain return differences.\",\n          \"example\": \"Momentum and quality are common factors.\",\n          \"common_misunderstanding\": \"A factor is not a guaranteed edge forever.\"\n        },\n        {\n          \"term\": \"max drawdown\",\n          \"definition\": \"The largest peak-to-trough loss during a period.\",\n          \"example\": \"A strategy up 20% but down 15% along the way still has a painful drawdown.\",\n          \"common_misunderstanding\": \"High return with unmanageable drawdown is not beginner friendly.\"\n        },\n        {\n          \"term\": \"turnover\",\n          \"definition\": \"How frequently the portfolio changes.\",\n          \"example\": \"Higher turnover usually means more cost and more execution sensitivity.\",\n          \"common_misunderstanding\": \"High turnover is not automatically better.\"\n        }\n      ]\n    },\n    {\n      \"title\": \"Research workflow\",\n      \"summary\": \"A safer workflow is hypothesis -> data check -> backtest -> simulation -> review, not idea -> live trade.\",\n      \"beginner_actions\": [\n        \"Record sample period, fee/slippage assumptions and what counts as a failure.\",\n        \"Split validation into at least development and out-of-sample review.\"\n      ],\n      \"avoid_for_now\": [\n        \"Do not trust a single backtest run without checking another market regime.\"\n      ],\n      \"examples\": [\n        \"A rule that looks great only in one strong trend year should stay in research or simulation.\"\n      ],\n      \"warnings\": [\n        \"Missing data-quality checks can create false confidence through look-ahead bias or survivor bias.\"\n      ],\n      \"terms\": [\n        {\n          \"term\": \"out-of-sample\",\n          \"definition\": \"A period not used to design the rule.\",\n          \"example\": \"It is the closest thing to a fair exam for the strategy.\",\n          \"common_misunderstanding\": \"Good in-sample performance does not imply good out-of-sample performance.\"\n        },\n        {\n          \"term\": \"slippage\",\n          \"definition\": \"The difference between expected execution price and actual execution price.\",\n          \"example\": \"Fast intraday strategies are much more sensitive to slippage.\",\n          \"common_misunderstanding\": \"Ignoring slippage can make a fragile strategy look good.\"\n        }\n      ]\n    },\n    {\n      \"title\": \"Risk control\",\n      \"summary\": \"For beginners, position sizing, diversification and pause rules are often more important than finding one more indicator.\",\n      \"beginner_actions\": [\n        \"Define single-position and portfolio exposure limits before the first paper trade.\",\n        \"Limit watchlist size so you can review every name properly.\"\n      ],\n      \"avoid_for_now\": [\n        \"Do not increase risk because one recent trade worked well.\",\n        \"Do not concentrate several highly related names into one theme bet without noticing it.\"\n      ],\n      \"examples\": [\n        \"Owning several AI-chip names can look diversified by ticker count but still be one theme exposure.\"\n      ],\n      \"warnings\": [\n        \"If drawdown, execution anomaly or data anomaly is triggered, the next step should usually be review, not more trading.\"\n      ],\n      \"terms\": [\n        {\n          \"term\": \"position sizing\",\n          \"definition\": \"How much capital one idea is allowed to use.\",\n          \"example\": \"A good idea can still hurt if the size is too large.\",\n          \"common_misunderstanding\": \"Entry direction and position size are separate decisions.\"\n        },\n        {\n          \"term\": \"capacity\",\n          \"definition\": \"How much money a strategy can realistically handle.\",\n          \"example\": \"A minute-level strategy on illiquid names has lower capacity than a daily large-cap strategy.\",\n          \"common_misunderstanding\": \"Capacity is not only about account size; it is also about liquidity.\"\n        }\n      ]\n    },\n    {\n      \"title\": \"Performance evaluation\",\n      \"summary\": \"Headline return is incomplete; you need return, drawdown, risk-adjusted return, turnover, sample size and stability together.\",\n      \"beginner_actions\": [\n        \"Review both return and the path taken to achieve it.\",\n        \"Keep a small scorecard for every strategy version and compare changes carefully.\"\n      ],\n      \"avoid_for_now\": [\n        \"Do not upgrade a strategy just because one parameter set has the highest profit.\"\n      ],\n      \"examples\": [\n        \"A slightly lower return with much smaller drawdown and lower turnover may be the better beginner choice.\"\n      ],\n      \"warnings\": [\n        \"If a strategy only wins after aggressive tuning, it may be overfit rather than robust.\"\n      ],\n      \"terms\": [\n        {\n          \"term\": \"Sharpe ratio\",\n          \"definition\": \"A rough measure of return per unit of volatility.\",\n          \"example\": \"Higher is usually better, but only when sample quality is acceptable.\",\n          \"common_misunderstanding\": \"Sharpe alone does not capture tail risk or execution friction.\"\n        },\n        {\n          \"term\": \"stability\",\n          \"definition\": \"Whether results stay reasonable across periods, assets or parameter ranges.\",\n          \"example\": \"A robust rule should not collapse after a small parameter change.\",\n          \"common_misunderstanding\": \"The best single backtest number is not the same as stability.\"\n        }\n      ]\n    }\n  ],\n  \"research_findings\": [\n    {\n      \"topic\": \"workflow\",\n      \"conclusion\": \"Beginners should prioritise evidence-backed, low-frequency and reviewable workflows over minute-level automation.\",\n      \"evidence_level\": \"high\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": [\n        \"If the user already has proven minute-level execution infrastructure and monitoring, this may be relaxed.\"\n      ]\n    },\n    {\n      \"topic\": \"validation\",\n      \"conclusion\": \"Out-of-sample checks, transaction costs and data-quality notes are mandatory before moving beyond research or backtest summaries.\",\n      \"evidence_level\": \"high\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": [\n        \"Missing cost or data-quality assumptions should block stage upgrades.\"\n      ]\n    },\n    {\n      \"topic\": \"llm_usage\",\n      \"conclusion\": \"LLM tools are useful for evidence summarisation and candidate explanation, but they should remain research helpers rather than execution authorities.\",\n      \"evidence_level\": \"mid\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": [\n        \"If an LLM output bypasses rule-based screening or risk control, treat the workflow as unsafe.\"\n      ]\n    },\n    {\n      \"topic\": \"risk_budget\",\n      \"conclusion\": \"A written risk budget and stop conditions should exist before the first simulation session, not after the first drawdown.\",\n      \"evidence_level\": \"mid\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": [\n        \"If the user cannot explain the stop rule, the plan is not ready for upgrade.\"\n      ]\n    }\n  ],\n  \"practice_order\": [\n    \"Run the read-only health check first.\",\n    \"Review research findings and evidence levels.\",\n    \"Check the watchlist or candidate observations and keep only a few names.\",\n    \"Review one backtest or validation summary before any simulation idea.\",\n    \"Move to simulation only after risk budget and readiness checklist are both clear.\"\n  ],\n  \"assumptions\": [\n    \"evidence_scope: public_and_verifiable_only — Prefer public sources that can be revisited later.\",\n    \"default_frequency: low_frequency_first — Beginners should optimise for explainability and reviewability.\",\n    \"llm_role: research_assistant_only — LLM output should not bypass risk controls or directly place trades.\"\n  ],\n  \"common_pitfalls\": [\n    \"Confusing a good story with a tested rule.\",\n    \"Looking only at return and ignoring drawdown, turnover and sample quality.\",\n    \"Adding too many correlated names and calling it diversification.\",\n    \"Letting an LLM summary replace manual review of evidence and risk controls.\",\n    \"Do not move to live trading until reconciliation, logging and approval controls are in place.\",\n    \"If a result depends on minute-level execution, add stricter cost and latency assumptions.\"\n  ],\n  \"minimum_viable_start\": [\n    \"One market, a small watchlist and a low-frequency review habit.\",\n    \"A written risk budget with single-position, total-exposure and pause rules.\",\n    \"At least one backtest or validation note with data-quality and cost assumptions recorded.\",\n    \"A simulation observation period before any live intent.\"\n  ],\n  \"readiness\": [\n    \"No readiness checklist has been attached yet.\"\n  ],\n  \"plan_differences\": [\n    \"No previous plan comparison was available for this run.\"\n  ],\n  \"personalization_summary\": [\n    \"No explicit personalization summary was recorded for this artifact.\"\n  ],\n  \"update_scope\": [\n    \"No scoped profile update information was recorded.\"\n  ],\n  \"next_actions\": [\n    \"Start from research, explanation and backtest review before any simulation step.\",\n    \"Use LLM results as an evidence summary, not as a direct execution instruction.\",\n    \"Keep a small watchlist and define pause conditions before the first paper trade.\"\n  ],\n  \"local_limits\": [\n    \"Missing local capability: scripts/run_hk_sim_task.py -> Use US-only examples or a manual HK simulation flow until this entry exists.\",\n    \"Missing local capability: scripts/run_hk_live_task.py -> Do not claim HK live support in automated workflow until the entry exists.\",\n    \"Missing local capability: scripts/run_hk_futu_sim_session.py -> Use alternative manual HK SIM flow until this entry exists.\",\n    \"The following local entries require confirmation before execution: scripts/classic_multifactor/run_daily_rebalance.py, scripts/classic_multifactor/run_intraday_loop.py, scripts/classic_multifactor/run_vnpy_cta_backtest.py, scripts/quant_workflow/run_quant_workflow.py, scripts/run_hk_futu_sim_session.py\"\n  ]\n}\n",
+      "section_count": 12,
+      "version": "v1",
+      "generated_at": "2026-05-10T07:39:33.645902+00:00"
+    }
+  ],
+  "meta": {
+    "source": "curated_fallback",
+    "schema_hint": "beginner_quant",
+    "runner_path": "scripts/classic_multifactor/run_llm_research.py",
+    "next_step_suggestions": [
+      "Start from research, explanation and backtest review before any simulation step.",
+      "Use LLM results as an evidence summary, not as a direct execution instruction.",
+      "Keep a small watchlist and define pause conditions before the first paper trade.",
+      "Keep capability gaps visible and use manual alternatives where needed."
+    ],
+    "confirmation_requirements": [
+      "scripts/classic_multifactor/run_llm_research.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/classic_multifactor/run_intraday_loop.py.",
+      "scripts/classic_multifactor/run_intraday_loop.py may change local state or reports.",
+      "scripts/classic_multifactor/run_intraday_loop.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/classic_multifactor/run_daily_rebalance.py.",
+      "scripts/classic_multifactor/run_daily_rebalance.py may change local state or reports.",
+      "scripts/classic_multifactor/run_daily_rebalance.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/classic_multifactor/run_vnpy_cta_backtest.py.",
+      "scripts/classic_multifactor/run_vnpy_cta_backtest.py may change local state or reports.",
+      "scripts/llm/analyze_stock_with_llm.py may connect to remote/OpenD or market data services.",
+      "scripts/llm/anomaly_detector.py may connect to remote/OpenD or market data services.",
+      "scripts/run_healthcheck.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/run_us_sim_task.py.",
+      "scripts/run_us_sim_task.py may change local state or reports.",
+      "scripts/run_us_sim_task.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/run_us_futu_sim_session.py.",
+      "scripts/run_us_futu_sim_session.py may change local state or reports.",
+      "scripts/run_us_futu_sim_session.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/run_us_live_task.py.",
+      "scripts/run_us_live_task.py may change local state or reports.",
+      "scripts/run_us_live_task.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/quant_workflow/run_quant_workflow.py.",
+      "scripts/quant_workflow/run_quant_workflow.py may change local state or reports.",
+      "scripts/quant_workflow/run_quant_workflow.py may connect to remote/OpenD or market data services.",
+      "Confirmation required before using scripts/run_hk_sim_task.py.",
+      "Confirmation required before using scripts/run_hk_live_task.py.",
+      "Confirmation required before using scripts/run_hk_futu_sim_session.py."
+    ],
+    "rendered_formats": [
+      "markdown",
+      "json"
+    ],
+    "risk_labels": [
+      "risk_prompts_present",
+      "capability_gaps_present",
+      "confirmation_required"
+    ],
+    "artifact_summary": {
+      "artifact_type": "beginner_quant_research",
+      "title": "Beginner Quant Research",
+      "generated_at": "2026-05-10T07:39:33.645764+00:00",
+      "version": "v1",
+      "knowledge_section_count": 4,
+      "research_finding_count": 4,
+      "candidate_count": 0,
+      "plan_phase_count": 0,
+      "rendered_document_count": 2,
+      "has_risk_budget": false,
+      "has_readiness": false
+    },
+    "traceability": {
+      "slug": "beginner_quant_research",
+      "artifact_type": "beginner_quant_research",
+      "version": "v1",
+      "generated_at": "2026-05-10T07:39:33.645764+00:00",
+      "current_assumption_count": 3,
+      "invalidation_condition_count": 2,
+      "confirmation_requirement_count": 27,
+      "next_step_count": 4
+    }
+  }
+}

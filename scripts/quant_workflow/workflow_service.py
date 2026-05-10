@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from services.evaluation_hub import EvaluationHub
+from vnpy_llm.base import beijing_now_isoformat
 from services.evaluation_hub.artifact_store import ArtifactStore
 from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
 from services.evaluation_hub.beginner_research import BeginnerResearchService
@@ -16,6 +16,7 @@ from services.evaluation_hub.models import PlanAssumption, PlanningArtifact, Wor
 from services.evaluation_hub.plan_generator import BeginnerPlanGenerator
 from services.evaluation_hub.readiness_gate import ReadinessGateService
 from services.healthcheck import HealthcheckService
+from services.strategy.candidate_preparation import CandidateInputPreparationService
 from services.strategy.candidate_provider import UnifiedCandidateProvider
 
 
@@ -47,6 +48,7 @@ class QuantWorkflowService:
         self.plan_generator = BeginnerPlanGenerator(self.hub)
         self.readiness_gate = ReadinessGateService()
         self.store = ArtifactStore(self.repo_root)
+        self.candidate_preparation = CandidateInputPreparationService(self.repo_root)
 
     def run(
         self,
@@ -57,14 +59,40 @@ class QuantWorkflowService:
         preferred_markets: list[str] | None = None,
         max_candidates: int = 5,
         stage: str = "research",
+        prepare_candidates: bool = False,
+        prepare_include_market_data: bool = False,
+        prepare_knot_runtime: str = "auto",
     ) -> dict[str, Any]:
-        started_at = datetime.now(timezone.utc).isoformat()
+        started_at = beijing_now_isoformat()
         profile = dict(profile or {})
         requested_steps = list(self._resolve_requested_steps(mode=mode, stage=stage))
         steps: list[WorkflowStepResult] = []
         warnings: list[str] = []
         outputs: list[str] = []
         artifact_paths: dict[str, str] = {}
+
+        if prepare_candidates:
+            candidate_prepare_report = self.candidate_preparation.prepare(
+                include_market_data=prepare_include_market_data,
+                knot_runtime=prepare_knot_runtime,
+            )
+            candidate_prepare_step = self.store.build_step(
+                step="candidate_prepare",
+                status="ok",
+                message="Prepared normalized candidate input artifacts before workflow evaluation.",
+                outputs=[str(candidate_prepare_report.get("report_path"))],
+                warnings=list(candidate_prepare_report.get("summary", {}).get("warnings", [])),
+                meta={
+                    "requires_confirmation": False,
+                    "market_coverage": list(candidate_prepare_report.get("summary", {}).get("market_coverage", [])),
+                    "written_targets": list(candidate_prepare_report.get("summary", {}).get("written_targets", [])),
+                    "include_market_data": bool(candidate_prepare_report.get("summary", {}).get("include_market_data")),
+                    "knot_runtime": str(candidate_prepare_report.get("summary", {}).get("knot_runtime") or "auto"),
+                },
+            )
+            artifact_paths["candidate_prepare_report"] = str(candidate_prepare_report.get("report_path"))
+            outputs.append(str(candidate_prepare_report.get("report_path")))
+            self._append_step(steps=steps, warnings=warnings, step=candidate_prepare_step)
 
         preflight = self._build_preflight(mode=mode, stage=stage, requested_steps=requested_steps)
         preflight_step = self.store.build_step(

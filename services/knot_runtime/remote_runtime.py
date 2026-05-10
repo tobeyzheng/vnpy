@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from services.evaluation_hub.adapters.knot_agent import KnotAgentEvaluationAdapter
+from vnpy_llm.base import beijing_now_isoformat
 from services.evaluation_hub.adapters.knot_agent_schema import local_strategy_fallback, validate_json_only_response
 from vnpy_llm.llm_client import LlmClientError, OpenAICompatibleClient
 
@@ -47,7 +47,7 @@ class RemoteKnotAgentRuntime:
             'symbol': symbol,
             'market': market,
             'task_type': task_type,
-            'decision_time': datetime.now().isoformat(),
+            'decision_time': beijing_now_isoformat(),
             'payload': payload,
             'prompt': prompt,
             'raw_response': raw_response,
