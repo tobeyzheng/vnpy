@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-10**：新增仓库根目录 `run.sh` 安全统一入口
+  - **代码文件**：[run.sh](/projects/vnpy/run.sh)
+  - **文档/进度文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)、[beginner_quant_planning.md](/projects/vnpy/.codebuddy/task_list/beginner_quant_planning.md)
+  - **影响摘要**：新增仓库根目录安全版 `run.sh`，统一封装 `check`、`plan`、`research`、`sim-gate`、`live-gate`、`backtest`、`us-sim` 等入口；默认只做命令预览并打印影响范围，只有显式传入 `--confirm` 才执行；当前刻意不暴露 `us-live` 直通命令，以保持 live 入口的人工确认与硬开关边界
+
 - **2026-05-10**：完成 US live 顶层入口迁移与静态修复收口
   - **代码文件**：[run_us_live_task.py](/projects/vnpy/scripts/run_us_live_task.py)、[__init__.py](/projects/vnpy/services/trading_pipeline/__init__.py)、[run_llm_research.py](/projects/vnpy/scripts/classic_multifactor/run_llm_research.py)
   - **文档/进度文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[task-item.md](/projects/vnpy/.codebuddy/plan/vnpy_wheel_reinvent_audit/task-item.md)、[vnpy_wheel_reinvent_audit.md](/projects/vnpy/.codebuddy/task_list/vnpy_wheel_reinvent_audit.md)

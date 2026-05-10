@@ -19,8 +19,9 @@
 - [x] 7. 实现策略验证、防过拟合检查与阶段升级闸门
 - [x] 8. 实现安全边界、版本化落盘与运行汇总能力
 - [x] 9. 在 `scripts/` 下新增自动化入口模块与一键工作流脚本
+  - [x] 2026-05-10 补充仓库根目录 [run.sh](/projects/vnpy/run.sh) 作为统一安全入口；默认 preview-only，显式 `--confirm` 后才执行 `check / plan / research / sim-gate / live-gate / backtest / us-sim`
 - [x] 10. 补充自动化测试、回归样例与现有文档更新
 
 ### 当前执行焦点
-- 当前状态：`beginner_quant_planning` 本轮 1-10 项已全部完成
+- 当前状态：`beginner_quant_planning` 本轮 1-10 项已全部完成，`run.sh` 安全统一入口增强已补充落地
 - 下一步：等待新的实现需求，或在后续回合继续做增强与重构

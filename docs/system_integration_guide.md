@@ -42,6 +42,12 @@
 
 ### 主要入口脚本
 
+- **`run.sh`**：仓库根目录的安全统一入口脚本。
+  - 默认只做 preview，不执行底层命令
+  - 仅在显式传入 `--confirm` 时才真正执行目标入口
+  - 当前封装的子命令包括 `check`、`plan`、`research`、`sim-gate`、`live-gate`、`backtest`、`us-sim`
+  - 会在执行前打印解析后的命令、是否触达 OpenD / 账户 / SIM 状态、预期输出文件和交易影响说明
+  - 当前**不暴露** `us-live` 直通命令，避免把真实 live 入口误包装成“一键执行”
 - **`scripts/quant_workflow/run_quant_workflow.py`**：当前推荐的总入口。
   - 默认 `--preset beginner_full`
   - 默认 `--mode plan`
@@ -144,6 +150,8 @@
 
 以下是当前项目文档必须明确写清楚的安全边界：
 
+- **`run.sh` 默认是 preview-first；即使是 `plan` / `research` / `sim-gate` 这类汇总命令，也只会在显式传入 `--confirm` 后才执行。**
+- **`run.sh` 当前不提供 `us-live` 直通子命令；真实 live 入口仍需单独使用 `scripts/run_us_live_task.py` 并遵守人工确认与硬开关。**
 - **`quant_workflow` 默认是 plan-first，不自动跑 SIM/live。**
 - **不会自动提交 Futu/OpenD 订单。**
 - **不会绕过 reconciliation、approval、live switches。**
@@ -177,10 +185,15 @@
 ### 常用只读命令示例
 
 ```bash
+./run.sh check
+./run.sh plan --preferred-market us
+./run.sh research --max-candidates 3
+./run.sh sim-gate
+./run.sh live-gate
 python scripts/quant_workflow/run_quant_workflow.py --preset beginner_full --summary-only
 python -m scripts.quant_workflow --preset research_snapshot --summary-only
 python scripts/run_healthcheck.py
 python scripts/run_portfolio_brief.py
 ```
 
-这些命令适合用来快速理解当前项目工件和阶段状态；真正的 SIM/live 入口应继续遵守显式确认和安全门禁。
+这些命令适合用来快速理解当前项目工件和阶段状态；其中 `run.sh` 默认只打印预览，不会直接执行底层脚本；真正的 SIM/live 入口应继续遵守显式确认和安全门禁。
