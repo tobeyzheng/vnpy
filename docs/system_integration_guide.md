@@ -36,7 +36,7 @@
 - **`services/evaluation_hub/`**：项目级解释与计划生成层。负责能力地图、研究文档、候选观察、阶段 readiness、artifact 落盘。
 - **`services/strategy/`**：策略内核层。负责候选输入标准化、`raw_score` 计算、入场/退出择时、策略选择与信号生成。
 - **`scripts/classic_multifactor/`**：经典多因子主线。包含 LLM research、vn.py CTA backtest、日内/日频执行入口。
-- **`services/execution_guard/`、`services/risk_engine/`、`services/trading_pipeline/`**：执行保护层。负责 live gate、precheck、reconciliation、risk guard、sim/live task 约束。
+- **`services/execution_guard/`、`services/risk_engine/`、`services/trading_pipeline/`**：执行保护层。负责 live gate、precheck、reconciliation、risk guard、sim/live task 约束；其中 `services/trading_pipeline/` 当前仅保留 SIM / close 兼容入口，live 顶层入口已转发到 classic mainline。
 - **`services/futu_account/`、`services/futu_opend/`、`services/futu_sim_trade/`**：券商与 OpenD 接入层。
 - **`state/runs/`**：运行时工件目录。健康检查、候选输入、回测报告、workflow artifact、orders、brief 等都落在这里。
 
@@ -56,9 +56,9 @@
 - **`scripts/classic_multifactor/run_vnpy_cta_backtest.py`**：官方 vn.py CTA 回测入口，输出 `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`。
 - **`scripts/classic_multifactor/run_intraday_loop.py`**：分钟级主线 runner，带执行保护，属于 simulation/live 邻近入口。
 - **`scripts/classic_multifactor/run_daily_rebalance.py`**：日频再平衡 runner，带执行保护，属于 simulation/live 邻近入口。
-- **`scripts/run_us_sim_task.py`**：US SIM 任务入口。
+- **`scripts/run_us_sim_task.py`**：US SIM 任务入口；默认保留 legacy SIM 路径，同时支持显式转发到 `run_intraday_loop.py` 新主线。
 - **`scripts/run_us_futu_sim_session.py`**：US Futu SIM session 入口。
-- **`scripts/run_us_live_task.py`**：US live task 入口，默认仍应保持显式人工确认。
+- **`scripts/run_us_live_task.py`**：US live task 顶层包装入口；当前不再直接调用 `LiveTradingPipeline`，而是转发到 `scripts/classic_multifactor/run_intraday_loop.py`。该包装层本身不连接 OpenD、不直接下单，真实提交仍需 `--live-submit` 与下游 `VNPY_LIVE_*` 硬开关同时满足。
 
 ### 推荐的项目阅读顺序
 
@@ -147,6 +147,7 @@
 - **`quant_workflow` 默认是 plan-first，不自动跑 SIM/live。**
 - **不会自动提交 Futu/OpenD 订单。**
 - **不会绕过 reconciliation、approval、live switches。**
+- **`scripts/run_us_live_task.py` 只是顶层转发包装器；真实 live 行为由 `scripts/classic_multifactor/run_intraday_loop.py` 执行，并继续受 `--live-submit` + `VNPY_LIVE_CONFIG=YES` + `VNPY_LIVE_SUBMIT=YES` + `VNPY_LIVE_APPROVED=YES` 共同约束。**
 - **LLM/Knot/外部选择结果必须先转成结构化字段，再交给本地规则层消费。**
 - **凡是带 `requires_confirmation` 的入口，都应视为人工确认后才能继续。**
 

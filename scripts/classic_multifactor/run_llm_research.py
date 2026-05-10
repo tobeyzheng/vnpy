@@ -57,10 +57,15 @@ SCHEMA_PRESETS: dict[str, dict[str, Any]] = {
         ),
     },
     "tune": {
-    "tune": {
         "keys": [
-            "topic", "symbol", "timeframe", "baseline", "tuning_plan",
-            "expected_impact", "risks", "references",
+            "topic",
+            "symbol",
+            "timeframe",
+            "baseline",
+            "tuning_plan",
+            "expected_impact",
+            "risks",
+            "references",
         ],
         "system": (
             "You are QuantTuningAgent. Given the user's baseline and goal, "
@@ -71,10 +76,19 @@ SCHEMA_PRESETS: dict[str, dict[str, Any]] = {
     },
     "beginner_quant": {
         "keys": [
-            "topic", "core_concepts", "research_workflow", "risk_control",
-            "performance_evaluation", "beginner_safe_practices", "common_misunderstandings",
-            "learning_sequence", "practice_sequence", "minimum_viable_start",
-            "conflicting_viewpoints", "low_confidence_items", "references"
+            "topic",
+            "core_concepts",
+            "research_workflow",
+            "risk_control",
+            "performance_evaluation",
+            "beginner_safe_practices",
+            "common_misunderstandings",
+            "learning_sequence",
+            "practice_sequence",
+            "minimum_viable_start",
+            "conflicting_viewpoints",
+            "low_confidence_items",
+            "references",
         ],
         "system": (
             "You are QuantBeginnerResearchAgent. Summarise public and verifiable knowledge "
@@ -94,8 +108,6 @@ SCHEMA_PRESETS: dict[str, dict[str, Any]] = {
             "Cite public academic papers, industry research, and regulatory guidance "
             "when making claims about best practices."
         ),
-    },
-}        ),
     },
 }
 

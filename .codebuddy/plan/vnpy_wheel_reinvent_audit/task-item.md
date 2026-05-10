@@ -8,6 +8,15 @@
 > 权威完成进度请查看 [vnpy_wheel_reinvent_audit.md](/projects/vnpy/.codebuddy/task_list/vnpy_wheel_reinvent_audit.md)。
 > 如计划结构调整，应同步更新对应 `task_list`；如仅完成状态变化，以 `task_list` 为准。
 
+## 2026-05-10 仓库只读验收结论
+
+- 本轮仅做仓库验收：检查了代码、入口、文档、产物与轻量编译结果；**未启动** Futu/OpenD，**未运行** SIM/REAL，**未改写** `state/runs/`。
+- 总体判断：核心 vnpy 原生化主线已基本落地，**S1-S4 主体完成，S0 与 S5 仍未完成**；权威完成进度已同步更新到 [vnpy_wheel_reinvent_audit.md](/projects/vnpy/.codebuddy/task_list/vnpy_wheel_reinvent_audit.md)。
+- 已验收主线：`cta_backtest.py` + `OptimizationSetting`、`FutuAccountProvider` → `OmsEngine`、`run_intraday_loop.py` / `run_daily_rebalance.py`、`ExecutionGuardPipeline`、`OmsEventRecorder`、`diff_dual_run.py` / `dual_run_preflight.py`。
+- 本轮新增完成：`scripts/classic_multifactor/run_llm_research.py` 已修复 schema preset 语法错误；`scripts/run_us_live_task.py` 已改为转发到 `scripts/classic_multifactor/run_intraday_loop.py`；`services/trading_pipeline/__init__.py` 已移除 `LiveTaskConfig` / `LiveTradingPipeline` 默认导出。
+- 当前未完成项：`services/` / `state/` 清理未收尾，`README.md` 顶部缺少 migration notice，Task 7 的 5 个交易日双跑结果仍待周一开盘后补齐。
+- 当前关注点：Task 8 的删除动作仍需等待双跑通过与用户确认；当前剩余阻塞已从“live 入口仍走旧主线 + LLM research 语法错误”收敛为“清理收尾与双跑证据尚缺”。
+
 - [ ] 1. 新分支初始化与清理基线（S0）
 - [ ] 1.1 拉新分支 + 旧分支冻结打 tag
    - 从 `futu-dev-knot-setup` 拉出 `classic-vnpy-native-rewrite`，立即冻结旧分支
@@ -36,7 +45,7 @@
    - 直接删除 10 个 services 子包及其 `__pycache__`：`sim_account/` / `candidate_engine/` / `watchlist_engine/` / `scoring_engine/` / `signals/` / `decision_engine/` / `approval_gate/` / `reporting/` / `datahub/` / `backtest/`
    - 同步删除 `tests/` 下引用以上子包的测试文件（保持编译绿灯、避免虚假通过）
    - 保留：`execution_guard/` / `risk_engine/` / `strategy/` / `evaluation_hub/` / `knot_runtime/` / `futu_account/` / `futu_opend/` / `futu_sim_trade/` / `portfolio/` / `healthcheck/` / `trading_pipeline/` / `trade_state/` / `common/`
-   - `trading_pipeline/live_task.py` **暂保留**（S3a/S3b 完成后在 Task 8 删除），避免过渡期断链
+   - `trading_pipeline/live_task.py` **暂保留**（当前已不再作为默认入口，但清理删除仍放在 Task 8），避免过渡期断链
    - 完成后跑 `python -m py_compile services/**/*.py scripts/**/*.py`，失败则回滚对应子包
    - _需求：11.1、11.4、11.5_
 
