@@ -1,15 +1,15 @@
 {
   "artifacts": {
     "beginner_quant_research": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_research_artifact_20260510_084717_338257.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_research_artifact_20260511_002109_418154.json",
       "artifact_type": "beginner_quant_research",
       "title": "Beginner Quant Research",
-      "generated_at": "2026-05-10T08:47:17.337900+00:00",
+      "generated_at": "2026-05-11T00:21:09.417620+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "beginner_quant_research",
         "title": "Beginner Quant Research",
-        "generated_at": "2026-05-10T08:47:17.337900+00:00",
+        "generated_at": "2026-05-11T00:21:09.417620+08:00",
         "version": "v1",
         "knowledge_section_count": 4,
         "research_finding_count": 4,
@@ -23,15 +23,14 @@
         "slug": "beginner_quant_research",
         "artifact_type": "beginner_quant_research",
         "version": "v1",
-        "generated_at": "2026-05-10T08:47:17.337900+00:00",
+        "generated_at": "2026-05-11T00:21:09.417620+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 2,
-        "confirmation_requirement_count": 27,
-        "next_step_count": 4
+        "confirmation_requirement_count": 33,
+        "next_step_count": 3
       },
       "risk_labels": [
         "risk_prompts_present",
-        "capability_gaps_present",
         "confirmation_required"
       ]
     },
@@ -71,19 +70,19 @@
       ]
     },
     "beginner_quant_plan": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_plan_artifact_20260510_084717_342701.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_plan_artifact_20260511_002109_424180.json",
       "artifact_type": "beginner_quant_plan",
       "title": "Beginner Quant Personal Plan",
-      "generated_at": "2026-05-10T08:47:17.342495+00:00",
+      "generated_at": "2026-05-11T00:21:09.423910+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "beginner_quant_plan",
         "title": "Beginner Quant Personal Plan",
-        "generated_at": "2026-05-10T08:47:17.342495+00:00",
+        "generated_at": "2026-05-11T00:21:09.423910+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
         "research_finding_count": 0,
-        "candidate_count": 3,
+        "candidate_count": 0,
         "plan_phase_count": 5,
         "rendered_document_count": 2,
         "has_risk_budget": true,
@@ -93,36 +92,35 @@
         "slug": "beginner_quant_plan",
         "artifact_type": "beginner_quant_plan",
         "version": "v1",
-        "generated_at": "2026-05-10T08:47:17.342495+00:00",
+        "generated_at": "2026-05-11T00:21:09.423910+08:00",
         "current_assumption_count": 5,
         "invalidation_condition_count": 3,
-        "confirmation_requirement_count": 27,
-        "next_step_count": 5
+        "confirmation_requirement_count": 33,
+        "next_step_count": 4
       },
       "risk_labels": [
         "risk_prompts_present",
-        "capability_gaps_present",
         "confirmation_required"
       ]
     }
   },
   "workflow_reports": {
     "beginner_quant": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_workflow_20260510_084717_344573.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_workflow_20260511_002109_426043.json",
       "workflow_name": "beginner_quant",
       "mode": "plan",
-      "started_at": "2026-05-10T08:47:17.337686+00:00",
+      "started_at": "2026-05-11T00:21:09.417326+08:00",
       "status": "ok",
       "workflow_summary": {
         "step_count": 8,
-        "output_count": 3,
-        "warning_count": 22,
+        "output_count": 2,
+        "warning_count": 21,
         "blocked_steps": [],
         "confirmation_required_steps": [
           "execution_boundary"
         ],
         "warning_steps": [
-          "capability_map",
+          "candidate_framework",
           "backtest_validation",
           "execution_boundary"
         ]
@@ -131,11 +129,11 @@
         "slug": "beginner_quant",
         "workflow_name": "beginner_quant",
         "mode": "plan",
-        "started_at": "2026-05-10T08:47:17.337686+00:00",
+        "started_at": "2026-05-11T00:21:09.417326+08:00",
         "status": "ok",
         "assumption_count": 5
       }
     }
   },
-  "updated_at": "2026-05-10T08:47:17.345711+00:00"
+  "updated_at": "2026-05-11T00:21:09.427305+08:00"
 }

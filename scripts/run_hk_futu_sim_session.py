@@ -23,6 +23,7 @@ DEFAULT_CLASSIC_CONFIG = REPO_ROOT / "configs" / "classic_multifactor" / "tencen
 DEFAULT_REPORT_FILENAME = "hk_futu_sim_session_report.json"
 DEFAULT_SESSION_TZ = "Asia/Hong_Kong"
 DEFAULT_FUTU_ENV = "模拟"
+DEFAULT_FUTU_MARKET = "HK"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -79,6 +80,7 @@ def _run_vnpy_mainline(classic_config: str, extra: list[str]) -> int:
     extra = _inject_default_extra(list(extra), flag="--session-tz", value=DEFAULT_SESSION_TZ)
     extra = _inject_default_extra(extra, flag="--report-filename", value=DEFAULT_REPORT_FILENAME)
     extra = _inject_default_extra(extra, flag="--futu-env", value=DEFAULT_FUTU_ENV)
+    extra = _inject_default_extra(extra, flag="--futu-market", value=DEFAULT_FUTU_MARKET)
     cmd = [sys.executable, str(runner), "--config", str(cfg_path), *extra]
     print(
         f"[run_hk_futu_sim_session] vnpy-mainline forward: {' '.join(cmd)}",

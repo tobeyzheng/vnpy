@@ -1,7 +1,7 @@
 {
   "schema_version": "candidate_prepare_report_v2",
-  "generated_at": "2026-05-10T22:29:44.616567+08:00",
-  "as_of_date": "2026-05-10",
+  "generated_at": "2026-05-11T00:21:02.492765+08:00",
+  "as_of_date": "2026-05-11",
   "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
   "targets": {
     "dynamic": {
@@ -85,9 +85,12 @@
           "status": "ok",
           "source": "knot_agent",
           "runtime_mode": "auto",
+          "requested_runtime_mode": "auto",
           "runtimes_used": [
             "remote-knot-fallback"
           ],
+          "single_runtime_effective": true,
+          "fallback_used": true,
           "evaluated_rows": 5,
           "fallback_count": 5,
           "warnings": []
@@ -188,9 +191,12 @@
           "status": "ok",
           "source": "knot_agent",
           "runtime_mode": "auto",
+          "requested_runtime_mode": "auto",
           "runtimes_used": [
             "remote-knot-fallback"
           ],
+          "single_runtime_effective": true,
+          "fallback_used": true,
           "evaluated_rows": 17,
           "fallback_count": 17,
           "warnings": []
@@ -225,6 +231,7 @@
       "hong_kong",
       "us"
     ],
+    "provider_merge_policy": "symbol_merge_dynamic_preferred",
     "total_items": 22,
     "include_market_data": true,
     "knot_runtime": "auto",

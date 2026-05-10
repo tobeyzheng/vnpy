@@ -12,24 +12,25 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.quant_workflow import QuantWorkflowService
 
 PRESET_WORKFLOWS = {
-    "beginner_full": {"workflow": "beginner_quant", "mode": "plan", "stage": "research"},
-    "research_snapshot": {"workflow": "beginner_quant_research_snapshot", "mode": "research_only", "stage": "research"},
-    "simulation_gate": {"workflow": "beginner_quant_simulation_gate", "mode": "stage_only", "stage": "simulation"},
-    "live_gate": {"workflow": "beginner_quant_live_gate", "mode": "stage_only", "stage": "live"},
+    "beginner_full": {"workflow": "beginner_quant", "mode": "plan", "stage": "readiness", "task_type": "simulation"},
+    "health_snapshot": {"workflow": "beginner_quant_health_snapshot", "mode": "healthcheck_only", "stage": "healthcheck", "task_type": "simulation"},
+    "simulation_readiness": {"workflow": "beginner_quant_simulation_readiness", "mode": "stage_only", "stage": "readiness", "task_type": "simulation"},
+    "live_readiness": {"workflow": "beginner_quant_live_readiness", "mode": "stage_only", "stage": "readiness", "task_type": "live"},
 }
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Beginner quant workflow entry. Default behaviour is planning/report-only; "
-            "it does not auto-run simulation or live scripts."
+            "Quant workflow entry focused on candidate preparation, unified healthcheck, candidate framework, "
+            "backtest evidence, and readiness review."
         )
     )
     parser.add_argument("--workflow", default=None)
     parser.add_argument("--preset", choices=sorted(PRESET_WORKFLOWS.keys()), default="beginner_full")
-    parser.add_argument("--mode", default=None, choices=["plan", "research_only", "stage_only"])
-    parser.add_argument("--stage", default=None, choices=["research", "backtest", "simulation", "live"])
+    parser.add_argument("--mode", default=None, choices=["plan", "healthcheck_only", "stage_only"])
+    parser.add_argument("--stage", default=None, choices=["healthcheck", "candidate_framework", "backtest", "readiness"])
+    parser.add_argument("--task-type", default=None, choices=["simulation", "live"])
     parser.add_argument("--preferred-market", action="append", dest="preferred_markets", default=[])
     parser.add_argument("--capital", type=float, default=None)
     parser.add_argument("--hours-per-week", type=float, default=None)
@@ -48,7 +49,8 @@ def _resolve_workflow_args(args: argparse.Namespace) -> dict[str, str]:
     return {
         "workflow": args.workflow or preset.get("workflow", "beginner_quant"),
         "mode": args.mode or preset.get("mode", "plan"),
-        "stage": args.stage or preset.get("stage", "research"),
+        "stage": args.stage or preset.get("stage", "readiness"),
+        "task_type": args.task_type or preset.get("task_type", "simulation"),
         "preset": args.preset,
     }
 
@@ -59,12 +61,13 @@ def _cli_summary(result: dict[str, object], *, preset: str) -> dict[str, object]
         "status": result.get("status"),
         "workflow_name": result.get("workflow_name"),
         "mode": result.get("mode"),
+        "task_type": result.get("task_type"),
         "workflow_summary": result.get("workflow_summary"),
         "workflow_report": result.get("workflow_report"),
         "latest_index": result.get("latest_index"),
         "artifacts": {
             key: result.get(key)
-            for key in ("research_artifact", "candidate_artifact", "plan_artifact", "candidate_prepare_report")
+            for key in ("candidate_artifact", "backtest_artifact", "readiness_artifact", "candidate_prepare_report")
             if result.get(key)
         },
         "warnings": result.get("warnings"),
@@ -89,6 +92,7 @@ def main() -> int:
         preferred_markets=list(args.preferred_markets or []),
         max_candidates=max(int(args.max_candidates), 1),
         stage=workflow_args["stage"],
+        task_type=workflow_args["task_type"],
         prepare_candidates=bool(args.prepare_candidates),
         prepare_include_market_data=bool(args.prepare_include_market_data),
         prepare_knot_runtime=str(args.prepare_knot_runtime or "auto"),

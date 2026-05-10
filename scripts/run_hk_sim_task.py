@@ -26,6 +26,7 @@ from services.trading_pipeline import MarketSimTaskConfig, MultiMarketSimTrading
 DEFAULT_CLASSIC_CONFIG = REPO_ROOT / "configs" / "classic_multifactor" / "tencent_hk_g01.json"
 DEFAULT_REPORT_FILENAME = "hk_sim_task_report.json"
 DEFAULT_SESSION_TZ = "Asia/Hong_Kong"
+DEFAULT_FUTU_MARKET = "HK"
 
 CONFIG = MarketSimTaskConfig(
     market="hong_kong",
@@ -109,6 +110,7 @@ def _run_vnpy_mainline(classic_config: str, extra: list[str]) -> int:
         extra = extra[1:]
     extra = _inject_default_extra(list(extra), flag="--session-tz", value=DEFAULT_SESSION_TZ)
     extra = _inject_default_extra(extra, flag="--report-filename", value=DEFAULT_REPORT_FILENAME)
+    extra = _inject_default_extra(extra, flag="--futu-market", value=DEFAULT_FUTU_MARKET)
     cmd = [sys.executable, str(runner), "--config", str(cfg_path), *extra]
     print(
         f"[run_hk_sim_task] vnpy-mainline forward: {' '.join(cmd)}",

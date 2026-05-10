@@ -518,12 +518,25 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            classic = runs / "classic_multifactor"
+            classic.mkdir(parents=True)
+            (classic / "vnpy_cta_backtest_report.json").write_text(
+                json.dumps(
+                    {
+                        "symbol": "NVDA.US",
+                        "start": "2024-01-01",
+                        "end": "2024-12-31",
+                        "stats": {"status": "ok", "sharpe_ratio": 1.1, "return_drawdown_ratio": 1.5, "trade_count": 8},
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             service = QuantWorkflowService(tmp_path)
             result = service.run(
                 profile={"preferred_market": "us", "risk_profile": "conservative"},
                 preferred_markets=["us"],
-                stage="research",
+                stage="readiness",
                 prepare_candidates=True,
                 prepare_include_market_data=True,
             )
@@ -547,7 +560,9 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         with TemporaryDirectory() as temp_dir:
             tmp_path = Path(temp_dir)
             runs = tmp_path / "state" / "runs"
+            classic = runs / "classic_multifactor"
             runs.mkdir(parents=True)
+            classic.mkdir(parents=True)
             (runs / "candidate_inputs.json").write_text(
                 json.dumps(
                     [
@@ -559,42 +574,78 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                             "risk": "valuation sensitivity",
                             "raw_score": 0.84,
                             "action_hint": "observe pullbacks",
+                            "signals": [{"score": 0.82, "summary": "trend intact"}],
                         }
                     ]
                 ),
                 encoding="utf-8",
             )
+            (classic / "vnpy_cta_backtest_report.json").write_text(
+                json.dumps(
+                    {
+                        "symbol": "NVDA.US",
+                        "start": "2024-01-01",
+                        "end": "2024-12-31",
+                        "stats": {"status": "ok", "sharpe_ratio": 1.1, "return_drawdown_ratio": 1.5, "trade_count": 8},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (classic / "vnpy_cta_sweep_report.json").write_text(
+                json.dumps(
+                    {
+                        "per_symbol_best": [
+                            {
+                                "symbol": "NVDA.US",
+                                "params": {"fast_window": 10, "slow_window": 60},
+                                "stats_summary": {"status": "ok", "sharpe_ratio": 1.1},
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             service = QuantWorkflowService(tmp_path)
-            result = service.run(profile={"preferred_market": "us", "risk_profile": "conservative"}, preferred_markets=["us"], stage="research")
+            result = service.run(
+                profile={"preferred_market": "us", "risk_profile": "conservative"},
+                preferred_markets=["us"],
+                stage="readiness",
+            )
 
-            self.assertIn(result["status"], {"ok", "blocked"})
-            self.assertTrue(Path(result["research_artifact"]).exists())
+            self.assertIn(result["status"], {"ok", "warning", "blocked"})
             self.assertTrue(Path(result["candidate_artifact"]).exists())
-            self.assertTrue(Path(result["plan_artifact"]).exists())
+            self.assertTrue(Path(result["backtest_artifact"]).exists())
+            self.assertTrue(Path(result["readiness_artifact"]).exists())
             self.assertTrue(Path(result["workflow_report"]).exists())
             self.assertIn("workflow_summary", result)
-            self.assertTrue(any(step["step"] == "execution_boundary" for step in result["steps"]))
+
+            step_names = [step["step"] for step in result["steps"]]
+            self.assertEqual(step_names, ["healthcheck", "candidate_framework", "backtest", "readiness"])
             candidate_steps = [step for step in result["steps"] if step["step"] == "candidate_framework"]
             self.assertTrue(candidate_steps)
             self.assertEqual(candidate_steps[0]["outputs"], [result["candidate_artifact"]])
 
             candidate_payload = json.loads(Path(result["candidate_artifact"]).read_text(encoding="utf-8"))
+            backtest_payload = json.loads(Path(result["backtest_artifact"]).read_text(encoding="utf-8"))
             workflow_payload = json.loads(Path(result["workflow_report"]).read_text(encoding="utf-8"))
             self.assertIn("artifact_summary", candidate_payload["meta"])
             self.assertIn("traceability", candidate_payload["meta"])
             self.assertIn("risk_labels", candidate_payload["meta"])
             self.assertIn("rendered_formats", candidate_payload["meta"])
+            self.assertIn("backtest_results", backtest_payload["meta"])
             self.assertIn("workflow_summary", workflow_payload)
             self.assertIn("traceability", workflow_payload)
 
-    def test_quant_workflow_second_run_loads_previous_plan_and_records_differences(self):
+    def test_quant_workflow_second_run_refreshes_artifacts_with_new_assumptions(self):
         from tempfile import TemporaryDirectory
 
         with TemporaryDirectory() as temp_dir:
             tmp_path = Path(temp_dir)
             runs = tmp_path / "state" / "runs"
+            classic = runs / "classic_multifactor"
             runs.mkdir(parents=True)
+            classic.mkdir(parents=True)
             (runs / "candidate_inputs.json").write_text(
                 json.dumps(
                     [
@@ -605,32 +656,64 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                             "rationale": "AI leader with large-cap liquidity",
                             "risk": "valuation sensitivity",
                             "raw_score": 0.84,
+                            "action_hint": "daily trend review",
+                            "signals": [{"score": 0.81, "summary": "trend intact"}],
                         }
                     ]
                 ),
                 encoding="utf-8",
             )
+            (classic / "vnpy_cta_backtest_report.json").write_text(
+                json.dumps(
+                    {
+                        "symbol": "NVDA.US",
+                        "start": "2024-01-01",
+                        "end": "2024-12-31",
+                        "stats": {"status": "ok", "sharpe_ratio": 1.1, "return_drawdown_ratio": 1.5, "trade_count": 8},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (classic / "vnpy_cta_sweep_report.json").write_text(
+                json.dumps(
+                    {
+                        "per_symbol_best": [
+                            {
+                                "symbol": "NVDA.US",
+                                "params": {"fast_window": 10, "slow_window": 60},
+                                "stats_summary": {"status": "ok", "sharpe_ratio": 1.1},
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             service = QuantWorkflowService(tmp_path)
-            first = service.run(profile={"preferred_market": "us", "risk_profile": "conservative"}, preferred_markets=["us"], stage="research")
-            second = service.run(profile={"preferred_market": "hong_kong", "risk_profile": "moderate"}, preferred_markets=["us"], stage="research")
+            first = service.run(
+                profile={"preferred_market": "us", "risk_profile": "conservative"},
+                preferred_markets=["us"],
+                stage="readiness",
+            )
+            second = service.run(
+                profile={"preferred_market": "hong_kong", "risk_profile": "moderate"},
+                preferred_markets=["us"],
+                stage="readiness",
+                task_type="simulation",
+            )
 
-            first_plan = json.loads(Path(first["plan_artifact"]).read_text(encoding="utf-8"))
-            second_plan = json.loads(Path(second["plan_artifact"]).read_text(encoding="utf-8"))
-            planning_steps = [step for step in second["steps"] if step["step"] == "planning"]
+            first_readiness = json.loads(Path(first["readiness_artifact"]).read_text(encoding="utf-8"))
+            second_readiness = json.loads(Path(second["readiness_artifact"]).read_text(encoding="utf-8"))
 
-            self.assertTrue(second_plan["meta"]["previous_plan_loaded"])
-            self.assertTrue(any(item["field"] == "preferred_market" for item in second_plan["meta"].get("plan_differences", [])))
-            self.assertNotEqual(first["plan_artifact"], second["plan_artifact"])
-            self.assertTrue(planning_steps[0]["meta"]["previous_plan_loaded"])
-            self.assertTrue(any(item["field"] == "preferred_market" for item in planning_steps[0]["meta"]["plan_differences"]))
-            self.assertIn("personalization_summary", planning_steps[0]["meta"])
-            self.assertIn("profile_update_scope", planning_steps[0]["meta"])
-            self.assertTrue(second_plan["rendered_documents"])
-            self.assertIn("What changed from the previous plan", second_plan["rendered_documents"][0]["body"])
-            self.assertIn("Personalization summary", second_plan["rendered_documents"][0]["body"])
-            self.assertIn("Update scope", second_plan["rendered_documents"][0]["body"])
-            self.assertIn("Next actions", second_plan["rendered_documents"][0]["body"])
+            self.assertNotEqual(first["readiness_artifact"], second["readiness_artifact"])
+            self.assertEqual(first_readiness["meta"]["task_type"], "simulation")
+            self.assertEqual(second_readiness["meta"]["task_type"], "simulation")
+            self.assertNotEqual(first_readiness["assumptions"], second_readiness["assumptions"])
+            self.assertIn("simulation_acceptance", second_readiness["meta"])
+            self.assertIn("live_evidence", second_readiness["meta"])
+            self.assertTrue(second_readiness["rendered_documents"])
+            self.assertIn("Readiness checkpoints", second_readiness["rendered_documents"][0]["body"])
+            self.assertIn("Next actions", second_readiness["rendered_documents"][0]["body"])
 
     def test_quant_workflow_collects_local_simulation_and_live_evidence(self):
         from tempfile import TemporaryDirectory
@@ -653,6 +736,8 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                             "rationale": "Platform cash flow and buyback support remain intact.",
                             "risk": "regulation overhang",
                             "raw_score": 0.82,
+                            "action_hint": "daily trend review",
+                            "signals": [{"score": 0.75, "summary": "buyback support remains firm"}],
                         }
                     ]
                 ),
@@ -661,25 +746,31 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             (classic / "vnpy_cta_backtest_report.json").write_text(
                 json.dumps(
                     {
+                        "symbol": "00700.HK",
+                        "start": "2024-01-01",
+                        "end": "2024-12-31",
                         "stats": {
+                            "status": "ok",
                             "start_date": "2024-01-01",
                             "end_date": "2024-12-31",
                             "sharpe_ratio": 1.1,
                             "return_drawdown_ratio": 1.5,
-                            "turnover": 1.4,
                             "sample_count": 260,
                         },
-                        "setting": {
-                            "rate": 0.0005,
-                            "slippage": 0.0008,
-                            "liquidity_assumptions": ["HK large-cap spread review completed"],
-                        },
-                        "validation_split": {
-                            "train": "2024-01-01:2024-06-30",
-                            "validation": "2024-07-01:2024-09-30",
-                            "test": "2024-10-01:2024-12-31",
-                        },
-                        "data_quality": {"notes": ["manual bias review completed"], "bias_flags": []},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (classic / "vnpy_cta_sweep_report.json").write_text(
+                json.dumps(
+                    {
+                        "per_symbol_best": [
+                            {
+                                "symbol": "00700.HK",
+                                "params": {"fast_window": 10, "slow_window": 60},
+                                "stats_summary": {"status": "ok", "sharpe_ratio": 1.1},
+                            }
+                        ]
                     }
                 ),
                 encoding="utf-8",
@@ -711,23 +802,24 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 profile={"preferred_market": "hong_kong", "risk_profile": "moderate"},
                 preferred_markets=["hong_kong"],
                 mode="stage_only",
-                stage="live",
+                stage="readiness",
+                task_type="live",
             )
 
-            planning_steps = [step for step in result["steps"] if step["step"] == "planning"]
-            self.assertTrue(planning_steps)
-            self.assertTrue(planning_steps[0]["meta"]["simulation_acceptance"]["latest_preflight_passed"])
-            self.assertTrue(planning_steps[0]["meta"]["simulation_acceptance"]["latest_diff_passed"])
-            self.assertTrue(planning_steps[0]["meta"]["live_evidence"]["approval_switches_documented"])
-            self.assertTrue(planning_steps[0]["meta"]["live_evidence"]["reconciliation_recent"])
+            readiness_steps = [step for step in result["steps"] if step["step"] == "readiness"]
+            self.assertTrue(readiness_steps)
+            self.assertTrue(readiness_steps[0]["meta"]["simulation_acceptance"]["latest_preflight_passed"])
+            self.assertTrue(readiness_steps[0]["meta"]["simulation_acceptance"]["latest_diff_passed"])
+            self.assertTrue(readiness_steps[0]["meta"]["live_evidence"]["approval_switches_documented"])
+            self.assertTrue(readiness_steps[0]["meta"]["live_evidence"]["reconciliation_recent"])
 
-            plan_payload = json.loads(Path(result["plan_artifact"]).read_text(encoding="utf-8"))
-            self.assertIn("simulation_acceptance", plan_payload["meta"])
-            self.assertIn("live_evidence", plan_payload["meta"])
-            self.assertTrue(plan_payload["meta"]["simulation_acceptance"]["latest_diff_passed"])
-            self.assertTrue(plan_payload["meta"]["live_evidence"]["report_schema_ready"])
+            readiness_payload = json.loads(Path(result["readiness_artifact"]).read_text(encoding="utf-8"))
+            self.assertIn("simulation_acceptance", readiness_payload["meta"])
+            self.assertIn("live_evidence", readiness_payload["meta"])
+            self.assertTrue(readiness_payload["meta"]["simulation_acceptance"]["latest_diff_passed"])
+            self.assertTrue(readiness_payload["meta"]["live_evidence"]["report_schema_ready"])
 
-    def test_quant_workflow_research_only_mode_limits_steps(self):
+    def test_quant_workflow_healthcheck_only_mode_limits_steps(self):
         from tempfile import TemporaryDirectory
 
         with TemporaryDirectory() as temp_dir:
@@ -736,17 +828,13 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             runs.mkdir(parents=True)
 
             service = QuantWorkflowService(tmp_path)
-            result = service.run(mode="research_only", stage="research")
+            result = service.run(mode="healthcheck_only", stage="healthcheck")
 
             step_names = [step["step"] for step in result["steps"]]
-            self.assertIn("preflight", step_names)
-            self.assertIn("healthcheck", step_names)
-            self.assertIn("capability_map", step_names)
-            self.assertIn("research", step_names)
-            self.assertNotIn("candidate_framework", step_names)
-            self.assertNotIn("planning", step_names)
-            self.assertIn("research_artifact", result)
-            self.assertNotIn("plan_artifact", result)
+            self.assertEqual(step_names, ["healthcheck"])
+            self.assertNotIn("candidate_artifact", result)
+            self.assertNotIn("backtest_artifact", result)
+            self.assertNotIn("readiness_artifact", result)
 
     def test_quant_workflow_writes_latest_index_file(self):
         from tempfile import TemporaryDirectory
@@ -754,7 +842,9 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         with TemporaryDirectory() as temp_dir:
             tmp_path = Path(temp_dir)
             runs = tmp_path / "state" / "runs"
+            classic = runs / "classic_multifactor"
             runs.mkdir(parents=True)
+            classic.mkdir(parents=True)
             (runs / "candidate_inputs.json").write_text(
                 json.dumps(
                     [
@@ -765,37 +855,54 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                             "rationale": "AI leader with large-cap liquidity",
                             "risk": "valuation sensitivity",
                             "raw_score": 0.84,
+                            "action_hint": "observe pullbacks",
+                            "signals": [{"score": 0.82, "summary": "trend intact"}],
                         }
                     ]
                 ),
                 encoding="utf-8",
             )
+            (classic / "vnpy_cta_backtest_report.json").write_text(
+                json.dumps(
+                    {
+                        "symbol": "NVDA.US",
+                        "start": "2024-01-01",
+                        "end": "2024-12-31",
+                        "stats": {"status": "ok", "sharpe_ratio": 1.1, "return_drawdown_ratio": 1.5, "trade_count": 8},
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             service = QuantWorkflowService(tmp_path)
-            result = service.run(profile={"preferred_market": "us"}, preferred_markets=["us"], stage="research")
+            result = service.run(profile={"preferred_market": "us"}, preferred_markets=["us"], stage="readiness")
 
             latest_index_path = Path(result["latest_index"])
             self.assertTrue(latest_index_path.exists())
             latest_index = json.loads(latest_index_path.read_text(encoding="utf-8"))
             self.assertIn("artifacts", latest_index)
             self.assertIn("workflow_reports", latest_index)
-            self.assertIn("beginner_quant_plan", latest_index["artifacts"])
+            self.assertIn("beginner_quant_candidate_framework", latest_index["artifacts"])
+            self.assertIn("beginner_quant_backtest", latest_index["artifacts"])
+            self.assertIn("beginner_quant_readiness", latest_index["artifacts"])
             self.assertIn("beginner_quant", latest_index["workflow_reports"])
 
     def test_cli_preset_resolution_uses_preset_defaults(self):
         args = argparse.Namespace(
             workflow=None,
-            preset="simulation_gate",
+            preset="simulation_readiness",
             mode=None,
             stage=None,
+            task_type=None,
         )
 
         resolved = _resolve_workflow_args(args)
 
-        self.assertEqual(resolved["preset"], "simulation_gate")
-        self.assertEqual(resolved["workflow"], PRESET_WORKFLOWS["simulation_gate"]["workflow"])
-        self.assertEqual(resolved["mode"], PRESET_WORKFLOWS["simulation_gate"]["mode"])
-        self.assertEqual(resolved["stage"], PRESET_WORKFLOWS["simulation_gate"]["stage"])
+        self.assertEqual(resolved["preset"], "simulation_readiness")
+        self.assertEqual(resolved["workflow"], PRESET_WORKFLOWS["simulation_readiness"]["workflow"])
+        self.assertEqual(resolved["mode"], PRESET_WORKFLOWS["simulation_readiness"]["mode"])
+        self.assertEqual(resolved["stage"], PRESET_WORKFLOWS["simulation_readiness"]["stage"])
+        self.assertEqual(resolved["task_type"], PRESET_WORKFLOWS["simulation_readiness"]["task_type"])
 
     def test_cli_summary_only_keeps_paths_and_summary(self):
         payload = _cli_summary(
@@ -803,12 +910,13 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 "status": "ok",
                 "workflow_name": "beginner_quant",
                 "mode": "plan",
-                "workflow_summary": {"step_count": 5},
+                "task_type": "simulation",
+                "workflow_summary": {"step_count": 4},
                 "workflow_report": "/tmp/workflow.json",
                 "latest_index": "/tmp/latest_index.json",
-                "research_artifact": "/tmp/research.json",
                 "candidate_artifact": "/tmp/candidate.json",
-                "plan_artifact": "/tmp/plan.json",
+                "backtest_artifact": "/tmp/backtest.json",
+                "readiness_artifact": "/tmp/readiness.json",
                 "candidate_prepare_report": "/tmp/candidate_prepare_report.json",
                 "warnings": ["offline placeholder"],
             },
@@ -816,10 +924,11 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["preset"], "beginner_full")
-        self.assertEqual(payload["workflow_summary"]["step_count"], 5)
-        self.assertEqual(payload["artifacts"]["plan_artifact"], "/tmp/plan.json")
+        self.assertEqual(payload["workflow_summary"]["step_count"], 4)
+        self.assertEqual(payload["artifacts"]["readiness_artifact"], "/tmp/readiness.json")
         self.assertEqual(payload["artifacts"]["candidate_prepare_report"], "/tmp/candidate_prepare_report.json")
         self.assertEqual(payload["latest_index"], "/tmp/latest_index.json")
+        self.assertEqual(payload["task_type"], "simulation")
 
     def test_prepare_related_cli_defaults_use_auto_knot_runtime(self):
         workflow_args = build_quant_workflow_parser().parse_args([])
@@ -837,16 +946,16 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         with TemporaryDirectory() as temp_dir:
             tmp_path = Path(temp_dir)
             service = QuantWorkflowService(tmp_path)
-            result = service.run(mode="stage_only", stage="live")
+            result = service.run(mode="stage_only", stage="readiness", task_type="live")
 
             self.assertEqual(result["status"], "blocked")
-            self.assertEqual(result["steps"][0]["step"], "preflight")
+            self.assertEqual(result["steps"][0]["step"], "healthcheck")
             self.assertEqual(result["steps"][0]["status"], "blocked")
             self.assertIn("checks", result["steps"][0]["meta"])
             self.assertIn("blocking_reasons", result["steps"][0]["meta"])
             self.assertIn("candidate_inputs_any", result["steps"][0]["meta"]["checks"])
-            self.assertTrue(any("Candidate inputs are required" in warning for warning in result["warnings"]))
-            self.assertTrue(any("backtest report is required" in warning for warning in result["warnings"]))
+            self.assertTrue(any("candidate_inputs_any" in warning for warning in result["warnings"]))
+            self.assertTrue(any("backtest_report" in warning for warning in result["warnings"]))
             self.assertTrue(Path(result["workflow_report"]).exists())
 
 

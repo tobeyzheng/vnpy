@@ -26,7 +26,7 @@
 - **`scripts/run_hk_sim_task.py` / `scripts/run_hk_futu_sim_session.py` / `scripts/run_hk_live_task.py`**：新增 HK 顶层包装入口，统一把 HK `SIM` / `session` / `live` 接到 vnpy intraday 主线，并保持 preview-first / evidence-first 的安全边界。
 - **`services/strategy/candidate_scoring.py`**：定义可复用的候选评分接口、dynamic/static 混合评分模型，以及单标候选 enrich 能力。
 - **`services/strategy/candidate_enrichment.py`**：定义可复用的候选 enrich 层，负责可选接入真实市场快照与 Knot 结构化评估。
-- **`services/strategy/candidate_generation.py`**：基于评分接口生成 dynamic/static 候选 payload，也可单独评估一个候选行。
+- **`services/strategy/candidate_generation.py`**：基于评分接口生成 dynamic/static payload，也可单独评估一个候选行。
 - **`services/strategy/candidate_preparation.py`**：调用生成服务重写候选输入，并补充 `row_requirements`、准备元信息和追溯报告。
 - **`services/strategy/candidate_provider.py`**：统一读取和标准化候选输入。
 - **`services/strategy/raw_score.py`**：定义 `RawScoreFeatures` 和 `RawScoreEngine`。
@@ -35,6 +35,7 @@
 - **`services/strategy/engine.py`**：把候选、行情、事件催化、外部选择结果整合成 `StrategyEvaluation`，并复用候选评分接口。
 - **`services/strategy/market_rules.py`**：给港股/美股提供基础的市场参数。
 - **`services/strategy/registry.py`**：定义当前默认 `strategy_id`、可交易动作和最低 `raw_score` 门槛。
+- **`services/evaluation_hub/candidate_framework.py`**：把候选输入筛成观察标，并进一步判断 `daily` / `minute` / `needs_review` 交易级别，作为 workflow 中 `candidate_framework` 与 `backtest` 的桥接层。
 
 ### 当前真实数据流
 
@@ -79,8 +80,6 @@
 - 这意味着当前优先级已经改为**按 `(market, symbol)` 精细 merge**，dynamic 对同 symbol 具有覆盖权，但不会再整市场覆盖。
 - 所有候选在返回前都会经过 `normalize_symbol()` 标准化。
 
-这点和旧文档里“主流程优先读取静态文件”的说法不同；当前实现已经是**动态文件优先**。
-
 当前生成/准备层会额外补齐或规范化的候选字段包括：
 
 - `candidate_type`
@@ -116,6 +115,7 @@
 - 把候选生成与单标评估统一到一套评分输入上
 - 给 dynamic/static 维护不同的评分模型，但共享相同接口
 - 在进入 `StrategyEngine` 前先补齐 `strategy_tags`、`source_breakdown`、`risk_flags`、`scoring` 等结构化字段
+- 给 `candidate_framework` 提供足够的结构化上下文，用于判断观察标更适合 `daily`、`minute` 还是 `needs_review`
 
 当前 dynamic/static 评分模型分别是：
 
@@ -189,7 +189,25 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 
 这说明当前实现已经不再是“只有一个旧 `raw_score` 被直接透传”，而是一个**新评分 + 旧评分兼容混合**的模型。
 
-#### 4. 入场择时层
+#### 4. workflow 中的 `candidate_framework` / `backtest` / `readiness` 桥接
+
+新的 `quant workflow` 不再包含独立 `research` / `planning` 阶段，而是把 strategy 层输出直接转成证据链：
+
+- **`candidate_framework`**
+  - 从候选输入中筛出观察标
+  - 输出 `selected_as`、`trading_level`、`trading_level_reasons`、`backtest_ready`
+  - 当前 `trading_level` 至少包括：`daily`、`minute`、`needs_review`
+- **`backtest`**
+  - 复用本地 `vnpy_cta_backtest_report.json` 和 `*sweep*.json`
+  - 对每个观察标记录：交易级别、推荐数据粒度、参数搜索空间、最佳参数、绩效指标、样本区间与本地路径
+  - 当前阶段仍然是 evidence-only，不会自动执行新的回测任务
+- **`readiness`**
+  - 把 `healthcheck`、观察标交易级别和回测证据合并成 readiness checklist
+  - `simulation` 与 `live` 使用不同门槛：`live` 额外要求 `preflight`、`dual_run_diff`、live report schema、approval switches、reconciliation 等证据
+
+因此，strategy 层现在不仅服务于单标信号生成，也直接服务于 workflow 的观察标筛选和证据门禁。
+
+#### 5. 入场择时层
 
 `EntryTimingEngine.decide()` 当前会返回以下动作之一：
 
@@ -214,7 +232,7 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 - `invalidator`
 - `suggested_size_pct`
 
-#### 5. 策略选择层
+#### 6. 策略选择层
 
 `StrategySelector` 是当前真正的“规则裁决器”，它的职责不是生成市场观点，而是把结构化特征收敛成可执行或不可执行的策略选择。
 
@@ -230,7 +248,7 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 
 也就是说，**外部 AI/LLM/Knot 结果不能直接越过这个规则层下单**。
 
-#### 6. 外部策略选择的并入方式
+#### 7. 外部策略选择的并入方式
 
 `StrategyEngine` 支持 `external_strategy_selection`，但当前合并逻辑是保守的：
 
@@ -240,7 +258,7 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 
 这条规则非常关键：**AI 只能提供结构化建议，不能绕过本地规则和安全边界。**
 
-#### 7. 最终信号输出层
+#### 8. 最终信号输出层
 
 `StrategyEngine.evaluate_candidate()` 和 `StrategyEngine.evaluate_bar()` 最终返回 `StrategyEvaluation`，其中最重要的是 `signal`：
 
@@ -315,13 +333,13 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 - **规则型策略选择与风险阻断**
 - **外部选择结果的保守合并机制**
 - **输出统一的 `StrategySignal` / `StrategyEvaluation` 结构**
+- **观察标交易级别判断（`daily` / `minute` / `needs_review`）**
+- **面向 workflow 的本地回测证据与 readiness 汇总**
 
 ### 当前仍然是缺口或扩展点的部分
 
 - **动态 universe discovery 还不是这层自动完成的**
   - 当前仍依赖上游把候选写入 `state/runs/candidate_inputs.dynamic.json`
-- **当前 prepare/provider 仍按 market 粗覆盖，不是按 symbol 精细 merge**
-  - 如果 dynamic 只提供某市场的局部补丁，仍可能整体遮掉 static 的同市场候选
 - **真实市场数据与 Knot 接入已支持为可选 enrich，但默认并不自动开启**
   - 需要显式启用 CLI / workflow 参数才会尝试请求 snapshot 或调用 Knot runtime
   - Futu SDK 不可用、远端 Knot 未配置或 schema 校验失败时，会降级为 warning / fallback，而不是替代本地安全规则层
@@ -333,6 +351,8 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
   - 还没有完整 tick size、税费、lot size 明细
 - **当前评分特征仍偏启发式**
   - 更细的 quality / event / microstructure 特征可以继续扩展
+- **当前 `backtest` 阶段主要复用本地已有回测/扫参产物**
+  - 当前 workflow 还不会自己发起真实回测命令，只做结构化证据整理
 - **当前覆盖重点仍是 US 与 HK**
   - 其他市场还未纳入 beginner-safe 主线
 
@@ -358,6 +378,8 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 5. `services/strategy/strategy_selector.py`
 6. `services/strategy/market_rules.py`
 7. `services/strategy/registry.py`
+8. `services/evaluation_hub/candidate_framework.py`
+9. `scripts/quant_workflow/workflow_service.py`
 
 ### 结论
 
@@ -365,5 +387,5 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 但它仍然应该被描述为：
 
 - 一个**确定性、可解释、可继续扩展**的策略内核；
-- 一个适合被 research / backtest / simulation 复用的中间层；
+- 一个适合被 `candidate_framework` / `backtest` / `readiness` 复用的中间层；
 - 而不是一个已经完成全自动 candidate discovery、全自动对账、全自动实盘执行的闭环系统。

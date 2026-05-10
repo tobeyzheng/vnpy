@@ -1,8 +1,8 @@
 {
   "mode": "static_generated",
   "schema_version": "candidate_inputs_v3",
-  "generated_at": "2026-05-10T22:29:44.616567+08:00",
-  "as_of_date": "2026-05-10",
+  "generated_at": "2026-05-11T00:21:02.492765+08:00",
+  "as_of_date": "2026-05-11",
   "selection_policy": "stable_baseline_hybrid_v2",
   "scoring_model": {
     "mode": "static",
@@ -187,10 +187,39 @@
           "category": "candidate_score",
           "score": 0.7565,
           "summary": "国产算力主线清晰"
+        },
+        {
+          "symbol": "688041.SH",
+          "market": "a_share",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.3712,
+          "summary": "snapshot change -5.36%; turnover 16242863702"
+        },
+        {
+          "symbol": "688041.SH",
+          "market": "a_share",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "688041.SH",
+          "market": "a_share",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.7565,
+          "summary": "国产算力主线清晰"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "ai_compute",
       "risk_level": "medium",
@@ -402,9 +431,9 @@
         "research_priority": 0.8067
       },
       "source_breakdown": {
-        "classic": 0.5253,
-        "knot_agent": 0.1899,
-        "research": 0.2848
+        "classic": 0.507,
+        "knot_agent": 0.2113,
+        "research": 0.2817
       },
       "risk_flags": [
         "high_volatility"
@@ -512,9 +541,9 @@
           "research_priority": 0.8067
         },
         "source_breakdown": {
-          "classic": 0.5253,
-          "knot_agent": 0.1899,
-          "research": 0.2848
+          "classic": 0.507,
+          "knot_agent": 0.2113,
+          "research": 0.2817
         },
         "consensus_score": 0.8073,
         "risk_flags": [
@@ -626,10 +655,39 @@
           "category": "candidate_score",
           "score": 0.751,
           "summary": "AI算力链辨识度高"
+        },
+        {
+          "symbol": "300308.SZ",
+          "market": "a_share",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5824,
+          "summary": "snapshot change 0.97%; turnover 17406542425"
+        },
+        {
+          "symbol": "300308.SZ",
+          "market": "a_share",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "300308.SZ",
+          "market": "a_share",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.751,
+          "summary": "AI算力链辨识度高"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "ai_compute",
       "risk_level": "medium",
@@ -841,9 +899,9 @@
         "research_priority": 0.8167
       },
       "source_breakdown": {
-        "classic": 0.5276,
-        "knot_agent": 0.189,
-        "research": 0.2835
+        "classic": 0.5088,
+        "knot_agent": 0.2105,
+        "research": 0.2807
       },
       "risk_flags": [
         "high_volatility"
@@ -951,9 +1009,9 @@
           "research_priority": 0.8167
         },
         "source_breakdown": {
-          "classic": 0.5276,
-          "knot_agent": 0.189,
-          "research": 0.2835
+          "classic": 0.5088,
+          "knot_agent": 0.2105,
+          "research": 0.2807
         },
         "consensus_score": 0.789,
         "risk_flags": [
@@ -1065,10 +1123,39 @@
           "category": "candidate_score",
           "score": 0.6907,
           "summary": "设备链景气和国产替代逻辑仍在"
+        },
+        {
+          "symbol": "002371.SZ",
+          "market": "a_share",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.4815,
+          "summary": "snapshot change -2.06%; turnover 4475463104"
+        },
+        {
+          "symbol": "002371.SZ",
+          "market": "a_share",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "002371.SZ",
+          "market": "a_share",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6907,
+          "summary": "设备链景气和国产替代逻辑仍在"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "general",
       "risk_level": "low",
@@ -1279,9 +1366,9 @@
         "research_priority": 0.7933
       },
       "source_breakdown": {
-        "classic": 0.5223,
-        "knot_agent": 0.1911,
-        "research": 0.2866
+        "classic": 0.5047,
+        "knot_agent": 0.2123,
+        "research": 0.283
       },
       "risk_flags": [
         "high_volatility"
@@ -1388,9 +1475,9 @@
           "research_priority": 0.7933
         },
         "source_breakdown": {
-          "classic": 0.5223,
-          "knot_agent": 0.1911,
-          "research": 0.2866
+          "classic": 0.5047,
+          "knot_agent": 0.2123,
+          "research": 0.283
         },
         "consensus_score": 0.6977,
         "risk_flags": [
@@ -1502,10 +1589,39 @@
           "category": "candidate_score",
           "score": 0.6838,
           "summary": "趋势、事件催化与龙头属性共振"
+        },
+        {
+          "symbol": "NVDA.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6083,
+          "summary": "snapshot change 1.75%; turnover 29406902542"
+        },
+        {
+          "symbol": "NVDA.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "NVDA.US",
+          "market": "us",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6838,
+          "summary": "趋势、事件催化与龙头属性共振"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "general",
       "risk_level": "low",
@@ -1715,9 +1831,9 @@
         "research_priority": 0.82
       },
       "source_breakdown": {
-        "classic": 0.5638,
-        "knot_agent": 0.1678,
-        "research": 0.2685
+        "classic": 0.5477,
+        "knot_agent": 0.1884,
+        "research": 0.2638
       },
       "risk_flags": [
         "high_volatility",
@@ -1824,9 +1940,9 @@
           "research_priority": 0.82
         },
         "source_breakdown": {
-          "classic": 0.5638,
-          "knot_agent": 0.1678,
-          "research": 0.2685
+          "classic": 0.5477,
+          "knot_agent": 0.1884,
+          "research": 0.2638
         },
         "consensus_score": 0.655,
         "risk_flags": [
@@ -1939,10 +2055,39 @@
           "category": "candidate_score",
           "score": 0.6824,
           "summary": "AI链景气度延续"
+        },
+        {
+          "symbol": "AVGO.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6909,
+          "summary": "snapshot change 4.23%; turnover 9632063239"
+        },
+        {
+          "symbol": "AVGO.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "AVGO.US",
+          "market": "us",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6824,
+          "summary": "AI链景气度延续"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "ai_compute",
       "risk_level": "low",
@@ -2153,9 +2298,9 @@
         "research_priority": 0.8853
       },
       "source_breakdown": {
-        "classic": 0.5426,
-        "knot_agent": 0.1624,
-        "research": 0.295
+        "classic": 0.5321,
+        "knot_agent": 0.1839,
+        "research": 0.284
       },
       "risk_flags": [
         "high_volatility",
@@ -2263,9 +2408,9 @@
           "research_priority": 0.8853
         },
         "source_breakdown": {
-          "classic": 0.5426,
-          "knot_agent": 0.1624,
-          "research": 0.295
+          "classic": 0.5321,
+          "knot_agent": 0.1839,
+          "research": 0.284
         },
         "consensus_score": 0.6535,
         "risk_flags": [
@@ -2378,10 +2523,39 @@
           "category": "candidate_score",
           "score": 0.6665,
           "summary": "半导体主线共振增强"
+        },
+        {
+          "symbol": "00981.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.4023,
+          "summary": "snapshot change -4.43%; turnover 7803020446"
+        },
+        {
+          "symbol": "00981.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00981.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6665,
+          "summary": "半导体主线共振增强"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "ai_compute",
       "risk_level": "high",
@@ -2593,9 +2767,9 @@
         "research_priority": 0.7507
       },
       "source_breakdown": {
-        "classic": 0.5704,
-        "knot_agent": 0.1718,
-        "research": 0.2577
+        "classic": 0.5524,
+        "knot_agent": 0.1918,
+        "research": 0.2558
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -2704,9 +2878,9 @@
           "research_priority": 0.7507
         },
         "source_breakdown": {
-          "classic": 0.5704,
-          "knot_agent": 0.1718,
-          "research": 0.2577
+          "classic": 0.5524,
+          "knot_agent": 0.1918,
+          "research": 0.2558
         },
         "consensus_score": 0.7192,
         "risk_flags": [
@@ -2724,8 +2898,8 @@
       "raw_score": 0.6705,
       "confidence_source": "refresh_agent_candidate",
       "action_hint": "观察突破",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "signals": [
         {
@@ -2740,6 +2914,35 @@
           "symbol": "01347.HK",
           "market": "hong_kong",
           "source": "local-fallback-until-remote-hooked",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01347.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6705,
+          "summary": "半导体链有交易弹性，适合事件驱动观察"
+        },
+        {
+          "symbol": "01347.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.3001,
+          "summary": "snapshot change -7.50%; turnover 7243010326"
+        },
+        {
+          "symbol": "01347.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
           "category": "research",
           "score": 0.6,
           "summary": "未满足明确开仓模式，先观察。",
@@ -3026,9 +3229,9 @@
         "research_priority": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3333,
-        "knot_agent": 0.4267,
-        "research": 0.24
+        "classic": 0.3608,
+        "knot_agent": 0.3918,
+        "research": 0.2474
       },
       "risk_flags": [
         "high_volatility"
@@ -3136,9 +3339,9 @@
           "research_priority": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3333,
-          "knot_agent": 0.4267,
-          "research": 0.24
+          "classic": 0.3608,
+          "knot_agent": 0.3918,
+          "research": 0.2474
         },
         "consensus_score": 0.6792,
         "risk_flags": [
@@ -3258,10 +3461,39 @@
           "category": "candidate_score",
           "score": 0.6454,
           "summary": "平台龙头与回购支撑增强"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5081,
+          "summary": "snapshot change -1.26%; turnover 11871680730"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6454,
+          "summary": "平台龙头与回购支撑增强"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "platform_internet",
       "risk_level": "low",
@@ -3472,9 +3704,9 @@
         "research_priority": 0.8133
       },
       "source_breakdown": {
-        "classic": 0.6137,
-        "knot_agent": 0.1486,
-        "research": 0.2377
+        "classic": 0.5876,
+        "knot_agent": 0.1718,
+        "research": 0.2405
       },
       "risk_flags": [
         "high_volatility",
@@ -3582,9 +3814,9 @@
           "research_priority": 0.8133
         },
         "source_breakdown": {
-          "classic": 0.6137,
-          "knot_agent": 0.1486,
-          "research": 0.2377
+          "classic": 0.5876,
+          "knot_agent": 0.1718,
+          "research": 0.2405
         },
         "consensus_score": 0.6121,
         "risk_flags": [
@@ -3697,10 +3929,39 @@
           "category": "candidate_score",
           "score": 0.6421,
           "summary": "软件与AI应用双重属性"
+        },
+        {
+          "symbol": "MSFT.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5052,
+          "summary": "snapshot change -1.34%; turnover 13880315248"
+        },
+        {
+          "symbol": "MSFT.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "MSFT.US",
+          "market": "us",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6421,
+          "summary": "软件与AI应用双重属性"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "ai_compute",
       "risk_level": "low",
@@ -3911,9 +4172,9 @@
         "research_priority": 0.8
       },
       "source_breakdown": {
-        "classic": 0.5593,
-        "knot_agent": 0.1695,
-        "research": 0.2712
+        "classic": 0.5443,
+        "knot_agent": 0.1899,
+        "research": 0.2658
       },
       "risk_flags": [
         "high_volatility",
@@ -4021,9 +4282,9 @@
           "research_priority": 0.8
         },
         "source_breakdown": {
-          "classic": 0.5593,
-          "knot_agent": 0.1695,
-          "research": 0.2712
+          "classic": 0.5443,
+          "knot_agent": 0.1899,
+          "research": 0.2658
         },
         "consensus_score": 0.6225,
         "risk_flags": [
@@ -4041,8 +4302,8 @@
       "raw_score": 0.6018,
       "confidence_source": "refresh_agent_candidate",
       "action_hint": "顺势为主",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "signals": [
         {
@@ -4057,6 +4318,35 @@
           "symbol": "09992.HK",
           "market": "hong_kong",
           "source": "local-fallback-until-remote-hooked",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "09992.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.6018,
+          "summary": "消费成长强势，趋势属性较好"
+        },
+        {
+          "symbol": "09992.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6712,
+          "summary": "snapshot change 3.64%; turnover 7187465790"
+        },
+        {
+          "symbol": "09992.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
           "category": "research",
           "score": 0.432,
           "summary": "风险过高或资金条件不足，阻断交易。",
@@ -4343,9 +4633,9 @@
         "research_priority": 0.7011
       },
       "source_breakdown": {
-        "classic": 0.3571,
-        "knot_agent": 0.4286,
-        "research": 0.2143
+        "classic": 0.3889,
+        "knot_agent": 0.3889,
+        "research": 0.2222
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -4455,9 +4745,9 @@
           "research_priority": 0.7011
         },
         "source_breakdown": {
-          "classic": 0.3571,
-          "knot_agent": 0.4286,
-          "research": 0.2143
+          "classic": 0.3889,
+          "knot_agent": 0.3889,
+          "research": 0.2222
         },
         "consensus_score": 0.6843,
         "risk_flags": [
@@ -4571,10 +4861,39 @@
           "category": "candidate_score",
           "score": 0.5831,
           "summary": "内容资产与AI叙事有补涨空间"
+        },
+        {
+          "symbol": "00772.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6015,
+          "summary": "snapshot change 1.54%; turnover 150292574"
+        },
+        {
+          "symbol": "00772.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00772.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.5831,
+          "summary": "内容资产与AI叙事有补涨空间"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "ai_compute",
       "risk_level": "low",
@@ -4785,10 +5104,10 @@
         "research_priority": 0.7633
       },
       "source_breakdown": {
-        "classic": 0.4318,
-        "event": 0.1192,
-        "knot_agent": 0.1727,
-        "research": 0.2763
+        "classic": 0.4493,
+        "event": 0.0886,
+        "knot_agent": 0.1926,
+        "research": 0.2696
       },
       "risk_flags": [
         "high_volatility",
@@ -4896,10 +5215,10 @@
           "research_priority": 0.7633
         },
         "source_breakdown": {
-          "classic": 0.4318,
-          "event": 0.1192,
-          "knot_agent": 0.1727,
-          "research": 0.2763
+          "classic": 0.4493,
+          "event": 0.0886,
+          "knot_agent": 0.1926,
+          "research": 0.2696
         },
         "consensus_score": 0.5811,
         "risk_flags": [
@@ -5012,10 +5331,39 @@
           "category": "candidate_score",
           "score": 0.5708,
           "summary": "平台修复与回购支撑"
+        },
+        {
+          "symbol": "09988.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5051,
+          "summary": "snapshot change -1.35%; turnover 8242013574"
+        },
+        {
+          "symbol": "09988.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "09988.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.5708,
+          "summary": "平台修复与回购支撑"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "platform_internet",
       "risk_level": "medium",
@@ -5226,9 +5574,9 @@
         "research_priority": 0.7867
       },
       "source_breakdown": {
-        "classic": 0.5563,
-        "knot_agent": 0.1706,
-        "research": 0.273
+        "classic": 0.542,
+        "knot_agent": 0.1908,
+        "research": 0.2672
       },
       "risk_flags": [
         "high_volatility",
@@ -5336,9 +5684,9 @@
           "research_priority": 0.7867
         },
         "source_breakdown": {
-          "classic": 0.5563,
-          "knot_agent": 0.1706,
-          "research": 0.273
+          "classic": 0.542,
+          "knot_agent": 0.1908,
+          "research": 0.2672
         },
         "consensus_score": 0.585,
         "risk_flags": [
@@ -5451,10 +5799,39 @@
           "category": "candidate_score",
           "score": 0.5661,
           "summary": "机器人主题活跃，小资金更易参与"
+        },
+        {
+          "symbol": "02432.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6781,
+          "summary": "snapshot change 3.84%; turnover 192403022"
+        },
+        {
+          "symbol": "02432.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "02432.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.5661,
+          "summary": "机器人主题活跃，小资金更易参与"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "consumer_growth",
       "risk_level": "high",
@@ -5666,10 +6043,10 @@
         "research_priority": 0.7173
       },
       "source_breakdown": {
-        "classic": 0.4371,
-        "event": 0.1259,
-        "knot_agent": 0.1748,
-        "research": 0.2622
+        "classic": 0.4534,
+        "event": 0.0933,
+        "knot_agent": 0.1943,
+        "research": 0.2591
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -5778,10 +6155,10 @@
           "research_priority": 0.7173
         },
         "source_breakdown": {
-          "classic": 0.4371,
-          "event": 0.1259,
-          "knot_agent": 0.1748,
-          "research": 0.2622
+          "classic": 0.4534,
+          "event": 0.0933,
+          "knot_agent": 0.1943,
+          "research": 0.2591
         },
         "consensus_score": 0.6402,
         "risk_flags": [
@@ -5799,8 +6176,8 @@
       "raw_score": 0.566,
       "confidence_source": "refresh_agent_candidate",
       "action_hint": "跟踪量价",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "signals": [
         {
@@ -5815,6 +6192,35 @@
           "symbol": "02382.HK",
           "market": "hong_kong",
           "source": "local-fallback-until-remote-hooked",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "02382.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.566,
+          "summary": "消费电子链修复弹性"
+        },
+        {
+          "symbol": "02382.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5649,
+          "summary": "snapshot change 0.45%; turnover 595236637"
+        },
+        {
+          "symbol": "02382.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
           "category": "research",
           "score": 0.6,
           "summary": "未满足明确开仓模式，先观察。",
@@ -6100,9 +6506,9 @@
         "research_priority": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3333,
-        "knot_agent": 0.4267,
-        "research": 0.24
+        "classic": 0.3608,
+        "knot_agent": 0.3918,
+        "research": 0.2474
       },
       "risk_flags": [
         "high_volatility"
@@ -6209,9 +6615,9 @@
           "research_priority": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3333,
-          "knot_agent": 0.4267,
-          "research": 0.24
+          "classic": 0.3608,
+          "knot_agent": 0.3918,
+          "research": 0.2474
         },
         "consensus_score": 0.5803,
         "risk_flags": [
@@ -6228,8 +6634,8 @@
       "raw_score": 0.5419,
       "confidence_source": "refresh_agent_candidate",
       "action_hint": "回踩关注",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "signals": [
         {
@@ -6249,6 +6655,35 @@
           "summary": "未满足明确开仓模式，先观察。",
           "metadata": {
             "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "09868.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.5419,
+          "summary": "智能车主题活跃，适合趋势跟踪"
+        },
+        {
+          "symbol": "09868.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.4991,
+          "summary": "snapshot change -1.53%; turnover 559125129"
+        },
+        {
+          "symbol": "09868.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
             "confidence": 0.78,
             "task_type": "strategy_select"
           }
@@ -6529,9 +6964,9 @@
         "research_priority": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3521,
-        "knot_agent": 0.4225,
-        "research": 0.2254
+        "classic": 0.3846,
+        "knot_agent": 0.3846,
+        "research": 0.2308
       },
       "risk_flags": [
         "high_volatility",
@@ -6639,9 +7074,9 @@
           "research_priority": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3521,
-          "knot_agent": 0.4225,
-          "research": 0.2254
+          "classic": 0.3846,
+          "knot_agent": 0.3846,
+          "research": 0.2308
         },
         "consensus_score": 0.5458,
         "risk_flags": [
@@ -6754,10 +7189,39 @@
           "category": "candidate_score",
           "score": 0.5304,
           "summary": "产品催化与风险偏好改善"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.61,
+          "summary": "snapshot change 1.80%; turnover 4168062433"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.5304,
+          "summary": "产品催化与风险偏好改善"
         }
       ],
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "theme_bucket": "general",
       "risk_level": "high",
@@ -6967,10 +7431,10 @@
         "research_priority": 0.7373
       },
       "source_breakdown": {
-        "classic": 0.4325,
-        "event": 0.1349,
-        "knot_agent": 0.173,
-        "research": 0.2595
+        "classic": 0.4499,
+        "event": 0.1003,
+        "knot_agent": 0.1928,
+        "research": 0.2571
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -7078,10 +7542,10 @@
           "research_priority": 0.7373
         },
         "source_breakdown": {
-          "classic": 0.4325,
-          "event": 0.1349,
-          "knot_agent": 0.173,
-          "research": 0.2595
+          "classic": 0.4499,
+          "event": 0.1003,
+          "knot_agent": 0.1928,
+          "research": 0.2571
         },
         "consensus_score": 0.5551,
         "risk_flags": [
@@ -7100,8 +7564,8 @@
       "raw_score": 0.4624,
       "confidence_source": "refresh_agent_candidate",
       "action_hint": "小仓跟踪",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.json",
       "signals": [
         {
@@ -7116,6 +7580,35 @@
           "symbol": "09626.HK",
           "market": "hong_kong",
           "source": "local-fallback-until-remote-hooked",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "09626.HK",
+          "market": "hong_kong",
+          "source": "static_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4624,
+          "summary": "成长修复与情绪弹性并存"
+        },
+        {
+          "symbol": "09626.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5765,
+          "summary": "snapshot change 0.79%; turnover 718931060"
+        },
+        {
+          "symbol": "09626.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
           "category": "research",
           "score": 0.432,
           "summary": "风险过高或资金条件不足，阻断交易。",
@@ -7400,9 +7893,9 @@
         "research_priority": 0.6695
       },
       "source_breakdown": {
-        "classic": 0.3571,
-        "knot_agent": 0.4286,
-        "research": 0.2143
+        "classic": 0.3889,
+        "knot_agent": 0.3889,
+        "research": 0.2222
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -7509,9 +8002,9 @@
           "research_priority": 0.6695
         },
         "source_breakdown": {
-          "classic": 0.3571,
-          "knot_agent": 0.4286,
-          "research": 0.2143
+          "classic": 0.3889,
+          "knot_agent": 0.3889,
+          "research": 0.2222
         },
         "consensus_score": 0.5356,
         "risk_flags": [
@@ -7537,9 +8030,12 @@
       "status": "ok",
       "source": "knot_agent",
       "runtime_mode": "auto",
+      "requested_runtime_mode": "auto",
       "runtimes_used": [
         "remote-knot-fallback"
       ],
+      "single_runtime_effective": true,
+      "fallback_used": true,
       "evaluated_rows": 17,
       "fallback_count": 17,
       "warnings": []

@@ -30,6 +30,7 @@ from scripts.classic_multifactor.config_schema import (
     LoopModeValidationError,
     validate_loop_mode,
 )
+from scripts.classic_multifactor._base_runner import map_vt_symbol
 from scripts.classic_multifactor.run_daily_rebalance import (
     DailyRebalanceRunner,
     build_parser,
@@ -97,6 +98,11 @@ def test_daily_runner_hard_switch_gating():
                 os.environ.pop(k, None)
             else:
                 os.environ[k] = v
+
+
+def test_map_vt_symbol_normalizes_hk_exchange_suffix():
+    assert map_vt_symbol("00700.HK") == "00700.SEHK"
+    assert map_vt_symbol("00700.SEHK") == "00700.SEHK"
 
 
 def test_daily_runner_construct_with_example_config():

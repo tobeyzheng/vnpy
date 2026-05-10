@@ -1,8 +1,8 @@
 {
   "mode": "dynamic_generated",
   "schema_version": "candidate_inputs_v3",
-  "generated_at": "2026-05-10T22:29:44.616567+08:00",
-  "as_of_date": "2026-05-10",
+  "generated_at": "2026-05-11T00:21:02.492765+08:00",
+  "as_of_date": "2026-05-11",
   "selection_policy": "dynamic_hybrid_market_complete_v2",
   "scoring_model": {
     "mode": "dynamic",
@@ -88,8 +88,8 @@
       "raw_score": 0.4333,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "关注回调后的分批布局机会，适合中线跟踪",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
         {
@@ -109,6 +109,35 @@
           "summary": "未满足明确开仓模式，先观察。",
           "metadata": {
             "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4333,
+          "summary": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5081,
+          "summary": "snapshot change -1.26%; turnover 11871680730"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
             "confidence": 0.78,
             "task_type": "strategy_select"
           }
@@ -390,9 +419,9 @@
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3521,
-        "knot_agent": 0.4225,
-        "research": 0.2254
+        "classic": 0.3846,
+        "knot_agent": 0.3846,
+        "research": 0.2308
       },
       "risk_flags": [
         "high_volatility",
@@ -501,9 +530,9 @@
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3521,
-          "knot_agent": 0.4225,
-          "research": 0.2254
+          "classic": 0.3846,
+          "knot_agent": 0.3846,
+          "research": 0.2308
         },
         "consensus_score": 0.4143,
         "risk_flags": [
@@ -521,8 +550,8 @@
       "raw_score": 0.4248,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "观察利润率与订单增速趋势，适合逢调整分批关注",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
         {
@@ -542,6 +571,35 @@
           "summary": "未满足明确开仓模式，先观察。",
           "metadata": {
             "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4248,
+          "summary": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。"
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5421,
+          "summary": "snapshot change -0.24%; turnover 2023618926"
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
             "confidence": 0.78,
             "task_type": "strategy_select"
           }
@@ -823,9 +881,9 @@
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3521,
-        "knot_agent": 0.4225,
-        "research": 0.2254
+        "classic": 0.3846,
+        "knot_agent": 0.3846,
+        "research": 0.2308
       },
       "risk_flags": [
         "high_volatility",
@@ -934,9 +992,9 @@
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3521,
-          "knot_agent": 0.4225,
-          "research": 0.2254
+          "classic": 0.3846,
+          "knot_agent": 0.3846,
+          "research": 0.2308
         },
         "consensus_score": 0.4434,
         "risk_flags": [
@@ -954,8 +1012,8 @@
       "raw_score": 0.4226,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "适合作为组合中的稳健配置，关注新业务价值与回购节奏",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
         {
@@ -975,6 +1033,35 @@
           "summary": "未满足明确开仓模式，先观察。",
           "metadata": {
             "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4226,
+          "summary": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。"
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.4547,
+          "summary": "snapshot change -2.86%; turnover 2817112623"
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
             "confidence": 0.78,
             "task_type": "strategy_select"
           }
@@ -1256,9 +1343,9 @@
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3521,
-        "knot_agent": 0.4225,
-        "research": 0.2254
+        "classic": 0.3846,
+        "knot_agent": 0.3846,
+        "research": 0.2308
       },
       "risk_flags": [
         "high_volatility",
@@ -1367,9 +1454,9 @@
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3521,
-          "knot_agent": 0.4225,
-          "research": 0.2254
+          "classic": 0.3846,
+          "knot_agent": 0.3846,
+          "research": 0.2308
         },
         "consensus_score": 0.4045,
         "risk_flags": [
@@ -1387,8 +1474,8 @@
       "raw_score": 0.4105,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "适合高波动成长型仓位，等待销量或业绩催化确认",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
         {
@@ -1403,6 +1490,35 @@
           "symbol": "01810.HK",
           "market": "hong_kong",
           "source": "local-fallback-until-remote-hooked",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4105,
+          "summary": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.61,
+          "summary": "snapshot change 1.80%; turnover 4168062433"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
           "category": "research",
           "score": 0.432,
           "summary": "风险过高或资金条件不足，阻断交易。",
@@ -1689,9 +1805,9 @@
         "knot_overlay": 0.6807
       },
       "source_breakdown": {
-        "classic": 0.3571,
-        "knot_agent": 0.4286,
-        "research": 0.2143
+        "classic": 0.3889,
+        "knot_agent": 0.3889,
+        "research": 0.2222
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -1801,9 +1917,9 @@
           "knot_overlay": 0.6807
         },
         "source_breakdown": {
-          "classic": 0.3571,
-          "knot_agent": 0.4286,
-          "research": 0.2143
+          "classic": 0.3889,
+          "knot_agent": 0.3889,
+          "research": 0.2222
         },
         "consensus_score": 0.4878,
         "risk_flags": [
@@ -1822,8 +1938,8 @@
       "raw_score": 0.4075,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "适合用作市场活跃度修复的代表标的，关注成交额与IPO回暖信号",
-      "generated_at": "2026-05-10T22:29:44.616567+08:00",
-      "as_of_date": "2026-05-10",
+      "generated_at": "2026-05-11T00:21:02.492765+08:00",
+      "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
         {
@@ -1843,6 +1959,35 @@
           "summary": "未满足明确开仓模式，先观察。",
           "metadata": {
             "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5281,
+          "summary": "snapshot change -0.66%; turnover 1437536301"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
             "confidence": 0.78,
             "task_type": "strategy_select"
           }
@@ -2123,9 +2268,9 @@
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.3521,
-        "knot_agent": 0.4225,
-        "research": 0.2254
+        "classic": 0.3846,
+        "knot_agent": 0.3846,
+        "research": 0.2308
       },
       "risk_flags": [
         "high_volatility",
@@ -2233,9 +2378,9 @@
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.3521,
-          "knot_agent": 0.4225,
-          "research": 0.2254
+          "classic": 0.3846,
+          "knot_agent": 0.3846,
+          "research": 0.2308
         },
         "consensus_score": 0.4188,
         "risk_flags": [
@@ -2261,9 +2406,12 @@
       "status": "ok",
       "source": "knot_agent",
       "runtime_mode": "auto",
+      "requested_runtime_mode": "auto",
       "runtimes_used": [
         "remote-knot-fallback"
       ],
+      "single_runtime_effective": true,
+      "fallback_used": true,
       "evaluated_rows": 5,
       "fallback_count": 5,
       "warnings": []

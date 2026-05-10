@@ -8,13 +8,17 @@ from services.evaluation_hub import EvaluationHub
 from vnpy_llm.base import beijing_now_isoformat
 from services.evaluation_hub.artifact_store import ArtifactStore
 from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
-from services.evaluation_hub.beginner_research import BeginnerResearchService
 from services.evaluation_hub.candidate_framework import BeginnerCandidateFramework
-from services.evaluation_hub.capability_registry import CapabilityRegistry, CapabilityStageResolver
 from services.evaluation_hub.doc_renderer import BeginnerExplanationRenderer
-from services.evaluation_hub.models import PlanAssumption, PlanningArtifact, WorkflowRunResult, WorkflowStepResult
-from services.evaluation_hub.plan_generator import BeginnerPlanGenerator
-from services.evaluation_hub.readiness_gate import ReadinessGateService
+from services.evaluation_hub.models import (
+    PlanAssumption,
+    PlanningArtifact,
+    ReadinessCheckItem,
+    ReadinessChecklist,
+    ResearchFinding,
+    WorkflowRunResult,
+    WorkflowStepResult,
+)
 from services.healthcheck import HealthcheckService
 from services.strategy.candidate_preparation import CandidateInputPreparationService
 from services.strategy.candidate_provider import UnifiedCandidateProvider
@@ -22,31 +26,25 @@ from services.strategy.candidate_provider import UnifiedCandidateProvider
 
 class QuantWorkflowService:
     FULL_PLAN_STEPS = (
-        "research",
+        "healthcheck",
         "candidate_framework",
-        "backtest_validation",
-        "planning",
-        "execution_boundary",
+        "backtest",
+        "readiness",
     )
     STAGE_ONLY_STEPS = {
-        "research": ("research",),
-        "backtest": ("research", "backtest_validation"),
-        "simulation": ("research", "candidate_framework", "backtest_validation", "planning", "execution_boundary"),
-        "live": ("research", "candidate_framework", "backtest_validation", "planning", "execution_boundary"),
+        "healthcheck": ("healthcheck",),
+        "candidate_framework": ("healthcheck", "candidate_framework"),
+        "backtest": ("healthcheck", "candidate_framework", "backtest"),
+        "readiness": ("healthcheck", "candidate_framework", "backtest", "readiness"),
     }
 
     def __init__(self, repo_root: Path, *, allow_remote_checks: bool = False):
         self.repo_root = Path(repo_root)
         self.allow_remote_checks = bool(allow_remote_checks)
-        self.registry = CapabilityRegistry()
-        self.stage_resolver = CapabilityStageResolver(self.registry)
         self.hub = EvaluationHub()
-        self.research_service = BeginnerResearchService(self.hub)
         self.renderer = BeginnerExplanationRenderer()
         self.candidate_framework = BeginnerCandidateFramework()
         self.candidate_selector = BeginnerCandidateSelector(self.candidate_framework, self.hub)
-        self.plan_generator = BeginnerPlanGenerator(self.hub)
-        self.readiness_gate = ReadinessGateService()
         self.store = ArtifactStore(self.repo_root)
         self.candidate_preparation = CandidateInputPreparationService(self.repo_root)
 
@@ -58,13 +56,15 @@ class QuantWorkflowService:
         profile: dict[str, Any] | None = None,
         preferred_markets: list[str] | None = None,
         max_candidates: int = 5,
-        stage: str = "research",
+        stage: str = "readiness",
+        task_type: str = "simulation",
         prepare_candidates: bool = False,
         prepare_include_market_data: bool = False,
         prepare_knot_runtime: str = "auto",
     ) -> dict[str, Any]:
         started_at = beijing_now_isoformat()
         profile = dict(profile or {})
+        preferred_markets = list(preferred_markets or [])
         requested_steps = list(self._resolve_requested_steps(mode=mode, stage=stage))
         steps: list[WorkflowStepResult] = []
         warnings: list[str] = []
@@ -72,395 +72,799 @@ class QuantWorkflowService:
         artifact_paths: dict[str, str] = {}
 
         if prepare_candidates:
-            candidate_prepare_report = self.candidate_preparation.prepare(
+            prepare_step, prepare_report_path = self._run_candidate_prepare(
                 include_market_data=prepare_include_market_data,
                 knot_runtime=prepare_knot_runtime,
             )
-            candidate_prepare_step = self.store.build_step(
-                step="candidate_prepare",
-                status="ok",
-                message="Prepared normalized candidate input artifacts before workflow evaluation.",
-                outputs=[str(candidate_prepare_report.get("report_path"))],
-                warnings=list(candidate_prepare_report.get("summary", {}).get("warnings", [])),
-                meta={
-                    "requires_confirmation": False,
-                    "market_coverage": list(candidate_prepare_report.get("summary", {}).get("market_coverage", [])),
-                    "written_targets": list(candidate_prepare_report.get("summary", {}).get("written_targets", [])),
-                    "include_market_data": bool(candidate_prepare_report.get("summary", {}).get("include_market_data")),
-                    "knot_runtime": str(candidate_prepare_report.get("summary", {}).get("knot_runtime") or "auto"),
-                },
-            )
-            artifact_paths["candidate_prepare_report"] = str(candidate_prepare_report.get("report_path"))
-            outputs.append(str(candidate_prepare_report.get("report_path")))
-            self._append_step(steps=steps, warnings=warnings, step=candidate_prepare_step)
+            if prepare_report_path:
+                artifact_paths["candidate_prepare_report"] = prepare_report_path
+                outputs.append(prepare_report_path)
+            self._append_step(steps=steps, warnings=warnings, step=prepare_step)
+            if prepare_step.status == "blocked":
+                return self._finalize_workflow(
+                    workflow_name=workflow_name,
+                    mode=mode,
+                    task_type=task_type,
+                    started_at=started_at,
+                    steps=steps,
+                    outputs=outputs,
+                    warnings=warnings,
+                    assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
+                    artifact_paths=artifact_paths,
+                )
 
-        preflight = self._build_preflight(mode=mode, stage=stage, requested_steps=requested_steps)
-        preflight_step = self.store.build_step(
-            step="preflight",
-            status=preflight["status"],
-            message=preflight["message"],
-            warnings=preflight["warnings"],
+        health_summary = self._build_healthcheck(
+            mode=mode,
+            task_type=task_type,
+            requested_steps=requested_steps,
+        )
+        health_step = self.store.build_step(
+            step="healthcheck",
+            status=health_summary["status"],
+            message=health_summary["message"],
+            outputs=list(health_summary["outputs"]),
+            warnings=list(dict.fromkeys([*health_summary["blocking_reasons"], *health_summary["warnings"]])),
             meta={
                 "requires_confirmation": False,
-                "requested_steps": requested_steps,
-                "checks": preflight["checks"],
-                "blocking_reasons": preflight["blocking_reasons"],
+                "task_type": task_type,
+                "checks": health_summary["checks"],
+                "blocking_reasons": health_summary["blocking_reasons"],
+                "health_status": health_summary["health_payload"].get("status"),
+                "health_source": health_summary["health_payload"].get("source"),
             },
         )
-        self._append_step(steps=steps, warnings=warnings, step=preflight_step)
-
-        if preflight_step.status == "blocked":
+        self._append_step(steps=steps, warnings=warnings, step=health_step)
+        if health_step.status == "blocked":
             return self._finalize_workflow(
                 workflow_name=workflow_name,
                 mode=mode,
+                task_type=task_type,
                 started_at=started_at,
                 steps=steps,
                 outputs=outputs,
                 warnings=warnings,
-                assumptions=[],
+                assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
                 artifact_paths=artifact_paths,
             )
 
-        health = self._load_health_snapshot(mode=mode)
-        health_step = self.store.build_step(
-            step="healthcheck",
-            status="ok" if health.get("status") not in {"blocked", "unknown"} else ("warning" if health.get("status") == "unknown" else "blocked"),
-            message="Health status collected from cached file or offline placeholder.",
-            outputs=[health.get("path")] if health.get("path") else [],
-            warnings=[alert.get("message", "") for alert in health.get("alerts", []) if alert.get("message")],
-            meta={"requires_confirmation": False, "status": health.get("status"), "source": health.get("source")},
-        )
-        self._append_step(steps=steps, warnings=warnings, step=health_step)
-
-        capability_map = self.registry.list_all()
-        stage_capabilities = self.registry.select_for_stage(stage, include_unsafe=True)
-        capability_gaps = self.registry.capability_gaps()
-        stage_map = self.stage_resolver.available_stages(beginner_mode=False)
-        capabilities_step = self.store.build_step(
-            step="capability_map",
-            status="ok",
-            message=f"Collected capability map for stage {stage}.",
-            warnings=[gap.reason for gap in capability_gaps],
-            meta={
-                "requires_confirmation": False,
-                "current_stage_capabilities": [item.capability_id for item in stage_capabilities],
-                "stage_boundary_map": self.registry.stage_boundary_map(),
-                "available_stages": {key: [item.capability_id for item in value] for key, value in stage_map.items()},
-            },
-        )
-        self._append_step(steps=steps, warnings=warnings, step=capabilities_step)
-
-        research_artifact: PlanningArtifact | None = None
-        if "research" in requested_steps:
-            research_artifact = self.research_service.build_default_artifact()
-            research_artifact.capability_map = capability_map
-            research_artifact.capability_gaps = capability_gaps
-            research_artifact.rendered_documents = [
-                self.renderer.render_markdown(research_artifact),
-                self.renderer.render_json(research_artifact),
-            ]
-            research_path = self.store.save_artifact(research_artifact, slug="beginner_quant_research")
-            artifact_paths["research_artifact"] = str(research_path)
-            outputs.append(str(research_path))
-            research_step = self.store.build_step(
-                step="research",
-                status="ok",
-                message="Generated beginner research artifact and readable documents.",
-                outputs=[str(research_path)],
-                meta={"requires_confirmation": False},
-            )
-            self._append_step(steps=steps, warnings=warnings, step=research_step)
-
         observations = []
         candidate_artifact: PlanningArtifact | None = None
-        if any(step_name in requested_steps for step_name in {"candidate_framework", "planning"}):
-            candidates = UnifiedCandidateProvider(self.repo_root).load()
+        candidate_rows: list[dict[str, Any]] = []
+        if "candidate_framework" in requested_steps or "backtest" in requested_steps or "readiness" in requested_steps:
+            candidate_rows = UnifiedCandidateProvider(self.repo_root).load()
             if preferred_markets:
-                filtered = [row for row in candidates if row.get("market") in set(preferred_markets)]
-            else:
-                filtered = candidates
+                candidate_rows = [row for row in candidate_rows if row.get("market") in set(preferred_markets)]
             candidate_artifact = self.candidate_selector.build_candidate_artifact(
-                rows=filtered,
-                research_artifact=research_artifact,
+                rows=candidate_rows,
                 preferred_markets=preferred_markets,
-                max_candidates=max_candidates,
+                max_candidates=max(int(max_candidates), 1),
             )
             observations = list(candidate_artifact.candidate_observations)
-            if observations:
-                candidate_artifact.capability_map = capability_map
-                candidate_artifact.capability_gaps = capability_gaps
-                candidate_artifact.rendered_documents = [
-                    self.renderer.render_markdown(candidate_artifact),
-                    self.renderer.render_json(candidate_artifact),
-                ]
-                candidate_path = self.store.save_artifact(candidate_artifact, slug="beginner_candidate_framework")
-                artifact_paths["candidate_artifact"] = str(candidate_path)
-                outputs.append(str(candidate_path))
-            observation_summary = dict(candidate_artifact.meta.get("framework_summary") or self.candidate_framework.summary(observations))
+            backtest_targets = [
+                {
+                    "symbol": item.symbol,
+                    "market": item.market,
+                    "selected_as": item.selected_as,
+                    "trading_level": item.meta.get("trading_level"),
+                    "backtest_ready": bool(item.meta.get("backtest_ready")),
+                    "trading_level_reasons": list(item.meta.get("trading_level_reasons") or []),
+                }
+                for item in observations
+            ]
+            candidate_artifact.meta["profile"] = dict(profile)
+            candidate_artifact.meta["task_type"] = task_type
+            candidate_artifact.meta["backtest_targets"] = backtest_targets
+            candidate_artifact.meta["preferred_markets"] = preferred_markets
+            candidate_artifact.rendered_documents = [
+                self.renderer.render_markdown(candidate_artifact),
+                self.renderer.render_json(candidate_artifact),
+            ]
+            candidate_path = self.store.save_artifact(candidate_artifact, slug="beginner_quant_candidate_framework")
+            artifact_paths["candidate_artifact"] = str(candidate_path)
+            outputs.append(str(candidate_path))
             if "candidate_framework" in requested_steps:
+                summary = dict(candidate_artifact.meta.get("framework_summary") or self.candidate_framework.summary(observations))
+                candidate_status = "ok" if observations else "warning"
                 candidate_step = self.store.build_step(
                     step="candidate_framework",
-                    status="ok" if observations else "warning",
-                    message="Built enhanced beginner candidate observation list.",
-                    outputs=[str(candidate_path)] if observations else [],
+                    status=candidate_status,
+                    message="Selected observation targets and assigned daily/minute readiness levels from local candidate inputs.",
+                    outputs=[str(candidate_path)],
                     warnings=[] if observations else ["No candidate observations were produced from the current local inputs."],
                     meta={
                         "requires_confirmation": False,
-                        "summary": observation_summary,
-                        "next_actions": list(candidate_artifact.meta.get("next_step_suggestions") or []),
-                        "llm_research_pending_count": observation_summary.get("llm_research_pending_count", 0),
+                        "summary": summary,
+                        "backtest_targets": backtest_targets,
                     },
                 )
                 self._append_step(steps=steps, warnings=warnings, step=candidate_step)
 
-        backtest_report: dict[str, Any] = {}
-        backtest_metadata: dict[str, Any] = {}
-        backtest_checklist = None
-        if any(step_name in requested_steps for step_name in {"backtest_validation", "planning"}):
-            backtest_report = self._load_backtest_report()
-            backtest_metadata = self.readiness_gate.normalize_backtest_report(backtest_report) if backtest_report else {}
-            backtest_checklist = self.readiness_gate.validate_backtest_metadata(backtest_metadata) if backtest_metadata else None
-            if "backtest_validation" in requested_steps:
-                validation_warnings: list[str] = []
-                if not backtest_report:
-                    validation_warnings.append("No local vn.py backtest report was found for validation.")
-                elif backtest_checklist is not None:
-                    validation_warnings.extend(item.details for item in backtest_checklist.failed_items() if item.details)
-                validation_step = self.store.build_step(
-                    step="backtest_validation",
-                    status="ok" if backtest_checklist and backtest_checklist.passed else "warning",
-                    message="Collected local backtest metadata for stage validation.",
-                    outputs=["state/runs/classic_multifactor/vnpy_cta_backtest_report.json"] if backtest_report else [],
-                    warnings=validation_warnings,
+        backtest_entries: list[dict[str, Any]] = []
+        backtest_artifact: PlanningArtifact | None = None
+        if "backtest" in requested_steps or "readiness" in requested_steps:
+            backtest_artifact = self._build_backtest_artifact(
+                observations=observations,
+                profile=profile,
+                preferred_markets=preferred_markets,
+                task_type=task_type,
+            )
+            backtest_entries = list(backtest_artifact.meta.get("backtest_results") or [])
+            backtest_path = self.store.save_artifact(backtest_artifact, slug="beginner_quant_backtest")
+            artifact_paths["backtest_artifact"] = str(backtest_path)
+            outputs.append(str(backtest_path))
+            if "backtest" in requested_steps:
+                summary = dict(backtest_artifact.meta.get("backtest_summary") or {})
+                backtest_status = str(summary.get("status") or "warning")
+                backtest_step = self.store.build_step(
+                    step="backtest",
+                    status=backtest_status,
+                    message="Collected historical backtest and optimization evidence for the observation targets.",
+                    outputs=[str(backtest_path)],
+                    warnings=list(backtest_artifact.meta.get("backtest_warnings") or []),
                     meta={
                         "requires_confirmation": False,
-                        "backtest_metadata": backtest_metadata,
+                        "summary": summary,
+                        "results": backtest_entries,
                     },
                 )
-                self._append_step(steps=steps, warnings=warnings, step=validation_step)
+                self._append_step(steps=steps, warnings=warnings, step=backtest_step)
 
-        simulation_acceptance = self._collect_simulation_acceptance(stage=stage)
-        live_evidence = self._collect_live_evidence(stage=stage)
-
-        plan_artifact: PlanningArtifact | None = None
-        if "planning" in requested_steps:
-            previous_plan = self.store.load_previous_plan(slug="beginner_quant_plan")
-            plan_artifact = self.plan_generator.build_plan(
-                profile=profile,
+        if "readiness" in requested_steps:
+            readiness_artifact = self._build_readiness_artifact(
+                task_type=task_type,
+                health_summary=health_summary,
                 observations=observations,
-                previous_plan=previous_plan,
+                backtest_entries=backtest_entries,
+                profile=profile,
+                preferred_markets=preferred_markets,
             )
-            plan_artifact.capability_map = capability_map
-            plan_artifact.capability_gaps = capability_gaps
-            readiness = self.readiness_gate.build_stage_checklist(
-                stage=stage,
-                health_status=str(health.get("status") or "ok"),
-                has_research_artifact=research_artifact is not None,
-                has_backtest_metadata=bool(backtest_checklist and backtest_checklist.passed),
-                has_risk_budget=plan_artifact.risk_budget is not None,
-                has_review_notes=True,
-                capability_gaps=[gap.capability_id for gap in capability_gaps if gap.expected_path.startswith("scripts/run_hk")],
-                simulation_acceptance=simulation_acceptance,
-                live_evidence=live_evidence,
-            )
-            plan_artifact.readiness = readiness
-            plan_artifact.meta.setdefault("profile", profile)
-            plan_artifact.meta["current_stage"] = stage
-            plan_artifact.meta["workflow_mode"] = mode
-            plan_artifact.meta["previous_plan_loaded"] = previous_plan is not None
-            plan_artifact.meta["simulation_acceptance"] = simulation_acceptance
-            plan_artifact.meta["live_evidence"] = live_evidence
-            if previous_plan is not None:
-                plan_artifact.meta["previous_plan_generated_at"] = previous_plan.generated_at
-                plan_artifact.meta["previous_plan_version"] = previous_plan.version
-            plan_artifact.meta["next_step_suggestions"] = self._build_next_step_suggestions(
-                artifact=plan_artifact,
-                stage=stage,
-            )
-            plan_artifact.rendered_documents = [
-                self.renderer.render_markdown(plan_artifact),
-                self.renderer.render_json(plan_artifact),
-            ]
-            plan_path = self.store.save_artifact(plan_artifact, slug="beginner_quant_plan")
-            artifact_paths["plan_artifact"] = str(plan_path)
-            outputs.append(str(plan_path))
-            block_upgrade, reasons = self.readiness_gate.should_block_upgrade(readiness)
-            planning_step = self.store.build_step(
-                step="planning",
-                status="ok" if not block_upgrade else "blocked",
-                message="Generated personal beginner plan and readiness checklist.",
-                outputs=[str(plan_path)],
-                warnings=reasons,
+            readiness_path = self.store.save_artifact(readiness_artifact, slug="beginner_quant_readiness")
+            artifact_paths["readiness_artifact"] = str(readiness_path)
+            outputs.append(str(readiness_path))
+            readiness = readiness_artifact.readiness
+            readiness_status = "ok"
+            if readiness is not None and readiness.failed_items():
+                readiness_status = "blocked" if any(item.severity in {"high", "critical"} for item in readiness.failed_items()) else "warning"
+            readiness_step = self.store.build_step(
+                step="readiness",
+                status=readiness_status,
+                message="Evaluated whether the current health, candidate, and backtest evidence is sufficient for the requested next stage.",
+                outputs=[str(readiness_path)],
+                warnings=[item.details for item in (readiness.failed_items() if readiness else []) if item.details],
                 meta={
                     "requires_confirmation": False,
-                    "minimum_observation_requirements": self.readiness_gate.minimum_observation_requirements(stage),
-                    "plan_differences": list(plan_artifact.meta.get("plan_differences") or []),
-                    "personalization_summary": dict(plan_artifact.meta.get("personalization_summary") or {}),
-                    "profile_update_scope": list(plan_artifact.meta.get("profile_update_scope") or []),
-                    "previous_plan_loaded": previous_plan is not None,
-                    "next_step_suggestions": list(plan_artifact.meta.get("next_step_suggestions") or []),
-                    "readiness_failed_items": [item.name for item in readiness.failed_items()],
-                    "simulation_acceptance": simulation_acceptance,
-                    "live_evidence": live_evidence,
+                    "task_type": task_type,
+                    "failed_items": [item.name for item in (readiness.failed_items() if readiness else [])],
+                    "next_step_suggestions": list(readiness_artifact.meta.get("next_step_suggestions") or []),
+                    "simulation_acceptance": readiness_artifact.meta.get("simulation_acceptance", {}),
+                    "live_evidence": readiness_artifact.meta.get("live_evidence", {}),
                 },
             )
-            self._append_step(steps=steps, warnings=warnings, step=planning_step)
+            self._append_step(steps=steps, warnings=warnings, step=readiness_step)
 
-        if "execution_boundary" in requested_steps:
-            execution_caps = [cap for cap in capability_map if cap.stage in {"simulation", "live"}]
-            if execution_caps:
-                execution_step = self.store.build_step(
-                    step="execution_boundary",
-                    status="planned",
-                    message="Execution-capable entries were detected but not run.",
-                    warnings=[f"Confirmation required before using {cap.path}" for cap in execution_caps],
-                    meta={
-                        "requires_confirmation": True,
-                        "capabilities": [cap.capability_id for cap in execution_caps],
-                    },
-                )
-                self._append_step(steps=steps, warnings=warnings, step=execution_step)
-                warnings.extend([f"Execution not started: {cap.path}" for cap in execution_caps])
-
-        assumptions = self._collect_assumptions(plan_artifact=plan_artifact, research_artifact=research_artifact)
         return self._finalize_workflow(
             workflow_name=workflow_name,
             mode=mode,
+            task_type=task_type,
             started_at=started_at,
             steps=steps,
             outputs=outputs,
             warnings=warnings,
-            assumptions=assumptions,
+            assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
             artifact_paths=artifact_paths,
         )
 
-    def _append_step(
-        self,
-        *,
-        steps: list[WorkflowStepResult],
-        warnings: list[str],
-        step: WorkflowStepResult,
-    ) -> None:
+    def _run_candidate_prepare(self, *, include_market_data: bool, knot_runtime: str) -> tuple[WorkflowStepResult, str]:
+        report = self.candidate_preparation.prepare(
+            include_market_data=include_market_data,
+            knot_runtime=knot_runtime,
+        )
+        summary = dict(report.get("summary") or {})
+        written_targets = list(summary.get("written_targets") or [])
+        total_items = int(summary.get("total_items") or 0)
+        warnings = list(summary.get("warnings") or [])
+        blocking_reasons: list[str] = []
+        if not written_targets:
+            blocking_reasons.append("Candidate preparation did not write any normalized candidate target.")
+        if total_items <= 0:
+            blocking_reasons.append("Candidate preparation completed without any candidate rows, so downstream workflow stages cannot continue.")
+        status = "blocked" if blocking_reasons else ("warning" if warnings else "ok")
+        step = self.store.build_step(
+            step="candidate_prepare",
+            status=status,
+            message="Prepared normalized candidate inputs before workflow evaluation." if not blocking_reasons else "Candidate input preparation is incomplete for the requested workflow.",
+            outputs=[str(report.get("report_path"))] if report.get("report_path") else [],
+            warnings=list(dict.fromkeys([*blocking_reasons, *warnings])),
+            meta={
+                "requires_confirmation": False,
+                "market_coverage": list(summary.get("market_coverage") or []),
+                "written_targets": written_targets,
+                "include_market_data": bool(summary.get("include_market_data")),
+                "knot_runtime": str(summary.get("knot_runtime") or "auto"),
+                "generated_at": str(report.get("generated_at") or ""),
+                "missing_required_field_counts": dict(summary.get("missing_required_field_counts") or {}),
+            },
+        )
+        return step, str(report.get("report_path") or "")
+
+    def _append_step(self, *, steps: list[WorkflowStepResult], warnings: list[str], step: WorkflowStepResult) -> None:
         steps.append(step)
         warnings.extend(step.warnings)
 
     def _resolve_requested_steps(self, *, mode: str, stage: str) -> tuple[str, ...]:
-        if mode == "research_only":
-            return ("research",)
+        if mode == "healthcheck_only":
+            return ("healthcheck",)
         if mode == "stage_only":
-            return self.STAGE_ONLY_STEPS.get(stage, self.STAGE_ONLY_STEPS["research"])
+            return self.STAGE_ONLY_STEPS.get(stage, self.STAGE_ONLY_STEPS["readiness"])
         return self.FULL_PLAN_STEPS
 
-    def _build_preflight(self, *, mode: str, stage: str, requested_steps: list[str]) -> dict[str, Any]:
+    def _build_healthcheck(self, *, mode: str, task_type: str, requested_steps: list[str]) -> dict[str, Any]:
         runs_root = self.repo_root / "state" / "runs"
-        health_path = runs_root / "healthcheck.json"
+        health_payload = self._load_health_snapshot(mode=mode)
+        health_path = str(health_payload.get("path") or "")
+        checks: dict[str, dict[str, Any]] = {}
+        outputs: list[str] = []
+        warnings: list[str] = []
+        blocking_reasons: list[str] = []
+
+        def add_check(name: str, *, path: str, exists: bool, required: bool, note: str) -> None:
+            checks[name] = {
+                "path": path,
+                "exists": bool(exists),
+                "required": bool(required),
+                "note": note,
+            }
+            if exists and path:
+                outputs.append(path)
+            if required and not exists:
+                blocking_reasons.append(f"Missing required healthcheck evidence: {name} -> {path}.")
+
+        requires_candidates = any(step in requested_steps for step in {"candidate_framework", "backtest", "readiness"})
+        requires_backtest = any(step in requested_steps for step in {"backtest", "readiness"})
+        requires_readiness = "readiness" in requested_steps
+
         dynamic_candidate_path = runs_root / "candidate_inputs.dynamic.json"
         static_candidate_path = runs_root / "candidate_inputs.json"
         backtest_path = runs_root / "classic_multifactor" / "vnpy_cta_backtest_report.json"
+        sweep_path = runs_root / "classic_multifactor" / "vnpy_cta_sweep_report.json"
+        sim_session_path = runs_root / "hk_futu_sim_session_report.json"
+        sim_reconcile_path = runs_root / "futu_sim_position_reconcile.json"
+        live_report_path = next(
+            (path for path in (runs_root / "hk_live_task_report.json", runs_root / "us_live_task_report.json") if path.exists()),
+            runs_root / "hk_live_task_report.json",
+        )
+        live_reconcile_path = runs_root / "futu_live_position_reconcile.json"
+        reports_root = runs_root / "reports"
+        latest_preflight = self._latest_matching_path(reports_root, "preflight_*.json")
+        latest_diff = self._latest_matching_path(reports_root, "*dual_run_diff*.json")
 
-        candidate_available = dynamic_candidate_path.exists() or static_candidate_path.exists()
-        backtest_available = backtest_path.exists()
-        requires_candidates = any(step_name in requested_steps for step_name in {"candidate_framework", "planning"})
+        add_check(
+            "health_snapshot",
+            path=health_path,
+            exists=bool(health_path),
+            required=False,
+            note="Cached or active environment health snapshot.",
+        )
+        add_check(
+            "candidate_inputs_dynamic",
+            path=str(dynamic_candidate_path),
+            exists=dynamic_candidate_path.exists(),
+            required=False,
+            note="Prepared dynamic candidate input artifact.",
+        )
+        add_check(
+            "candidate_inputs_static",
+            path=str(static_candidate_path),
+            exists=static_candidate_path.exists(),
+            required=False,
+            note="Prepared static candidate input artifact.",
+        )
+        add_check(
+            "candidate_inputs_any",
+            path=f"{dynamic_candidate_path} | {static_candidate_path}",
+            exists=dynamic_candidate_path.exists() or static_candidate_path.exists(),
+            required=requires_candidates,
+            note="Any local candidate input artifact required by candidate/backtest/readiness stages.",
+        )
+        add_check(
+            "backtest_report",
+            path=str(backtest_path),
+            exists=backtest_path.exists(),
+            required=requires_backtest,
+            note="Local historical backtest report evidence.",
+        )
+        add_check(
+            "optimization_report",
+            path=str(sweep_path),
+            exists=sweep_path.exists(),
+            required=False,
+            note="Local optimization sweep report used to recover best parameters.",
+        )
+        add_check(
+            "sim_session_report",
+            path=str(sim_session_path),
+            exists=sim_session_path.exists(),
+            required=False,
+            note="Latest simulation session report if simulation evidence has already been collected.",
+        )
+        add_check(
+            "sim_reconciliation",
+            path=str(sim_reconcile_path),
+            exists=sim_reconcile_path.exists(),
+            required=False,
+            note="Latest simulation reconciliation artifact.",
+        )
+        add_check(
+            "simulation_preflight",
+            path=str(latest_preflight) if latest_preflight else str(reports_root / "preflight_<date>.json"),
+            exists=latest_preflight is not None,
+            required=bool(requires_readiness and task_type == "live"),
+            note="Latest simulation preflight pass/fail evidence.",
+        )
+        add_check(
+            "simulation_diff",
+            path=str(latest_diff) if latest_diff else str(reports_root / "dual_run_diff_<date>.json"),
+            exists=latest_diff is not None,
+            required=bool(requires_readiness and task_type == "live"),
+            note="Latest simulation dual-run or reconciliation diff evidence.",
+        )
+        add_check(
+            "live_report",
+            path=str(live_report_path),
+            exists=live_report_path.exists(),
+            required=bool(requires_readiness and task_type == "live"),
+            note="Latest live-task report or audit schema evidence.",
+        )
+        add_check(
+            "live_reconciliation",
+            path=str(live_reconcile_path),
+            exists=live_reconcile_path.exists(),
+            required=bool(requires_readiness and task_type == "live"),
+            note="Latest live reconciliation evidence.",
+        )
 
-        warnings: list[str] = []
-        blocking_reasons: list[str] = []
-        checks = {
-            "healthcheck_cache": {
-                "path": str(health_path),
-                "exists": health_path.exists(),
-                "required": False,
-            },
-            "candidate_inputs_dynamic": {
-                "path": str(dynamic_candidate_path),
-                "exists": dynamic_candidate_path.exists(),
-                "required": False,
-            },
-            "candidate_inputs_static": {
-                "path": str(static_candidate_path),
-                "exists": static_candidate_path.exists(),
-                "required": False,
-            },
-            "candidate_inputs_any": {
-                "path": f"{dynamic_candidate_path} | {static_candidate_path}",
-                "exists": candidate_available,
-                "required": requires_candidates,
-            },
-            "backtest_report": {
-                "path": str(backtest_path),
-                "exists": backtest_available,
-                "required": stage == "live",
-            },
-        }
+        alerts = [alert.get("message", "") for alert in health_payload.get("alerts", []) if alert.get("message")]
+        warnings.extend(alerts)
+        if health_payload.get("status") == "blocked":
+            blocking_reasons.append("Cached or active health status is blocked.")
+        elif health_payload.get("status") == "unknown":
+            warnings.append("No cached healthcheck artifact found; the workflow is using an offline placeholder.")
 
-        if not health_path.exists():
-            warnings.append("No cached healthcheck artifact found; the workflow will use an offline placeholder unless remote checks are enabled.")
-        if requires_candidates and not candidate_available:
-            message = "No candidate input artifact was found; candidate framework and planning will fall back to an empty local universe."
-            if mode == "stage_only" and stage in {"simulation", "live"}:
-                blocking_reasons.append(
-                    "Candidate inputs are required for stage_only simulation/live runs, but neither state/runs/candidate_inputs.dynamic.json nor state/runs/candidate_inputs.json exists."
-                )
-            else:
-                warnings.append(message)
-        if not backtest_available and stage in {"backtest", "simulation", "live"}:
-            message = "No local vn.py backtest report found; backtest validation and readiness will stay in warning mode."
-            if mode == "stage_only" and stage == "live":
-                blocking_reasons.append(
-                    "A local vn.py backtest report is required before a stage_only live readiness run can proceed."
-                )
-            else:
-                warnings.append(message)
+        if task_type == "simulation":
+            if requires_readiness and not sim_session_path.exists():
+                warnings.append("No simulation session report was found yet; simulation readiness can still proceed, but local session evidence remains incomplete.")
+            if requires_readiness and not sim_reconcile_path.exists():
+                warnings.append("No simulation reconciliation artifact was found yet; review the first simulation run before upgrading further.")
 
         status = "blocked" if blocking_reasons else ("warning" if warnings else "ok")
         if status == "blocked":
-            message = "Preflight blocked the requested workflow because required local artifacts are missing."
+            message = "Unified healthcheck blocked the requested workflow because required local evidence is missing."
         elif status == "warning":
-            message = "Preflight completed with warnings; the workflow will continue in report-only mode."
+            message = "Unified healthcheck completed with warnings; downstream stages may continue in evidence-first mode."
         else:
-            message = "Preflight completed and the requested workflow has the expected local inputs."
+            message = "Unified healthcheck completed and the requested local evidence is available."
 
-        all_warnings = list(dict.fromkeys([*blocking_reasons, *warnings]))
         return {
             "status": status,
             "message": message,
-            "warnings": all_warnings,
-            "blocking_reasons": blocking_reasons,
+            "warnings": list(dict.fromkeys(warnings)),
+            "blocking_reasons": list(dict.fromkeys(blocking_reasons)),
             "checks": checks,
+            "outputs": list(dict.fromkeys(outputs)),
+            "health_payload": health_payload,
         }
 
-    def _collect_simulation_acceptance(self, *, stage: str) -> dict[str, Any]:
+    def _build_backtest_artifact(
+        self,
+        *,
+        observations: list[Any],
+        profile: dict[str, Any],
+        preferred_markets: list[str],
+        task_type: str,
+    ) -> PlanningArtifact:
+        backtest_targets = [
+            item for item in observations if item.selected_as != "validate_only" and item.meta.get("backtest_ready")
+        ]
+        entries = [self._collect_backtest_entry(item) for item in backtest_targets]
+        ok_count = sum(1 for item in entries if item.get("status") == "ok")
+        missing_count = sum(1 for item in entries if item.get("status") != "ok")
+        optimized_count = sum(1 for item in entries if item.get("best_params"))
+        warnings = [warning for item in entries for warning in item.get("warnings", [])]
+        if not backtest_targets:
+            warnings.append("No observation target is currently marked as backtest-ready.")
+        status = "ok" if ok_count > 0 and missing_count == 0 else ("warning" if ok_count > 0 else "blocked")
+        summary = {
+            "status": status,
+            "task_type": task_type,
+            "target_count": len(backtest_targets),
+            "ok_count": ok_count,
+            "missing_count": missing_count,
+            "optimized_count": optimized_count,
+            "daily_count": sum(1 for item in entries if item.get("trading_level") == "daily"),
+            "minute_count": sum(1 for item in entries if item.get("trading_level") == "minute"),
+        }
+        findings = [
+            ResearchFinding(
+                topic="workflow_backtest_summary",
+                conclusion=(
+                    f"Collected historical backtest evidence for {len(backtest_targets)} observation target(s): "
+                    f"{ok_count} with report evidence, {optimized_count} with optimization evidence, and {missing_count} still missing local backtest artifacts."
+                ),
+                evidence_level="mid" if ok_count else "low",
+                source_kind="local_backtest_artifacts",
+                confidence=0.78 if ok_count else 0.42,
+                verification_status="verified",
+            )
+        ]
+        for item in entries:
+            if item.get("status") == "ok":
+                findings.append(
+                    ResearchFinding(
+                        topic=item["symbol"],
+                        conclusion=(
+                            f"{item['symbol']} has {item['trading_level']} backtest evidence with interval {item['preferred_interval']} "
+                            f"and optimization status {item.get('optimization_status')}."
+                        ),
+                        evidence_level="mid" if item.get("best_params") else "low",
+                        source_kind="local_backtest_artifacts",
+                        confidence=0.72 if item.get("best_params") else 0.58,
+                        verification_status="verified",
+                    )
+                )
+        artifact = self.hub.build_planning_artifact(
+            artifact_type="beginner_quant_backtest",
+            title="Quant Workflow Backtest Evidence",
+            generated_at=beijing_now_isoformat(),
+            assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
+            research_findings=findings,
+            research_conclusions=[finding.conclusion for finding in findings],
+            execution_suggestions=self._backtest_suggestions(entries),
+            risk_prompts=list(dict.fromkeys(warnings))[:10],
+            invalidation_conditions=[
+                "If a candidate loses its trading_level assignment or local report path changes, regenerate the backtest evidence artifact.",
+                "If optimization evidence is stale or missing, do not treat the candidate as fully backtest-ready for stage upgrade.",
+            ],
+            candidate_observations=list(backtest_targets),
+            meta={
+                "profile": dict(profile),
+                "task_type": task_type,
+                "backtest_results": entries,
+                "backtest_summary": summary,
+                "backtest_warnings": list(dict.fromkeys(warnings)),
+                "preferred_markets": list(preferred_markets),
+                "evidence_mode": "local_artifact_reuse",
+                "next_step_suggestions": self._backtest_suggestions(entries),
+            },
+        )
+        artifact.rendered_documents = [
+            self.renderer.render_markdown(artifact),
+            self.renderer.render_json(artifact),
+        ]
+        return artifact
+
+    def _collect_backtest_entry(self, observation: Any) -> dict[str, Any]:
+        trading_level = str(observation.meta.get("trading_level") or "needs_review")
+        preferred_interval = "1m" if trading_level == "minute" else "1d"
+        report_payload, report_path = self._find_backtest_report(observation.symbol)
+        optimization_payload, optimization_path, optimization_entry = self._find_optimization_payload(observation.symbol)
+        metrics = self._extract_backtest_metrics(report_payload)
+        sample_period = {
+            "start": report_payload.get("start") or metrics.get("start_date") or metrics.get("start") or "",
+            "end": report_payload.get("end") or metrics.get("end_date") or metrics.get("end") or "",
+        }
+        best_params = dict(optimization_entry.get("params") or {}) if optimization_entry else {}
+        warnings: list[str] = []
+        if not report_payload:
+            warnings.append(f"No local backtest report was found for {observation.symbol}.")
+        if report_payload and not best_params:
+            warnings.append(f"No optimization result was found for {observation.symbol}; only raw backtest evidence is available.")
+        return {
+            "symbol": observation.symbol,
+            "market": observation.market,
+            "selected_as": observation.selected_as,
+            "trading_level": trading_level,
+            "preferred_interval": preferred_interval,
+            "search_space": self._default_search_space(trading_level),
+            "status": "ok" if report_payload else "missing",
+            "backtest_report_path": report_path,
+            "optimization_report_path": optimization_path,
+            "optimization_status": "ok" if best_params else "missing",
+            "best_params": best_params,
+            "performance": metrics,
+            "sample_period": sample_period,
+            "warnings": warnings,
+        }
+
+    def _find_backtest_report(self, symbol: str) -> tuple[dict[str, Any], str]:
+        root = self.repo_root / "state" / "runs" / "classic_multifactor"
+        if not root.exists():
+            return {}, ""
+        exact_payload: dict[str, Any] = {}
+        exact_path = ""
+        fallback_payload: dict[str, Any] = {}
+        fallback_path = ""
+        for path in sorted(root.glob("*backtest*.json")):
+            payload = self._safe_load_json(path)
+            if not payload:
+                continue
+            payload_symbol = str(payload.get("symbol") or "").upper()
+            if payload_symbol == symbol.upper():
+                return payload, str(path)
+            if not fallback_payload and path.name == "vnpy_cta_backtest_report.json":
+                fallback_payload = payload
+                fallback_path = str(path)
+            if not exact_payload:
+                exact_payload = payload
+                exact_path = str(path)
+        return fallback_payload or exact_payload, fallback_path or exact_path
+
+    def _find_optimization_payload(self, symbol: str) -> tuple[dict[str, Any], str, dict[str, Any]]:
+        root = self.repo_root / "state" / "runs" / "classic_multifactor"
+        if not root.exists():
+            return {}, "", {}
+        for path in sorted(root.glob("*sweep*.json")):
+            payload = self._safe_load_json(path)
+            if not payload:
+                continue
+            best_items = list(payload.get("per_symbol_best") or [])
+            for item in best_items:
+                if str(item.get("symbol") or "").upper() == symbol.upper():
+                    return payload, str(path), dict(item)
+            ranking = list(payload.get("global_ranking") or [])
+            for item in ranking:
+                if str(item.get("symbol") or "").upper() == symbol.upper():
+                    return payload, str(path), dict(item)
+        return {}, "", {}
+
+    def _extract_backtest_metrics(self, payload: dict[str, Any]) -> dict[str, Any]:
+        stats = dict(payload.get("stats") or payload.get("stats_summary") or {})
+        metrics = {
+            "status": stats.get("status") or payload.get("status") or "",
+            "sharpe_ratio": stats.get("sharpe_ratio"),
+            "return_drawdown_ratio": stats.get("return_drawdown_ratio"),
+            "max_drawdown_pct": stats.get("max_drawdown_pct") or stats.get("max_ddpercent"),
+            "total_return_pct": stats.get("total_return_pct") or stats.get("total_return"),
+            "trade_count": stats.get("trade_count") or stats.get("total_trade_count") or stats.get("trade_count_runtime"),
+            "sample_count": payload.get("bar_count") or stats.get("sample_count") or stats.get("total_days"),
+            "start_date": stats.get("start_date") or payload.get("start"),
+            "end_date": stats.get("end_date") or payload.get("end"),
+        }
+        return {key: value for key, value in metrics.items() if value not in {None, ""}}
+
+    def _default_search_space(self, trading_level: str) -> dict[str, list[Any]]:
+        if trading_level == "minute":
+            return {
+                "signal_interval_minutes": [3, 5, 10],
+                "entry_score": [0.62, 0.64, 0.66, 0.68],
+                "max_intraday_trades": [2, 4, 6],
+            }
+        return {
+            "fast_window": [5, 10, 20],
+            "slow_window": [30, 60, 90],
+            "momentum_window": [10, 20, 30],
+            "atr_window": [10, 14, 20],
+        }
+
+    def _backtest_suggestions(self, entries: list[dict[str, Any]]) -> list[str]:
+        suggestions: list[str] = []
+        for item in entries:
+            if item.get("status") != "ok":
+                suggestions.append(f"Generate a historical backtest report for {item['symbol']} before using it in readiness gating.")
+            elif not item.get("best_params"):
+                suggestions.append(f"Add optimization evidence for {item['symbol']} so the workflow can keep a traceable best-parameter record.")
+            else:
+                suggestions.append(f"Reuse the stored best parameters for {item['symbol']} and verify they still match the intended {item['preferred_interval']} review cadence.")
+        return list(dict.fromkeys(suggestions))
+
+    def _build_readiness_artifact(
+        self,
+        *,
+        task_type: str,
+        health_summary: dict[str, Any],
+        observations: list[Any],
+        backtest_entries: list[dict[str, Any]],
+        profile: dict[str, Any],
+        preferred_markets: list[str],
+    ) -> PlanningArtifact:
+        readiness = self._build_readiness_checklist(
+            task_type=task_type,
+            health_summary=health_summary,
+            observations=observations,
+            backtest_entries=backtest_entries,
+        )
+        simulation_acceptance = self._collect_simulation_acceptance()
+        live_evidence = self._collect_live_evidence()
+        findings = [
+            ResearchFinding(
+                topic="workflow_readiness",
+                conclusion=(
+                    f"Readiness for task type {task_type} currently has {len(readiness.failed_items())} unmet item(s)."
+                ),
+                evidence_level="high" if not readiness.failed_items() else "mid",
+                source_kind="workflow_readiness",
+                confidence=0.82 if not readiness.failed_items() else 0.64,
+                verification_status="verified",
+            )
+        ]
+        next_steps = self._readiness_suggestions(readiness)
+        artifact = self.hub.build_planning_artifact(
+            artifact_type="beginner_quant_readiness",
+            title=f"Quant Workflow Readiness ({task_type})",
+            generated_at=beijing_now_isoformat(),
+            assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
+            research_findings=findings,
+            research_conclusions=[finding.conclusion for finding in findings],
+            execution_suggestions=next_steps,
+            risk_prompts=[item.details for item in readiness.failed_items() if item.details],
+            invalidation_conditions=[
+                "If healthcheck evidence changes or candidate/backtest artifacts are refreshed, rerun readiness before using the result as a stage gate.",
+                "If any candidate remains cadence=needs_review, keep readiness in review mode until the missing evidence is filled.",
+            ],
+            candidate_observations=list(observations),
+            readiness=readiness,
+            meta={
+                "profile": dict(profile),
+                "task_type": task_type,
+                "preferred_markets": list(preferred_markets),
+                "simulation_acceptance": simulation_acceptance,
+                "live_evidence": live_evidence,
+                "next_step_suggestions": next_steps,
+                "readiness_failed_items": [item.name for item in readiness.failed_items()],
+            },
+        )
+        artifact.rendered_documents = [
+            self.renderer.render_markdown(artifact),
+            self.renderer.render_json(artifact),
+        ]
+        return artifact
+
+    def _build_readiness_checklist(
+        self,
+        *,
+        task_type: str,
+        health_summary: dict[str, Any],
+        observations: list[Any],
+        backtest_entries: list[dict[str, Any]],
+    ) -> ReadinessChecklist:
+        candidate_targets = [item for item in observations if item.selected_as != "validate_only"]
+        cadence_ready = [item for item in candidate_targets if item.meta.get("trading_level") in {"daily", "minute"}]
+        backtest_ok = [item for item in backtest_entries if item.get("status") == "ok"]
+        optimized = [item for item in backtest_ok if item.get("best_params")]
+        metrics_ready = [
+            item
+            for item in backtest_ok
+            if item.get("performance") and item.get("sample_period", {}).get("start") and item.get("sample_period", {}).get("end")
+        ]
+        checks = dict(health_summary.get("checks") or {})
+        items = [
+            ReadinessCheckItem(
+                name="healthcheck_status",
+                passed=health_summary.get("status") != "blocked",
+                severity="critical",
+                details="Unified healthcheck must not be blocked before readiness can pass.",
+                remediation="Resolve missing candidate, backtest, or task-type-specific local evidence first.",
+            ),
+            ReadinessCheckItem(
+                name="candidate_targets_present",
+                passed=bool(candidate_targets),
+                severity="high",
+                details="At least one observation target must survive candidate framework filtering.",
+                remediation="Refresh candidate inputs and rerun candidate framework selection.",
+            ),
+            ReadinessCheckItem(
+                name="trading_level_assignment",
+                passed=bool(candidate_targets) and len(cadence_ready) == len(candidate_targets),
+                severity="high",
+                details="Every promoted observation target should resolve to daily or minute cadence before readiness can pass.",
+                remediation="Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.",
+            ),
+            ReadinessCheckItem(
+                name="backtest_evidence",
+                passed=bool(backtest_ok),
+                severity="high",
+                details="Readiness requires at least one local historical backtest evidence record for the promoted targets.",
+                remediation="Generate or place the required local backtest report before stage upgrade.",
+            ),
+            ReadinessCheckItem(
+                name="optimization_evidence",
+                passed=bool(backtest_ok) and len(optimized) == len(backtest_ok),
+                severity="medium" if task_type == "simulation" else "high",
+                details="Optimization evidence should be present so the workflow can track best parameters for each promoted target.",
+                remediation="Attach a sweep or optimization artifact for every promoted symbol.",
+            ),
+            ReadinessCheckItem(
+                name="backtest_metrics_traceable",
+                passed=bool(backtest_ok) and len(metrics_ready) == len(backtest_ok),
+                severity="high",
+                details="Backtest evidence should expose both sample period and performance metrics before readiness can pass.",
+                remediation="Regenerate or standardize the local backtest reports so period and metrics are complete.",
+            ),
+        ]
+        if task_type == "simulation":
+            items.append(
+                ReadinessCheckItem(
+                    name="simulation_local_state",
+                    passed=bool(checks.get("sim_session_report", {}).get("exists")) or bool(checks.get("sim_reconciliation", {}).get("exists")),
+                    severity="medium",
+                    details="Simulation readiness is stronger when at least one local simulation session or reconciliation artifact already exists.",
+                    remediation="After the first SIM run, keep the session report and reconciliation artifact for later stage reviews.",
+                )
+            )
+        else:
+            simulation_acceptance = self._collect_simulation_acceptance()
+            live_evidence = self._collect_live_evidence()
+            items.extend(
+                [
+                    ReadinessCheckItem(
+                        name="simulation_preflight_current",
+                        passed=bool(simulation_acceptance.get("latest_preflight_passed")),
+                        severity="critical",
+                        details="Live readiness requires the latest simulation preflight report to pass.",
+                        remediation="Resolve simulation preflight issues before using this workflow for live readiness.",
+                    ),
+                    ReadinessCheckItem(
+                        name="simulation_diff_current",
+                        passed=bool(simulation_acceptance.get("latest_diff_passed")),
+                        severity="critical",
+                        details="Live readiness requires the latest simulation diff or reconciliation report to pass.",
+                        remediation="Resolve simulation diff mismatches before live-stage promotion.",
+                    ),
+                    ReadinessCheckItem(
+                        name="live_report_schema",
+                        passed=bool(live_evidence.get("report_schema_ready")),
+                        severity="critical",
+                        details="Live readiness requires a local live-task report schema or path.",
+                        remediation="Create a local live-task report artifact before promoting to live readiness.",
+                    ),
+                    ReadinessCheckItem(
+                        name="live_reconciliation_current",
+                        passed=bool(live_evidence.get("reconciliation_recent")),
+                        severity="critical",
+                        details="Live readiness requires a current live reconciliation artifact.",
+                        remediation="Refresh live reconciliation evidence before treating the workflow as live-ready.",
+                    ),
+                    ReadinessCheckItem(
+                        name="live_approval_documented",
+                        passed=bool(live_evidence.get("approval_switches_documented")),
+                        severity="critical",
+                        details="Live readiness requires explicit local approval-switch documentation.",
+                        remediation="Keep the workflow below live until approval switches are explicit and auditable.",
+                    ),
+                ]
+            )
+        return ReadinessChecklist(stage=task_type, items=items)
+
+    def _readiness_suggestions(self, readiness: ReadinessChecklist) -> list[str]:
+        if not readiness.failed_items():
+            return [f"Evidence for task type {readiness.stage} is sufficient for the next workflow stage review."]
+        suggestions = []
+        for item in readiness.failed_items():
+            if item.remediation:
+                suggestions.append(item.remediation)
+        suggestions.append("Resolve the failed readiness items before promoting the workflow to the next stage.")
+        return list(dict.fromkeys(suggestions))
+
+    def _collect_simulation_acceptance(self) -> dict[str, Any]:
         reports_root = self.repo_root / "state" / "runs" / "reports"
         preflight_files = sorted(reports_root.glob("preflight_*.json")) if reports_root.exists() else []
         diff_files = sorted(reports_root.glob("*dual_run_diff*.json")) if reports_root.exists() else []
-
         latest_preflight_path = preflight_files[-1] if preflight_files else None
         latest_diff_path = diff_files[-1] if diff_files else None
         latest_preflight = self._safe_load_json(latest_preflight_path)
         latest_diff = self._safe_load_json(latest_diff_path)
-
         passed_preflights = [path for path in preflight_files if self._preflight_passed(self._safe_load_json(path))]
         passed_diffs = [path for path in diff_files if self._diff_report_passed(self._safe_load_json(path))]
-        minimums = self.readiness_gate.minimum_observation_requirements(stage)
-
         return {
-            "required_days": int(minimums.get("minimum_simulation_days") or 0),
+            "required_days": 40,
             "passed_days": min(len(passed_preflights), len(passed_diffs)),
             "history_points": max(len(preflight_files), len(diff_files)),
             "latest_preflight_passed": self._preflight_passed(latest_preflight),
             "latest_diff_passed": self._diff_report_passed(latest_diff),
             "latest_preflight_path": str(latest_preflight_path) if latest_preflight_path else "",
             "latest_report_path": str(latest_diff_path) if latest_diff_path else "",
-            "history_summary": [
-                {
-                    "preflight_reports": len(preflight_files),
-                    "preflight_passed": len(passed_preflights),
-                    "diff_reports": len(diff_files),
-                    "diff_passed": len(passed_diffs),
-                }
-            ],
         }
 
-    def _collect_live_evidence(self, *, stage: str) -> dict[str, Any]:
+    def _collect_live_evidence(self) -> dict[str, Any]:
         live_report_paths = [
             self.repo_root / "state" / "runs" / "hk_live_task_report.json",
             self.repo_root / "state" / "runs" / "us_live_task_report.json",
@@ -472,14 +876,12 @@ class QuantWorkflowService:
         report_path = next((path for path in live_report_paths if path.exists()), None)
         reconciliation_path = next((path for path in reconciliation_paths if path.exists()), None)
         report_payload = self._safe_load_json(report_path)
-
         approval_switches_documented = False
         if isinstance(report_payload, dict):
             approval_switches_documented = bool(
                 report_payload.get("env_var_required")
                 and (report_payload.get("risk_config") or {}).get("approval_env_var_required")
             )
-
         return {
             "report_schema_ready": report_path is not None,
             "approval_switches_documented": approval_switches_documented,
@@ -487,62 +889,33 @@ class QuantWorkflowService:
             "risk_guard_auditable": bool(report_path and report_payload and isinstance(report_payload.get("risk_config"), dict)),
             "report_path": str(report_path) if report_path else "",
             "reconciliation_path": str(reconciliation_path) if reconciliation_path else "",
-            "approval_notes": [
-                "HK/US live wrappers preserve explicit --live-submit intent and downstream VNPY_LIVE_* switches."
-            ] if stage == "live" else [],
         }
 
-    def _safe_load_json(self, path: Path | None) -> dict[str, Any]:
-        if path is None or not path.exists():
-            return {}
-        try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            return {}
-
-    def _preflight_passed(self, payload: dict[str, Any]) -> bool:
-        totals = payload.get("totals") or {}
-        return bool(payload) and int(totals.get("fail") or 0) == 0
-
-    def _diff_report_passed(self, payload: dict[str, Any]) -> bool:
-        totals = payload.get("totals") or {}
-        business_keys = payload.get("business_keys") or {}
-        return bool(payload) and int(totals.get("fail") or 0) == 0 and int(business_keys.get("only_a_total_count") or 0) == 0 and int(business_keys.get("only_b_total_count") or 0) == 0
-
-    def _build_next_step_suggestions(self, *, artifact: PlanningArtifact, stage: str) -> list[str]:
-        suggestions = list(artifact.execution_suggestions)
-        if artifact.readiness and not artifact.readiness.passed:
-            suggestions.append("Resolve readiness failures before upgrading to the next stage.")
-        if artifact.capability_gaps:
-            suggestions.append("Keep capability gaps visible and use manual alternatives where needed.")
-        minimums = self.readiness_gate.minimum_observation_requirements(stage)
-        if minimums.get("minimum_simulation_days", 0) > 0:
-            suggestions.append(
-                f"Stay in observation/simulation mode for at least {minimums['minimum_observation_days']} observation days and {minimums['minimum_simulation_days']} simulation days before stage upgrade."
-            )
-        else:
-            suggestions.append(
-                f"Maintain at least {minimums['minimum_observation_days']} observation days before changing the workflow scope."
-            )
-        return list(dict.fromkeys(suggestions))
-
-    def _collect_assumptions(
-        self,
-        *,
-        plan_artifact: PlanningArtifact | None,
-        research_artifact: PlanningArtifact | None,
-    ) -> list[PlanAssumption]:
-        if plan_artifact is not None:
-            return list(plan_artifact.assumptions)
-        if research_artifact is not None:
-            return list(research_artifact.assumptions)
-        return []
+    def _workflow_assumptions(self, *, profile: dict[str, Any], preferred_markets: list[str], task_type: str) -> list[PlanAssumption]:
+        return [
+            PlanAssumption(
+                name="task_type",
+                value=task_type,
+                reason="Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews.",
+            ),
+            PlanAssumption(
+                name="preferred_markets",
+                value=",".join(preferred_markets) or "all_local_markets",
+                reason="Candidate framework filtering stays aligned with the requested market subset.",
+            ),
+            PlanAssumption(
+                name="workflow_mode",
+                value=str(profile.get("risk_profile") or "conservative"),
+                reason="Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning.",
+            ),
+        ]
 
     def _finalize_workflow(
         self,
         *,
         workflow_name: str,
         mode: str,
+        task_type: str,
         started_at: str,
         steps: list[WorkflowStepResult],
         outputs: list[str],
@@ -554,8 +927,9 @@ class QuantWorkflowService:
         workflow = {
             "workflow_name": workflow_name,
             "mode": mode,
+            "task_type": task_type,
             "started_at": started_at,
-            "status": "blocked" if any(step.status == "blocked" for step in steps) else "ok",
+            "status": "blocked" if any(step.status == "blocked" for step in steps) else ("warning" if any(step.status == "warning" for step in steps) else "ok"),
             "steps": serialized_steps,
             "outputs": list(outputs),
             "warnings": list(dict.fromkeys(warnings)),
@@ -581,16 +955,11 @@ class QuantWorkflowService:
             "output_count": len(workflow["outputs"]),
             "warning_count": len(workflow["warnings"]),
             "blocked_steps": [step["step"] for step in workflow["steps"] if step["status"] == "blocked"],
-            "confirmation_required_steps": [step["step"] for step in workflow["steps"] if step.get("meta", {}).get("requires_confirmation")],
+            "warning_steps": [step["step"] for step in workflow["steps"] if step["status"] == "warning"],
+            "task_type": task_type,
         }
         workflow.update(artifact_paths)
         return workflow
-
-    def _load_backtest_report(self) -> dict[str, Any]:
-        path = self.repo_root / "state" / "runs" / "classic_multifactor" / "vnpy_cta_backtest_report.json"
-        if not path.exists():
-            return {}
-        return json.loads(path.read_text(encoding="utf-8"))
 
     def _load_health_snapshot(self, *, mode: str) -> dict[str, Any]:
         path = self.repo_root / "state" / "runs" / "healthcheck.json"
@@ -600,7 +969,7 @@ class QuantWorkflowService:
             payload.setdefault("path", str(path))
             payload.setdefault("alerts", payload.get("alerts", []))
             return payload
-        if self.allow_remote_checks and mode not in {"plan", "research_only"}:
+        if self.allow_remote_checks and mode not in {"plan", "healthcheck_only"}:
             payload = HealthcheckService(self.repo_root).run()
             payload["source"] = "active_healthcheck"
             payload["path"] = str(path)
@@ -616,3 +985,27 @@ class QuantWorkflowService:
                 }
             ],
         }
+
+    def _safe_load_json(self, path: Path | None) -> dict[str, Any]:
+        if path is None or not path.exists():
+            return {}
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+
+    def _latest_matching_path(self, root: Path, pattern: str) -> Path | None:
+        if not root.exists():
+            return None
+        matches = sorted(root.glob(pattern))
+        return matches[-1] if matches else None
+
+    def _preflight_passed(self, payload: dict[str, Any]) -> bool:
+        totals = payload.get("totals") or {}
+        return bool(payload) and int(totals.get("fail") or 0) == 0
+
+    def _diff_report_passed(self, payload: dict[str, Any]) -> bool:
+        totals = payload.get("totals") or {}
+        business_keys = payload.get("business_keys") or {}
+        return bool(payload) and int(totals.get("fail") or 0) == 0 and int(business_keys.get("only_a_total_count") or 0) == 0 and int(business_keys.get("only_b_total_count") or 0) == 0
+

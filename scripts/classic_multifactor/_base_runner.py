@@ -75,10 +75,12 @@ STRATEGY_CLASS = "ClassicMultiFactorCtaStrategy"
 # ---------------------------------------------------------------------------
 
 def map_vt_symbol(vt_symbol: str) -> str:
-    """Convert classic config-style ``NVDA.US`` into Futu OMS-style ``NVDA.SMART``.
+    """Normalize classic config symbols into the gateway-specific vn.py exchange suffix.
 
-    ``FutuGateway`` reports all US equities under the synthetic ``.SMART``
-    exchange; strategies subscribing under ``.US`` would receive no ticks.
+    * US equities: ``NVDA.US`` → ``NVDA.SMART`` because ``FutuGateway`` reports
+      them under the synthetic ``.SMART`` exchange.
+    * Hong Kong equities: ``00700.HK`` → ``00700.SEHK`` because vn.py expects
+      the Stock Exchange of Hong Kong exchange suffix during strategy creation.
     """
     if "." not in vt_symbol:
         return vt_symbol
@@ -86,6 +88,8 @@ def map_vt_symbol(vt_symbol: str) -> str:
     ex = exchange.upper()
     if ex in ("US", "NASDAQ", "NYSE", "AMEX"):
         return f"{symbol}.SMART"
+    if ex == "HK":
+        return f"{symbol}.SEHK"
     return vt_symbol
 
 

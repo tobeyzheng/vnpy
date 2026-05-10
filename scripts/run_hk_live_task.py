@@ -29,6 +29,7 @@ DEFAULT_CLASSIC_CONFIG = REPO_ROOT / "configs" / "classic_multifactor" / "tencen
 DEFAULT_REPORT_FILENAME = "hk_live_task_report.json"
 DEFAULT_SESSION_TZ = "Asia/Hong_Kong"
 DEFAULT_FUTU_ENV = "真实"
+DEFAULT_FUTU_MARKET = "HK"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -91,6 +92,7 @@ def _run_vnpy_mainline(classic_config: str, live_submit: bool, extra: list[str])
     extra = _inject_default_extra(list(extra), flag="--session-tz", value=DEFAULT_SESSION_TZ)
     extra = _inject_default_extra(extra, flag="--report-filename", value=DEFAULT_REPORT_FILENAME)
     extra = _inject_default_extra(extra, flag="--futu-env", value=DEFAULT_FUTU_ENV)
+    extra = _inject_default_extra(extra, flag="--futu-market", value=DEFAULT_FUTU_MARKET)
     cmd = [sys.executable, str(runner), "--config", str(cfg_path)]
     if live_submit:
         cmd.append("--live-submit")
