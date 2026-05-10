@@ -7,6 +7,7 @@ from typing import Any
 
 from services.evaluation_hub import EvaluationHub
 from services.evaluation_hub.artifact_store import ArtifactStore
+from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
 from services.evaluation_hub.beginner_research import BeginnerResearchService
 from services.evaluation_hub.candidate_framework import BeginnerCandidateFramework
 from services.evaluation_hub.capability_registry import CapabilityRegistry, CapabilityStageResolver
@@ -42,6 +43,7 @@ class QuantWorkflowService:
         self.research_service = BeginnerResearchService(self.hub)
         self.renderer = BeginnerExplanationRenderer()
         self.candidate_framework = BeginnerCandidateFramework()
+        self.candidate_selector = BeginnerCandidateSelector(self.candidate_framework, self.hub)
         self.plan_generator = BeginnerPlanGenerator(self.hub)
         self.readiness_gate = ReadinessGateService()
         self.store = ArtifactStore(self.repo_root)
@@ -142,28 +144,43 @@ class QuantWorkflowService:
             self._append_step(steps=steps, warnings=warnings, step=research_step)
 
         observations = []
+        candidate_artifact: PlanningArtifact | None = None
         if any(step_name in requested_steps for step_name in {"candidate_framework", "planning"}):
             candidates = UnifiedCandidateProvider(self.repo_root).load()
             if preferred_markets:
                 filtered = [row for row in candidates if row.get("market") in set(preferred_markets)]
             else:
                 filtered = candidates
-            observations = self.candidate_framework.build_observation_list(
-                filtered,
+            candidate_artifact = self.candidate_selector.build_candidate_artifact(
+                rows=filtered,
+                research_artifact=research_artifact,
                 preferred_markets=preferred_markets,
-                max_items=max_candidates,
+                max_candidates=max_candidates,
             )
-            observation_summary = self.candidate_framework.summary(observations)
+            observations = list(candidate_artifact.candidate_observations)
+            if observations:
+                candidate_artifact.capability_map = capability_map
+                candidate_artifact.capability_gaps = capability_gaps
+                candidate_artifact.rendered_documents = [
+                    self.renderer.render_markdown(candidate_artifact),
+                    self.renderer.render_json(candidate_artifact),
+                ]
+                candidate_path = self.store.save_artifact(candidate_artifact, slug="beginner_candidate_framework")
+                artifact_paths["candidate_artifact"] = str(candidate_path)
+                outputs.append(str(candidate_path))
+            observation_summary = dict(candidate_artifact.meta.get("framework_summary") or self.candidate_framework.summary(observations))
             if "candidate_framework" in requested_steps:
                 candidate_step = self.store.build_step(
                     step="candidate_framework",
                     status="ok" if observations else "warning",
-                    message="Built candidate observation list.",
+                    message="Built enhanced beginner candidate observation list.",
+                    outputs=[str(candidate_path)] if observations else [],
                     warnings=[] if observations else ["No candidate observations were produced from the current local inputs."],
                     meta={
                         "requires_confirmation": False,
                         "summary": observation_summary,
-                        "next_actions": self.candidate_framework.suggest_next_actions(observations),
+                        "next_actions": list(candidate_artifact.meta.get("next_step_suggestions") or []),
+                        "llm_research_pending_count": observation_summary.get("llm_research_pending_count", 0),
                     },
                 )
                 self._append_step(steps=steps, warnings=warnings, step=candidate_step)
@@ -243,6 +260,8 @@ class QuantWorkflowService:
                     "requires_confirmation": False,
                     "minimum_observation_requirements": self.readiness_gate.minimum_observation_requirements(stage),
                     "plan_differences": list(plan_artifact.meta.get("plan_differences") or []),
+                    "personalization_summary": dict(plan_artifact.meta.get("personalization_summary") or {}),
+                    "profile_update_scope": list(plan_artifact.meta.get("profile_update_scope") or []),
                     "previous_plan_loaded": previous_plan is not None,
                     "next_step_suggestions": list(plan_artifact.meta.get("next_step_suggestions") or []),
                     "readiness_failed_items": [item.name for item in readiness.failed_items()],
@@ -437,6 +456,15 @@ class QuantWorkflowService:
         workflow_path = self.store.save_workflow_summary(workflow_obj, slug="beginner_quant")
         workflow["outputs"].append(str(workflow_path))
         workflow["workflow_report"] = str(workflow_path)
+        latest_index_path = self.store.root / "latest_index.json"
+        workflow["latest_index"] = str(latest_index_path)
+        workflow["workflow_summary"] = {
+            "step_count": len(workflow["steps"]),
+            "output_count": len(workflow["outputs"]),
+            "warning_count": len(workflow["warnings"]),
+            "blocked_steps": [step["step"] for step in workflow["steps"] if step["status"] == "blocked"],
+            "confirmation_required_steps": [step["step"] for step in workflow["steps"] if step.get("meta", {}).get("requires_confirmation")],
+        }
         workflow.update(artifact_paths)
         return workflow
 
@@ -470,27 +498,3 @@ class QuantWorkflowService:
                 }
             ],
         }
-        from services.evaluation_hub.models import WorkflowRunResult, WorkflowStepResult, PlanAssumption
-
-        workflow_obj = WorkflowRunResult(
-            workflow_name=workflow_name,
-            mode=mode,
-            started_at=started_at,
-            status=workflow["status"],
-            steps=[WorkflowStepResult(**step) for step in workflow["steps"]],
-            outputs=outputs,
-            warnings=workflow["warnings"],
-            assumptions=[PlanAssumption(**item) for item in workflow["assumptions"]],
-        )
-        workflow_path = self.store.save_workflow_summary(workflow_obj, slug="beginner_quant")
-        outputs.append(str(workflow_path))
-        workflow["workflow_report"] = str(workflow_path)
-        workflow["research_artifact"] = str(research_path)
-        workflow["plan_artifact"] = str(plan_path)
-        return workflow
-
-    def _load_backtest_report(self) -> dict[str, Any]:
-        path = self.repo_root / "state" / "runs" / "classic_multifactor" / "vnpy_cta_backtest_report.json"
-        if not path.exists():
-            return {}
-        return json.loads(path.read_text(encoding="utf-8"))

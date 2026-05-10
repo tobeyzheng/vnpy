@@ -57,15 +57,10 @@ SCHEMA_PRESETS: dict[str, dict[str, Any]] = {
         ),
     },
     "tune": {
+    "tune": {
         "keys": [
-            "topic",
-            "symbol",
-            "timeframe",
-            "baseline",
-            "tuning_plan",
-            "expected_impact",
-            "risks",
-            "references",
+            "topic", "symbol", "timeframe", "baseline", "tuning_plan",
+            "expected_impact", "risks", "references",
         ],
         "system": (
             "You are QuantTuningAgent. Given the user's baseline and goal, "
@@ -73,6 +68,34 @@ SCHEMA_PRESETS: dict[str, dict[str, Any]] = {
             "grid). Output ONLY one JSON object; cite sources when claims "
             "are based on public research."
         ),
+    },
+    "beginner_quant": {
+        "keys": [
+            "topic", "core_concepts", "research_workflow", "risk_control",
+            "performance_evaluation", "beginner_safe_practices", "common_misunderstandings",
+            "learning_sequence", "practice_sequence", "minimum_viable_start",
+            "conflicting_viewpoints", "low_confidence_items", "references"
+        ],
+        "system": (
+            "You are QuantBeginnerResearchAgent. Summarise public and verifiable knowledge "
+            "about quantitative trading for a beginner. Output ONLY one JSON object. "
+            "Separate verified findings, conflicting viewpoints, low-confidence items, "
+            "and references. Do not fabricate URLs; when evidence is weak, mark "
+            "evidence_level=low and verification_status=to_verify. Focus on: "
+            "- Core concepts in simple language with examples "
+            "- Research workflow from idea to validation "
+            "- Risk control principles for beginners "
+            "- Performance evaluation beyond simple returns "
+            "- Beginner-safe practice order and common pitfalls "
+            "- Learning and practice sequences "
+            "- Minimum viable starting point "
+            "- Conflicting viewpoints in the field "
+            "- Items needing verification "
+            "Cite public academic papers, industry research, and regulatory guidance "
+            "when making claims about best practices."
+        ),
+    },
+}        ),
     },
 }
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import unittest
@@ -10,10 +11,14 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from services.evaluation_hub import CapabilityRegistry
+from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
 from services.evaluation_hub.candidate_framework import BeginnerCandidateFramework
 from services.evaluation_hub.doc_renderer import BeginnerExplanationRenderer
+from services.evaluation_hub.evidence_standardizer import EvidenceStandardizer
 from services.evaluation_hub.plan_generator import BeginnerPlanGenerator
 from services.evaluation_hub.readiness_gate import ReadinessGateService
+from scripts.quant_workflow import __main__ as quant_workflow_module
+from scripts.quant_workflow.run_quant_workflow import PRESET_WORKFLOWS, _cli_summary, _resolve_workflow_args
 from scripts.quant_workflow.workflow_service import QuantWorkflowService
 
 
@@ -72,6 +77,56 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertTrue(blocked)
         self.assertTrue(any("validated backtest metadata" in reason for reason in reasons))
 
+    def test_readiness_gate_requires_split_turnover_liquidity_and_bias_cleanliness(self):
+        gate = ReadinessGateService()
+
+        checklist = gate.validate_backtest_metadata(
+            {
+                "start": "2024-01-01",
+                "end": "2024-12-31",
+                "rate": 0.0005,
+                "slippage": 0.0008,
+                "validation_split": {"train": "2024-01-01:2024-06-30"},
+                "data_quality": {"notes": ["missing corporate action review"], "bias_flags": ["look_ahead_bias"]},
+            }
+        )
+        blocked, reasons = gate.should_block_upgrade(checklist)
+        failed_names = {item.name for item in checklist.failed_items()}
+
+        self.assertTrue(blocked)
+        self.assertIn("validation_split", failed_names)
+        self.assertIn("turnover_metric", failed_names)
+        self.assertIn("liquidity_assumptions", failed_names)
+        self.assertIn("bias_review", failed_names)
+        self.assertTrue(any("Train/validation/test split" in reason for reason in reasons))
+
+    def test_readiness_gate_accepts_complete_backtest_metadata(self):
+        gate = ReadinessGateService()
+
+        checklist = gate.validate_backtest_metadata(
+            {
+                "start": "2024-01-01",
+                "end": "2024-12-31",
+                "rate": 0.0005,
+                "slippage": 0.0008,
+                "turnover": 1.6,
+                "sample_count": 240,
+                "liquidity_assumptions": ["Large-cap daily bars with manual spread review"],
+                "out_of_sample": "2024-10-01:2024-12-31",
+                "validation_split": {
+                    "train": "2024-01-01:2024-06-30",
+                    "validation": "2024-07-01:2024-09-30",
+                    "test": "2024-10-01:2024-12-31",
+                },
+                "stability_metrics": {"sharpe_ratio": 1.1, "return_drawdown_ratio": 1.4, "turnover": 1.6},
+                "data_quality": {"notes": ["manual bias review completed"], "bias_flags": []},
+            }
+        )
+        blocked, _ = gate.should_block_upgrade(checklist)
+
+        self.assertFalse(blocked)
+        self.assertFalse(checklist.failed_items())
+
     def test_plan_generator_records_profile_changes_against_previous_plan(self):
         generator = BeginnerPlanGenerator()
         previous = generator.build_plan(profile={"preferred_market": "us", "risk_profile": "conservative"}, observations=[])
@@ -85,6 +140,52 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         diffs = current.meta.get("plan_differences") or []
         self.assertTrue(any(item["field"] == "preferred_market" for item in diffs))
         self.assertTrue(any(item["field"] == "risk_profile" for item in diffs))
+
+    def test_plan_generator_uses_conservative_defaults_when_profile_is_missing(self):
+        generator = BeginnerPlanGenerator()
+
+        plan = generator.build_plan(profile={}, observations=[])
+
+        self.assertEqual(plan.meta["profile"]["capital"], "unknown_keep_small")
+        self.assertEqual(plan.meta["profile"]["hours_per_week"], 5.0)
+        self.assertEqual(plan.meta["profile"]["max_drawdown_pct"], 8.0)
+        self.assertEqual(plan.risk_budget.max_positions, 3)
+        self.assertIn("full_plan_initialization", plan.meta["profile_update_scope"])
+
+    def test_plan_generator_personalization_changes_budget_and_update_scope(self):
+        generator = BeginnerPlanGenerator()
+        previous = generator.build_plan(
+            profile={
+                "preferred_market": "us",
+                "risk_profile": "conservative",
+                "capital": 30000,
+                "hours_per_week": 6,
+                "max_drawdown_pct": 8,
+                "preferred_cadence": "low_frequency",
+            },
+            observations=[],
+        )
+
+        current = generator.build_plan(
+            profile={
+                "preferred_market": "us",
+                "risk_profile": "moderate",
+                "capital": 5000,
+                "hours_per_week": 3,
+                "max_drawdown_pct": 5,
+                "preferred_cadence": "intraday",
+            },
+            observations=[],
+            previous_plan=previous,
+        )
+
+        self.assertEqual(current.meta["personalization_summary"]["capital_bucket"], "micro")
+        self.assertEqual(current.meta["personalization_summary"]["time_budget_bucket"], "limited")
+        self.assertIn("risk_budget", current.meta["profile_update_scope"])
+        self.assertIn("phase_schedule", current.meta["profile_update_scope"])
+        self.assertLessEqual(current.risk_budget.max_positions, 2)
+        self.assertLessEqual(current.risk_budget.total_exposure_limit_pct, 0.18)
+        self.assertTrue(any("turnover or execution sensitivity" in item for item in current.risk_budget.stop_conditions))
 
     def test_renderer_includes_plan_differences_and_next_steps(self):
         generator = BeginnerPlanGenerator()
@@ -103,9 +204,109 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
 
         self.assertIn("### What changed from the previous plan", markdown)
         self.assertIn("preferred_market", markdown)
+        self.assertIn("### Personalization summary", markdown)
+        self.assertIn("### Update scope", markdown)
         self.assertIn("### Next actions", markdown)
         self.assertTrue(any("preferred_market" in item for item in payload["plan_differences"]))
         self.assertIn("Resolve readiness failures before upgrading to the next stage.", payload["next_actions"])
+        self.assertIn("personalization_summary", payload)
+        self.assertIn("update_scope", payload)
+
+    def test_evidence_standardizer_marks_conflicts_and_pending_verification(self):
+        standardizer = EvidenceStandardizer()
+
+        result = standardizer.standardize_llm_research_result(
+            {
+                "references": [
+                    {
+                        "title": "AQR trend research",
+                        "url": "https://www.aqr.com/Research/example",
+                        "published_at": "2024-01-01",
+                        "evidence_level": "high",
+                        "summary": "Well-known industry reference",
+                    },
+                    {
+                        "title": "SEC market structure bulletin",
+                        "url": "https://www.sec.gov/example",
+                        "published_at": "2024-02-01",
+                        "evidence_level": "high",
+                        "summary": "Regulatory guidance on execution assumptions",
+                    },
+                    {
+                        "title": "University portfolio construction note",
+                        "url": "https://example.edu/quant-note",
+                        "published_at": "2024-03-01",
+                        "evidence_level": "high",
+                        "summary": "Academic note on diversification trade-offs",
+                    }
+                ],
+                "core_concepts": [
+                    "Quant research should separate evidence from opinion.",
+                    "Validation rules should be written before stage upgrades.",
+                ],
+                "beginner_safe_practices": [
+                    "Start with low-frequency and reviewable workflows.",
+                    "Keep the active universe small until review notes are stable.",
+                ],
+                "conflicting_viewpoints": [
+                    "Some practitioners prefer highly diversified portfolios.",
+                    "Others prefer a very small focused universe.",
+                ],
+                "low_confidence_items": ["Intraday alpha persistence for beginners."],
+            }
+        )
+
+        self.assertEqual(result.evidence_strength, "strong")
+        self.assertTrue(result.conflicts)
+        self.assertIn("Intraday alpha persistence for beginners.", result.low_confidence_items)
+        source_types = {item.source_type for item in result.standardized_evidence}
+        self.assertIn("academic_reference", source_types)
+        self.assertIn("regulatory_guidance", source_types)
+        self.assertEqual(result.research_findings[0].verification_status, "verified")
+
+    def test_evidence_standardizer_adds_pending_verification_when_references_missing(self):
+        standardizer = EvidenceStandardizer()
+
+        result = standardizer.standardize_llm_research_result(
+            {
+                "core_concepts": ["Backtests should include costs."],
+            }
+        )
+
+        self.assertIn("Research lacks verifiable public references", result.pending_verification_items)
+        self.assertEqual(result.evidence_strength, "weak")
+
+    def test_beginner_candidate_selector_downgrades_candidates_without_explanation_or_data(self):
+        selector = BeginnerCandidateSelector()
+        framework_artifact = selector.build_candidate_artifact(
+            rows=[
+                {
+                    "symbol": "NVDA.US",
+                    "market": "us",
+                    "name": "NVIDIA",
+                    "rationale": "AI leader with large-cap liquidity",
+                    "risk": "valuation sensitivity",
+                    "raw_score": 0.92,
+                    "signals": [{"score": 0.90, "summary": "trend intact"}],
+                    "action_hint": "observe pullbacks",
+                },
+                {
+                    "symbol": "AMD.US",
+                    "market": "us",
+                    "name": "AMD",
+                    "risk": "wide spread and illiquid intraday tape",
+                    "raw_score": 0.88,
+                },
+            ],
+            preferred_markets=["us"],
+            max_candidates=5,
+        )
+
+        observations = {item.symbol: item for item in framework_artifact.candidate_observations}
+        self.assertEqual(observations["NVDA.US"].selected_as, "observe_only")
+        self.assertTrue(observations["NVDA.US"].meta["needs_llm_research"])
+        self.assertEqual(observations["AMD.US"].selected_as, "validate_only")
+        self.assertGreaterEqual(framework_artifact.meta["framework_summary"]["llm_research_pending_count"], 1)
 
     def test_quant_workflow_service_runs_in_plan_mode(self):
         from tempfile import TemporaryDirectory
@@ -136,9 +337,23 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
 
             self.assertIn(result["status"], {"ok", "blocked"})
             self.assertTrue(Path(result["research_artifact"]).exists())
+            self.assertTrue(Path(result["candidate_artifact"]).exists())
             self.assertTrue(Path(result["plan_artifact"]).exists())
             self.assertTrue(Path(result["workflow_report"]).exists())
+            self.assertIn("workflow_summary", result)
             self.assertTrue(any(step["step"] == "execution_boundary" for step in result["steps"]))
+            candidate_steps = [step for step in result["steps"] if step["step"] == "candidate_framework"]
+            self.assertTrue(candidate_steps)
+            self.assertEqual(candidate_steps[0]["outputs"], [result["candidate_artifact"]])
+
+            candidate_payload = json.loads(Path(result["candidate_artifact"]).read_text(encoding="utf-8"))
+            workflow_payload = json.loads(Path(result["workflow_report"]).read_text(encoding="utf-8"))
+            self.assertIn("artifact_summary", candidate_payload["meta"])
+            self.assertIn("traceability", candidate_payload["meta"])
+            self.assertIn("risk_labels", candidate_payload["meta"])
+            self.assertIn("rendered_formats", candidate_payload["meta"])
+            self.assertIn("workflow_summary", workflow_payload)
+            self.assertIn("traceability", workflow_payload)
 
     def test_quant_workflow_second_run_loads_previous_plan_and_records_differences(self):
         from tempfile import TemporaryDirectory
@@ -176,8 +391,12 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertNotEqual(first["plan_artifact"], second["plan_artifact"])
             self.assertTrue(planning_steps[0]["meta"]["previous_plan_loaded"])
             self.assertTrue(any(item["field"] == "preferred_market" for item in planning_steps[0]["meta"]["plan_differences"]))
+            self.assertIn("personalization_summary", planning_steps[0]["meta"])
+            self.assertIn("profile_update_scope", planning_steps[0]["meta"])
             self.assertTrue(second_plan["rendered_documents"])
             self.assertIn("What changed from the previous plan", second_plan["rendered_documents"][0]["body"])
+            self.assertIn("Personalization summary", second_plan["rendered_documents"][0]["body"])
+            self.assertIn("Update scope", second_plan["rendered_documents"][0]["body"])
             self.assertIn("Next actions", second_plan["rendered_documents"][0]["body"])
 
     def test_quant_workflow_research_only_mode_limits_steps(self):
@@ -201,6 +420,80 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertIn("research_artifact", result)
             self.assertNotIn("plan_artifact", result)
 
+    def test_quant_workflow_writes_latest_index_file(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            runs.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "NVDA.US",
+                            "market": "us",
+                            "name": "NVIDIA",
+                            "rationale": "AI leader with large-cap liquidity",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.84,
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            service = QuantWorkflowService(tmp_path)
+            result = service.run(profile={"preferred_market": "us"}, preferred_markets=["us"], stage="research")
+
+            latest_index_path = Path(result["latest_index"])
+            self.assertTrue(latest_index_path.exists())
+            latest_index = json.loads(latest_index_path.read_text(encoding="utf-8"))
+            self.assertIn("artifacts", latest_index)
+            self.assertIn("workflow_reports", latest_index)
+            self.assertIn("beginner_quant_plan", latest_index["artifacts"])
+            self.assertIn("beginner_quant", latest_index["workflow_reports"])
+
+    def test_cli_preset_resolution_uses_preset_defaults(self):
+        args = argparse.Namespace(
+            workflow=None,
+            preset="simulation_gate",
+            mode=None,
+            stage=None,
+        )
+
+        resolved = _resolve_workflow_args(args)
+
+        self.assertEqual(resolved["preset"], "simulation_gate")
+        self.assertEqual(resolved["workflow"], PRESET_WORKFLOWS["simulation_gate"]["workflow"])
+        self.assertEqual(resolved["mode"], PRESET_WORKFLOWS["simulation_gate"]["mode"])
+        self.assertEqual(resolved["stage"], PRESET_WORKFLOWS["simulation_gate"]["stage"])
+
+    def test_cli_summary_only_keeps_paths_and_summary(self):
+        payload = _cli_summary(
+            {
+                "status": "ok",
+                "workflow_name": "beginner_quant",
+                "mode": "plan",
+                "workflow_summary": {"step_count": 5},
+                "workflow_report": "/tmp/workflow.json",
+                "latest_index": "/tmp/latest_index.json",
+                "research_artifact": "/tmp/research.json",
+                "candidate_artifact": "/tmp/candidate.json",
+                "plan_artifact": "/tmp/plan.json",
+                "warnings": ["offline placeholder"],
+            },
+            preset="beginner_full",
+        )
+
+        self.assertEqual(payload["preset"], "beginner_full")
+        self.assertEqual(payload["workflow_summary"]["step_count"], 5)
+        self.assertEqual(payload["artifacts"]["plan_artifact"], "/tmp/plan.json")
+        self.assertEqual(payload["latest_index"], "/tmp/latest_index.json")
+
+    def test_quant_workflow_module_entrypoint_reexports_main(self):
+        self.assertTrue(callable(quant_workflow_module.main))
+
     def test_quant_workflow_stage_only_live_blocks_without_required_artifacts(self):
         from tempfile import TemporaryDirectory
 
@@ -212,6 +505,9 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertEqual(result["status"], "blocked")
             self.assertEqual(result["steps"][0]["step"], "preflight")
             self.assertEqual(result["steps"][0]["status"], "blocked")
+            self.assertIn("checks", result["steps"][0]["meta"])
+            self.assertIn("blocking_reasons", result["steps"][0]["meta"])
+            self.assertIn("candidate_inputs_any", result["steps"][0]["meta"]["checks"])
             self.assertTrue(any("Candidate inputs are required" in warning for warning in result["warnings"]))
             self.assertTrue(any("backtest report is required" in warning for warning in result["warnings"]))
             self.assertTrue(Path(result["workflow_report"]).exists())

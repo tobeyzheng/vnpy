@@ -11,6 +11,13 @@
 - 新增、删除、重命名入口脚本时，文档更新应与代码变更在同一轮提交中完成。
 - 如果代码与文档不一致，以代码为准；发现偏差后，下一次相关修改必须补齐文档。
 - 对其他协作者来说，这两份文档是理解项目的第一入口，不要让它们长期停留在“设计草稿”状态。
+- 框架、需求、入口等改动完成后，还应同步检查 [project_operation_log.md](/projects/vnpy/docs/project_operation_log.md) 是否需要补历史记录。
+
+### 协作治理补充
+
+- 已开始或已完成的 plan item / task item，应及时更新对应 markdown 状态，避免任务记录长期滞后。
+- 对框架、需求、入口、规则、运行产物结构、阶段边界有影响的改动，应同步记录到 [project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)。
+- 在回复、文档、日志和说明中，避免暴露真实账户金额、完整账号、密钥、令牌等敏感信息；需要表达时应使用脱敏后的描述。
 
 ### 一句话理解当前项目主线
 
@@ -36,10 +43,14 @@
 ### 主要入口脚本
 
 - **`scripts/quant_workflow/run_quant_workflow.py`**：当前推荐的总入口。
+  - 默认 `--preset beginner_full`
   - 默认 `--mode plan`
   - 默认 `--stage research`
   - 默认 `--workflow beginner_quant`
+  - 支持 `--preset research_snapshot / simulation_gate / live_gate`
+  - 支持 `--summary-only` 只输出 workflow 汇总、artifact 路径和 warning
   - 默认不会自动启动 SIM/live 脚本
+- **`python -m scripts.quant_workflow`**：与上面的脚本入口等价的模块入口，适合统一的一键工作流触发。
 - **`scripts/run_healthcheck.py`**：环境和账户健康检查入口，输出 `state/runs/healthcheck.json`。
 - **`scripts/run_portfolio_brief.py`**：组合摘要入口，聚合 HK/US close report 与 healthcheck，输出 `state/runs/portfolio_brief.json`。
 - **`scripts/classic_multifactor/run_vnpy_cta_backtest.py`**：官方 vn.py CTA 回测入口，输出 `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`。
@@ -83,6 +94,7 @@
    - 生成个人 beginner plan、risk budget、phase/task、readiness checklist
 7. **`execution_boundary`**
    - 如果本地发现 simulation/live 能力入口，只输出“需要明确确认”的边界警告，不会自动执行
+   - 当前设计默认保持 report-only / non-executing 口径，即使发现可用 execution capability 也只会在 workflow summary 与 warning 中暴露确认点
 
 最终 workflow summary 会根据 readiness 的 high/critical 失败项决定 `status` 是 `ok` 还是 `blocked`。
 
@@ -99,13 +111,15 @@
 
 - `state/runs/quant_workflow/*_artifact_*.json`
 - `state/runs/quant_workflow/*_workflow_*.json`
+- `state/runs/quant_workflow/latest_index.json`
 - `state/runs/portfolio_brief.json`
 
 补充说明：
 
 - 候选输入由 `UnifiedCandidateProvider` 统一读取。
 - `candidate_inputs.dynamic.json` 的优先级高于 `candidate_inputs.json`，但当前合并规则是**按 market 覆盖**，不是按 symbol 精细合并。
-- `ArtifactStore` 会自动为 workflow artifact 追加 next step suggestions 和 confirmation requirements。
+- `ArtifactStore` 会自动为 workflow artifact 追加 `next_step_suggestions`、`confirmation_requirements`、`artifact_summary`、`traceability`、`rendered_formats` 和 `risk_labels`。
+- `latest_index.json` 会记录每类 artifact / workflow report 的最新路径、摘要和追溯信息，方便 CLI summary 与后续回看。
 
 ### 阶段定义与升级门槛
 
@@ -162,7 +176,8 @@
 ### 常用只读命令示例
 
 ```bash
-python scripts/quant_workflow/run_quant_workflow.py --stage research --mode plan
+python scripts/quant_workflow/run_quant_workflow.py --preset beginner_full --summary-only
+python -m scripts.quant_workflow --preset research_snapshot --summary-only
 python scripts/run_healthcheck.py
 python scripts/run_portfolio_brief.py
 ```

@@ -1,4 +1,5 @@
 from .artifact_store import ArtifactStore
+from .beginner_candidate_selector import BeginnerCandidateSelector
 from .beginner_research import BeginnerResearchService
 from .candidate_framework import BeginnerCandidateFramework
 from .capability_registry import CapabilityRegistry, CapabilityStageResolver
@@ -31,6 +32,7 @@ from .readiness_gate import ReadinessGateService
 
 __all__ = [
     "ArtifactStore",
+    "BeginnerCandidateSelector",
     "BeginnerCandidateFramework",
     "BeginnerExplanationRenderer",
     "BeginnerPlanGenerator",

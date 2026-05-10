@@ -21,7 +21,16 @@ class ArtifactStore:
         payload.setdefault("meta", {})
         payload["meta"].setdefault("next_step_suggestions", self._next_step_suggestions(artifact))
         payload["meta"].setdefault("confirmation_requirements", self._confirmation_requirements(artifact))
+        payload["meta"].setdefault("rendered_formats", self._rendered_formats(artifact))
+        payload["meta"].setdefault("risk_labels", self._artifact_risk_labels(artifact))
+        payload["meta"].setdefault("artifact_summary", self._artifact_summary(artifact))
+        payload["meta"].setdefault("traceability", self._artifact_traceability(artifact, slug=slug))
         self._write_json(path, payload)
+        self._update_latest_index(
+            bucket="artifacts",
+            slug=slug,
+            entry=self._artifact_index_entry(path=path, artifact=artifact, payload=payload),
+        )
         return path
 
     def save_workflow_summary(self, workflow: WorkflowRunResult, *, slug: str) -> Path:
@@ -30,7 +39,14 @@ class ArtifactStore:
         payload = asdict(workflow)
         payload.setdefault("warnings", [])
         payload["warnings"] = list(dict.fromkeys([*payload["warnings"], *self._workflow_confirmation_prompts(workflow)]))
+        payload["workflow_summary"] = self._workflow_summary(workflow)
+        payload["traceability"] = self._workflow_traceability(workflow, slug=slug)
         self._write_json(path, payload)
+        self._update_latest_index(
+            bucket="workflow_reports",
+            slug=slug,
+            entry=self._workflow_index_entry(path=path, workflow=workflow, payload=payload),
+        )
         return path
 
     def build_step(
@@ -124,3 +140,111 @@ class ArtifactStore:
             if step.meta.get("requires_confirmation"):
                 prompts.append(f"Step {step.step} requires explicit user confirmation before execution.")
         return prompts
+
+    def _rendered_formats(self, artifact: PlanningArtifact) -> list[str]:
+        return list(dict.fromkeys(item.format for item in artifact.rendered_documents if getattr(item, "format", "")))
+
+    def _artifact_risk_labels(self, artifact: PlanningArtifact) -> list[str]:
+        labels: list[str] = []
+        if artifact.risk_prompts:
+            labels.append("risk_prompts_present")
+        if artifact.readiness and not artifact.readiness.passed:
+            labels.append("readiness_blocked")
+        if artifact.capability_gaps:
+            labels.append("capability_gaps_present")
+        if self._confirmation_requirements(artifact):
+            labels.append("confirmation_required")
+        return labels
+
+    def _artifact_summary(self, artifact: PlanningArtifact) -> dict[str, Any]:
+        return {
+            "artifact_type": artifact.artifact_type,
+            "title": artifact.title,
+            "generated_at": artifact.generated_at,
+            "version": artifact.version,
+            "knowledge_section_count": len(artifact.knowledge_sections),
+            "research_finding_count": len(artifact.research_findings),
+            "candidate_count": len(artifact.candidate_observations),
+            "plan_phase_count": len(artifact.plan_phases),
+            "rendered_document_count": len(artifact.rendered_documents),
+            "has_risk_budget": artifact.risk_budget is not None,
+            "has_readiness": artifact.readiness is not None,
+        }
+
+    def _artifact_traceability(self, artifact: PlanningArtifact, *, slug: str) -> dict[str, Any]:
+        return {
+            "slug": self._clean_slug(slug),
+            "artifact_type": artifact.artifact_type,
+            "version": artifact.version,
+            "generated_at": artifact.generated_at,
+            "current_assumption_count": len(artifact.assumptions),
+            "invalidation_condition_count": len(artifact.invalidation_conditions),
+            "confirmation_requirement_count": len(self._confirmation_requirements(artifact)),
+            "next_step_count": len(self._next_step_suggestions(artifact)),
+        }
+
+    def _workflow_summary(self, workflow: WorkflowRunResult) -> dict[str, Any]:
+        blocked_steps = [step.step for step in workflow.steps if step.status == "blocked"]
+        confirmation_steps = [step.step for step in workflow.steps if step.meta.get("requires_confirmation")]
+        warning_steps = [step.step for step in workflow.steps if step.warnings]
+        return {
+            "step_count": len(workflow.steps),
+            "output_count": len(workflow.outputs),
+            "warning_count": len(workflow.warnings),
+            "blocked_steps": blocked_steps,
+            "confirmation_required_steps": confirmation_steps,
+            "warning_steps": warning_steps,
+        }
+
+    def _workflow_traceability(self, workflow: WorkflowRunResult, *, slug: str) -> dict[str, Any]:
+        return {
+            "slug": self._clean_slug(slug),
+            "workflow_name": workflow.workflow_name,
+            "mode": workflow.mode,
+            "started_at": workflow.started_at,
+            "status": workflow.status,
+            "assumption_count": len(workflow.assumptions),
+        }
+
+    def _artifact_index_entry(self, *, path: Path, artifact: PlanningArtifact, payload: dict[str, Any]) -> dict[str, Any]:
+        meta = dict(payload.get("meta") or {})
+        return {
+            "path": str(path),
+            "artifact_type": artifact.artifact_type,
+            "title": artifact.title,
+            "generated_at": artifact.generated_at,
+            "version": artifact.version,
+            "artifact_summary": dict(meta.get("artifact_summary") or {}),
+            "traceability": dict(meta.get("traceability") or {}),
+            "risk_labels": list(meta.get("risk_labels") or []),
+        }
+
+    def _workflow_index_entry(self, *, path: Path, workflow: WorkflowRunResult, payload: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "path": str(path),
+            "workflow_name": workflow.workflow_name,
+            "mode": workflow.mode,
+            "started_at": workflow.started_at,
+            "status": workflow.status,
+            "workflow_summary": dict(payload.get("workflow_summary") or {}),
+            "traceability": dict(payload.get("traceability") or {}),
+        }
+
+    def _latest_index_path(self) -> Path:
+        return self.root / "latest_index.json"
+
+    def _load_latest_index(self) -> dict[str, Any]:
+        path = self._latest_index_path()
+        if not path.exists():
+            return {"artifacts": {}, "workflow_reports": {}}
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload.setdefault("artifacts", {})
+        payload.setdefault("workflow_reports", {})
+        return payload
+
+    def _update_latest_index(self, *, bucket: str, slug: str, entry: dict[str, Any]) -> None:
+        payload = self._load_latest_index()
+        payload.setdefault(bucket, {})
+        payload[bucket][self._clean_slug(slug)] = entry
+        payload["updated_at"] = datetime.now(timezone.utc).isoformat()
+        self._write_json(self._latest_index_path(), payload)

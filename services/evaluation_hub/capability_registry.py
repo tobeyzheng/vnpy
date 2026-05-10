@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, Any
 
 from .models import CapabilityDefinition, CapabilityGap
 
@@ -283,6 +283,226 @@ class CapabilityRegistry:
                 safe_by_default=False,
             ),
         ]
+
+
+class EnhancedCapabilityRegistry(CapabilityRegistry):
+    """增强能力注册表，支持更详细的阶段边界映射和本地脚本能力"""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._stage_boundaries = self._build_stage_boundaries()
+
+    def _build_stage_boundaries(self) -> dict[str, dict[str, Any]]:
+        """构建详细的阶段边界映射"""
+        return {
+            "research": {
+                "description": "研究阶段 - 知识学习、策略研究、数据验证",
+                "allowed_capabilities": ["classic_multifactor.llm_research", "llm.stock_analysis", "llm.anomaly_detector", "healthcheck.report", "portfolio.brief"],
+                "safe_by_default": True,
+                "confirmation_required": False,
+                "output_types": ["research_report", "knowledge_document", "candidate_list"],
+                "next_stage": "backtest",
+                "upgrade_conditions": ["完成基础知识学习", "验证数据质量", "建立候选观察名单"]
+            },
+            "backtest": {
+                "description": "回测阶段 - 策略验证、参数调优、过拟合检查",
+                "allowed_capabilities": ["classic_multifactor.vnpy_backtest"],
+                "safe_by_default": True,
+                "confirmation_required": True,
+                "output_types": ["backtest_report", "performance_metrics", "stability_analysis"],
+                "next_stage": "simulation",
+                "upgrade_conditions": ["通过稳健性测试", "验证交易成本", "确认样本外表现"]
+            },
+            "simulation": {
+                "description": "模拟阶段 - 实盘模拟、执行验证、风控测试",
+                "allowed_capabilities": ["classic_multifactor.intraday_runner", "classic_multifactor.daily_runner", "sim.us_legacy_task", "sim.us_futu_session"],
+                "safe_by_default": False,
+                "confirmation_required": True,
+                "output_types": ["simulation_report", "execution_log", "risk_monitor"],
+                "next_stage": "live",
+                "upgrade_conditions": ["模拟运行稳定", "风控系统验证", "执行质量达标"]
+            },
+            "live": {
+                "description": "实盘阶段 - 真实交易、资金管理、持续监控",
+                "allowed_capabilities": ["live.us_task"],
+                "safe_by_default": False,
+                "confirmation_required": True,
+                "output_types": ["live_trading_report", "account_statement", "risk_dashboard"],
+                "next_stage": None,
+                "upgrade_conditions": []
+            },
+            "orchestration": {
+                "description": "编排阶段 - 工作流管理、多阶段协调、结果汇总",
+                "allowed_capabilities": ["workflow.quant_entry"],
+                "safe_by_default": False,
+                "confirmation_required": True,
+                "output_types": ["workflow_summary", "stage_transition_log", "artifact_collection"],
+                "next_stage": None,
+                "upgrade_conditions": []
+            }
+        }
+
+    def get_stage_boundary_info(self, stage: str) -> dict[str, Any]:
+        """获取阶段边界详细信息"""
+        return self._stage_boundaries.get(stage, {})
+
+    def get_capabilities_by_stage_with_details(self, stage: str) -> list[dict[str, Any]]:
+        """获取指定阶段的详细能力信息"""
+        capabilities = self.by_stage(stage)
+        stage_info = self.get_stage_boundary_info(stage)
+
+        result = []
+        for capability in capabilities:
+            capability_info = asdict(capability)
+            capability_info.update({
+                "stage_description": stage_info.get("description", ""),
+                "allowed_in_stage": capability.capability_id in stage_info.get("allowed_capabilities", []),
+                "safe_by_default": stage_info.get("safe_by_default", True),
+                "confirmation_required": stage_info.get("confirmation_required", False),
+                "output_types": stage_info.get("output_types", []),
+                "next_stage": stage_info.get("next_stage"),
+                "upgrade_conditions": stage_info.get("upgrade_conditions", [])
+            })
+            result.append(capability_info)
+
+        return result
+
+    def validate_stage_transition(self, from_stage: str, to_stage: str) -> dict[str, Any]:
+        """验证阶段转换是否允许"""
+        from_info = self.get_stage_boundary_info(from_stage)
+        to_info = self.get_stage_boundary_info(to_stage)
+
+        if not from_info or not to_info:
+            return {"valid": False, "reason": "无效的阶段名称"}
+
+        if from_info.get("next_stage") != to_stage:
+            return {"valid": False, "reason": f"从{from_stage}到{to_stage}的阶段转换不被允许"}
+
+        return {"valid": True, "reason": "阶段转换验证通过"}
+
+    def get_stage_readiness_checklist(self, stage: str) -> list[str]:
+        """获取阶段准备度检查清单"""
+        stage_info = self.get_stage_boundary_info(stage)
+        upgrade_conditions = stage_info.get("upgrade_conditions", [])
+
+        checklist = []
+        for condition in upgrade_conditions:
+            checklist.append(f"✓ {condition}")
+
+        # 添加通用检查项
+        if stage == "backtest":
+            checklist.extend([
+                "✓ 数据质量验证完成",
+                "✓ 交易成本假设明确",
+                "✓ 样本外测试计划制定"
+            ])
+        elif stage == "simulation":
+            checklist.extend([
+                "✓ 回测结果稳健性确认",
+                "✓ 风控规则定义完成",
+                "✓ 模拟环境配置就绪"
+            ])
+        elif stage == "live":
+            checklist.extend([
+                "✓ 模拟运行稳定通过",
+                "✓ 资金管理计划制定",
+                "✓ 应急预案准备完成"
+            ])
+
+        return checklist
+
+
+class LocalScriptCapabilityMapper:
+    """本地脚本能力映射器"""
+
+    def __init__(self, registry: EnhancedCapabilityRegistry):
+        self.registry = registry
+
+    def map_script_to_capability(self, script_path: str) -> CapabilityDefinition | None:
+        """将脚本路径映射到能力定义"""
+        for capability in self.registry.list_all():
+            if capability.path == script_path:
+                return capability
+        return None
+
+    def get_capabilities_by_directory(self, directory: str) -> list[CapabilityDefinition]:
+        """获取指定目录下的所有能力"""
+        return [cap for cap in self.registry.list_all() if cap.path.startswith(directory)]
+
+    def get_classic_multifactor_capabilities(self) -> list[CapabilityDefinition]:
+        """获取classic_multifactor目录下的能力"""
+        return self.get_capabilities_by_directory("scripts/classic_multifactor/")
+
+    def get_llm_capabilities(self) -> list[CapabilityDefinition]:
+        """获取LLM相关能力"""
+        return self.get_capabilities_by_directory("scripts/llm/")
+
+    def get_automation_entry_capabilities(self) -> list[CapabilityDefinition]:
+        """获取自动化入口能力"""
+        return [cap for cap in self.registry.list_all() if cap.stage == "orchestration"]
+
+    def get_manual_checkpoints_by_stage(self, stage: str) -> list[str]:
+        """获取指定阶段的人工确认点"""
+        capabilities = self.registry.by_stage(stage)
+        checkpoints = []
+        for capability in capabilities:
+            checkpoints.extend(capability.manual_checkpoints)
+        return list(set(checkpoints))  # 去重
+
+
+class StageBoundaryManager:
+    """阶段边界管理器"""
+
+    def __init__(self, registry: EnhancedCapabilityRegistry):
+        self.registry = registry
+
+    def get_stage_progression_path(self) -> list[dict[str, Any]]:
+        """获取阶段演进路径"""
+        stages = ["research", "backtest", "simulation", "live"]
+        path = []
+
+        for i, stage in enumerate(stages):
+            stage_info = self.registry.get_stage_boundary_info(stage)
+            next_stage = stages[i + 1] if i + 1 < len(stages) else None
+
+            path.append({
+                "stage": stage,
+                "description": stage_info.get("description", ""),
+                "safe_by_default": stage_info.get("safe_by_default", True),
+                "confirmation_required": stage_info.get("confirmation_required", False),
+                "next_stage": next_stage,
+                "upgrade_conditions": stage_info.get("upgrade_conditions", []),
+                "capabilities": len(self.registry.by_stage(stage))
+            })
+
+        return path
+
+    def can_upgrade_to_stage(self, current_stage: str, target_stage: str) -> dict[str, Any]:
+        """检查是否可以升级到目标阶段"""
+        validation = self.registry.validate_stage_transition(current_stage, target_stage)
+
+        if not validation["valid"]:
+            return validation
+
+        # 检查目标阶段的能力是否可用
+        target_capabilities = self.registry.by_stage(target_stage)
+        if not target_capabilities:
+            return {"valid": False, "reason": f"目标阶段{target_stage}没有可用的能力"}
+
+        return {"valid": True, "reason": "可以升级到目标阶段"}
+
+    def get_stage_dependencies(self, stage: str) -> list[str]:
+        """获取阶段依赖关系"""
+        dependencies = []
+
+        if stage == "backtest":
+            dependencies = ["research"]
+        elif stage == "simulation":
+            dependencies = ["research", "backtest"]
+        elif stage == "live":
+            dependencies = ["research", "backtest", "simulation"]
+
+        return dependencies
 
 
 class CapabilityStageResolver:

@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 
-from .models import ExplanationSection, PlanningArtifact, RenderedDocument, TerminologyItem
+from .models import ExplanationSection, PlanningArtifact, RenderedDocument, TerminologyItem, UnifiedOutputSchema
+from .evidence_standardizer import EvidenceStandardizer, EvidenceStandardizationResult
 
 
 class BeginnerExplanationRenderer:
@@ -62,6 +63,14 @@ class BeginnerExplanationRenderer:
         for item in self._plan_difference_lines(artifact):
             lines.append(f"- {item}")
         lines.append("")
+        lines.append("### Personalization summary")
+        for item in self._personalization_lines(artifact):
+            lines.append(f"- {item}")
+        lines.append("")
+        lines.append("### Update scope")
+        for item in self._update_scope_lines(artifact):
+            lines.append(f"- {item}")
+        lines.append("")
         lines.append("### Next actions")
         for item in self._next_steps(artifact):
             lines.append(f"- {item}")
@@ -103,6 +112,8 @@ class BeginnerExplanationRenderer:
             "minimum_viable_start": self._minimum_viable_start(artifact),
             "readiness": self._readiness_lines(artifact),
             "plan_differences": self._plan_difference_lines(artifact),
+            "personalization_summary": self._personalization_lines(artifact),
+            "update_scope": self._update_scope_lines(artifact),
             "next_actions": self._next_steps(artifact),
             "local_limits": self._local_limits(artifact),
         }
@@ -241,6 +252,18 @@ class BeginnerExplanationRenderer:
             for item in diffs
         ]
 
+    def _personalization_lines(self, artifact: PlanningArtifact) -> list[str]:
+        summary = dict(artifact.meta.get("personalization_summary") or {})
+        if not summary:
+            return ["No explicit personalization summary was recorded for this artifact."]
+        return [f"{key}: {value}" for key, value in summary.items()]
+
+    def _update_scope_lines(self, artifact: PlanningArtifact) -> list[str]:
+        scopes = list(artifact.meta.get("profile_update_scope") or [])
+        if not scopes:
+            return ["No scoped profile update information was recorded."]
+        return scopes
+
     def _next_steps(self, artifact: PlanningArtifact) -> list[str]:
         suggestions = list(artifact.meta.get("next_step_suggestions") or [])
         if not suggestions:
@@ -289,3 +312,327 @@ class BeginnerExplanationRenderer:
             example=term.example or "Use a small real example you can explain without jargon.",
             common_misunderstanding=term.common_misunderstanding or "Do not treat the term as a magic shortcut to profit.",
         )
+
+
+class QuantBeginnerDocumentRenderer:
+    """量化入门文档渲染器"""
+
+    def __init__(self, standardizer: EvidenceStandardizer | None = None):
+        self.standardizer = standardizer or EvidenceStandardizer()
+        self.beginner_renderer = BeginnerExplanationRenderer()
+
+    def render_beginner_guide(
+        self,
+        research_result: UnifiedOutputSchema,
+        *,
+        include_evidence_summary: bool = True,
+        include_conflict_analysis: bool = True,
+        include_rewritten_chapters: bool = True
+    ) -> RenderedDocument:
+        """渲染量化入门指南"""
+        generated_at = datetime.now(timezone.utc).isoformat()
+        lines: list[str] = []
+
+        # 标题和元信息
+        lines.append(f"# {research_result.title or 'Quantitative Trading Beginner Guide'}")
+        lines.append("")
+        lines.append(f"- Generated: {generated_at}")
+        lines.append(f"- Audience: Beginner quantitative trader")
+        lines.append(f"- Confidence Level: {research_result.confidence_level or 'medium'}")
+        lines.append("")
+
+        # 核心概念
+        lines.append("## Core Concepts")
+        if research_result.knowledge_sections:
+            for section in research_result.knowledge_sections:
+                lines.extend(self._render_beginner_section(section))
+        else:
+            lines.append("- Core concepts will be populated after research collection")
+        lines.append("")
+
+        # 学习顺序
+        lines.append("## Learning Sequence")
+        learning_seq = research_result.meta.get("learning_sequence") or self._default_learning_sequence()
+        for i, item in enumerate(learning_seq, 1):
+            lines.append(f"{i}. {item}")
+        lines.append("")
+
+        # 实践顺序
+        lines.append("## Practice Sequence")
+        practice_seq = research_result.meta.get("practice_sequence") or self._default_practice_sequence()
+        for i, item in enumerate(practice_seq, 1):
+            lines.append(f"{i}. {item}")
+        lines.append("")
+
+        # 证据摘要
+        if include_evidence_summary:
+            lines.append("## Evidence Summary")
+            evidence_summary = self._render_evidence_summary(research_result)
+            lines.extend(evidence_summary)
+            lines.append("")
+
+        # 冲突分析
+        if include_conflict_analysis:
+            lines.append("## Conflicting Viewpoints")
+            conflict_analysis = self._render_conflict_analysis(research_result)
+            lines.extend(conflict_analysis)
+            lines.append("")
+
+        # 重写章节
+        if include_rewritten_chapters:
+            lines.append("## Beginner-Friendly Explanations")
+            rewritten_chapters = self._render_rewritten_chapters(research_result)
+            lines.extend(rewritten_chapters)
+            lines.append("")
+
+        # 风险控制
+        lines.append("## Risk Control for Beginners")
+        risk_controls = self._render_risk_controls(research_result)
+        lines.extend(risk_controls)
+        lines.append("")
+
+        # 最低可行起点
+        lines.append("## Minimum Viable Starting Point")
+        min_start = research_result.meta.get("minimum_viable_start") or self._default_minimum_start()
+        for item in min_start:
+            lines.append(f"- {item}")
+        lines.append("")
+
+        # 常见误解
+        lines.append("## Common Misunderstandings")
+        misunderstandings = research_result.meta.get("common_misunderstandings") or self._default_misunderstandings()
+        for item in misunderstandings:
+            lines.append(f"- {item}")
+        lines.append("")
+
+        # 下一步行动
+        lines.append("## Next Steps")
+        next_steps = self._render_next_steps(research_result)
+        lines.extend(next_steps)
+
+        body = "\n".join(lines).strip() + "\n"
+
+        return RenderedDocument(
+            title=f"{research_result.title or 'Beginner Guide'} (Markdown)",
+            format="markdown",
+            body=body,
+            section_count=self._count_sections(lines),
+            version="v1.0",
+            generated_at=generated_at,
+        )
+
+    def rewrite_chapter_for_beginner(
+        self,
+        chapter_content: str,
+        *,
+        extra_context: str = "",
+        target_audience: str = "beginner"
+    ) -> str:
+        """为初学者重写章节内容"""
+        # 这里可以集成LLM调用进行智能重写
+        # 目前先实现基础的重写逻辑
+
+        rewritten = chapter_content.strip()
+
+        # 简化语言
+        if target_audience == "beginner":
+            rewritten = self._simplify_language(rewritten)
+
+        # 添加上下文
+        if extra_context:
+            rewritten = f"{rewritten}\n\n**Context**: {extra_context}"
+
+        # 添加学习提示
+        rewritten += "\n\n**Learning Tip**: Start with one simple concept and practice explaining it in your own words."
+
+        return rewritten
+
+    def _render_beginner_section(self, section: ExplanationSection) -> list[str]:
+        """渲染初学者友好的章节"""
+        lines = []
+        lines.append(f"### {section.title}")
+        lines.append(section.summary)
+
+        if section.beginner_actions:
+            lines.append("**What you can do now:**")
+            for action in section.beginner_actions:
+                lines.append(f"- {action}")
+
+        if section.avoid_for_now:
+            lines.append("**What to avoid for now:**")
+            for avoid in section.avoid_for_now:
+                lines.append(f"- {avoid}")
+
+        if section.examples:
+            lines.append("**Examples:**")
+            for example in section.examples:
+                lines.append(f"- {example}")
+
+        if section.warnings:
+            lines.append("**Warnings:**")
+            for warning in section.warnings:
+                lines.append(f"- {warning}")
+
+        if section.terms:
+            lines.append("**Key Terms:**")
+            for term in section.terms:
+                lines.append(f"- **{term.term}**: {term.definition}")
+                if term.example:
+                    lines.append(f"  - Example: {term.example}")
+
+        lines.append("")
+        return lines
+
+    def _render_evidence_summary(self, research: UnifiedOutputSchema) -> list[str]:
+        """渲染证据摘要"""
+        lines = []
+
+        if research.sources:
+            high_evidence = [s for s in research.sources if getattr(s, 'evidence_level', 'medium') == 'high']
+            medium_evidence = [s for s in research.sources if getattr(s, 'evidence_level', 'medium') == 'medium']
+            low_evidence = [s for s in research.sources if getattr(s, 'evidence_level', 'medium') == 'low']
+
+            lines.append(f"- High confidence sources: {len(high_evidence)}")
+            lines.append(f"- Medium confidence sources: {len(medium_evidence)}")
+            lines.append(f"- Low confidence sources: {len(low_evidence)}")
+
+        if research.research_conclusions:
+            lines.append(f"- Research conclusions: {len(research.research_conclusions)}")
+
+        return lines
+
+    def _render_conflict_analysis(self, research: UnifiedOutputSchema) -> list[str]:
+        """渲染冲突分析"""
+        lines = []
+
+        # 从元数据中提取冲突信息
+        conflicts = research.meta.get("conflicting_viewpoints", [])
+        if conflicts:
+            lines.append("Different schools of thought exist on these topics:")
+            for conflict in conflicts:
+                lines.append(f"- {conflict}")
+        else:
+            lines.append("No major conflicting viewpoints identified in current research.")
+
+        return lines
+
+    def _render_rewritten_chapters(self, research: UnifiedOutputSchema) -> list[str]:
+        """渲染重写章节"""
+        lines = []
+
+        if research.knowledge_sections:
+            for section in research.knowledge_sections:
+                rewritten = self.beginner_renderer.rewrite_section_for_beginner(section)
+                lines.append(f"### {rewritten.title}")
+                lines.append(rewritten.summary)
+
+                if rewritten.beginner_actions:
+                    lines.append("**Beginner Actions:**")
+                    for action in rewritten.beginner_actions:
+                        lines.append(f"- {action}")
+
+                lines.append("")
+
+        return lines
+
+    def _render_risk_controls(self, research: UnifiedOutputSchema) -> list[str]:
+        """渲染风险控制"""
+        lines = []
+
+        risk_prompts = research.risk_prompts or []
+        if risk_prompts:
+            lines.append("**Essential Risk Controls:**")
+            for prompt in risk_prompts:
+                lines.append(f"- {prompt}")
+        else:
+            lines.append("**Default Risk Controls:**")
+            lines.append("- Start with paper trading only")
+            lines.append("- Limit position size to 1-2% of portfolio")
+            lines.append("- Set maximum daily loss limits")
+            lines.append("- Always use stop-loss orders")
+
+        return lines
+
+    def _render_next_steps(self, research: UnifiedOutputSchema) -> list[str]:
+        """渲染下一步行动"""
+        lines = []
+
+        execution_suggestions = research.execution_suggestions or []
+        if execution_suggestions:
+            lines.append("**Recommended Next Steps:**")
+            for suggestion in execution_suggestions:
+                lines.append(f"- {suggestion}")
+        else:
+            lines.append("**Suggested Learning Path:**")
+            lines.append("- Review core concepts and terminology")
+            lines.append("- Practice explaining strategies in plain language")
+            lines.append("- Start with simple backtesting exercises")
+            lines.append("- Gradually introduce risk management principles")
+
+        return lines
+
+    def _simplify_language(self, text: str) -> str:
+        """简化语言"""
+        # 基础的语言简化逻辑
+        replacements = {
+            "utilize": "use",
+            "leverage": "use",
+            "optimize": "improve",
+            "implement": "use",
+            "methodology": "method",
+            "paradigm": "model",
+            "robust": "strong",
+            "sophisticated": "complex",
+        }
+
+        simplified = text
+        for complex, simple in replacements.items():
+            simplified = simplified.replace(complex, simple)
+
+        return simplified
+
+    def _default_learning_sequence(self) -> list[str]:
+        """默认学习顺序"""
+        return [
+            "Understand basic market mechanics and terminology",
+            "Learn about different asset classes and their characteristics",
+            "Study risk management principles and position sizing",
+            "Understand technical analysis and fundamental analysis basics",
+            "Learn about quantitative trading strategies and backtesting",
+            "Practice with paper trading before live execution"
+        ]
+
+    def _default_practice_sequence(self) -> list[str]:
+        """默认实践顺序"""
+        return [
+            "Set up a demo trading account",
+            "Practice with simple moving average strategies",
+            "Learn to read and interpret trading charts",
+            "Practice risk management with position sizing",
+            "Backtest strategies on historical data",
+            "Review and analyze trading performance"
+        ]
+
+    def _default_minimum_start(self) -> list[str]:
+        """默认最低可行起点"""
+        return [
+            "Basic understanding of financial markets",
+            "Access to historical market data",
+            "Demo trading platform setup",
+            "Simple strategy backtesting capability",
+            "Risk management framework"
+        ]
+
+    def _default_misunderstandings(self) -> list[str]:
+        """默认常见误解"""
+        return [
+            "More complex strategies are always better",
+            "Past performance guarantees future results",
+            "Quantitative trading requires advanced mathematics",
+            "Automated trading eliminates all risk",
+            "You need large capital to start quantitative trading"
+        ]
+
+    def _count_sections(self, lines: list[str]) -> int:
+        """计算章节数量"""
+        return sum(1 for line in lines if line.startswith("## "))
