@@ -1,10 +1,13 @@
 # 实施计划
 
-## 状态标记规则
-- ✅ 已完成：项目已完全实现并通过测试
-- 🔄 进行中：项目正在开发中，部分功能已实现
-- ⏸️  暂停：项目因依赖或优先级调整暂时搁置
-- ❌ 未开始：项目尚未开始实施
+> 本文件用于维护 `beginner_quant_planning` 的计划拆解、范围说明和任务顺序。
+> 权威完成进度请查看 [beginner_quant_planning.md](/projects/vnpy/.codebuddy/task_list/beginner_quant_planning.md)。
+> 如计划结构调整，应同步更新对应 `task_list`；如仅完成状态变化，以 `task_list` 为准。
+
+## 使用说明
+- 本文件提供计划说明与任务拆解。
+- 是否已完成、进行中或暂停，以 `.codebuddy/task_list/beginner_quant_planning.md` 为准。
+- 若本文件中的勾选状态与 `task_list` 不一致，应以 `task_list` 为准，并在后续整理时修正本文件表达。
 
 - [x] 1. 建立结构化产物模型与编排接口 ✅
   - 在 `services/evaluation_hub/` 或相邻复用模块中新增研究证据、冲突观点、术语说明、计划阶段、候选观察项、风险预算、readiness checklist、工作流运行结果等模型

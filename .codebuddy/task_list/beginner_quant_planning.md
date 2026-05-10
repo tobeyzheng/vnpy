@@ -1,5 +1,10 @@
 ## beginner_quant_planning task_list
 
+> 对应计划：[task-item.md](/projects/vnpy/.codebuddy/plan/beginner_quant_planning/task-item.md)
+>
+> 本文件是 `beginner_quant_planning` 的权威完成进度记录；计划范围、需求背景和任务拆解以 `.codebuddy/plan/beginner_quant_planning/` 为准。
+> 若计划结构变化，应同步更新本文件的任务映射；若仅完成状态变化，优先更新本文件。
+
 - [x] 1. 建立结构化产物模型与编排接口
 - [x] 2. 实现本地能力注册表与阶段边界映射
 - [x] 3. 实现公开量化研究采集与证据标准化（当前为本地 fallback + 标准化接口，真实 LLM 执行链路仍待继续增强）

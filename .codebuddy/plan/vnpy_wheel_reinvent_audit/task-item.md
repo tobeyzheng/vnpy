@@ -4,6 +4,10 @@
 执行阶段严格按 S0 → S5 偏序推进，S0 先完成清理基线（含 scripts / services / state 全面精简），
 再进入功能迁移。清理顺序遵守"scripts 删除 → services 删除 → state 清理"偏序，避免孤儿 import。
 
+> 本文件用于维护 `vnpy_wheel_reinvent_audit` 的计划范围、任务拆解和执行顺序。
+> 权威完成进度请查看 [vnpy_wheel_reinvent_audit.md](/projects/vnpy/.codebuddy/task_list/vnpy_wheel_reinvent_audit.md)。
+> 如计划结构调整，应同步更新对应 `task_list`；如仅完成状态变化，以 `task_list` 为准。
+
 - [ ] 1. 新分支初始化与清理基线（S0）
 - [ ] 1.1 拉新分支 + 旧分支冻结打 tag
    - 从 `futu-dev-knot-setup` 拉出 `classic-vnpy-native-rewrite`，立即冻结旧分支

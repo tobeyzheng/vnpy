@@ -6,6 +6,8 @@
 >
 > 生成时间：2026-05-09。基础 commit：`5eb8cb09`（HEAD）。
 > 关联计划：`.codebuddy/plan/vnpy_wheel_reinvent_audit/task-item.md` Task 8。
+> 本文件位于 `.codebuddy/plan/`，用于维护 Task 8 的盘点范围与执行前置条件，不作为项目整体完成进度的权威来源。
+> 顶层完成进度请同步查看 [vnpy_wheel_reinvent_audit.md](/projects/vnpy/.codebuddy/task_list/vnpy_wheel_reinvent_audit.md)。
 
 ---
 

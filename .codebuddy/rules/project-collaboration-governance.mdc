@@ -10,9 +10,11 @@ provider:
 
 ## Plan item 状态同步
 
-- 已开始的 plan item、task item 或子任务，应在对应 markdown 中及时更新状态，不要长期停留在未开始状态。
-- 已完成的 plan item、task item 或子任务，应在同一轮改动内及时更新为已完成，并补充必要的当前焦点或阶段说明。
-- 若项目中存在 `.codebuddy/task_list/` 或其他计划 markdown，默认优先更新这些文件，保持记录可追踪。
+- `.codebuddy/plan/` 用于维护计划背景、需求、任务拆解、依赖关系和执行顺序；`.codebuddy/task_list/` 用于维护权威完成进度。
+- 同名计划应保持一一对应：如 `.codebuddy/plan/<plan_name>/` 存在，则应有 `.codebuddy/task_list/<plan_name>.md` 作为对应进度记录文件。
+- 判断某项是否“已完成 / 进行中 / 暂停”，以 `.codebuddy/task_list/` 中对应文件为准，不以 `plan` 目录下 markdown 的勾选状态为准。
+- 若计划结构、任务编号或任务名称发生变化，必须在同一轮改动内同步更新对应 `task_list` 的任务映射。
+- 若仅完成状态发生变化，默认只更新 `.codebuddy/task_list/`，并在需要时补充当前执行焦点或阶段说明。
 
 ## 历史操作文档记录
 
