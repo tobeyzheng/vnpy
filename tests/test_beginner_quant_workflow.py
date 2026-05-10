@@ -6,6 +6,7 @@ import sys
 import unittest
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -936,6 +937,134 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
 
         self.assertEqual(workflow_args.prepare_knot_runtime, "auto")
         self.assertEqual(prepare_args.knot_runtime, "auto")
+        self.assertFalse(workflow_args.auto_execute_backtests)
+        self.assertEqual(workflow_args.backtest_optimize_mode, "ga")
+        self.assertEqual(workflow_args.backtest_top_n, 20)
+
+    def test_quant_workflow_parser_accepts_automated_backtest_flags(self):
+        args = build_quant_workflow_parser().parse_args(
+            [
+                "--auto-execute-backtests",
+                "--backtest-optimize-mode",
+                "bf",
+                "--backtest-start",
+                "2024-01-01",
+                "--backtest-end",
+                "2024-12-31",
+                "--backtest-rate",
+                "0.0005",
+                "--backtest-slippage",
+                "0.02",
+                "--backtest-size",
+                "3",
+                "--backtest-pricetick",
+                "0.005",
+                "--backtest-top-n",
+                "8",
+                "--backtest-workers",
+                "2",
+            ]
+        )
+
+        self.assertTrue(args.auto_execute_backtests)
+        self.assertEqual(args.backtest_optimize_mode, "bf")
+        self.assertEqual(args.backtest_start, "2024-01-01")
+        self.assertEqual(args.backtest_end, "2024-12-31")
+        self.assertAlmostEqual(args.backtest_rate, 0.0005)
+        self.assertAlmostEqual(args.backtest_slippage, 0.02)
+        self.assertEqual(args.backtest_size, 3)
+        self.assertAlmostEqual(args.backtest_pricetick, 0.005)
+        self.assertEqual(args.backtest_top_n, 8)
+        self.assertEqual(args.backtest_workers, 2)
+
+    def test_quant_workflow_auto_executes_backtests_and_writes_reports(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            classic = runs / "classic_multifactor"
+            runs.mkdir(parents=True)
+            classic.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "NVDA.US",
+                            "market": "us",
+                            "name": "NVIDIA",
+                            "rationale": "AI leader with large-cap liquidity",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.84,
+                            "action_hint": "daily trend review",
+                            "signals": [{"score": 0.81, "summary": "trend intact"}],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            def fake_load_bars(symbol, start, end, interval):
+                return "NVDA.SMART", "US.NVDA", []
+
+            def fake_run(self, **kwargs):
+                return (
+                    {
+                        "status": "ok",
+                        "sharpe_ratio": 1.23,
+                        "return_drawdown_ratio": 1.8,
+                        "trade_count_runtime": 12,
+                        "start_date": kwargs["start"].date().isoformat(),
+                        "end_date": kwargs["end"].date().isoformat(),
+                        "sample_count": 252,
+                    },
+                    object(),
+                )
+
+            def fake_opt(self, **kwargs):
+                return [
+                    (
+                        {"fast_window": 10, "slow_window": 60, "momentum_window": 20, "atr_window": 14},
+                        1.23,
+                        {"status": "ok", "sharpe_ratio": 1.23},
+                    )
+                ]
+
+            with patch("scripts.quant_workflow.workflow_service.VnpyBarRepository.load_bars", side_effect=fake_load_bars), patch(
+                "scripts.quant_workflow.workflow_service.ClassicCtaBacktestRunner.run", new=fake_run
+            ), patch(
+                "scripts.quant_workflow.workflow_service.ClassicCtaBacktestRunner.run_optimization", new=fake_opt
+            ):
+                service = QuantWorkflowService(tmp_path)
+                result = service.run(
+                    profile={"preferred_market": "us", "risk_profile": "conservative", "capital": 25000},
+                    preferred_markets=["us"],
+                    mode="stage_only",
+                    stage="backtest",
+                    task_type="simulation",
+                    auto_execute_backtests=True,
+                    backtest_optimize_mode="bf",
+                    backtest_start="2024-01-01",
+                    backtest_end="2024-12-31",
+                    backtest_top_n=5,
+                )
+
+            backtest_payload = json.loads(Path(result["backtest_artifact"]).read_text(encoding="utf-8"))
+            summary = backtest_payload["meta"]["backtest_summary"]
+            entry = backtest_payload["meta"]["backtest_results"][0]
+
+            self.assertEqual(backtest_payload["meta"]["evidence_mode"], "vnpy_automated_execution")
+            self.assertEqual(summary["execution_mode"], "vnpy_automated_execution")
+            self.assertEqual(summary["executed_count"], 1)
+            self.assertEqual(entry["execution_mode"], "executed")
+            self.assertEqual(entry["optimize_mode"], "bf")
+            self.assertEqual(entry["status"], "ok")
+            self.assertEqual(entry["optimization_status"], "ok")
+            self.assertEqual(entry["best_params"]["fast_window"], 10)
+            self.assertTrue(Path(entry["backtest_report_path"]).exists())
+            self.assertTrue(Path(entry["optimization_report_path"]).exists())
+            self.assertEqual(Path(entry["backtest_report_path"]).name, "vnpy_cta_backtest_NVDA_US.json")
+            self.assertEqual(Path(entry["optimization_report_path"]).name, "vnpy_cta_sweep_NVDA_US.json")
 
     def test_quant_workflow_module_entrypoint_reexports_main(self):
         self.assertTrue(callable(quant_workflow_module.main))

@@ -15,5 +15,5 @@
 
 ### 当前执行焦点
 - 当前状态：`quant-workflow-refactor` 1-7 项已全部完成；`quant_workflow` 已收敛为 `candidate_prepare`（可选）→ `healthcheck` → `candidate_framework` → `backtest` → `readiness` 五阶段主链路，旧的 `preflight / research / planning / execution_boundary` 默认不再执行
-- 验证结果：已执行 `python3 -m pytest /projects/vnpy/tests/test_beginner_quant_workflow.py -q`，结果为 `26 passed, 1 warning`
-- 下一步：如需继续增强，可优先把当前 evidence-only `backtest` 阶段扩展为“可显式确认后触发真实回测”的可执行模式，并补充更多分钟级/港股场景的本地证据样例
+- 验证结果：本轮已补充“显式开启真实回测/自动扫参”相关代码与测试；待完成本轮回归后同步刷新这里的通过数
+- 当前补充能力：`backtest` 默认仍支持复用本地 evidence，但在显式开启 `auto_execute_backtests` 时，允许 workflow 为 observation target 自动拉取历史数据、执行真实 vn.py CTA backtest 与参数搜索，并把结果回写到 `state/runs/classic_multifactor/`

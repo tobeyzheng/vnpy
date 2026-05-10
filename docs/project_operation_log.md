@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-11**：为 `quant_workflow` 的 `backtest` 阶段补齐显式可执行的真实回测与自动扫参模式
+  - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[run_quant_workflow.py](/projects/vnpy/scripts/quant_workflow/run_quant_workflow.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)、[quant-workflow-refactor.md](/projects/vnpy/.codebuddy/task_list/quant-workflow-refactor.md)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：`quant_workflow` 的 `backtest` 阶段默认仍支持复用本地 `vnpy_cta_backtest_report.json` / `*sweep*.json`，但在显式开启 `auto_execute_backtests` 时，会改为为 observation target 自动拉取或复用历史 bars、执行真实 vn.py CTA backtest、执行 `bf|ga` 参数搜索，并把 per-symbol 报告写回 `state/runs/classic_multifactor/`；同时 `healthcheck` 会在该模式下允许“缺本地 backtest 报告先继续，由 backtest 阶段补生成”，artifact 也会记录 `execution_mode`、执行区间、参数搜索模式与新产物路径，便于后续 readiness 和人工复核。
+
 - **2026-05-11**：修复 `quant_workflow` 的港股市场别名过滤与 HK backtest target 规则
   - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

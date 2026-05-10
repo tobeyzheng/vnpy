@@ -104,15 +104,15 @@
       ]
     },
     "beginner_quant_candidate_framework": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_candidate_framework_artifact_20260511_071645_695482.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_candidate_framework_artifact_20260511_073411_602685.json",
       "artifact_type": "beginner_candidate_framework",
       "title": "Beginner Candidate Framework",
-      "generated_at": "2026-05-11T07:16:45.694643+08:00",
+      "generated_at": "2026-05-11T07:34:11.601901+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "beginner_candidate_framework",
         "title": "Beginner Candidate Framework",
-        "generated_at": "2026-05-11T07:16:45.694643+08:00",
+        "generated_at": "2026-05-11T07:34:11.601901+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
         "research_finding_count": 1,
@@ -126,7 +126,7 @@
         "slug": "beginner_quant_candidate_framework",
         "artifact_type": "beginner_candidate_framework",
         "version": "v1",
-        "generated_at": "2026-05-11T07:16:45.694643+08:00",
+        "generated_at": "2026-05-11T07:34:11.601901+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 3,
         "confirmation_requirement_count": 0,
@@ -235,5 +235,5 @@
       }
     }
   },
-  "updated_at": "2026-05-11T07:16:45.709115+08:00"
+  "updated_at": "2026-05-11T07:34:11.603871+08:00"
 }

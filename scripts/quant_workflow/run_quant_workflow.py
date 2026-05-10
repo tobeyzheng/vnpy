@@ -41,6 +41,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--prepare-candidates", action="store_true")
     parser.add_argument("--prepare-include-market-data", action="store_true")
     parser.add_argument("--prepare-knot-runtime", choices=["off", "local", "remote", "auto"], default="auto")
+    parser.add_argument("--auto-execute-backtests", action="store_true")
+    parser.add_argument("--backtest-optimize-mode", choices=["bf", "ga"], default="ga")
+    parser.add_argument("--backtest-start", default=None)
+    parser.add_argument("--backtest-end", default=None)
+    parser.add_argument("--backtest-rate", type=float, default=0.0003)
+    parser.add_argument("--backtest-slippage", type=float, default=0.05)
+    parser.add_argument("--backtest-size", type=int, default=1)
+    parser.add_argument("--backtest-pricetick", type=float, default=0.01)
+    parser.add_argument("--backtest-top-n", type=int, default=20)
+    parser.add_argument("--backtest-workers", type=int, default=None)
     return parser
 
 
@@ -96,6 +106,16 @@ def main() -> int:
         prepare_candidates=bool(args.prepare_candidates),
         prepare_include_market_data=bool(args.prepare_include_market_data),
         prepare_knot_runtime=str(args.prepare_knot_runtime or "auto"),
+        auto_execute_backtests=bool(args.auto_execute_backtests),
+        backtest_optimize_mode=str(args.backtest_optimize_mode or "ga"),
+        backtest_start=args.backtest_start,
+        backtest_end=args.backtest_end,
+        backtest_rate=float(args.backtest_rate),
+        backtest_slippage=float(args.backtest_slippage),
+        backtest_size=int(args.backtest_size),
+        backtest_pricetick=float(args.backtest_pricetick),
+        backtest_top_n=int(args.backtest_top_n),
+        backtest_workers=args.backtest_workers,
     )
     payload = _cli_summary(result, preset=workflow_args["preset"]) if args.summary_only else result
     print(json.dumps(payload, ensure_ascii=False, indent=2))

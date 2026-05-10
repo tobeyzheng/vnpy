@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from services.evaluation_hub import EvaluationHub
-from scripts.classic_multifactor.cta_backtest import ClassicCtaBacktestRunner, build_opt_setting
-from scripts.classic_multifactor.data import parse_symbol
+from scripts.classic_multifactor.cta_backtest import ClassicCtaBacktestRunner, build_opt_setting, dump_sweep_results
+from scripts.classic_multifactor.data import VnpyBarRepository, parse_symbol
 from vnpy_llm.base import beijing_now_isoformat
 from services.evaluation_hub.artifact_store import ArtifactStore
 from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
@@ -140,6 +140,7 @@ class QuantWorkflowService:
             mode=mode,
             task_type=task_type,
             requested_steps=requested_steps,
+            auto_execute_backtests=auto_execute_backtests,
         )
         health_step = self.store.build_step(
             step="healthcheck",
@@ -235,6 +236,16 @@ class QuantWorkflowService:
                 profile=profile,
                 preferred_markets=preferred_markets,
                 task_type=task_type,
+                auto_execute_backtests=auto_execute_backtests,
+                optimize_mode=backtest_optimize_mode,
+                backtest_start=backtest_start,
+                backtest_end=backtest_end,
+                backtest_rate=backtest_rate,
+                backtest_slippage=backtest_slippage,
+                backtest_size=backtest_size,
+                backtest_pricetick=backtest_pricetick,
+                backtest_top_n=backtest_top_n,
+                backtest_workers=backtest_workers,
             )
             backtest_entries = list(backtest_artifact.meta.get("backtest_results") or [])
             backtest_path = self.store.save_artifact(backtest_artifact, slug="beginner_quant_backtest")
@@ -346,7 +357,14 @@ class QuantWorkflowService:
             return self.STAGE_ONLY_STEPS.get(stage, self.STAGE_ONLY_STEPS["readiness"])
         return self.FULL_PLAN_STEPS
 
-    def _build_healthcheck(self, *, mode: str, task_type: str, requested_steps: list[str]) -> dict[str, Any]:
+    def _build_healthcheck(
+        self,
+        *,
+        mode: str,
+        task_type: str,
+        requested_steps: list[str],
+        auto_execute_backtests: bool = False,
+    ) -> dict[str, Any]:
         runs_root = self.repo_root / "state" / "runs"
         health_payload = self._load_health_snapshot(mode=mode)
         health_path = str(health_payload.get("path") or "")
@@ -418,7 +436,7 @@ class QuantWorkflowService:
             "backtest_report",
             path=str(backtest_path),
             exists=backtest_path.exists(),
-            required=requires_backtest,
+            required=bool(requires_backtest and not auto_execute_backtests),
             note="Local historical backtest report evidence.",
         )
         add_check(
@@ -478,6 +496,9 @@ class QuantWorkflowService:
         elif health_payload.get("status") == "unknown":
             warnings.append("No cached healthcheck artifact found; the workflow is using an offline placeholder.")
 
+        if requires_backtest and auto_execute_backtests and not backtest_path.exists():
+            warnings.append("No cached backtest report was found; the workflow will attempt to generate real backtest evidence during the backtest stage.")
+
         if task_type == "simulation":
             if requires_readiness and not sim_session_path.exists():
                 warnings.append("No simulation session report was found yet; simulation readiness can still proceed, but local session evidence remains incomplete.")
@@ -509,9 +530,35 @@ class QuantWorkflowService:
         profile: dict[str, Any],
         preferred_markets: list[str],
         task_type: str,
+        auto_execute_backtests: bool = False,
+        optimize_mode: str = "ga",
+        backtest_start: str | None = None,
+        backtest_end: str | None = None,
+        backtest_rate: float = 0.0003,
+        backtest_slippage: float = 0.05,
+        backtest_size: int = 1,
+        backtest_pricetick: float = 0.01,
+        backtest_top_n: int = 20,
+        backtest_workers: int | None = None,
     ) -> PlanningArtifact:
         backtest_targets = [item for item in observations if self._is_backtest_target_candidate(item)]
-        entries = [self._collect_backtest_entry(item) for item in backtest_targets]
+        entries = [
+            self._collect_backtest_entry(
+                item,
+                profile=profile,
+                auto_execute_backtests=auto_execute_backtests,
+                optimize_mode=optimize_mode,
+                backtest_start=backtest_start,
+                backtest_end=backtest_end,
+                backtest_rate=backtest_rate,
+                backtest_slippage=backtest_slippage,
+                backtest_size=backtest_size,
+                backtest_pricetick=backtest_pricetick,
+                backtest_top_n=backtest_top_n,
+                backtest_workers=backtest_workers,
+            )
+            for item in backtest_targets
+        ]
         ok_count = sum(1 for item in entries if item.get("status") == "ok")
         missing_count = sum(1 for item in entries if item.get("status") != "ok")
         optimized_count = sum(1 for item in entries if item.get("best_params"))
@@ -519,6 +566,7 @@ class QuantWorkflowService:
         if not backtest_targets:
             warnings.append("No observation target is currently marked as backtest-ready.")
         status = "ok" if ok_count > 0 and missing_count == 0 else ("warning" if ok_count > 0 else "blocked")
+        evidence_mode = "vnpy_automated_execution" if auto_execute_backtests else "local_artifact_reuse"
         summary = {
             "status": status,
             "task_type": task_type,
@@ -528,12 +576,14 @@ class QuantWorkflowService:
             "optimized_count": optimized_count,
             "daily_count": sum(1 for item in entries if item.get("trading_level") == "daily"),
             "minute_count": sum(1 for item in entries if item.get("trading_level") == "minute"),
+            "execution_mode": evidence_mode,
+            "executed_count": sum(1 for item in entries if item.get("execution_mode") == "executed"),
         }
         findings = [
             ResearchFinding(
                 topic="workflow_backtest_summary",
                 conclusion=(
-                    f"Collected historical backtest evidence for {len(backtest_targets)} observation target(s): "
+                    f"Collected backtest evidence for {len(backtest_targets)} observation target(s): "
                     f"{ok_count} with report evidence, {optimized_count} with optimization evidence, and {missing_count} still missing local backtest artifacts."
                 ),
                 evidence_level="mid" if ok_count else "low",
@@ -578,7 +628,7 @@ class QuantWorkflowService:
                 "backtest_summary": summary,
                 "backtest_warnings": list(dict.fromkeys(warnings)),
                 "preferred_markets": list(preferred_markets),
-                "evidence_mode": "local_artifact_reuse",
+                "evidence_mode": evidence_mode,
                 "next_step_suggestions": self._backtest_suggestions(entries),
             },
         )
@@ -588,18 +638,53 @@ class QuantWorkflowService:
         ]
         return artifact
 
-    def _collect_backtest_entry(self, observation: Any) -> dict[str, Any]:
+    def _collect_backtest_entry(
+        self,
+        observation: Any,
+        *,
+        profile: dict[str, Any],
+        auto_execute_backtests: bool,
+        optimize_mode: str,
+        backtest_start: str | None,
+        backtest_end: str | None,
+        backtest_rate: float,
+        backtest_slippage: float,
+        backtest_size: int,
+        backtest_pricetick: float,
+        backtest_top_n: int,
+        backtest_workers: int | None,
+    ) -> dict[str, Any]:
         trading_level = str(observation.meta.get("trading_level") or "needs_review")
         preferred_interval = "1m" if trading_level == "minute" else "1d"
+        search_space = self._default_search_space(trading_level)
         report_payload, report_path = self._find_backtest_report(observation.symbol)
         optimization_payload, optimization_path, optimization_entry = self._find_optimization_payload(observation.symbol)
+        execution_meta: dict[str, Any] = {"execution_mode": "reused"}
+        if auto_execute_backtests and (not report_payload or not optimization_entry):
+            execution_meta = self._execute_real_backtest(
+                observation,
+                profile=profile,
+                preferred_interval=preferred_interval,
+                search_space=search_space,
+                optimize_mode=optimize_mode,
+                backtest_start=backtest_start,
+                backtest_end=backtest_end,
+                backtest_rate=backtest_rate,
+                backtest_slippage=backtest_slippage,
+                backtest_size=backtest_size,
+                backtest_pricetick=backtest_pricetick,
+                backtest_top_n=backtest_top_n,
+                backtest_workers=backtest_workers,
+            )
+            report_payload, report_path = self._find_backtest_report(observation.symbol)
+            optimization_payload, optimization_path, optimization_entry = self._find_optimization_payload(observation.symbol)
         metrics = self._extract_backtest_metrics(report_payload)
         sample_period = {
             "start": report_payload.get("start") or metrics.get("start_date") or metrics.get("start") or "",
             "end": report_payload.get("end") or metrics.get("end_date") or metrics.get("end") or "",
         }
         best_params = dict(optimization_entry.get("params") or {}) if optimization_entry else {}
-        warnings: list[str] = []
+        warnings: list[str] = list(execution_meta.get("warnings") or [])
         if not report_payload:
             warnings.append(f"No local backtest report was found for {observation.symbol}.")
         if report_payload and not best_params:
@@ -610,7 +695,7 @@ class QuantWorkflowService:
             "selected_as": observation.selected_as,
             "trading_level": trading_level,
             "preferred_interval": preferred_interval,
-            "search_space": self._default_search_space(trading_level),
+            "search_space": search_space,
             "status": "ok" if report_payload else "missing",
             "backtest_report_path": report_path,
             "optimization_report_path": optimization_path,
@@ -619,7 +704,270 @@ class QuantWorkflowService:
             "performance": metrics,
             "sample_period": sample_period,
             "warnings": warnings,
+            "execution_mode": execution_meta.get("execution_mode") or "reused",
+            "execution_start": execution_meta.get("execution_start") or sample_period.get("start") or "",
+            "execution_end": execution_meta.get("execution_end") or sample_period.get("end") or "",
+            "execution_errors": list(execution_meta.get("errors") or []),
+            "capital": execution_meta.get("capital"),
+            "rate": execution_meta.get("rate", backtest_rate),
+            "slippage": execution_meta.get("slippage", backtest_slippage),
+            "size": execution_meta.get("size", backtest_size),
+            "pricetick": execution_meta.get("pricetick", backtest_pricetick),
+            "optimize_mode": execution_meta.get("optimize_mode") or optimize_mode,
         }
+
+    def _execute_real_backtest(
+        self,
+        observation: Any,
+        *,
+        profile: dict[str, Any],
+        preferred_interval: str,
+        search_space: dict[str, list[Any]],
+        optimize_mode: str,
+        backtest_start: str | None,
+        backtest_end: str | None,
+        backtest_rate: float,
+        backtest_slippage: float,
+        backtest_size: int,
+        backtest_pricetick: float,
+        backtest_top_n: int,
+        backtest_workers: int | None,
+    ) -> dict[str, Any]:
+        symbol = str(observation.symbol)
+        runtime = self._resolve_backtest_runtime(
+            observation,
+            profile=profile,
+            preferred_interval=preferred_interval,
+            backtest_start=backtest_start,
+            backtest_end=backtest_end,
+            backtest_rate=backtest_rate,
+            backtest_slippage=backtest_slippage,
+            backtest_size=backtest_size,
+            backtest_pricetick=backtest_pricetick,
+        )
+        result: dict[str, Any] = {
+            "execution_mode": "executed",
+            "execution_start": runtime["start"].date().isoformat(),
+            "execution_end": runtime["end"].date().isoformat(),
+            "warnings": [],
+            "errors": [],
+            "capital": runtime["capital"],
+            "rate": runtime["rate"],
+            "slippage": runtime["slippage"],
+            "size": runtime["size"],
+            "pricetick": runtime["pricetick"],
+            "optimize_mode": optimize_mode,
+        }
+        try:
+            VnpyBarRepository(fetch_futu_history=True).load_bars(
+                symbol,
+                runtime["start"],
+                runtime["end"],
+                preferred_interval,
+            )
+            runner = ClassicCtaBacktestRunner()
+            setting = self._default_backtest_setting(observation, runtime["capital"], preferred_interval)
+            stats, _engine = runner.run(
+                vt_symbol=runtime["vt_symbol"],
+                interval=preferred_interval,
+                start=runtime["start"],
+                end=runtime["end"],
+                capital=runtime["capital"],
+                rate=runtime["rate"],
+                slippage=runtime["slippage"],
+                size=runtime["size"],
+                pricetick=runtime["pricetick"],
+                setting=setting,
+            )
+            backtest_path = self._write_backtest_report(
+                symbol=symbol,
+                vt_symbol=runtime["vt_symbol"],
+                interval=preferred_interval,
+                start=runtime["start"],
+                end=runtime["end"],
+                setting=setting,
+                stats=stats,
+            )
+            result["backtest_report_path"] = str(backtest_path)
+            if stats.get("status") != "ok":
+                result["warnings"].append(
+                    f"Real backtest for {symbol} finished without an ok status: {stats.get('status') or 'unknown'}."
+                )
+                return result
+            opt_specs = self._build_opt_param_specs(search_space)
+            opt_setting = build_opt_setting("sharpe_ratio", opt_specs)
+            sweep_results = runner.run_optimization(
+                vt_symbol=runtime["vt_symbol"],
+                interval=preferred_interval,
+                start=runtime["start"],
+                end=runtime["end"],
+                capital=runtime["capital"],
+                rate=runtime["rate"],
+                slippage=runtime["slippage"],
+                size=runtime["size"],
+                pricetick=runtime["pricetick"],
+                base_setting=setting,
+                opt_setting=opt_setting,
+                mode=optimize_mode,
+                max_workers=backtest_workers,
+                ga_kwargs={},
+            )
+            sweep_path = self._write_sweep_report(
+                symbol=symbol,
+                vt_symbol=runtime["vt_symbol"],
+                interval=preferred_interval,
+                start=runtime["start"],
+                end=runtime["end"],
+                base_setting=setting,
+                search_space=search_space,
+                results=sweep_results,
+                optimize_mode=optimize_mode,
+                top_n=backtest_top_n,
+            )
+            result["optimization_report_path"] = str(sweep_path)
+            if not sweep_results:
+                result["warnings"].append(f"Optimization for {symbol} completed without any ranked parameter result.")
+        except Exception as exc:
+            result["errors"].append(str(exc))
+            result["warnings"].append(f"Real backtest execution failed for {symbol}: {exc}")
+        return result
+
+    def _resolve_backtest_runtime(
+        self,
+        observation: Any,
+        *,
+        profile: dict[str, Any],
+        preferred_interval: str,
+        backtest_start: str | None,
+        backtest_end: str | None,
+        backtest_rate: float,
+        backtest_slippage: float,
+        backtest_size: int,
+        backtest_pricetick: float,
+    ) -> dict[str, Any]:
+        _market, _input_form, vt_symbol, _futu_code = parse_symbol(str(observation.symbol))
+        end_text = str(backtest_end or datetime.now().date().isoformat())
+        start_text = str(backtest_start or ((datetime.fromisoformat(end_text) - timedelta(days=365)).date().isoformat()))
+        return {
+            "vt_symbol": vt_symbol,
+            "start": datetime.fromisoformat(start_text),
+            "end": datetime.fromisoformat(end_text),
+            "capital": float(profile.get("capital") or 20000.0),
+            "rate": float(backtest_rate),
+            "slippage": float(backtest_slippage),
+            "size": int(backtest_size),
+            "pricetick": float(backtest_pricetick),
+        }
+
+    def _default_backtest_setting(self, observation: Any, capital: float, preferred_interval: str) -> dict[str, Any]:
+        setting: dict[str, Any] = {
+            "capital": float(capital),
+            "max_order_value": min(float(capital) * 0.35, 5000.0),
+        }
+        if preferred_interval == "1m":
+            setting.update(
+                {
+                    "signal_interval_minutes": 5,
+                    "entry_score": 0.64,
+                    "max_intraday_trades": 4,
+                }
+            )
+        else:
+            setting.update(
+                {
+                    "fast_window": 10,
+                    "slow_window": 60,
+                    "momentum_window": 20,
+                    "atr_window": 14,
+                }
+            )
+        raw_score = observation.meta.get("raw_score")
+        if raw_score is None:
+            raw_score = getattr(observation, "raw_score", 0.0)
+        if raw_score is not None:
+            setting["raw_score"] = float(raw_score)
+        return setting
+
+    def _build_opt_param_specs(self, search_space: dict[str, list[Any]]) -> list[str]:
+        specs: list[str] = []
+        for key, values in search_space.items():
+            if not values:
+                continue
+            if len(values) == 1:
+                specs.append(f"{key}={values[0]}")
+                continue
+            start = values[0]
+            end = values[-1]
+            step = values[1] - values[0] if len(values) > 1 else 1
+            specs.append(f"{key}={start}:{end}:{step}")
+        return specs
+
+    def _write_backtest_report(
+        self,
+        *,
+        symbol: str,
+        vt_symbol: str,
+        interval: str,
+        start: datetime,
+        end: datetime,
+        setting: dict[str, Any],
+        stats: dict[str, Any],
+    ) -> Path:
+        root = self.repo_root / "state" / "runs" / "classic_multifactor"
+        root.mkdir(parents=True, exist_ok=True)
+        safe_symbol = symbol.replace(".", "_").replace("/", "_")
+        symbol_path = root / f"vnpy_cta_backtest_{safe_symbol}.json"
+        latest_path = root / "vnpy_cta_backtest_report.json"
+        report = {
+            "strategy": "classic_multifactor_no_llm_vnpy_cta",
+            "symbol": symbol,
+            "vt_symbol": vt_symbol,
+            "interval": interval,
+            "start": start.isoformat(),
+            "end": end.isoformat(),
+            "setting": setting,
+            "stats": stats,
+        }
+        payload = json.dumps(report, ensure_ascii=False, indent=2, default=str)
+        symbol_path.write_text(payload, encoding="utf-8")
+        latest_path.write_text(payload, encoding="utf-8")
+        return symbol_path
+
+    def _write_sweep_report(
+        self,
+        *,
+        symbol: str,
+        vt_symbol: str,
+        interval: str,
+        start: datetime,
+        end: datetime,
+        base_setting: dict[str, Any],
+        search_space: dict[str, list[Any]],
+        results: list[tuple],
+        optimize_mode: str,
+        top_n: int,
+    ) -> Path:
+        root = self.repo_root / "state" / "runs" / "classic_multifactor"
+        root.mkdir(parents=True, exist_ok=True)
+        safe_symbol = symbol.replace(".", "_").replace("/", "_")
+        symbol_path = root / f"vnpy_cta_sweep_{safe_symbol}.json"
+        latest_path = root / "vnpy_cta_sweep_report.json"
+        dump_sweep_results(
+            results=results,
+            output_path=symbol_path,
+            mode=optimize_mode,
+            target="sharpe_ratio",
+            symbol=symbol,
+            vt_symbol=vt_symbol,
+            interval=interval,
+            start=start,
+            end=end,
+            base_setting=base_setting,
+            sweep_space=search_space,
+            top_n=int(top_n),
+        )
+        latest_path.write_text(symbol_path.read_text(encoding="utf-8"), encoding="utf-8")
+        return symbol_path
 
     def _find_backtest_report(self, symbol: str) -> tuple[dict[str, Any], str]:
         root = self.repo_root / "state" / "runs" / "classic_multifactor"
@@ -629,12 +977,13 @@ class QuantWorkflowService:
         exact_path = ""
         fallback_payload: dict[str, Any] = {}
         fallback_path = ""
+        normalized_symbol = symbol.upper()
         for path in sorted(root.glob("*backtest*.json")):
             payload = self._safe_load_json(path)
             if not payload:
                 continue
             payload_symbol = str(payload.get("symbol") or "").upper()
-            if payload_symbol == symbol.upper():
+            if payload_symbol == normalized_symbol:
                 return payload, str(path)
             if not fallback_payload and path.name == "vnpy_cta_backtest_report.json":
                 fallback_payload = payload
@@ -648,17 +997,22 @@ class QuantWorkflowService:
         root = self.repo_root / "state" / "runs" / "classic_multifactor"
         if not root.exists():
             return {}, "", {}
+        normalized_symbol = symbol.upper()
         for path in sorted(root.glob("*sweep*.json")):
             payload = self._safe_load_json(path)
             if not payload:
                 continue
+            if str(payload.get("symbol") or "").upper() == normalized_symbol:
+                best_items = list(payload.get("per_symbol_best") or [])
+                if best_items:
+                    return payload, str(path), dict(best_items[0])
             best_items = list(payload.get("per_symbol_best") or [])
             for item in best_items:
-                if str(item.get("symbol") or "").upper() == symbol.upper():
+                if str(item.get("symbol") or "").upper() == normalized_symbol:
                     return payload, str(path), dict(item)
             ranking = list(payload.get("global_ranking") or [])
             for item in ranking:
-                if str(item.get("symbol") or "").upper() == symbol.upper():
+                if str(item.get("symbol") or "").upper() == normalized_symbol:
                     return payload, str(path), dict(item)
         return {}, "", {}
 
@@ -698,6 +1052,8 @@ class QuantWorkflowService:
                 suggestions.append(f"Generate a historical backtest report for {item['symbol']} before using it in readiness gating.")
             elif not item.get("best_params"):
                 suggestions.append(f"Add optimization evidence for {item['symbol']} so the workflow can keep a traceable best-parameter record.")
+            elif item.get("execution_mode") == "executed":
+                suggestions.append(f"Review the freshly generated best parameters for {item['symbol']} and confirm they are still appropriate for the intended {item['preferred_interval']} cadence.")
             else:
                 suggestions.append(f"Reuse the stored best parameters for {item['symbol']} and verify they still match the intended {item['preferred_interval']} review cadence.")
         return list(dict.fromkeys(suggestions))
