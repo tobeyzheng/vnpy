@@ -11,6 +11,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from services.evaluation_hub import CapabilityRegistry
 from services.evaluation_hub.candidate_framework import BeginnerCandidateFramework
+from services.evaluation_hub.doc_renderer import BeginnerExplanationRenderer
 from services.evaluation_hub.plan_generator import BeginnerPlanGenerator
 from services.evaluation_hub.readiness_gate import ReadinessGateService
 from scripts.quant_workflow.workflow_service import QuantWorkflowService
@@ -85,6 +86,27 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertTrue(any(item["field"] == "preferred_market" for item in diffs))
         self.assertTrue(any(item["field"] == "risk_profile" for item in diffs))
 
+    def test_renderer_includes_plan_differences_and_next_steps(self):
+        generator = BeginnerPlanGenerator()
+        renderer = BeginnerExplanationRenderer()
+        previous = generator.build_plan(profile={"preferred_market": "us", "risk_profile": "conservative"}, observations=[])
+        current = generator.build_plan(
+            profile={"preferred_market": "hong_kong", "risk_profile": "moderate"},
+            observations=[],
+            previous_plan=previous,
+        )
+        current.meta["previous_plan_loaded"] = True
+        current.meta["next_step_suggestions"] = ["Resolve readiness failures before upgrading to the next stage."]
+
+        markdown = renderer.render_markdown(current).body
+        payload = json.loads(renderer.render_json(current).body)
+
+        self.assertIn("### What changed from the previous plan", markdown)
+        self.assertIn("preferred_market", markdown)
+        self.assertIn("### Next actions", markdown)
+        self.assertTrue(any("preferred_market" in item for item in payload["plan_differences"]))
+        self.assertIn("Resolve readiness failures before upgrading to the next stage.", payload["next_actions"])
+
     def test_quant_workflow_service_runs_in_plan_mode(self):
         from tempfile import TemporaryDirectory
 
@@ -117,6 +139,46 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertTrue(Path(result["plan_artifact"]).exists())
             self.assertTrue(Path(result["workflow_report"]).exists())
             self.assertTrue(any(step["step"] == "execution_boundary" for step in result["steps"]))
+
+    def test_quant_workflow_second_run_loads_previous_plan_and_records_differences(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as temp_dir:
+            tmp_path = Path(temp_dir)
+            runs = tmp_path / "state" / "runs"
+            runs.mkdir(parents=True)
+            (runs / "candidate_inputs.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "symbol": "NVDA.US",
+                            "market": "us",
+                            "name": "NVIDIA",
+                            "rationale": "AI leader with large-cap liquidity",
+                            "risk": "valuation sensitivity",
+                            "raw_score": 0.84,
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            service = QuantWorkflowService(tmp_path)
+            first = service.run(profile={"preferred_market": "us", "risk_profile": "conservative"}, preferred_markets=["us"], stage="research")
+            second = service.run(profile={"preferred_market": "hong_kong", "risk_profile": "moderate"}, preferred_markets=["us"], stage="research")
+
+            first_plan = json.loads(Path(first["plan_artifact"]).read_text(encoding="utf-8"))
+            second_plan = json.loads(Path(second["plan_artifact"]).read_text(encoding="utf-8"))
+            planning_steps = [step for step in second["steps"] if step["step"] == "planning"]
+
+            self.assertTrue(second_plan["meta"]["previous_plan_loaded"])
+            self.assertTrue(any(item["field"] == "preferred_market" for item in second_plan["meta"].get("plan_differences", [])))
+            self.assertNotEqual(first["plan_artifact"], second["plan_artifact"])
+            self.assertTrue(planning_steps[0]["meta"]["previous_plan_loaded"])
+            self.assertTrue(any(item["field"] == "preferred_market" for item in planning_steps[0]["meta"]["plan_differences"]))
+            self.assertTrue(second_plan["rendered_documents"])
+            self.assertIn("What changed from the previous plan", second_plan["rendered_documents"][0]["body"])
+            self.assertIn("Next actions", second_plan["rendered_documents"][0]["body"])
 
     def test_quant_workflow_research_only_mode_limits_steps(self):
         from tempfile import TemporaryDirectory

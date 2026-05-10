@@ -77,8 +77,7 @@ class QuantWorkflowService:
                 "blocking_reasons": preflight["blocking_reasons"],
             },
         )
-        steps.append(preflight_step)
-        warnings.extend(preflight_step.warnings)
+        self._append_step(steps=steps, warnings=warnings, step=preflight_step)
 
         if preflight_step.status == "blocked":
             return self._finalize_workflow(
@@ -101,8 +100,7 @@ class QuantWorkflowService:
             warnings=[alert.get("message", "") for alert in health.get("alerts", []) if alert.get("message")],
             meta={"requires_confirmation": False, "status": health.get("status"), "source": health.get("source")},
         )
-        steps.append(health_step)
-        warnings.extend(health_step.warnings)
+        self._append_step(steps=steps, warnings=warnings, step=health_step)
 
         capability_map = self.registry.list_all()
         stage_capabilities = self.registry.select_for_stage(stage, include_unsafe=True)
@@ -120,8 +118,7 @@ class QuantWorkflowService:
                 "available_stages": {key: [item.capability_id for item in value] for key, value in stage_map.items()},
             },
         )
-        steps.append(capabilities_step)
-        warnings.extend(capabilities_step.warnings)
+        self._append_step(steps=steps, warnings=warnings, step=capabilities_step)
 
         research_artifact: PlanningArtifact | None = None
         if "research" in requested_steps:
@@ -135,15 +132,14 @@ class QuantWorkflowService:
             research_path = self.store.save_artifact(research_artifact, slug="beginner_quant_research")
             artifact_paths["research_artifact"] = str(research_path)
             outputs.append(str(research_path))
-            steps.append(
-                self.store.build_step(
-                    step="research",
-                    status="ok",
-                    message="Generated beginner research artifact and readable documents.",
-                    outputs=[str(research_path)],
-                    meta={"requires_confirmation": False},
-                )
+            research_step = self.store.build_step(
+                step="research",
+                status="ok",
+                message="Generated beginner research artifact and readable documents.",
+                outputs=[str(research_path)],
+                meta={"requires_confirmation": False},
             )
+            self._append_step(steps=steps, warnings=warnings, step=research_step)
 
         observations = []
         if any(step_name in requested_steps for step_name in {"candidate_framework", "planning"}):
@@ -159,19 +155,18 @@ class QuantWorkflowService:
             )
             observation_summary = self.candidate_framework.summary(observations)
             if "candidate_framework" in requested_steps:
-                steps.append(
-                    self.store.build_step(
-                        step="candidate_framework",
-                        status="ok" if observations else "warning",
-                        message="Built candidate observation list.",
-                        warnings=[] if observations else ["No candidate observations were produced from the current local inputs."],
-                        meta={
-                            "requires_confirmation": False,
-                            "summary": observation_summary,
-                            "next_actions": self.candidate_framework.suggest_next_actions(observations),
-                        },
-                    )
+                candidate_step = self.store.build_step(
+                    step="candidate_framework",
+                    status="ok" if observations else "warning",
+                    message="Built candidate observation list.",
+                    warnings=[] if observations else ["No candidate observations were produced from the current local inputs."],
+                    meta={
+                        "requires_confirmation": False,
+                        "summary": observation_summary,
+                        "next_actions": self.candidate_framework.suggest_next_actions(observations),
+                    },
                 )
+                self._append_step(steps=steps, warnings=warnings, step=candidate_step)
 
         backtest_report: dict[str, Any] = {}
         backtest_metadata: dict[str, Any] = {}
@@ -181,34 +176,34 @@ class QuantWorkflowService:
             backtest_metadata = self.readiness_gate.normalize_backtest_report(backtest_report) if backtest_report else {}
             backtest_checklist = self.readiness_gate.validate_backtest_metadata(backtest_metadata) if backtest_metadata else None
             if "backtest_validation" in requested_steps:
-                validation_warnings = []
+                validation_warnings: list[str] = []
                 if not backtest_report:
                     validation_warnings.append("No local vn.py backtest report was found for validation.")
                 elif backtest_checklist is not None:
                     validation_warnings.extend(item.details for item in backtest_checklist.failed_items() if item.details)
-                steps.append(
-                    self.store.build_step(
-                        step="backtest_validation",
-                        status="ok" if backtest_checklist and backtest_checklist.passed else "warning",
-                        message="Collected local backtest metadata for stage validation.",
-                        outputs=["state/runs/classic_multifactor/vnpy_cta_backtest_report.json"] if backtest_report else [],
-                        warnings=validation_warnings,
-                        meta={
-                            "requires_confirmation": False,
-                            "backtest_metadata": backtest_metadata,
-                        },
-                    )
+                validation_step = self.store.build_step(
+                    step="backtest_validation",
+                    status="ok" if backtest_checklist and backtest_checklist.passed else "warning",
+                    message="Collected local backtest metadata for stage validation.",
+                    outputs=["state/runs/classic_multifactor/vnpy_cta_backtest_report.json"] if backtest_report else [],
+                    warnings=validation_warnings,
+                    meta={
+                        "requires_confirmation": False,
+                        "backtest_metadata": backtest_metadata,
+                    },
                 )
+                self._append_step(steps=steps, warnings=warnings, step=validation_step)
 
         plan_artifact: PlanningArtifact | None = None
         if "planning" in requested_steps:
-            plan_artifact = self.plan_generator.build_plan(profile=profile, observations=observations)
+            previous_plan = self.store.load_previous_plan(slug="beginner_quant_plan")
+            plan_artifact = self.plan_generator.build_plan(
+                profile=profile,
+                observations=observations,
+                previous_plan=previous_plan,
+            )
             plan_artifact.capability_map = capability_map
             plan_artifact.capability_gaps = capability_gaps
-            plan_artifact.rendered_documents = [
-                self.renderer.render_markdown(plan_artifact),
-                self.renderer.render_json(plan_artifact),
-            ]
             readiness = self.readiness_gate.build_stage_checklist(
                 stage=stage,
                 health_status=str(health.get("status") or "ok"),
@@ -219,40 +214,56 @@ class QuantWorkflowService:
                 capability_gaps=[gap.capability_id for gap in capability_gaps if gap.expected_path.startswith("scripts/run_hk")],
             )
             plan_artifact.readiness = readiness
+            plan_artifact.meta.setdefault("profile", profile)
+            plan_artifact.meta["current_stage"] = stage
+            plan_artifact.meta["workflow_mode"] = mode
+            plan_artifact.meta["previous_plan_loaded"] = previous_plan is not None
+            if previous_plan is not None:
+                plan_artifact.meta["previous_plan_generated_at"] = previous_plan.generated_at
+                plan_artifact.meta["previous_plan_version"] = previous_plan.version
+            plan_artifact.meta["next_step_suggestions"] = self._build_next_step_suggestions(
+                artifact=plan_artifact,
+                stage=stage,
+            )
+            plan_artifact.rendered_documents = [
+                self.renderer.render_markdown(plan_artifact),
+                self.renderer.render_json(plan_artifact),
+            ]
             plan_path = self.store.save_artifact(plan_artifact, slug="beginner_quant_plan")
             artifact_paths["plan_artifact"] = str(plan_path)
             outputs.append(str(plan_path))
             block_upgrade, reasons = self.readiness_gate.should_block_upgrade(readiness)
-            steps.append(
-                self.store.build_step(
-                    step="planning",
-                    status="ok" if not block_upgrade else "blocked",
-                    message="Generated personal beginner plan and readiness checklist.",
-                    outputs=[str(plan_path)],
-                    warnings=reasons,
-                    meta={
-                        "requires_confirmation": False,
-                        "minimum_observation_requirements": self.readiness_gate.minimum_observation_requirements(stage),
-                    },
-                )
+            planning_step = self.store.build_step(
+                step="planning",
+                status="ok" if not block_upgrade else "blocked",
+                message="Generated personal beginner plan and readiness checklist.",
+                outputs=[str(plan_path)],
+                warnings=reasons,
+                meta={
+                    "requires_confirmation": False,
+                    "minimum_observation_requirements": self.readiness_gate.minimum_observation_requirements(stage),
+                    "plan_differences": list(plan_artifact.meta.get("plan_differences") or []),
+                    "previous_plan_loaded": previous_plan is not None,
+                    "next_step_suggestions": list(plan_artifact.meta.get("next_step_suggestions") or []),
+                    "readiness_failed_items": [item.name for item in readiness.failed_items()],
+                },
             )
-            warnings.extend(reasons)
+            self._append_step(steps=steps, warnings=warnings, step=planning_step)
 
         if "execution_boundary" in requested_steps:
             execution_caps = [cap for cap in capability_map if cap.stage in {"simulation", "live"}]
             if execution_caps:
-                steps.append(
-                    self.store.build_step(
-                        step="execution_boundary",
-                        status="planned",
-                        message="Execution-capable entries were detected but not run.",
-                        warnings=[f"Confirmation required before using {cap.path}" for cap in execution_caps],
-                        meta={
-                            "requires_confirmation": True,
-                            "capabilities": [cap.capability_id for cap in execution_caps],
-                        },
-                    )
+                execution_step = self.store.build_step(
+                    step="execution_boundary",
+                    status="planned",
+                    message="Execution-capable entries were detected but not run.",
+                    warnings=[f"Confirmation required before using {cap.path}" for cap in execution_caps],
+                    meta={
+                        "requires_confirmation": True,
+                        "capabilities": [cap.capability_id for cap in execution_caps],
+                    },
                 )
+                self._append_step(steps=steps, warnings=warnings, step=execution_step)
                 warnings.extend([f"Execution not started: {cap.path}" for cap in execution_caps])
 
         assumptions = self._collect_assumptions(plan_artifact=plan_artifact, research_artifact=research_artifact)
@@ -266,6 +277,16 @@ class QuantWorkflowService:
             assumptions=assumptions,
             artifact_paths=artifact_paths,
         )
+
+    def _append_step(
+        self,
+        *,
+        steps: list[WorkflowStepResult],
+        warnings: list[str],
+        step: WorkflowStepResult,
+    ) -> None:
+        steps.append(step)
+        warnings.extend(step.warnings)
 
     def _resolve_requested_steps(self, *, mode: str, stage: str) -> tuple[str, ...]:
         if mode == "research_only":
@@ -350,6 +371,23 @@ class QuantWorkflowService:
             "blocking_reasons": blocking_reasons,
             "checks": checks,
         }
+
+    def _build_next_step_suggestions(self, *, artifact: PlanningArtifact, stage: str) -> list[str]:
+        suggestions = list(artifact.execution_suggestions)
+        if artifact.readiness and not artifact.readiness.passed:
+            suggestions.append("Resolve readiness failures before upgrading to the next stage.")
+        if artifact.capability_gaps:
+            suggestions.append("Keep capability gaps visible and use manual alternatives where needed.")
+        minimums = self.readiness_gate.minimum_observation_requirements(stage)
+        if minimums.get("minimum_simulation_days", 0) > 0:
+            suggestions.append(
+                f"Stay in observation/simulation mode for at least {minimums['minimum_observation_days']} observation days and {minimums['minimum_simulation_days']} simulation days before stage upgrade."
+            )
+        else:
+            suggestions.append(
+                f"Maintain at least {minimums['minimum_observation_days']} observation days before changing the workflow scope."
+            )
+        return list(dict.fromkeys(suggestions))
 
     def _collect_assumptions(
         self,

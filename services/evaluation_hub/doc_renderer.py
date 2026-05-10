@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
-from typing import Iterable
 
 from .models import ExplanationSection, PlanningArtifact, RenderedDocument, TerminologyItem
 
@@ -31,6 +30,10 @@ class BeginnerExplanationRenderer:
         for item in self._practice_order(artifact):
             lines.append(f"- {item}")
         lines.append("")
+        lines.append("### Current assumptions")
+        for item in self._assumption_lines(artifact):
+            lines.append(f"- {item}")
+        lines.append("")
         lines.append("### Knowledge sections")
         for section in artifact.knowledge_sections:
             lines.extend(self._render_section(section))
@@ -51,6 +54,18 @@ class BeginnerExplanationRenderer:
         for item in self._minimum_viable_start(artifact):
             lines.append(f"- {item}")
         lines.append("")
+        lines.append("### Readiness checkpoints")
+        for item in self._readiness_lines(artifact):
+            lines.append(f"- {item}")
+        lines.append("")
+        lines.append("### What changed from the previous plan")
+        for item in self._plan_difference_lines(artifact):
+            lines.append(f"- {item}")
+        lines.append("")
+        lines.append("### Next actions")
+        for item in self._next_steps(artifact):
+            lines.append(f"- {item}")
+        lines.append("")
         lines.append("### Local system boundaries")
         for item in self._local_limits(artifact):
             lines.append(f"- {item}")
@@ -59,7 +74,7 @@ class BeginnerExplanationRenderer:
             title=f"{artifact.title} (markdown)",
             format="markdown",
             body=body,
-            section_count=max(len(artifact.knowledge_sections), 1) + 5,
+            section_count=max(len(artifact.knowledge_sections), 1) + 9,
             version=version,
             generated_at=generated_at,
         )
@@ -83,15 +98,19 @@ class BeginnerExplanationRenderer:
                 for finding in artifact.research_findings
             ],
             "practice_order": self._practice_order(artifact),
+            "assumptions": self._assumption_lines(artifact),
             "common_pitfalls": self._common_pitfalls(artifact),
             "minimum_viable_start": self._minimum_viable_start(artifact),
+            "readiness": self._readiness_lines(artifact),
+            "plan_differences": self._plan_difference_lines(artifact),
+            "next_actions": self._next_steps(artifact),
             "local_limits": self._local_limits(artifact),
         }
         return RenderedDocument(
             title=f"{artifact.title} (json)",
             format="json",
             body=json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-            section_count=max(len(artifact.knowledge_sections), 1) + 4,
+            section_count=max(len(artifact.knowledge_sections), 1) + 8,
             version=version,
             generated_at=generated_at,
         )
@@ -169,6 +188,14 @@ class BeginnerExplanationRenderer:
             actions.append("Follow the phase order in the generated personal plan instead of skipping directly to execution.")
         return actions
 
+    def _assumption_lines(self, artifact: PlanningArtifact) -> list[str]:
+        if not artifact.assumptions:
+            return ["No explicit assumptions were recorded for this artifact."]
+        return [
+            f"{item.name}: {item.value} — {item.reason}" if item.reason else f"{item.name}: {item.value}"
+            for item in artifact.assumptions
+        ]
+
     def _common_pitfalls(self, artifact: PlanningArtifact) -> list[str]:
         pitfalls = [
             "Confusing a good story with a tested rule.",
@@ -189,6 +216,38 @@ class BeginnerExplanationRenderer:
         if artifact.candidate_observations:
             start.append("Use the top few beginner_watchlist or observe_only names as the initial review universe.")
         return start
+
+    def _readiness_lines(self, artifact: PlanningArtifact) -> list[str]:
+        if artifact.readiness is None:
+            return ["No readiness checklist has been attached yet."]
+        failed = artifact.readiness.failed_items()
+        if not failed:
+            return [f"Stage {artifact.readiness.stage}: all tracked readiness checks passed."]
+        lines = [f"Stage {artifact.readiness.stage}: {len(failed)} readiness items still need work."]
+        for item in failed:
+            detail = item.details or "Check not passed."
+            remediation = f" Remediation: {item.remediation}" if item.remediation else ""
+            lines.append(f"{item.name} [{item.severity}] — {detail}{remediation}")
+        return lines
+
+    def _plan_difference_lines(self, artifact: PlanningArtifact) -> list[str]:
+        diffs = list(artifact.meta.get("plan_differences") or [])
+        if not diffs:
+            if artifact.meta.get("previous_plan_loaded"):
+                return ["A previous plan was loaded, but no tracked assumptions or risk-budget fields changed."]
+            return ["No previous plan comparison was available for this run."]
+        return [
+            f"{item.get('field')}: {item.get('old')} -> {item.get('new')}"
+            for item in diffs
+        ]
+
+    def _next_steps(self, artifact: PlanningArtifact) -> list[str]:
+        suggestions = list(artifact.meta.get("next_step_suggestions") or [])
+        if not suggestions:
+            suggestions = list(artifact.execution_suggestions)
+        if artifact.readiness and not artifact.readiness.passed:
+            suggestions.append("Do not upgrade stages until the failed readiness items are resolved.")
+        return list(dict.fromkeys(suggestions)) or ["Review the latest artifact before changing the workflow."]
 
     def _local_limits(self, artifact: PlanningArtifact) -> list[str]:
         limits: list[str] = []

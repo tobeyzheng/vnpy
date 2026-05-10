@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .models import PlanningArtifact, WorkflowRunResult, WorkflowStepResult
+from .models import PlanAssumption, PlanningArtifact, RiskBudget, WorkflowRunResult, WorkflowStepResult
 
 
 class ArtifactStore:
@@ -52,10 +52,27 @@ class ArtifactStore:
             meta=dict(meta or {}),
         )
 
+    def latest_artifact_path(self, *, slug: str) -> Path | None:
+        if not self.root.exists():
+            return None
+        prefix = f"{self._clean_slug(slug)}_artifact_"
+        candidates = sorted(self.root.glob(f"{prefix}*.json"))
+        return candidates[-1] if candidates else None
+
+    def load_previous_plan(self, *, slug: str) -> PlanningArtifact | None:
+        path = self.latest_artifact_path(slug=slug)
+        if path is None or not path.exists():
+            return None
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return self._planning_artifact_from_payload(payload)
+
     def _stamped_name(self, slug: str, *, suffix: str) -> str:
-        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        clean = "".join(ch if ch.isalnum() or ch in {"_", "-"} else "_" for ch in slug).strip("_") or "quant"
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
+        clean = self._clean_slug(slug)
         return f"{clean}_{suffix}_{ts}.json"
+
+    def _clean_slug(self, slug: str) -> str:
+        return "".join(ch if ch.isalnum() or ch in {"_", "-"} else "_" for ch in slug).strip("_") or "quant"
 
     def _write_json(self, path: Path, payload: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -67,6 +84,20 @@ class ArtifactStore:
         if isinstance(value, Path):
             return str(value)
         return str(value)
+
+    def _planning_artifact_from_payload(self, payload: dict[str, Any]) -> PlanningArtifact:
+        assumptions = [PlanAssumption(**item) for item in payload.get("assumptions", [])]
+        risk_budget_payload = payload.get("risk_budget")
+        risk_budget = RiskBudget(**risk_budget_payload) if isinstance(risk_budget_payload, dict) else None
+        return PlanningArtifact(
+            artifact_type=str(payload.get("artifact_type") or "beginner_quant_plan"),
+            title=str(payload.get("title") or "Beginner Quant Personal Plan"),
+            generated_at=str(payload.get("generated_at") or ""),
+            version=str(payload.get("version") or "v1"),
+            assumptions=assumptions,
+            risk_budget=risk_budget,
+            meta=dict(payload.get("meta") or {}),
+        )
 
     def _next_step_suggestions(self, artifact: PlanningArtifact) -> list[str]:
         suggestions = list(artifact.execution_suggestions)
