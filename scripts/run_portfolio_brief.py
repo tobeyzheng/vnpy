@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from dataclasses import asdict
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from services.healthcheck import HealthcheckService
 from services.portfolio.risk import PortfolioExposureAnalyzer, PortfolioRiskGuard
@@ -17,7 +22,7 @@ def load_json(path: Path):
 
 
 def main() -> None:
-    repo = Path(__file__).resolve().parents[1]
+    repo = REPO_ROOT
     runs = repo / 'state' / 'runs'
     hk = load_json(runs / 'hk_sim_close_report.json')
     us = load_json(runs / 'us_sim_close_report.json')

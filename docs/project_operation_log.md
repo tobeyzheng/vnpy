@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-10**：修复顶层脚本直接执行时的仓库内导入路径
+  - **代码文件**：[run_healthcheck.py](/projects/vnpy/scripts/run_healthcheck.py)、[run_portfolio_brief.py](/projects/vnpy/scripts/run_portfolio_brief.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：为顶层 `scripts/` 入口补充 `REPO_ROOT` + `sys.path` bootstrap，使其在仓库根目录直接执行或被 [run.sh](/projects/vnpy/run.sh) 调用时可以稳定导入 `services` 包，避免再次出现 `ModuleNotFoundError: No module named 'services'`
+
 - **2026-05-10**：新增仓库根目录 `run.sh` 安全统一入口
   - **代码文件**：[run.sh](/projects/vnpy/run.sh)
   - **文档/进度文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)、[beginner_quant_planning.md](/projects/vnpy/.codebuddy/task_list/beginner_quant_planning.md)
