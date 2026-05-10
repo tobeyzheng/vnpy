@@ -1,1096 +1,170 @@
-# 量化交易系统接入梳理
-
-## 1. 当前系统定位
-
-本项目当前定位为个人港股/美股多策略选股跟踪与量化交易系统，核心边界如下：
-
-- `scripts/`：只保留任务入口和市场配置。
-- `services/`：承载候选池、策略、风控、订单状态、对账、健康检查等业务逻辑。
-- `execution/`：承接 paper/vn.py/Futu 执行桥接，但默认不自动实盘。
-- `state/`：保存候选、观察池、报告、订单状态、对账结果和运行快照。
-- `vn.py` / `vnpy_futu`：作为行情、账户、订单、成交、回测和网关底座。
-
-当前安全原则：
-
-- 默认不做真实实盘提交；实盘入口默认 dry-run。
-- `VnpyExecutor` 支持 `paper/sim/sim_submit/live_submit`，但 `sim_submit/live_submit` 必须显式开关。
-- 真实提交需同时满足 `--live-submit`、`VNPY_LIVE_CONFIG=YES`、`VNPY_LIVE_SUBMIT=YES`，默认还要求 `VNPY_LIVE_APPROVED=YES`。
-- Futu SIM 会话只操作 `TrdEnv.SIMULATE`，不得切到 REAL。
-- Knot/LLM 只能产出结构化评估或策略建议，不得绕过风控、对账、审批、幂等和订单状态机。
-
-AI / Vibe Coding 协作底座：
-
-- 项目规则：`.codebuddy/rules/vnpy-quant-system-vibecoding-context.mdc`
-- 当前主线：`scripts/` 只保留入口与参数，`services/` 放业务逻辑，`execution/` 放执行桥，`state/runs/` 放运行产物。
-- 历史实验目录：`examples/` 仅作参考，不作为当前开发基线。
-
-## 2. 交易主入口文件
-
-### 港股交易入口
-
-- 盘中主任务：`scripts/run_hk_sim_task.py`
-  - 已改为调用 `services/trading_pipeline/sim_task.py`。
-  - 已启用 `reconciliation_required=True`。
-- 盘后收盘：`scripts/run_hk_sim_close.py`
-- 盘中盯市/估值：`scripts/run_hk_sim_mark.py`
-- 富途模拟账户会话：`scripts/run_hk_futu_sim_session.py`
-  - 操作 Futu `SIMULATE` 账户，默认港股常规交易时段内轮询，支持 `--max-budget`、`--max-order-value`、`--max-loss`、`--quote-retries`。
-  - 输出 `state/runs/hk_futu_sim_session_report.json` / `state/runs/hk_futu_sim_session_state.json` / `state/runs/hk_futu_sim_session.log`。
-- 港股 Knot 刷新：`scripts/run_knot_agent_hk_refresh.py`
-- 港股盘中 Knot 决策：`scripts/run_intraday_knot_decision.py`
-
-### 美股交易入口
-
-- 盘中主任务：`scripts/run_us_sim_task.py`
-  - 已改为调用 `services/trading_pipeline/sim_task.py`。
-- 盘后收盘：`scripts/run_us_sim_close.py`
-
-### 日常运维入口
-
-- 健康检查：`scripts/run_healthcheck.py`
-- 组合简报 / daily brief：`scripts/run_portfolio_brief.py`
-- 多市场简报：`scripts/run_multi_market_brief.py`
-- 日常流水线：`scripts/run_daily_pipeline.py`
-  - 支持 `--mode premarket`
-  - 支持 `--mode midday`
-  - 支持 `--mode recap`
-  - 支持 `--mode healthcheck`
-  - 支持 `--mode brief`
-
-## 3. 统一交易 pipeline
-
-### 主模块
-
-- `services/trading_pipeline/sim_task.py`
-
-核心类：
-
-- `MarketSimTaskConfig`
-- `MultiMarketSimTradingPipeline`
-
-当前职责：
-
-1. 按市场读取候选池。
-2. 获取 Futu 行情快照。
-3. 调用统一 `StrategyEngine` 生成策略评价。
-4. 构造 `task_candidate_pool`。
-5. 按分数排序并选出候选。
-6. 执行本地 `SimAccount` 模拟买入。
-7. 写出 `hk_sim_task_report.json` / `us_sim_task_report.json`。
-8. 可选执行 reconciliation 阻断。
-
-当前仍未抽象的部分：
-
-- Futu 模拟账户会话脚本已经支持 HK/US 两地独立入口，但尚未抽成同一个参数化 session pipeline。
-- Futu SIM submit 会话已写入 `OrderStateStore`，仍需继续增强成交回报轮询与撤单超时处理。
-
-## 4. 候选池入口
-
-### 文件
-
-- 统一候选提供器：`services/strategy/candidate_provider.py`
-- 静态候选文件：`state/runs/candidate_inputs.json`
-- 动态候选文件：`state/runs/candidate_inputs.dynamic.json`
-- 测试：`tests/test_candidate_provider.py`
-
-### 当前逻辑
-
-`UnifiedCandidateProvider.load(market)`：
-
-1. 优先读取 dynamic 中对应 `market` 的候选。
-2. 如果 dynamic 不含该 `market`，回退 static。
-3. 统一执行 `normalize_symbol()`。
-
-`UnifiedCandidateProvider.load()`：
-
-1. dynamic 覆盖其已包含市场。
-2. static 补齐 dynamic 未覆盖市场。
-3. 避免 dynamic 只有港股时，美股候选被整体吞掉。
-
-## 5. 策略系统入口
-
-### 基础模块
-
-- 多因子评分：`services/strategy/raw_score.py`
-- 入场/离场 timing：`services/strategy/timing.py`
-- 单标的风控：`services/strategy/risk_guard.py`
-- 市场规则：`services/strategy/market_rules.py`
-- 符号规范化：`services/strategy/symbols.py`
-
-### 新增策略注册与统一策略引擎
-
-- 策略注册：`services/strategy/registry.py`
-- 策略引擎：`services/strategy/engine.py`
-- 策略选择器：`services/strategy/strategy_selector.py`
-- 测试：`tests/test_strategy_engine.py`
-
-核心类：
-
-- `StrategyDefinition`
-- `StrategyRegistry`
-- `StrategyEngine`
-- `StrategyEvaluation`
-- `StrategySelector`
-- `StrategySelection`
-
-当前默认策略：
-
-- `raw_score_timing_v1`
-
-当前策略选择枚举：
-
-- `trend_following`
-- `breakout_momentum`
-- `pullback_buy`
-- `watch_only`
-- `block_trade`
-
-当前已接入：
-
-- `services/trading_pipeline/sim_task.py`
-- `services/backtest/vnpy_strategy_bridge.py`
-- `services/backtest/portfolio_engine.py`
-
-目标：让模拟、回测、未来实盘复用同一套策略计算，避免回测和交易逻辑分叉。LLM/Knot 只负责结构化策略选择或评估，不直接决定下单数量，也不得绕过硬风控。
-
-## 6. 订单协议与状态机
-
-### 统一协议
-
-- `services/common/trading_models.py`
-- `services/common/__init__.py`
-
-核心模型：
-
-- `StrategySignal`
-- `OrderIntent`
-- `OrderState`
-- `OrderStatus`
-- `OrderSide`
-- `Direction`
-
-### 订单状态机
-
-- 状态机：`services/trade_state/state_machine.py`
-- 状态存储：`services/trade_state/storage.py`
-- 包导出：`services/trade_state/__init__.py`
-- 测试：`tests/test_order_state_machine.py`
-
-核心类：
-
-- `OrderStateMachine`
-- `OrderStateStore`
-- `InvalidOrderTransition`
-
-支持状态流：
-
-```text
-created
--> validated
--> risk_checked
--> approval_required / approved
--> submitting
--> submitted
--> partial_filled / filled / cancelled / rejected / failed
--> reconciled
-```
-
-当前接入：
-
-- `VnpyExecutor` paper dry-run 会写入 `state/runs/orders/<request_id>.json`。
-- `HealthcheckService` 会统计订单状态数量。
-
-## 7. 风控与执行限制
-
-### 7.1 max_intraday_trades限制失效问题与修复
-
-#### 问题描述
-在`run_loop.py`每5分钟启动新进程的架构下，`max_intraday_trades`限制失效，导致实际成交次数超过配置限制。
-
-#### 根本原因
-- `run_loop.py`每5分钟启动一个新的`run.py`进程
-- 每个进程都从零初始化自己的`trade_times`列表
-- `minute_guard`只能看到当前进程内的交易记录
-- 前序进程的交易记录不会传递给后续进程
-
-#### 解决方案：账户同步机制（2026-05-09 全面修复）
-在每次`run.py`启动时从 Futu 账户拉取**真实成交流水**来驱动 minute_guard；
-相比旧方案最大的差别是：**不再使用进程内持久化状态**，也不再依赖订单状态机的快照，
-而是把 Futu 账户当作跨进程的唯一事实来源。
-
-1. **FutuSdkClient 新增 `deal_list_today()`**
-   - 直接调用 `deal_list_query(trd_env, acc_id)`（Futu 默认只返回当日成交）
-   - 字段 `create_time` 为 Futu 官方成交时间（`'%Y-%m-%d %H:%M:%S'`）
-   - 跟订单状态机解耦，不受 `submitted`→`filled` 回报延迟影响
-
-2. **FutuAccountProvider.get_today_trades(symbol)**
-   - 通过 `_normalize_symbol_key()` 统一 `NVDA.US` / `US.NVDA` / `NVDA`
-   - 异常向上抛出（之前旧实现吞异常导致 minute_guard 静默失效）
-
-3. **LiveTradingPipeline 集成**
-   - 按 candidate 逐标的同步（不再只按第一个标的）
-   - `last_trade_at` 自动取 `max(today_trades)`（修复了 cooldown 永远不触发的 bug）
-   - 同步失败 → `fail-closed`，拒绝下单并写入 `today_trades_sync_error`
-   - `no_new_entry_after` 使用交易所时区（`America/New_York` / `Asia/Hong_Kong`）而非北京时间
-
-4. **研究参数真实落地**
-   - `run.py` 会把 `nvda_g09.json` 的 `setting` 作为 `candidate["strategy_config"]`
-     同时写入 `state/runs/candidate_inputs.dynamic.json`（`UnifiedCandidateProvider` 真正读取的位置）
-   - `LiveTradingPipeline._candidate_guard()` 会基于 `candidate["strategy_config"]` 按
-     candidate 维度覆盖默认的 `MinuteTradeGuardConfig`；策略 JSON 里的
-     `max_intraday_trades/entry_cooldown_minutes/min_hold_minutes/no_new_entry_after`
-     会真实生效到实盘路径（而不是被 `configs/risk/live_risk_limits.yaml` 的全局默认值淹没）
-   - `--minute-profile` 改为 `setdefault` 语义：**仅在 JSON 未提供对应字段时**填入默认值，
-     不再无脑覆盖 JSON 冠军参数
-
-5. **执行流程**
-   ```
-   run.py
-     → 读 configs/classic_multifactor/<config>.json
-     → 把 setting 作为 strategy_config 写入 candidate_inputs.dynamic.json
-     → LiveTradingPipeline.run()
-       → UnifiedCandidateProvider.load("us")            # 读到 strategy_config
-       → 逐 candidate 调用 FutuAccountProvider.get_today_trades(symbol)
-       → _candidate_guard(candidate) 按 JSON 覆盖阈值
-       → MinuteTradeGuard.can_enter(now_ny, trades, max(trades))
-       → LiveExecutionGate（approval / risk / drawdown / exposure）
-       → VnpyExecutor.execute_intent → MainEngine.send_order
-       → _wait_for_order_states（轮询到 filled/rejected/cancelled 或 30s 超时）
-       → MainEngine.close()
-   ```
-
-#### 配置示例
-```json
-// configs/classic_multifactor/nvda_g09.json
-"setting": {
-    "max_intraday_trades": 4,
-    "entry_cooldown_minutes": 30,
-    "min_hold_minutes": 20,
-    "no_new_entry_after": "15:30"
-}
-```
-```yaml
-# configs/risk/live_risk_limits.yaml  —— 仅作全局默认
-max_intraday_trades: 4
-entry_cooldown_minutes: 30
-min_hold_minutes: 20
-no_new_entry_after: "15:30"
-```
-
-#### 验证方法
-- 检查 `state/runs/classic_multifactor_*_live_report.json`：
-  - `selected[*].today_trades_count` —— Futu 真实返回的当日成交笔数
-  - `selected[*].today_trades_sync_error` —— 同步失败原因（非空则 minute_guard 会 fail-closed）
-  - `selected[*].minute_guard_result` —— 反映 `{allowed, reason}`
-  - `selected[*].live_gate.reasons` —— 会包含 `minute_guard:max_intraday_trades_reached` 等前缀
-
-#### 相关改动（2026-05-09）
-- `services/futu_account/sdk_client.py`: 新增 `deal_list_today()`
-- `services/futu_account/provider.py`: 补 `datetime` import, 改 `get_today_trades` 用 deal_list, 新增 symbol 归一化
-- `services/trading_pipeline/live_task.py`: 逐 candidate 同步, `_candidate_guard`, `_guard_now`, `_wait_for_order_states`
-- `services/execution_guard/live_context.py`: 用 ctime 代替 mtime 判断今日买入通量
-- `scripts/classic_multifactor/run.py`: `--minute-profile` 改 `setdefault`, 同步写 `candidate_inputs.dynamic.json`
-- `scripts/classic_multifactor/run_loop.py`: 新增 `--exit-after-session` 开关
-
-### 7.2 其他风控限制
-
-#### 单笔订单限制
-- `max_order_value`：单笔订单最大金额
-- `max_single_position_pct`：单标的最大持仓比例
-- `max_daily_new_position_pct`：当日新增持仓比例限制
-
-#### 账户级限制
-- `max_market_exposure_pct`：市场总暴露比例
-- `max_drawdown_pct`：最大回撤限制
-- `max_signal_age_seconds`：信号有效期限制
-
-#### 执行检查
-- `OrderIdempotencyGuard`：订单幂等性检查，防止重复提交
-- `ReconciliationGuard`：对账检查，确保账户状态一致
-- `SubmitPrecheck`：提交前检查，验证订单参数合法性
-
-### 7.3 Classic Multifactor 主线（2026-05 审计后重构）
-
-`scripts/classic_multifactor/` 是当前唯一被主动维护的 US 多因子主线，覆盖
-回测（backtest.py / CTA sweeps）、vn.py CTA 模拟、Futu SIM 与 Futu 实盘四条路径。
-审计报告（.codebuddy/plan/classic_multifactor_audit/design.md）落地后，主线内所有
-"口径分叉"都被折叠到下列单一事实来源中。
-
-#### 7.3.1 回测 → 实盘口径映射
-
-| 维度 | 单一事实来源 | 回测 | CTA 模拟 | Futu SIM | Futu 实盘 |
-| --- | --- | --- | --- | --- | --- |
-| 策略参数 / 风控阈值 | `scripts/classic_multifactor/config_schema.py::ClassicMultiFactorConfig` | from_args | from_args | from_args | from_args + from_setting |
-| minute guard | `MinuteTradeGuardConfig.from_setting(setting)` | ✓ | ✓ | ✓ | ✓ |
-| 评分 / 入场 / 出场 | `ClassicMultiFactorModel.decide_target` | 直接调用 | 直接调用 | 直接调用 | 通过 `ClassicSignalAdapter` |
-| exchange 时区 | `America/New_York`（US）/ `Asia/Hong_Kong`（HK） | ✓ | ✓ | ✓ | ✓ |
-| entry_at/entry_price/highest_close | 策略内存 / `StrategyStateStore` 文件 | 内存 | 内存 | 内存 | 跨进程 JSON |
-| today_trades | 回测 bar 自带 / 实盘 `get_today_trades` | N/A | N/A | Futu | Futu（TTL 缓存+3 次重试+fail-closed） |
-
-#### 7.3.2 跨进程状态表
-
-| 路径 | 内容 | 写入方 | 消费方 |
-| --- | --- | --- | --- |
-| `state/runs/strategy_state/<task>_<symbol>.json` | entry_at / entry_price / highest_close / last_trade_at | `LiveTradingPipeline._persist_strategy_state_from_states` | `_reconcile_strategy_state` 下一轮读取并与 Futu 持仓做 5% 偏差校准 |
-| `state/runs/candidate_inputs.dynamic.json` | 每个 symbol 的 strategy_config（+ strategy_class/market） | `run.py live`（fcntl 独占锁 + 原子替换） | `UnifiedCandidateProvider.load(market)` |
-| `state/runs/classic_multifactor_<sym>_live_report.json` | selected 行（含 today_trades_count / today_buy_notional / current_qty / entry_price / highest_close / exit_reason / classic_decision） | `LiveTradingPipeline.run_once` | `run_loop.py` breaker / `run_portfolio_loop.py` anchor |
-| `state/runs/loop_anchor_<task>.json` | 当日 NAV 锚点 + env/account/market 指纹 | `_load_or_build_anchor` | `run_loop.py` / `run_portfolio_loop.py` |
-
-#### 7.3.3 风控分层表
-
-| 层级 | 组件 | 作用 |
-| --- | --- | --- |
-| 策略内出场 | `ClassicMultiFactorModel.decide_target`（ATR stop_loss / trailing / take_profit / min_hold） | 生成 SELL 信号 + `hard_exit` 标记 |
-| minute guard | `MinuteTradeGuard.can_enter` / `can_exit` | max_intraday_trades / entry_cooldown / min_hold / no_new_entry_after；SELL `hard_exit=True` 绕过 min_hold |
-| live_gate | `LiveExecutionGate.evaluate` | approval / budget_per_trade / market_exposure / drawdown / signal_age |
-| 幂等 | `OrderIdempotencyGuard.evaluate` | `request_id = md5(task|symbol|side|exchange_date|strategy_signal_id)`；仅拦 open+filled；cancelled/rejected 可重放 |
-| 对账 | `ReconciliationGuard` | 强制存在 reconciliation 文件，过期自动阻断 |
-| loop anchor | `_loop_common._load_or_build_anchor` / portfolio 版本 | 当日亏损熔断、环境指纹不匹配自动重建 |
-
-#### 7.3.4 live 评估 → 订单路径（ClassicSignalAdapter）
-
-```
-LiveTradingPipeline._build_candidate_pool(candidate)
-  ├─ _position_qty_for_symbol(account, symbol)                # 从 Futu 读 current_qty
-  ├─ _reconcile_strategy_state(symbol, account, trades)       # 偏差 >5% 以 Futu 为准
-  ├─ _evaluate_with_classic_adapter(candidate, quote, qty, state, account)
-  │     ├─ 持仓路径：decide_target(hold, current_qty>0) → SELL / HOLD
-  │     └─ 空仓路径：decide_target(empty)                   → BUY / HOLD
-  ├─ SELL 分支 → can_exit(hard_exit=classic_decision.hard_exit) → live_gate → idempotency
-  ├─ BUY  分支 → _calc_qty → can_enter(today_trades, tz) → live_gate → idempotency
-  └─ 终态写回 StrategyStateStore（BUY filled → update_on_buy；SELL 全平 → clear_on_sell）
-```
-
-#### 7.3.5 loop 公共基础
-
-- `scripts/classic_multifactor/_loop_common.py` 提供 `parse_hhmm / in_session /
-  seconds_until / read_current_nav / extract_env_fingerprint / fingerprint_mismatch /
-  append_loop_log / install_signal_handlers / run_child / sleep_responsive`
-  及 `LoopSignalState` 数据类。
-- `run_child` 在 SIGINT/SIGTERM/超时场景都强杀残留子进程，避免 run_loop 退出后
-  孤儿 `run.py` 继续下单。
-- `sleep_responsive` 将长 sleep 切为 5 秒一块，保证外层 SIGTERM 在秒级生效。
-
-#### 7.3.6 已知缺陷登记
-
-| 需求编号 | 状态 | 说明 |
-| --- | --- | --- |
-| 需求 1 | ✅ 已修复 | 实盘评分链路已接入 `ClassicSignalAdapter`，不再硬编码 raw_score=0.8 |
-| 需求 2 | ✅ 已修复 | LiveTradingPipeline 已补全 ATR stop_loss / trailing / take_profit 的持仓出场 |
-| 需求 3 | ✅ 已修复 | `StrategyStateStore` 持久化 entry_at/entry_price/highest_close，跨进程复用 |
-| 需求 4 | ✅ 已修复 | Config 统一为 `ClassicMultiFactorConfig`；所有路径使用 `MinuteTradeGuardConfig.from_setting` + exchange 时区 |
-| 需求 5 | ✅ 已修复 | `_loop_common.py` 抽取共享代码；信号处理统一；子进程不孤儿化 |
-| 需求 6 | ✅ 已修复 | live_task 调用 `ClassicSignalAdapter`，strategy_config 由 `run.py` 注入 |
-| 需求 7 | ✅ 已修复 | `daily_new_pct` 改由 `FutuAccountProvider.get_today_trade_details` 派生，30s TTL + 3 次重试 + fail-closed |
-| 需求 8 | ✅ 已修复 | `request_id` 改为 `strategy_signal_id + exchange_date`；`candidate_inputs.dynamic.json` 写入加 `fcntl.flock` |
-| 需求 9 | ✅ 已修复 | 本节即为文档落地；后续缺陷应在此表追加行 |
-
-后续如有新发现的缺陷，请在本表追加一行，并在 `design.md / tasks.md` 中同步任务编号，避免
-再次分散到多个主线脚本里靠口径漂移掩盖。
-
-## 8. vn.py / Futu 执行桥接
-
-### 现有 draft 桥接
-
-- `execution/paper_bridge/`
-- `execution/futu_bridge/`
-- `execution/vnpy_bridge/bridge.py`
-
-说明：
-
-- `VnpySignalBridge` 只生成 `VnpyOrderDraft`。
-- `FutuPaperBridge` 只生成 Futu draft。
-- draft 本身不提交订单。
-
-### 新增 VnpyExecutor
-
-- `execution/vnpy_bridge/executor.py`
-- `execution/vnpy_bridge/__init__.py`
-
-核心类：
-
-- `VnpyExecutor`
-- `VnpyGatewayEventBridge`
-
-当前行为：
-
-- 支持 `mode="paper"`。
-- 支持 `mode="sim"`，但仍为 dry-run scaffold。
-- 不调用 `MainEngine.send_order()`。
-- 不调用 `FutuGateway.send_order()`。
-- 不调用 `FutuSimTradeClient.submit_limit_order()`。
-- 对 `WATCH` 类信号不做执行映射，避免误买入。
-
-### vn.py 事件记录
-
-- `execution/vnpy_bridge/event_recorder.py`
-
-核心类：
-
-- `VnpyEventRecorder`
-
-可注册到 vn.py `EventEngine`，记录：
-
-- `EVENT_ORDER`
-- `EVENT_TRADE`
-- `EVENT_POSITION`
-- `EVENT_ACCOUNT`
-
-输出：
-
-- `state/runs/vnpy_gateway_events_YYYYMMDD.jsonl`
-
-当前没有直接修改 `vnpy_futu/futu_gateway.py`，避免影响网关原生行为。
-
-## 9. reconciliation 与执行阻断
-
-### 对账脚本
-
-- `scripts/reconcile_futu_sim_positions.py`
-- 输出：`state/runs/futu_sim_position_reconcile.json`
-
-### 对账守卫
-
-- `services/execution_guard/reconciliation.py`
-- 测试：`tests/test_reconciliation_guard.py`
-
-核心类：
-
-- `ReconciliationGuard`
-- `ReconciliationDecision`
-
-阻断规则：
-
-- 对账文件缺失且 `fail_closed=True`：阻断。
-- 对账文件过旧：阻断或告警。
-- `success != true`：阻断。
-- 任意 `qty_match == false`：阻断。
-- 卖出时 `sellable_match == false`：阻断。
-
-当前接入：
-
-- `services/trading_pipeline/sim_task.py`
-- `scripts/run_hk_futu_sim_session.py`
-- `scripts/run_us_futu_sim_session.py`
-- `services/healthcheck/checks.py`
-
-## 10. 回测相关文件
-
-### 单标的 CTA 回测
-
-- Runner：`scripts/run_vnpy_backtest.py`
-- 适配层：`services/backtest/vnpy_adapter.py`
-- 策略桥接：`services/backtest/vnpy_strategy_bridge.py`
-- 输出：`state/runs/vnpy_backtest_report.json`
-
-当前已接入：
-
-- `services/backtest/vnpy_strategy_bridge.py` 使用 `StrategyEngine.evaluate_bar()`。
-- 离场使用 `StrategyEngine.evaluate_exit()`。
-
-### 多标的聚合回测
-
-- Runner：`scripts/run_vnpy_portfolio_backtest.py`
-- 输出：`state/runs/vnpy_portfolio_backtest_report.json`
-
-### 共享现金池 / 组合级约束回测
-
-- Runner：`scripts/run_shared_cash_portfolio_backtest.py`
-- 引擎：`services/backtest/portfolio_engine.py`
-- 输出：`state/runs/shared_cash_portfolio_backtest_report.json`
-
-当前已接入：
-
-- `services/backtest/portfolio_engine.py` 使用 `StrategyEngine.evaluate_bar()`。
-
-### 其他回测骨架
-
-- Scaffold：`scripts/run_backtest_scaffold.py`
-- 输出：`state/runs/backtest_scaffold_report.json`
-- Alpha 尝试版：`scripts/run_vnpy_alpha_backtest.py`
-
-## 11. Knot Agent 模块位置
-
-### 评估适配层
-
-- 主适配器：`services/evaluation_hub/adapters/knot_agent.py`
-- Schema：`services/evaluation_hub/adapters/knot_agent_schema.py`
-- Hub：`services/evaluation_hub/hub.py`
-- 模型定义：`services/evaluation_hub/models.py`
-
-### 运行时
-
-- 本地运行时：`services/knot_runtime/runtime.py`
-- 远程运行时：`services/knot_runtime/remote_runtime.py`
-
-### 相关文档
-
-- Prompt 设计：`docs/knot_agent_prompt_design.md`
-- 远程批量集成：`docs/remote_knot_batch_integration.md`
-
-## 12. 健康检查 / daily brief / 告警
-
-### 健康检查服务
-
-- `services/healthcheck/checks.py`
-- `services/healthcheck/alerts.py`
-- `services/healthcheck/__init__.py`
-
-核心类 / 函数：
-
-- `HealthcheckService`
-- `build_alerts()`
-
-检查项：
-
-- Python runtime
-- Futu OpenD 连通性
-- Futu SDK 可用性
-- 只读账户状态
-- 只读持仓数量
-- 只读委托数量
-- reconciliation 状态
-- `OrderStateStore` 统计
-- paper/sim/live submit 开关
-- alerts
-
-### 脚本入口
-
-- `scripts/run_healthcheck.py`
-- `scripts/run_portfolio_brief.py`
-- `scripts/run_daily_pipeline.py --mode healthcheck`
-- `scripts/run_daily_pipeline.py --mode brief`
-
-输出：
+## 项目系统集成指南
+
+### 文档定位
+
+这份文档面向在本仓库内做 vibecoding、接手开发、补充脚本或维护集成链路的协作者。
+目标不是重复 `docs/community/` 或 `docs/elite/` 的上游说明，而是快速说明**本项目自定义层**的真实入口、关键目录、状态产物、阶段边界和已知缺口。
+
+### 文档同步规则
+
+- 当项目结构、主入口脚本、默认参数、状态产物路径、阶段定义发生变化时，必须同步更新本文档和 `docs/adaptive_quant_engine_design.md`。
+- 新增、删除、重命名入口脚本时，文档更新应与代码变更在同一轮提交中完成。
+- 如果代码与文档不一致，以代码为准；发现偏差后，下一次相关修改必须补齐文档。
+- 对其他协作者来说，这两份文档是理解项目的第一入口，不要让它们长期停留在“设计草稿”状态。
+
+### 一句话理解当前项目主线
+
+当前项目不是单一策略脚本，而是一条“**工作流编排 → 研究说明 → 候选观察 → 回测校验 → 阶段门禁 → 仿真/实盘入口隔离**”的多层结构。
+其中，推荐的第一阅读入口是：
+
+1. `scripts/quant_workflow/run_quant_workflow.py`
+2. `scripts/quant_workflow/workflow_service.py`
+3. `services/evaluation_hub/`
+4. `services/strategy/`
+5. `scripts/classic_multifactor/`
+
+### 关键目录与职责
+
+- **`scripts/quant_workflow/`**：统一的 beginner quant 工作流入口与编排层。负责把研究、候选、回测校验和个人计划串起来。
+- **`services/evaluation_hub/`**：项目级解释与计划生成层。负责能力地图、研究文档、候选观察、阶段 readiness、artifact 落盘。
+- **`services/strategy/`**：策略内核层。负责候选输入标准化、`raw_score` 计算、入场/退出择时、策略选择与信号生成。
+- **`scripts/classic_multifactor/`**：经典多因子主线。包含 LLM research、vn.py CTA backtest、日内/日频执行入口。
+- **`services/execution_guard/`、`services/risk_engine/`、`services/trading_pipeline/`**：执行保护层。负责 live gate、precheck、reconciliation、risk guard、sim/live task 约束。
+- **`services/futu_account/`、`services/futu_opend/`、`services/futu_sim_trade/`**：券商与 OpenD 接入层。
+- **`state/runs/`**：运行时工件目录。健康检查、候选输入、回测报告、workflow artifact、orders、brief 等都落在这里。
+
+### 主要入口脚本
+
+- **`scripts/quant_workflow/run_quant_workflow.py`**：当前推荐的总入口。
+  - 默认 `--mode plan`
+  - 默认 `--stage research`
+  - 默认 `--workflow beginner_quant`
+  - 默认不会自动启动 SIM/live 脚本
+- **`scripts/run_healthcheck.py`**：环境和账户健康检查入口，输出 `state/runs/healthcheck.json`。
+- **`scripts/run_portfolio_brief.py`**：组合摘要入口，聚合 HK/US close report 与 healthcheck，输出 `state/runs/portfolio_brief.json`。
+- **`scripts/classic_multifactor/run_vnpy_cta_backtest.py`**：官方 vn.py CTA 回测入口，输出 `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`。
+- **`scripts/classic_multifactor/run_intraday_loop.py`**：分钟级主线 runner，带执行保护，属于 simulation/live 邻近入口。
+- **`scripts/classic_multifactor/run_daily_rebalance.py`**：日频再平衡 runner，带执行保护，属于 simulation/live 邻近入口。
+- **`scripts/run_us_sim_task.py`**：US SIM 任务入口。
+- **`scripts/run_us_futu_sim_session.py`**：US Futu SIM session 入口。
+- **`scripts/run_us_live_task.py`**：US live task 入口，默认仍应保持显式人工确认。
+
+### 推荐的项目阅读顺序
+
+如果你是第一次接触本项目，建议按下面顺序阅读：
+
+1. **看总入口**：`scripts/quant_workflow/run_quant_workflow.py`
+2. **看工作流实际做了什么**：`scripts/quant_workflow/workflow_service.py`
+3. **看能力边界和缺口定义**：`services/evaluation_hub/capability_registry.py`
+4. **看阶段门禁**：`services/evaluation_hub/readiness_gate.py`
+5. **看候选输入与策略内核**：`services/strategy/candidate_provider.py`、`services/strategy/engine.py`
+6. **最后再看执行层入口**：`scripts/classic_multifactor/` 和 `scripts/run_us_*`
+
+### `quant_workflow` 当前真实流程
+
+`QuantWorkflowService.run()` 目前会按下面顺序组织流程：
+
+1. **`healthcheck`**
+   - 优先读取已有 `state/runs/healthcheck.json`
+   - 如果本地没有缓存且仍处于计划/研究模式，则回退为 offline placeholder
+2. **`capability_map`**
+   - 读取本地 capability registry
+   - 汇总 stage capability、stage boundary map、available stages、已知 capability gaps
+3. **`research`**
+   - 生成 beginner research artifact
+   - 由 `services/evaluation_hub/doc_renderer.py` 同时输出可读 Markdown/JSON 内容到 artifact 中
+4. **`candidate_framework`**
+   - 读取本地候选输入
+   - 生成 `beginner_watchlist` / `observe_only` / `validate_only` 三类观察结果
+5. **`backtest_validation`**
+   - 读取本地 vn.py 回测报告
+   - 标准化 sample period、fees、slippage、stability metrics、data quality notes
+6. **`planning`**
+   - 生成个人 beginner plan、risk budget、phase/task、readiness checklist
+7. **`execution_boundary`**
+   - 如果本地发现 simulation/live 能力入口，只输出“需要明确确认”的边界警告，不会自动执行
+
+最终 workflow summary 会根据 readiness 的 high/critical 失败项决定 `status` 是 `ok` 还是 `blocked`。
+
+### 输入与输出工件
+
+#### 工作流主要输入
 
 - `state/runs/healthcheck.json`
-- `state/runs/portfolio_brief.json`
-
-## 13. 当前运行产物 / 状态文件
-
-### Candidate / Knot
-
-- `state/runs/candidate_inputs.json`
 - `state/runs/candidate_inputs.dynamic.json`
-- `state/runs/remote_knot_batch_tasks.json`
-- `state/runs/knot_agent_raw_output_hk.json`
-- `state/runs/knot_agent_intraday_decision_hk.json`
-- `state/runs/hk_5w_candidate_refresh.json`
+- `state/runs/candidate_inputs.json`
+- `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`
 
-### 交易 / 执行
+#### 工作流主要输出
 
-- `state/runs/hk_sim_account.json`
-- `state/runs/us_sim_account.json`
-- `state/runs/hk_sim_task_report.json`
-- `state/runs/us_sim_task_report.json`
-- `state/runs/hk_sim_close_report.json`
-- `state/runs/us_sim_close_report.json`
-- `state/runs/hk_futu_sim_session_report.json`
-- `state/runs/hk_futu_sim_session_state.json`
-- `state/runs/us_futu_sim_session_report.json`
-- `state/runs/us_futu_sim_session_state.json`
-- `state/runs/futu_sim_position_reconcile.json`
-- `state/runs/futu_live_position_reconcile.json`
-- `state/runs/orders/<request_id>.json`
-
-- `state/runs/vnpy_gateway_events_YYYYMMDD.jsonl`
-
-### 简报 / 汇总
-
-- `state/runs/healthcheck.json`
-- `state/runs/hk_final_brief.json`
+- `state/runs/quant_workflow/*_artifact_*.json`
+- `state/runs/quant_workflow/*_workflow_*.json`
 - `state/runs/portfolio_brief.json`
-- `state/runs/multi_market_brief.json`
 
-### 回测输出
+补充说明：
 
-- `state/runs/vnpy_backtest_report.json`
-- `state/runs/vnpy_portfolio_backtest_report.json`
-- `state/runs/shared_cash_portfolio_backtest_report.json`
+- 候选输入由 `UnifiedCandidateProvider` 统一读取。
+- `candidate_inputs.dynamic.json` 的优先级高于 `candidate_inputs.json`，但当前合并规则是**按 market 覆盖**，不是按 symbol 精细合并。
+- `ArtifactStore` 会自动为 workflow artifact 追加 next step suggestions 和 confirmation requirements。
 
-## 14. 当前系统结构概览
+### 阶段定义与升级门槛
 
-### 盘前研究链
+当前项目对外暴露的主要 stage 包括：
 
-```text
-CandidateProvider
--> CandidateRanker
--> EvaluationHub / Knot
--> DecisionEngine
--> ApprovalGate
--> RiskEngine
--> PaperTradeBridge
--> VnpySignalBridge / FutuPaperBridge
--> VnpyExecutor paper dry-run
--> OrderStateStore
-```
+- **`research`**：研究说明、术语解释、证据整理
+- **`backtest`**：本地回测元数据标准化和校验
+- **`simulation`**：仿真前的 readiness 可视化与边界提示
+- **`live`**：实盘邻近能力可视化与严格门禁
+- **`orchestration`**：统一 workflow 入口本身
 
-### 盘中模拟交易链
+`ReadinessGateService` 当前的升级约束核心包括：
 
-```text
-UnifiedCandidateProvider.load(market)
--> Futu quote snapshot
--> StrategyEngine.evaluate_candidate()
--> RiskGuard
--> ReconciliationGuard
--> SimTradingEngine local fill
--> sim task report
+- `health_status` 不能是 `blocked`
+- 必须存在 research artifact
+- simulation/live 相关阶段必须有 backtest metadata
+- 必须存在明确的 risk budget
+- 必须有 review notes
+- live 阶段还要求 capability gaps 被消除
 
-Futu SIM session:
-UnifiedCandidateProvider.load(market) + existing Futu SIM positions
--> quote snapshot with retry
--> StrategyEngine.evaluate_candidate()
--> max_budget / max_order_value / max_loss
--> FutuSimTradeClient.submit_limit_order(SIMULATE)
--> status check
--> OrderStateStore
--> *_futu_sim_session_report.json
-```
+### 安全边界
 
-### vn.py/Futu 事件链
+以下是当前项目文档必须明确写清楚的安全边界：
 
-```text
-FutuGateway
--> EventEngine
--> VnpyEventRecorder
--> VnpyGatewayEventBridge
--> OrderStateStore
-```
+- **`quant_workflow` 默认是 plan-first，不自动跑 SIM/live。**
+- **不会自动提交 Futu/OpenD 订单。**
+- **不会绕过 reconciliation、approval、live switches。**
+- **LLM/Knot/外部选择结果必须先转成结构化字段，再交给本地规则层消费。**
+- **凡是带 `requires_confirmation` 的入口，都应视为人工确认后才能继续。**
 
-### 回测链
+### 当前已知 capability gaps
 
-```text
-vn.py BacktestingEngine / PortfolioBacktestEngine
--> StrategyEngine.evaluate_bar()
--> StrategyEngine.evaluate_exit()
--> stats/report
-```
-
-### 运维链
-
-```text
-OpenDClient / FutuSdkClient / FutuAccountProvider
--> ReconciliationGuard
--> OrderStateStore.summary()
--> HealthcheckService
--> daily brief / alerts
-```
-
-## 15. 当前接入完成度
-
-### 已完成
-
-- candidate dynamic/static 按 market fallback。
-- HK/US 盘中任务统一到 `MultiMarketSimTradingPipeline`。
-- `StrategySignal` / `OrderIntent` / `OrderState` 数据协议。
-- `OrderStateMachine` 和 `OrderStateStore`。
-- `VnpyExecutor` paper/sim dry-run scaffold。
-- vn.py 账户、持仓、订单、成交事件记录器 scaffold。
-- reconciliation guard 与 Futu SIM submit 阻断。
-- `StrategyRegistry` / `StrategyEngine`。
-- `StrategySelector` 已迁入 `services/strategy/strategy_selector.py`，并接入 `StrategyEngine.evaluate_candidate()` / `evaluate_bar()`。
-- `scripts/run_hk_sim_task.py` / `scripts/run_us_sim_task.py` 可直接从仓库根目录执行，并通过 `MultiMarketSimTradingPipeline` 输出 `strategy_selection`。
-- 新增 `services/trading_pipeline/live_task.py`、`scripts/run_us_live_task.py`、`scripts/run_hk_live_task.py`；默认 dry-run，真实提交需同时满足 `--live-submit`、`VNPY_LIVE_CONFIG=YES`、`VNPY_LIVE_SUBMIT=YES`。
-- `VnpyExecutor` 增加 `sim_submit` / `live_submit` 显式提交模式，默认仍不提交。
-- `SimTradingEngine` 本地成交开始写入 `OrderStateStore`。
-- 回测开始复用 `StrategyEngine`。
-- `HealthcheckService`、`run_healthcheck.py`、daily brief、alerts。
-
-### 仍待继续接入
-
-- Futu SIM session 继续抽象成统一参数化 session pipeline。
-- Futu SIM session 增强成交回报轮询与撤单超时处理。
-- `VnpyExecutor` 的 `sim explicit-submit` / `live_submit` 模式默认仍需关闭，只有三重环境开关、审批、REAL 环境和 live reconciliation 同时满足才可提交。
-
-- 订单持久化幂等去重继续强化。
-- Futu SIM 与本地账本自动修复策略。
-- 动态 candidate 历史化。
-- `strategy_selection` 历史化与回放替身。
-- Knot Agent 历史回放替身。
-- 多市场货币/汇率处理。
-- 行业/策略/市场暴露归因。
-- 真正组合再平衡。
-
-## 16. 最小接入建议
-
-### 只接交易主流程
-
-优先接：
+根据 `services/evaluation_hub/capability_registry.py`，以下入口仍被显式标记为缺口：
 
 - `scripts/run_hk_sim_task.py`
-- `scripts/run_us_sim_task.py`
-- `services/trading_pipeline/sim_task.py`
-- `services/strategy/engine.py`
-- `services/execution_guard/reconciliation.py`
-- `services/trade_state/state_machine.py`
+- `scripts/run_hk_futu_sim_session.py`
+- `scripts/run_hk_live_task.py`
 
-### 只接回测
+这意味着：
 
-优先接：
+- 当前仓库可以讨论 HK workflow、候选、研究和规划；
+- 但**不能把 HK execution 说成已经有完整自动化入口**；
+- beginner workflow 对 HK execution 仍应保持 manual / planned-only 口径。
 
-- `scripts/import_futu_history_to_vnpy.py`
-- `scripts/run_vnpy_backtest.py`
-- `services/backtest/vnpy_adapter.py`
-- `services/backtest/vnpy_strategy_bridge.py`
-- `services/strategy/engine.py`
+### 给协作者的最短上手建议
 
-### 接组合级回测
+如果你是来做 vibecoding 的，先记住下面四件事：
 
-优先接：
+- **先看 `quant_workflow`，不要一上来就钻执行脚本。**
+- **先看 `state/runs/` 里现有工件，再判断链路缺的是输入、规则还是执行入口。**
+- **涉及结构、入口、工件路径变化时，必须同步改本文档。**
+- **涉及策略打分、择时和 market rule 变化时，必须同步改 `docs/adaptive_quant_engine_design.md`。**
 
-- `services/backtest/portfolio_engine.py`
-- `scripts/run_shared_cash_portfolio_backtest.py`
-- `services/portfolio/risk.py`
-- `services/strategy/engine.py`
+### 常用只读命令示例
 
-### 接执行安全底座
-
-优先接：
-
-- `services/common/trading_models.py`
-- `services/trade_state/state_machine.py`
-- `services/trade_state/storage.py`
-- `execution/vnpy_bridge/executor.py`
-- `execution/vnpy_bridge/event_recorder.py`
-- `services/execution_guard/reconciliation.py`
-- `scripts/run_healthcheck.py`
-- `scripts/reconcile_hk_live_positions.py`
-
-## 17. 关键结论
-
-
-- 当前本地模拟交易入口：`scripts/run_hk_sim_task.py`、`scripts/run_us_sim_task.py`。
-- 当前 Futu SIM 账户会话入口：`scripts/run_hk_futu_sim_session.py`、`scripts/run_us_futu_sim_session.py`。
-- 当前实盘 dry-run/live gate 入口：`scripts/run_hk_live_task.py`、`scripts/run_us_live_task.py`。
-- 当前统一交易 pipeline：`services/trading_pipeline/sim_task.py`、`services/trading_pipeline/live_task.py`、`services/trading_pipeline/close_task.py`。
-- 当前统一策略入口：`services/strategy/engine.py`。
-- 当前订单状态入口：`services/trade_state/state_machine.py`。
-- 当前 vn.py dry-run / live-submit 执行入口：`execution/vnpy_bridge/executor.py`。
-- 当前 Futu/vn.py 事件记录入口：`execution/vnpy_bridge/event_recorder.py`。
-- 当前对账阻断入口：`services/execution_guard/reconciliation.py`。
-- 当前健康检查入口：`scripts/run_healthcheck.py`。
-- 当前 daily brief 入口：`scripts/run_portfolio_brief.py`。
-
-系统已经从“脚本堆叠”推进到“pipeline + strategy engine + order state + reconciliation + healthcheck + Futu SIM session + live gate”的结构。下一阶段重点应是统一 HK/US session pipeline、成交回报轮询、撤单超时、订单幂等和组合级实盘风控。
-
-## 18. vnpy 原生重构 — 双跑对账 Runbook（Task 7 / S5）
-
-> 适用分支：`classic-vnpy-native-rewrite`
-> 旧分支冻结 tag：`classic-pre-vnpy-rewrite-v1`
-
-### 18.1 背景
-
-新分支以 vn.py 原生 `MainEngine + EventEngine + CtaEngine + OmsEngine` 取代旧分支的手写
-`LiveTradingPipeline` 轮询路径。为了确保新分支的成交笔数 / 成交价格 / 拦截分布 / 幂等命中
-与旧分支基线无显著偏差，在 Task 8 删除 `services/trading_pipeline/live_task.py` 之前，
-**必须先完成 ≥ 5 个 SIM 交易日的双跑对账**（项目规则 2、需求 7.1）。
-
-### 18.2 双跑工作区布局
-
-为避免两个进程互相覆盖 `state/runs/` 与 `OrderStateStore`，使用两套独立工作区：
-
-```
-/projects/dual_run/
-├─ legacy/                                  # tag classic-pre-vnpy-rewrite-v1 检出
-│  └─ state/runs/
-│     ├─ classic_multifactor_NVDA_US_live_report.json
-│     ├─ orders/<request_id>.json
-│     └─ loop_anchor_classic_multifactor_NVDA_US.json
-└─ vnpy_native/                             # 新分支 classic-vnpy-native-rewrite
-   └─ state/runs/
-      ├─ classic_multifactor_intraday_report.json
-      ├─ orders/<request_id>.json
-      └─ events.jsonl
+```bash
+python scripts/quant_workflow/run_quant_workflow.py --stage research --mode plan
+python scripts/run_healthcheck.py
+python scripts/run_portfolio_brief.py
 ```
 
-两套工作区都使用同一份配置 `configs/classic_multifactor/nvda_g09.json`
-（旧分支需要 `loop_mode: intraday` 字段，schema 校验已加入）。
-
-### 18.3 启动命令（每日 SIM 开盘前由人工确认后执行）
-
-旧分支（legacy）：
-
-```
-cd /projects/dual_run/legacy
-git checkout classic-pre-vnpy-rewrite-v1
-python3 scripts/classic_multifactor/run_loop.py \
-    --config configs/classic_multifactor/nvda_g09.json \
-    --session-end 16:00 --exit-after-session
-```
-
-新分支（vnpy_native）：
-
-```
-cd /projects/dual_run/vnpy_native
-git checkout classic-vnpy-native-rewrite
-python3 scripts/classic_multifactor/run_intraday_loop.py \
-    --config configs/classic_multifactor/nvda_g09.json \
-    --session-end 16:00 --exit-after-session
-# dry-run by default; --live-submit 必须配合 VNPY_LIVE_CONFIG/SUBMIT/APPROVED=YES
-```
-
-### 18.4 日终对账（每个 SIM 交易日收盘后由人工触发）
-
-```
-python3 scripts/diff_dual_run.py \
-    --run-a /projects/dual_run/legacy/state/runs \
-    --run-b /projects/dual_run/vnpy_native/state/runs \
-    --report-filename-a classic_multifactor_NVDA_US_live_report.json \
-    --report-filename-b classic_multifactor_intraday_report.json \
-    --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
-```
-
-`scripts/diff_dual_run.py` 会从三类源里抽取归一化指标（双源 DB 配置）：
-
-1. `state/runs/<report-filename>` 聚合计数；
-2. `state/runs/orders/*.json` 的 `OrderState`（成交真值，新旧分支共用 schema）；
-3. `state/runs/events.jsonl`（仅新分支；可选）。
-
-并按以下分级输出：
-
-| 类别 | 指标 | 容差 | 失败时影响 |
-| --- | --- | --- | --- |
-| **hard** | `submitted_count` / `filled_qty_total` / `unique_request_ids` | abs ≤ 2 或 rel ≤ 2% | exit 1 |
-| **soft** | `approved_count` / `filled_notional_total` / `events_*` / `orders_*_residual` | abs ≤ 2 或 rel ≤ 2% | warning |
-
-`unique_request_ids`：A/B 同一交易日同一信号必须生成相同的 `request_id`
-（新分支 `_build_request_id` 使用 `(strategy_id, side, vt_symbol, bar_ts, uuid_hex[:6])`，
-uuid 部分会让两次重启的 request_id 不同；故双跑场景下该指标只看**数量**对齐，不看
-集合相等。`only_a` / `only_b` 计数差≤2 视为正常）。
-
-### 18.4a `--strict-rids` 业务键严格对账（推荐）
-
-由于 `request_id` 内嵌 uuid，A/B 之间的原始 `request_id` 字符串集合**永远**不会
-相等。`--strict-rids` 模式按业务 5-tuple 重做对账，绕过 uuid 噪声：
-
-```
-python3 scripts/diff_dual_run.py \
-    --run-a /projects/dual_run/legacy/state/runs \
-    --run-b /projects/dual_run/vnpy_native/state/runs \
-    --report-filename-a classic_multifactor_NVDA_US_live_report.json \
-    --report-filename-b classic_multifactor_intraday_report.json \
-    --strict-rids \
-    --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
-```
-
-业务等价键：`(strategy_id, market, symbol, side, qty, price_bucket)`，其中
-`price_bucket` 是 `f"{price:.2f}"`（2 位小数桶）。基于 `Counter` 的多重集对比，
-能识别"A 提交了同一意图 2 次而 B 只有 1 次"这类纯 uuid 模式无法识别的发散。
-
-**`--strict-rids` 出现 `only_a > 0` 或 `only_b > 0` 即视为 hard fail（exit 1）**，
-比默认的 uuid 集合对账更严格。
-
-### 18.4b `--markdown` 输出（PR/日志友好）
-
-```
-python3 scripts/diff_dual_run.py \
-    --run-a /projects/dual_run/legacy/state/runs \
-    --run-b /projects/dual_run/vnpy_native/state/runs \
-    --report-filename-a classic_multifactor_NVDA_US_live_report.json \
-    --report-filename-b classic_multifactor_intraday_report.json \
-    --strict-rids \
-    --markdown state/runs/reports/dual_run_diff_$(date +%Y%m%d).md \
-    --output state/runs/reports/dual_run_diff_$(date +%Y%m%d).json
-```
-
-输出文件含 4 张表：metric deltas、blocked_by_gate、request_ids、business_keys。
-建议每日把生成的 `.md` 文件直接贴进双跑日志或 PR 评论，方便复核。
-
-### 18.4c OmsEventRecorder 的 cancel / reject 路径与 stats 字段
-
-`services/trade_state/oms_recorder.py` 在 SIM 双跑期间的关键观测项（保存在
-`OmsEventRecorder.stats` dict 里，可被守护脚本或后续 diff 工具读取）：
-
-| stats 字段 | 含义 | 异常阈值（建议） |
-| --- | --- | --- |
-| `order_events` / `trade_events` | 累计接收的 EVENT_ORDER / EVENT_TRADE 数量 | 应与 broker 回报数量基本一致 |
-| `applied_orders` / `applied_trades` | 真正落到 OrderStateStore 的事件数量 | 与上一项差应仅由 dedup / orphan 解释 |
-| `order_dedup_skips` / `trade_dedup_skips` | 重复推送被去重的次数 | 大量增长说明 OpenD 重连频繁，应排查网络 |
-| `orphan_orders` / `orphan_trades` | EVENT 早于 `register_request` 到达，缓存待回放 | 单日 > 5 视为异常，需检查下单/绑定时序 |
-| `forced_cancelled` | 因 `traded > 0 + status=CANCELLED` 强制路由到 `cancelled`（避免被误判为 `partial_filled`） | 该计数 > 0 说明确实发生了部分撤单 |
-| `forced_rejected` | broker 直接拒单（包括 `approved → rejected` bridge 路径） | 出现一次必须人工核查 risk_engine 是否前置漏挡 |
-| `forced_expired` | 订单过期（broker 端超时） | 限价单常见，市价单出现需排查参数 |
-| `invalid_transitions` | 触发 `InvalidOrderTransition` 后被吞的事件数 | **必须为 0**；非 0 说明状态机/事件路径有 bug，立即暂停双跑 |
-
-OmsEventRecorder 处理的关键边缘场景（已有单测覆盖）：
-
-1. **EVENT_TRADE 早于 EVENT_ORDER**：通过 `_orphan_trades` 缓存，`register_request`
-   触发时回放。
-2. **`approved → cancelled` / `approved → rejected`**：状态机不允许直接跳转，
-   recorder 内部会先 bridge 到 `submitted` 再转终态，notes 中可见
-   `oms_recorder:bridge:<vt_orderid>` 痕迹。
-3. **partial_filled 后被撤单**：传统 `_map_broker_status` 因 `filled_qty>0`
-   会误判为 `partial_filled`，recorder 通过 `_classify_broker_status` 提前识别
-   中英文 cancel 关键字（`CANCEL`/`CXL`/`已撤`/`撤单`/`撤销`）并强制路由。
-4. **撤单回报里 `traded < state.filled_qty`**：用 `max(state.filled_qty,
-   payload.traded)` 防止 `filled_qty` 倒退。
-5. **重启恢复**：`_rebuild_index_from_disk` 从所有 `OrderState.broker_order_id`
-   字段重建 `vt_orderid → request_id` 映射，让重启后的 recorder 立刻可用。
-
-### 18.5 通过条件（5 日累计）
-
-- 任意一日 hard 指标出现 `fail` → 整个双跑视为失败，必须回到代码层定位差异。
-- 5 日 soft 指标累计 `warn` 数量 ≤ 5 视为可接受。
-- 5 日内任何一日 `orders_open_residual > 0`（即非 `filled` / `cancelled` / `rejected` 的
-  挂单残留）必须人工核查 `orders/*.json` 的 `notes` 字段 + `events.jsonl` 时间线。
-
-### 18.6 冷启动反向验证（第 6 日）
-
-通过前 5 日双跑后，执行一次冷启动反向验证：
-
-1. 在新分支 `vnpy_native` 工作区清空 `state/runs/orders/`；
-2. 启动 `run_intraday_loop.py`，盘中等待第一笔买入完成；
-3. 重启进程；
-4. 重启后 `OmsEventRecorder._rebuild_index_from_disk` 应能从持久化的 OrderState
-   恢复 `vt_orderid → request_id` 映射，使得后续 `EVENT_TRADE` 不进入 orphan 队列；
-5. `MinuteTradeGuard` 通过 `OmsEngine.get_all_trades()` 读出当日已成交记录，
-   `max_intraday_trades` 计数应包含重启前的下单。
-
-满足以上，记录在 `state/runs/reports/cold_start_validation_<date>.json` 后即可申请合并。
-
-### 18.7 与项目规则的关系
-
-- **规则 2**：每次启动 SIM 会话、每次 `--live-submit`、每次 `state/runs/orders/`
-  清理都需用户事前确认。本 runbook 提供命令模板但不替代确认动作。
-- **规则 3**：双跑期间不允许 `services/trading_pipeline/live_task.py` 删除（Task 8）；
-  待双跑通过 + 冷启动反向验证 OK 后才进入二轮清理。
-
-### 18.8 Task 8 清理清单入口
-
-双跑通过后再执行的二轮清理（删除 `live_task.py`、清理 `services/futu_account/`
-轮询 dead code、回收 S0 1.4 推迟的 services/ 子包等）已盘点在：
-
-```
-.codebuddy/plan/vnpy_wheel_reinvent_audit/task8_cleanup_checklist.md
-```
-
-清单是**只读盘点**，未删任何文件。包含：执行前置条件（5 日双跑通过 + 用户
-确认 + 工作树干净 + 回滚 tag）、6 个推荐执行批次（T8-B1 ~ T8-B6）、依赖簇
-风险登记。每个批次需用户单独确认才能执行（项目规则 2）。
-
-### 18.9 双跑前置自查工具
-
-`scripts/dual_run_preflight.py` 把双跑启动前的人工 checklist 自动化（**纯只读，
-不连 OpenD、不下单、不写状态**）。建议每日开盘前执行一次，作为启动 SIM 会话
-前的最后一道闸门：
-
-```
-python3 scripts/dual_run_preflight.py \
-    --run-a /projects/dual_run/legacy \
-    --run-b /projects/dual_run/vnpy_native \
-    --expected-tag-a classic-pre-vnpy-rewrite-v1 \
-    --expected-branch-b classic-vnpy-native-rewrite \
-    --config configs/classic_multifactor/nvda_g09.json
-```
-
-检查项（任一失败即 exit 1）：
-
-- 两个工作树存在且都是 git 仓库；
-- 旧分支 HEAD 是 `classic-pre-vnpy-rewrite-v1` tag，**或** HEAD 在
-  `dual_run_init_*` 本地分支上且沿 first-parent 链向上能在
-  `--max-init-commits`（默认 10）步内找到 `classic-pre-vnpy-rewrite-v1`
-  所指 commit，且链上每个 commit subject 都以 `dual-run init(` 开头；
-- 新分支当前分支名为 `classic-vnpy-native-rewrite`，**或** HEAD 在
-  `dual_run_init_*` 本地分支上且沿 first-parent 链向上能在
-  `--max-init-commits` 步内找到 `classic-vnpy-native-rewrite` 分支当前
-  tip，且链上每个 commit subject 都以 `dual-run init(` 开头；
-- 两边工作树 `git status --porcelain` 为空；
-- 两边使用相同 `--config` 文件（SHA256 一致），避免参数漂移；
-- 两边 `state/runs/orders/` 不存在残留挂单（status ∈ open_status 且 broker_order_id 非空）；
-- Python 版本一致（`major.minor`）；
-- 磁盘剩余空间 ≥ 1 GB（双跑当日 events.jsonl 与订单 JSON 写入空间）。
-
-加 `--strict-anchor` 可关闭 init 分支放宽，要求 HEAD **必须**直接落在
-预期 tag / 分支上（用于发布前最严格的回归校验）。
-
-通过 `--max-init-commits N` 可调整 init 分支允许的最大累积深度。当链上
-出现非 `dual-run init(` 前缀的 commit（例如误把业务改动落到 init 分支），
-或链长超过 N 仍未触达 tag/branch 时，preflight 会硬失败并指出具体位置，
-防止 init 分支退化为通用工作分支。
-
-#### 关于 dual_run_init_* 本地分支的设计意图
-
-主仓 `state/runs/` 下的历史产物（旧 task 报告、订单 JSON、event jsonl 等）
-是 git 跟踪文件。新建双跑工作树时，如果直接在 `classic-pre-vnpy-rewrite-v1`
-tag 或 `classic-vnpy-native-rewrite` 分支上工作，会面临两难：
-
-1. 不清空 `state/runs/`：旧产物会污染当日双跑的状态读取与对比；
-2. 直接 `rm -rf state/runs/*`：工作树立即变脏（`git status` 输出 100+ 条
-   `D ...`），preflight 第 4 项「工作树干净」检查必然失败。
-
-解决方法：在每个双跑 worktree 上各创建一个**仅本地、无 upstream**的初始化
-分支 `dual_run_init_legacy` / `dual_run_init_vnpy_native`，把 `state/runs/`
-清空操作（以及后续严格受控的对齐操作，例如 `dual-run init(legacy): align
-nvda_g09.json with vnpy_native ...`）以多次本地 commit 累积在这两个分支。
-要点：
-
-- 两个 init 分支**没有 upstream**（`git branch -vv` 不应显示 `[origin/...]`），
-  普通 `git push` 不会把它们推到主仓 origin。
-- init 分支沿 first-parent 链向上必须能在 `--max-init-commits` 步内回到
-  `classic-pre-vnpy-rewrite-v1` / `classic-vnpy-native-rewrite`；preflight
-  会校验整条链。
-- 链上每个 commit 的 subject 必须以 `dual-run init(` 开头
-  （例如 `dual-run init(legacy): clear state/runs ...` /
-  `dual-run init(vnpy_native): clear state/runs ...`）；任何不符合此前缀
-  的 commit 都会导致 preflight 失败 — 这把 init 分支锁定为「严格受控的状态
-  重置/对齐快照」，不允许变成通用工作分支。
-- 想恢复“原 tag/分支视角”时只需 `git checkout classic-pre-vnpy-rewrite-v1`
-  / `git checkout classic-vnpy-native-rewrite`，init 分支保留作为状态重置
-  快照。
-
-报告同时输出到 stdout（带 ✅/❌ 标记）和 `state/runs/reports/preflight_$(date +%Y%m%d).json`，
-方便审计。
-
-### 18.10 双跑启动模板
-
-`scripts/launch_dual_run.sh` 把 §18.2 ~ §18.4 的「跑 preflight → 起两侧 SIM
-会话 → 结束后跑 diff」流程脚本化，作为开盘前一键模板，**默认 dry-run**：
-
-- 不带 `--execute`：仅打印解析后的两侧命令、运行 preflight、退出 0。
-  这一步**不**启动任何会话，**不**连 OpenD，**不**改 `state/runs/orders/`。
-- 带 `--execute`：先跑 preflight；任一项 fail → 拒绝启动；preflight 全绿
-  后弹出交互提示，操作员必须键入字面字符串 `START DUAL RUN` 才会真正起
-  两个 `nohup` 后台进程（如系统装有 tmux 可手动改用 tmux 起会话）。
-- 即使 `--execute` 通过，启动命令**不**含 `--live-submit`，**不** export
-  `VNPY_LIVE_*` 环境变量；两侧仍是应用层 dry-run。任何真实下单仍受
-  `--live-submit` + `VNPY_LIVE_CONFIG=YES` + `VNPY_LIVE_SUBMIT=YES`
-  + `VNPY_LIVE_APPROVED=YES` 四重硬开关守护，不能由本模板绕过。
-
-入参（默认值见 `--help`）：
-
-```
-scripts/launch_dual_run.sh \
-    --run-a /projects/dual_run/legacy \
-    --run-b /projects/dual_run/vnpy_native \
-    --config configs/classic_multifactor/nvda_g09.json \
-    --symbol-a NVDA \
-    --legacy-config-name nvda_g09.json \
-    --session-end-bj 04:00 \
-    --session-end-et 16:00
-    # add --execute to actually launch (still requires interactive confirm)
-```
-
-两侧入口默认：
-
-| 侧 | 入口脚本（worktree 内） | 备注 |
-|---|---|---|
-| legacy（A） | `scripts/classic_multifactor/run_loop.py` | `--symbol`+`--config <filename>`；`--session-end` 是北京时间 |
-| vnpy_native（B） | `scripts/classic_multifactor/run_intraday_loop.py` | `--config <relpath>`；`--session-end` 默认 ET |
-
-启动后产物（路径写在各自 worktree 内，避免污染主仓）：
-
-- `${RUN_A}/state/runs/reports/run_<UTC>.log`、`...run_<UTC>.pid`
-- `${RUN_B}/state/runs/reports/run_<UTC>.log`、`...run_<UTC>.pid`
-- 主仓审计日志：`state/runs/reports/launch_dual_run_<UTC>.log`
-
-收盘后建议立即跑 §18.4 / §18.4a 的 diff：
-
-```
-python3 scripts/diff_dual_run.py \
-    --run-a /projects/dual_run/legacy \
-    --run-b /projects/dual_run/vnpy_native \
-    --strict-rids --markdown
-```
-
-停止双跑：手动 `kill <pid_a> <pid_b>`（pid 文件路径如上）。
-
+这些命令适合用来快速理解当前项目工件和阶段状态；真正的 SIM/live 入口应继续遵守显式确认和安全门禁。
