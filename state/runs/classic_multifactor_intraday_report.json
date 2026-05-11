@@ -1,13 +1,13 @@
 {
-  "started_at": "2026-05-11T12:07:30.552260+00:00",
-  "ended_at": "2026-05-11T12:07:45.552620+00:00",
-  "exit_reason": "stopped_before_start",
+  "started_at": "2026-05-11T15:48:42.079719+00:00",
+  "ended_at": "2026-05-11T20:00:08.211500+00:00",
+  "exit_reason": "session_end",
   "approved": 0,
   "blocked": {},
   "live_submit": false,
   "strategy_name": "classic_multifactor_NVDA_US",
   "vt_symbol": "NVDA.SMART",
-  "config_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_nvda_2024_1d.json",
+  "config_path": "/projects/vnpy/configs/classic_multifactor/nvda_g09.json",
   "loop_mode": "intraday",
   "session_end": "16:00"
 }

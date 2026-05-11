@@ -114,6 +114,23 @@
 - **`scripts/run_hk_live_task.py`**：HK live task 顶层包装入口；只保留 `--live-submit` 意图并转发到主线 intraday runner，真实提交仍需下游 `VNPY_LIVE_*` 硬开关同时满足。
   - 包装层会默认注入 `--futu-market HK`，避免 live 侧因市场默认值仍停留在 `US` 而出现港股合约订阅失败。
 
+### Knot 4 维选股 / 持仓 Review 入口
+
+下面三个入口共享 `services/strategy/knot_pick_helpers.py` 这一层 helper，单独面向「让 Knot 给出可阅读的研究类输出」，**不连交易、不改交易状态**：
+
+- **`scripts/quant_workflow/run_knot_4dim_picks_hk.py`** / **`run_knot_4dim_picks_us.py`**
+  - 让远端 Knot 按 4 个研究维度（`technical / fundamental / capital_flow / event_driven`）各给 3 个目标市场候选，每条候选回到本地 `CandidateScoringService.enrich_row("dynamic")` 走一遍打分。
+  - 默认仅出站调用 Knot LLM，不连 OpenD、不下单、不写 `candidate_inputs*.json`。
+  - 输出为紧凑可读文本到 stdout，并把结构化 JSON 写到 `state/runs/knot_4dim_hk.json` / `state/runs/knot_4dim_us.json`；`--dry-run` 只打印不落盘。
+  - 当 `KNOT_AGUI_URL` / `KNOT_API_TOKEN` 缺失或 Knot 返回不可用时，**直接以非零退出码报错**，不做静默降级（让操作者明确知道没拿到 Knot 输出）。
+- **`scripts/quant_workflow/run_holdings_knot_review.py`**
+  - 通过 `FutuAccountProvider().get_summary()` 只读拉取当前持仓，再让 Knot 对每只持仓给出 `hold | add | trim | exit` 四个方向之一（不给具体仓位百分比）。
+  - 对外暴露的字段经过 `mask_account_summary` 脱敏：仅保留 `symbol / name / market / weight_bucket / pl_direction`，剔除所有现金、市值、数量、可买力、总资产；`weight_bucket` 按相对总资产档位计算（`<5% small`、`5%~15% medium`、`>15% large`）。
+  - Knot prompt 中明确要求模型不要给出任何具体股数 / 金额 / NAV 占比；本地输出与落盘文件 `state/runs/holdings_knot_review.json` 同样不会包含原始金额或数量。
+  - `--skip-knot` 可跳过 Knot 调用做离线预览，仅打分不调远端。
+
+> 安全边界：以上三个入口归类为 **READ-ONLY 研究类入口**。它们不会启动交易会话、不会改写订单状态、不会触发 `prepare candidates` 流；持仓 review 只调用 OpenD 的 `position_list_query`，不下单、不撤单、不调仓。
+
 ### 推荐的项目阅读顺序
 
 如果你是第一次接触本项目，建议按下面顺序阅读：
