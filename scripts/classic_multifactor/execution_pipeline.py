@@ -15,11 +15,11 @@ interface:
 4. ``LiveRiskGuard`` — reject when single/daily/market exposure or drawdown
    limits are breached.
 
-Any rejection is written to ``state/runs/events.jsonl`` (one JSON per line)
-and to the ``OrderStateStore``. When ``live_submit=False`` (default), the
-hook always returns ``(False, "dry_run")`` after running the full gate
-pipeline so the decisioning / logging path is exercised without sending
-a real order.
+Any rejection is written to the execution-env scoped ``events.jsonl``
+(one JSON per line) and to the ``OrderStateStore``. When
+``live_submit=False`` (default), the hook always returns
+``(False, "dry_run")`` after running the full gate pipeline so the
+decisioning / logging path is exercised without sending a real order.
 
 The hook intentionally does **not** mutate the vn.py ``MainEngine`` or
 ``CtaEngine`` directly — it only decides allow/deny. Order submission is
@@ -96,8 +96,9 @@ class ExecutionGuardPipeline:
         ``OrderStateStore`` used to persist accepted/rejected requests for
         post-run diagnostics and cold-start idempotency.
     events_log_path
-        Path to the line-delimited JSON events log (typically
-        ``state/runs/events.jsonl``). ``None`` disables event logging.
+        Path to the line-delimited JSON events log (typically an
+        execution-env path such as ``state/runs/dry_run/events.jsonl``).
+        ``None`` disables event logging.
     context_provider
         Callable returning a fresh :class:`PipelineContext` each call.
         Required so the LiveRiskGuard sees up-to-date equity / drawdown.

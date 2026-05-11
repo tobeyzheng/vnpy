@@ -21,11 +21,11 @@ Usage
 -----
 ::
 
-    python3 scripts/dual_run_preflight.py \\
-        --run-a /projects/dual_run/legacy \\
-        --run-b /projects/dual_run/vnpy_native \\
-        --expected-tag-a classic-pre-vnpy-rewrite-v1 \\
-        --expected-branch-b classic-vnpy-native-rewrite \\
+    python3 scripts/dual_run_preflight.py \
+        --run-a /projects/dual_run/legacy \
+        --run-b /projects/dual_run/vnpy_native \
+        --expected-tag-a classic-pre-vnpy-rewrite-v1 \
+        --expected-branch-b classic-vnpy-native-rewrite \
         --config configs/classic_multifactor/nvda_g09.json
 
 The ``--config`` path is resolved **inside each worktree** (so each
@@ -51,6 +51,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+_ORDER_ENV_DIRS = ("dry_run", "futu_sim", "futu_real")
 
 # Statuses considered "still in flight" — same as diff_dual_run.py.
 _OPEN_STATUS = {
@@ -104,6 +106,7 @@ class WorktreeReport:
     config_sha256: str | None = None
     orders_residual: int = 0
     orders_residual_sample: list[str] = field(default_factory=list)
+    orders_checked_dirs: list[str] = field(default_factory=list)
     python_version: str | None = None
     disk_free_gb: float | None = None
 
@@ -144,6 +147,22 @@ def _safe_load_json(path: Path) -> dict[str, Any] | None:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
+
+
+def _candidate_order_dirs(state_root: Path) -> list[Path]:
+    """Return execution-env order directories plus the legacy fallback."""
+
+    candidates = [state_root / env / "orders" for env in _ORDER_ENV_DIRS]
+    legacy = state_root / "orders"
+    out: list[Path] = []
+    seen: set[Path] = set()
+    for path in [*candidates, legacy]:
+        if path in seen:
+            continue
+        seen.add(path)
+        if path.exists():
+            out.append(path)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -218,8 +237,9 @@ def probe_worktree(label: str, root: Path, config_relpath: str | None) -> Worktr
             rep.config_present = True
             rep.config_sha256 = _sha256_of_file(cfg)
 
-    orders_dir = root / "state" / "runs" / "orders"
-    if orders_dir.exists():
+    order_dirs = _candidate_order_dirs(root / "state" / "runs")
+    rep.orders_checked_dirs = [str(path) for path in order_dirs]
+    for orders_dir in order_dirs:
         for path in orders_dir.glob("*.json"):
             data = _safe_load_json(path)
             if not isinstance(data, dict):
@@ -231,7 +251,7 @@ def probe_worktree(label: str, root: Path, config_relpath: str | None) -> Worktr
             if status in _OPEN_STATUS and broker:
                 rep.orders_residual += 1
                 if len(rep.orders_residual_sample) < 10:
-                    rep.orders_residual_sample.append(path.name)
+                    rep.orders_residual_sample.append(str(path.relative_to(root / "state" / "runs")))
 
     py_bin = root / "venv" / "bin" / "python3"
     if not py_bin.exists():
@@ -584,16 +604,21 @@ def evaluate_checks(
                 name=f"orders_no_residual[{rep.label}]",
                 status="ok",
                 detail="no open submitted orders carried over",
+                extra={"checked_dirs": rep.orders_checked_dirs},
             ))
         else:
             checks.append(CheckResult(
                 name=f"orders_no_residual[{rep.label}]",
                 status="fail",
                 detail=(
-                    f"{rep.orders_residual} open submitted orders found in "
-                    f"state/runs/orders/; reconcile or archive before dual-run."
+                    f"{rep.orders_residual} open submitted orders found under "
+                    f"state/runs/<execution_env>/orders/ (legacy state/runs/orders/ also checked when present); "
+                    f"reconcile or archive before dual-run."
                 ),
-                extra={"sample": rep.orders_residual_sample},
+                extra={
+                    "sample": rep.orders_residual_sample,
+                    "checked_dirs": rep.orders_checked_dirs,
+                },
             ))
 
     # 7. Python major.minor identical.

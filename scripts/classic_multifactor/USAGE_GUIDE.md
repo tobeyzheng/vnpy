@@ -208,8 +208,8 @@ python3 scripts/classic_multifactor/run_daily_rebalance.py \
 访问监控界面: `file:///projects/vnpy/scripts/classic_multifactor/web_interface.html`
 
 ### 日志和报告
-- **事件日志**: `state/runs/events.jsonl`
-- **订单状态**: `state/runs/orders/`
+- **事件日志**: `state/runs/dry_run/events.jsonl`、`state/runs/futu_sim/events.jsonl`、`state/runs/futu_real/events.jsonl`
+- **订单状态**: `state/runs/dry_run/orders/`、`state/runs/futu_sim/orders/`、`state/runs/futu_real/orders/`
 - **运行报告**: `state/runs/classic_multifactor_*_report.json`
 
 ## 常见问题排查

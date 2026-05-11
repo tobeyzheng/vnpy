@@ -10,9 +10,11 @@ Compares two SIM runs of classic_multifactor — typically:
 For each run, the script extracts a normalised metric vector from up to
 three sources:
 
-1. ``state/runs/<report-filename>``                    — aggregated counters
-2. ``state/runs/orders/*.json`` ``OrderState``          — per-order ground truth
-3. ``state/runs/events.jsonl``                          — gate/approval timeline
+1. ``state/runs/<report-filename>``                             — aggregated counters
+2. ``state/runs/<execution_env>/orders/*.json`` (or legacy ``orders/*.json``)
+   ``OrderState``                                               — per-order ground truth
+3. ``state/runs/<execution_env>/events.jsonl`` (or legacy root ``events.jsonl``)
+                                                               — gate/approval timeline
 
 It then computes a per-metric absolute & relative delta and emits a JSON
 report. A non-zero exit code is returned when any "hard" metric diverges
@@ -23,11 +25,11 @@ Usage
 -----
 ::
 
-    python3 scripts/diff_dual_run.py \\
-        --run-a /path/to/legacy/state/runs \\
-        --run-b /path/to/new/state/runs \\
-        --report-filename-a classic_multifactor_NVDA_US_live_report.json \\
-        --report-filename-b classic_multifactor_intraday_report.json \\
+    python3 scripts/diff_dual_run.py \
+        --run-a /path/to/legacy/state/runs \
+        --run-b /path/to/new/state/runs \
+        --report-filename-a classic_multifactor_NVDA_US_live_report.json \
+        --report-filename-b classic_multifactor_intraday_report.json \
         --output state/runs/reports/dual_run_diff.json
 
 Both ``--report-filename-*`` arguments are optional; when omitted the
@@ -73,6 +75,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+_ORDER_ENV_DIRS = ("dry_run", "futu_sim", "futu_real")
+
 # Hard metrics — divergence => exit code 1 (block CI / cron pipeline).
 HARD_METRICS = {
     "submitted_count",
@@ -90,6 +94,38 @@ SOFT_METRICS = {
     "orders_open_residual",
     "orders_failed_residual",
 }
+
+
+def _candidate_order_dirs(state_root: Path) -> list[Path]:
+    """Return execution-env order directories plus legacy fallback when present."""
+
+    candidates = [state_root / env / "orders" for env in _ORDER_ENV_DIRS]
+    legacy = state_root / "orders"
+    out: list[Path] = []
+    seen: set[Path] = set()
+    for path in [*candidates, legacy]:
+        if path in seen:
+            continue
+        seen.add(path)
+        if path.exists():
+            out.append(path)
+    return out
+
+
+def _candidate_event_paths(state_root: Path) -> list[Path]:
+    """Return execution-env event logs plus legacy root-level fallback."""
+
+    candidates = [state_root / env / "events.jsonl" for env in _ORDER_ENV_DIRS]
+    legacy = state_root / "events.jsonl"
+    out: list[Path] = []
+    seen: set[Path] = set()
+    for path in [*candidates, legacy]:
+        if path in seen:
+            continue
+        seen.add(path)
+        if path.exists():
+            out.append(path)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -177,12 +213,12 @@ def _extract_report_metrics(payload: dict[str, Any]) -> tuple[dict[str, float], 
     return metrics, blocked
 
 
-def _scan_orders(orders_dir: Path) -> dict[str, Any]:
-    """Aggregate ``state/runs/orders/*.json`` (OrderState records).
+def _scan_orders(order_dirs: Iterable[Path]) -> dict[str, Any]:
+    """Aggregate ``OrderState`` records from new and legacy order-state layouts.
 
-    The same ``OrderStateStore`` schema is used by both the legacy and
-    new branches, which makes this the most reliable reconciliation
-    source.
+    The preferred layout is ``state/runs/<execution_env>/orders/*.json``.
+    For backward compatibility we still scan legacy ``state/runs/orders/*.json``
+    when present.
     """
 
     out = {
@@ -195,61 +231,64 @@ def _scan_orders(orders_dir: Path) -> dict[str, Any]:
         "request_ids": set(),
         "broker_orderids": set(),
         "business_keys": [],
+        "scanned_dirs": [],
     }
-    if not orders_dir.exists():
-        return out
     open_status = {
         "created", "validated", "risk_checked", "approval_required", "approved",
         "submitting", "submitted", "partial_filled", "cancel_requested",
     }
     failed_status = {"rejected", "expired", "failed"}
-    for path in sorted(orders_dir.glob("*.json")):
-        data = _safe_load_json(path)
-        if not isinstance(data, dict):
+    for orders_dir in order_dirs:
+        if not orders_dir.exists():
             continue
-        out["orders_total"] += 1
-        rid = str(data.get("request_id") or "").strip()
-        if rid:
-            out["request_ids"].add(rid)
-        broker = str(data.get("broker_order_id") or "").strip()
-        if broker:
-            out["broker_orderids"].add(broker)
-            out["submitted_count"] += 1
-        filled = int(data.get("filled_qty") or 0)
-        if filled > 0:
-            out["filled_qty_total"] += filled
-            avg_price = data.get("avg_fill_price")
-            if isinstance(avg_price, (int, float)):
-                out["filled_notional_total"] += float(avg_price) * filled
-        status = str(data.get("status") or "").strip()
-        if status in open_status and status != "approved":
-            # ``approved`` alone (without broker_order_id) is a dry-run trace;
-            # only count truly open submitted orders as residual.
+        out["scanned_dirs"].append(str(orders_dir))
+        for path in sorted(orders_dir.glob("*.json")):
+            data = _safe_load_json(path)
+            if not isinstance(data, dict):
+                continue
+            out["orders_total"] += 1
+            rid = str(data.get("request_id") or "").strip()
+            if rid:
+                out["request_ids"].add(rid)
+            broker = str(data.get("broker_order_id") or "").strip()
             if broker:
-                out["orders_open_residual"] += 1
-        elif status in failed_status:
-            out["orders_failed_residual"] += 1
-        # Business 5-tuple for --strict-rids mode. Price is bucketed to
-        # 2 decimal places to absorb the per-order limit-price jitter
-        # that is identical across A/B in classic_multifactor.
-        strategy_id = str(data.get("strategy_id") or "").strip()
-        market = str(data.get("market") or "").strip()
-        symbol = str(data.get("symbol") or "").strip()
-        side = str(data.get("side") or "").strip()
-        qty = int(data.get("qty") or 0)
-        price = data.get("price")
-        try:
-            price_bucket = f"{float(price):.2f}" if price is not None else "-"
-        except (TypeError, ValueError):
-            price_bucket = "-"
-        if strategy_id and symbol and side and qty:
-            out["business_keys"].append(
-                (strategy_id, market, symbol, side, qty, price_bucket)
-            )
+                out["broker_orderids"].add(broker)
+                out["submitted_count"] += 1
+            filled = int(data.get("filled_qty") or 0)
+            if filled > 0:
+                out["filled_qty_total"] += filled
+                avg_price = data.get("avg_fill_price")
+                if isinstance(avg_price, (int, float)):
+                    out["filled_notional_total"] += float(avg_price) * filled
+            status = str(data.get("status") or "").strip()
+            if status in open_status and status != "approved":
+                # ``approved`` alone (without broker_order_id) is a dry-run trace;
+                # only count truly open submitted orders as residual.
+                if broker:
+                    out["orders_open_residual"] += 1
+            elif status in failed_status:
+                out["orders_failed_residual"] += 1
+            # Business 5-tuple for --strict-rids mode. Price is bucketed to
+            # 2 decimal places to absorb the per-order limit-price jitter
+            # that is identical across A/B in classic_multifactor.
+            strategy_id = str(data.get("strategy_id") or "").strip()
+            market = str(data.get("market") or "").strip()
+            symbol = str(data.get("symbol") or "").strip()
+            side = str(data.get("side") or "").strip()
+            qty = int(data.get("qty") or 0)
+            price = data.get("price")
+            try:
+                price_bucket = f"{float(price):.2f}" if price is not None else "-"
+            except (TypeError, ValueError):
+                price_bucket = "-"
+            if strategy_id and symbol and side and qty:
+                out["business_keys"].append(
+                    (strategy_id, market, symbol, side, qty, price_bucket)
+                )
     return out
 
 
-def _scan_events(events_path: Path) -> dict[str, Any]:
+def _scan_events(events_paths: Iterable[Path]) -> dict[str, Any]:
     out = {
         "events_total": 0,
         "events_order_approved": 0,
@@ -258,22 +297,27 @@ def _scan_events(events_path: Path) -> dict[str, Any]:
         "events_order_fill": 0,
         "events_order_status_update": 0,
         "blocked_by_gate": {},
+        "scanned_paths": [],
     }
-    for evt in _iter_jsonl(events_path):
-        out["events_total"] += 1
-        kind = str(evt.get("event") or "")
-        if kind == "order_approved":
-            out["events_order_approved"] += 1
-        elif kind == "order_blocked":
-            out["events_order_blocked"] += 1
-            gate = str(evt.get("gate") or "unknown")
-            out["blocked_by_gate"][gate] = out["blocked_by_gate"].get(gate, 0) + 1
-        elif kind == "order_submitted":
-            out["events_order_submitted"] += 1
-        elif kind == "order_fill":
-            out["events_order_fill"] += 1
-        elif kind == "order_status_update":
-            out["events_order_status_update"] += 1
+    for events_path in events_paths:
+        if not events_path.exists():
+            continue
+        out["scanned_paths"].append(str(events_path))
+        for evt in _iter_jsonl(events_path):
+            out["events_total"] += 1
+            kind = str(evt.get("event") or "")
+            if kind == "order_approved":
+                out["events_order_approved"] += 1
+            elif kind == "order_blocked":
+                out["events_order_blocked"] += 1
+                gate = str(evt.get("gate") or "unknown")
+                out["blocked_by_gate"][gate] = out["blocked_by_gate"].get(gate, 0) + 1
+            elif kind == "order_submitted":
+                out["events_order_submitted"] += 1
+            elif kind == "order_fill":
+                out["events_order_fill"] += 1
+            elif kind == "order_status_update":
+                out["events_order_status_update"] += 1
     return out
 
 
@@ -299,8 +343,8 @@ def collect_run_metrics(
                 rm.blocked_by_gate.update(blocked)
             rm.samples["report_keys"] = sorted(report_data.keys())[:20]
 
-    # --- Source 2: orders/*.json (always tried)
-    orders_summary = _scan_orders(state_root / "orders")
+    # --- Source 2: execution-env orders/*.json (legacy root-level orders still supported)
+    orders_summary = _scan_orders(_candidate_order_dirs(state_root))
     if orders_summary["orders_total"] > 0:
         rm.orders_present = True
     rm.metrics.setdefault("submitted_count", float(orders_summary["submitted_count"]))
@@ -313,22 +357,28 @@ def collect_run_metrics(
     rm.business_keys = list(orders_summary["business_keys"])
     rm.samples["orders_total"] = orders_summary["orders_total"]
     rm.samples["broker_orderids_count"] = len(orders_summary["broker_orderids"])
+    rm.samples["orders_dirs"] = orders_summary["scanned_dirs"]
 
-    # --- Source 3: events.jsonl
-    events_path = state_root / "events.jsonl"
-    if events_path.exists():
+    # --- Source 3: execution-env events.jsonl (legacy root-level events still supported)
+    events_summary = _scan_events(_candidate_event_paths(state_root))
+    if events_summary["events_total"] > 0:
         rm.events_present = True
-        ev = _scan_events(events_path)
-        for k in ("events_total", "events_order_approved", "events_order_blocked",
-                  "events_order_submitted", "events_order_fill",
-                  "events_order_status_update"):
-            rm.metrics[k] = float(ev[k])
+        for k in (
+            "events_total",
+            "events_order_approved",
+            "events_order_blocked",
+            "events_order_submitted",
+            "events_order_fill",
+            "events_order_status_update",
+        ):
+            rm.metrics[k] = float(events_summary[k])
         # If the report didn't already provide approved_count, fall back to events.
-        rm.metrics.setdefault("approved_count", float(ev["events_order_approved"]))
+        rm.metrics.setdefault("approved_count", float(events_summary["events_order_approved"]))
         # Merge gate-level counters (events are authoritative if present).
-        for gate, count in ev["blocked_by_gate"].items():
+        for gate, count in events_summary["blocked_by_gate"].items():
             rm.blocked_by_gate[gate] = rm.blocked_by_gate.get(gate, 0) + int(count)
-        rm.samples["events_total"] = ev["events_total"]
+        rm.samples["events_total"] = events_summary["events_total"]
+        rm.samples["event_paths"] = events_summary["scanned_paths"]
 
     rm.metrics.setdefault("approved_count", 0.0)
     rm.metrics.setdefault("submitted_count", 0.0)

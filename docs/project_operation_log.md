@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-11**：补齐 dual-run / preflight 工具对新执行环境目录布局的兼容，并同步修正文档说明
+  - **代码文件**：[diff_dual_run.py](/projects/vnpy/scripts/diff_dual_run.py)、[dual_run_preflight.py](/projects/vnpy/scripts/dual_run_preflight.py)、[execution_pipeline.py](/projects/vnpy/scripts/classic_multifactor/execution_pipeline.py)、[oms_recorder.py](/projects/vnpy/services/trade_state/oms_recorder.py)、[test_dual_run_layout_compat.py](/projects/vnpy/tests/test_dual_run_layout_compat.py)
+  - **文档文件**：[USAGE_GUIDE.md](/projects/vnpy/scripts/classic_multifactor/USAGE_GUIDE.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：`diff_dual_run` 与 `dual_run_preflight` 现在会优先扫描 `state/runs/dry_run|futu_sim|futu_real/` 下的 `orders/` 与 `events.jsonl`，并保留对旧 `state/runs/orders/` 与根级 `events.jsonl` 的回退兼容；classic 主链路与 OMS 注释、使用指南也已同步更新到分环境目录表述，减少后续人工排查仍按旧路径理解运行产物的混淆。
+
 - **2026-05-11**：隔离 classic mainline 的 warmup 订单痕迹，并按执行环境拆分订单状态目录
   - **代码文件**：[trading_models.py](/projects/vnpy/services/common/trading_models.py)、[state_machine.py](/projects/vnpy/services/trade_state/state_machine.py)、[strategy.py](/projects/vnpy/scripts/classic_multifactor/strategy.py)、[_base_runner.py](/projects/vnpy/scripts/classic_multifactor/_base_runner.py)、[execution_pipeline.py](/projects/vnpy/scripts/classic_multifactor/execution_pipeline.py)、[engine.py](/projects/vnpy/services/sim_account/engine.py)、[run_us_futu_sim_session.py](/projects/vnpy/scripts/run_us_futu_sim_session.py)、[executor.py](/projects/vnpy/execution/vnpy_bridge/executor.py)、[test_order_state_machine.py](/projects/vnpy/tests/test_order_state_machine.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

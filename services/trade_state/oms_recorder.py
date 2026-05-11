@@ -136,12 +136,13 @@ class OmsEventRecorder:
     Parameters
     ----------
     store
-        The shared :class:`OrderStateStore` (typically
-        ``state/runs/orders``).
+        The shared :class:`OrderStateStore` (typically an execution-env
+        directory such as ``state/runs/dry_run/orders`` or
+        ``state/runs/futu_sim/orders``).
     events_log_path
-        Optional ``state/runs/events.jsonl`` path for audit trail. Each
-        recorded transition emits a single ``order_status_update`` /
-        ``order_fill`` JSON line.
+        Optional execution-env scoped events log path (for example
+        ``state/runs/dry_run/events.jsonl``). Each recorded transition
+        emits a single ``order_status_update`` / ``order_fill`` JSON line.
     machine
         Optional pre-built state machine; defaults to a fresh instance.
     """
