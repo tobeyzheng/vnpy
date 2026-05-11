@@ -4,7 +4,7 @@ import json
 import math
 from collections import Counter
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 from vnpy_llm.base import beijing_now_isoformat
 
@@ -12,6 +12,8 @@ from .candidate_generation import HybridCandidateGenerationService
 from .candidate_seed import KnotCandidateSeedService
 from .universe import (
     DEFAULT_UNIVERSE_LIMIT,
+    DEFAULT_UNIVERSE_PRESET,
+    SUPPORTED_UNIVERSE_PRESETS,
     FutuMarketUniverseProvider,
     UniverseUnavailableError,
 )
@@ -163,6 +165,7 @@ class CandidateInputPreparationService:
         knot_runtime: str = "auto",
         include_market_data: bool = True,
         universe_limit: int = DEFAULT_UNIVERSE_LIMIT,
+        universe_preset: str = DEFAULT_UNIVERSE_PRESET,
         dry_run: bool = False,
         generated_at: str | None = None,
         as_of_date: str | None = None,
@@ -207,6 +210,9 @@ class CandidateInputPreparationService:
         bounded_top_n = max(1, int(top_n or DEFAULT_TOP_N))
         bounded_target_count = max(bounded_top_n, int(knot_target_count or DEFAULT_KNOT_TARGET_COUNT))
         bounded_universe_limit = max(50, int(universe_limit or DEFAULT_UNIVERSE_LIMIT))
+        preset_key = (universe_preset or DEFAULT_UNIVERSE_PRESET).strip().lower()
+        if preset_key not in SUPPORTED_UNIVERSE_PRESETS:
+            preset_key = DEFAULT_UNIVERSE_PRESET
 
         existing_payload = self._load_dynamic_payload()
         kept_rows = [
@@ -230,6 +236,7 @@ class CandidateInputPreparationService:
                 knot_runtime=knot_runtime,
                 include_market_data=include_market_data,
                 universe_limit=bounded_universe_limit,
+                universe_preset=preset_key,
                 generated_at=generated_at,
                 as_of_date=as_of_date,
             )
@@ -273,6 +280,7 @@ class CandidateInputPreparationService:
                 "top_n": bounded_top_n,
                 "knot_target_count": bounded_target_count,
                 "universe_limit": bounded_universe_limit,
+                "universe_preset": preset_key,
                 "dry_run": bool(dry_run),
             },
         }
@@ -325,6 +333,7 @@ class CandidateInputPreparationService:
         knot_runtime: str,
         include_market_data: bool,
         universe_limit: int,
+        universe_preset: str = DEFAULT_UNIVERSE_PRESET,
         generated_at: str,
         as_of_date: str,
     ) -> dict[str, Any]:
@@ -360,10 +369,15 @@ class CandidateInputPreparationService:
                 )
 
         if strategy_used == "score_first":
-            try:
-                universe_rows = self.universe_provider.list_symbols(market)
-            except (UniverseUnavailableError, ValueError) as exc:
-                warnings.append(f"Universe unavailable for {market}: {exc}")
+            universe_rows = self._invoke_universe_provider(
+                market=market,
+                preset=universe_preset,
+                limit=universe_limit,
+            )
+            if universe_rows is None:
+                warnings.append(
+                    f"Universe unavailable for {market}; skipped score_first refresh."
+                )
                 return {
                     "market": market,
                     "strategy_requested": strategy,
@@ -371,6 +385,7 @@ class CandidateInputPreparationService:
                     "knot_status": knot_status,
                     "knot_seed_count": knot_seed_count,
                     "universe_size": 0,
+                    "universe_preset": universe_preset,
                     "scored_count": 0,
                     "kept_count": 0,
                     "rows": [],
@@ -433,6 +448,34 @@ class CandidateInputPreparationService:
         kept = scored_items[:top_n]
         warnings.extend(generated.get("warnings", []))
 
+        # Zero-enrichment guard: when score_first ran against the live
+        # universe but every snapshot fetch failed (or got quarantined), we
+        # would otherwise fall back to alphabetic top-N. Detect that case via
+        # the enrichment metadata embedded in ``generated`` and refuse to
+        # commit those rows so the existing dynamic pool stays untouched.
+        if (
+            strategy_used == "score_first"
+            and include_market_data
+            and self._enrichment_failed(generated)
+        ):
+            warnings.append(
+                f"Snapshot enrichment for {market} produced no matches; refusing to overwrite the dynamic pool with unscored rows."
+            )
+            return {
+                "market": market,
+                "strategy_requested": strategy,
+                "strategy_used": strategy_used,
+                "knot_status": knot_status,
+                "knot_seed_count": knot_seed_count,
+                "universe_size": universe_size,
+                "universe_preset": universe_preset,
+                "scored_count": len(scored_items),
+                "kept_count": 0,
+                "rows": [],
+                "source_files": [str(tmp_source)],
+                "warnings": list(dict.fromkeys(warnings)),
+            }
+
         return {
             "market": market,
             "strategy_requested": strategy,
@@ -440,12 +483,57 @@ class CandidateInputPreparationService:
             "knot_status": knot_status,
             "knot_seed_count": knot_seed_count,
             "universe_size": universe_size,
+            "universe_preset": universe_preset,
             "scored_count": len(scored_items),
             "kept_count": len(kept),
             "rows": kept,
             "source_files": [str(tmp_source)],
             "warnings": list(dict.fromkeys(warnings)),
         }
+
+    def _invoke_universe_provider(
+        self,
+        *,
+        market: str,
+        preset: str,
+        limit: int,
+    ) -> list[dict[str, Any]] | None:
+        """Call the configured provider, tolerating older stub signatures.
+
+        Returns ``None`` when the provider could not be used (treated as a
+        soft failure by the caller). Returns a list of raw universe rows
+        otherwise.
+        """
+        provider = self.universe_provider
+        try:
+            try:
+                return list(
+                    provider.list_symbols(market, preset=preset, extra_limit=limit)
+                )
+            except TypeError:
+                # Backward compatibility: legacy stubs / providers that only
+                # accept a single positional ``market`` argument.
+                return list(provider.list_symbols(market))
+        except (UniverseUnavailableError, ValueError):
+            return None
+        except Exception:
+            return None
+
+    @staticmethod
+    def _enrichment_failed(generated: dict[str, Any]) -> bool:
+        enrichment = generated.get("enrichment")
+        if not isinstance(enrichment, Mapping):
+            return False
+        market_data = enrichment.get("market_data") if isinstance(enrichment.get("market_data"), Mapping) else enrichment
+        status = str(market_data.get("status") or "").strip().lower()
+        if status in {"error", "unavailable"}:
+            return True
+        try:
+            requested = int(market_data.get("requested_symbols") or 0)
+            matched = int(market_data.get("matched_rows") or 0)
+        except (TypeError, ValueError):
+            return False
+        return requested > 0 and matched == 0
 
     def _strip_run_rows(self, run: dict[str, Any]) -> dict[str, Any]:
         stripped = {key: value for key, value in run.items() if key != "rows"}

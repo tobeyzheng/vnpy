@@ -70,14 +70,20 @@
   - `--market` 可选 `all` / `hong_kong` / `us`，默认 `all`，`all` 时按市场依次跑。
   - `--strategy` 可选 `knot_first`（默认）/ `score_first` / `merge_existing`：
     - `knot_first`：先调用远端 Knot agent 生成 ~20 个候选，再走本地 multifactor 评分 + Futu snapshot enrich，取 Top-N 写回。
-    - `score_first`：直接通过 `FutuMarketUniverseProvider` 拉对应市场的全市场标的，按 `universe_limit` 截断，本地多因子评分后取 Top-N，再做一轮 Knot 富化。
+    - `score_first`：通过 `FutuMarketUniverseProvider` 用 `get_stock_filter` 按市值降序 + 流动性下限拉目标市场的高质量短名单（按 `--universe-preset` 控制条件），本地多因子评分后取 Top-N，再做一轮 Knot 富化。
     - 当 `knot_first` 失败（远端 Knot 不可用、未配置、返回空）时，会**自动降级为 `score_first`**，并在 `market_runs[*].knot_status` 标注降级原因。
     - `merge_existing`：仅基于动态池里已有的目标市场行重新打分（兼容老行为）。
-  - `--top-n`（默认 20）控制每市场最终保留的候选数；`--knot-target-count`（默认 20）控制让 Knot 提议的候选数；`--universe-limit`（默认 800）限制 score_first 拉到的全市场标的上限。
+  - `--top-n`（默认 20）控制每市场最终保留的候选数；`--knot-target-count`（默认 20）控制让 Knot 提议的候选数；`--universe-limit`（默认 200，对齐 OpenD 单页上限）限制 score_first 拉到的标的数。
+  - `--universe-preset` 可选 `large_cap`（默认）/ `momentum_cta` / `none`：
+    - `large_cap`：HK 市值 ≥ 50 亿 HKD、价格 ∈ [1, 1000]、成交额 ≥ 5000 万 HKD；US 市值 ≥ 5 亿 USD、价格 ≥ 5、成交额 ≥ 1000 万 USD；按市值降序分页拉取。
+    - `momentum_cta`：在 `large_cap` 的基础上叠加 N 日涨幅 / 量比等技术过滤（连接的 OpenD 缺失对应字段时会自动忽略相关条件）。
+    - `none`：回退到旧 `get_stock_basicinfo` 全市场字典序列举；当 `get_stock_filter` 不被 SDK 支持或调用失败时也会自动降级到该路径。
   - `--include-market-data` 默认开启（`--no-include-market-data` 关闭）；`--knot-runtime` 仍支持 `off|local|remote|auto`，默认 `auto`。
+  - Snapshot enrichment 已实现**分批 + 二分降级**容错：单次 OpenD `get_market_snapshot` 不超过 200 个 code，遇错时自动二分重试，疑似非法的单 symbol 会被隔离并记 warning，不再因为一个无效代码导致整批失败。
+  - **零 enrichment 守护**：当 `score_first` 路径下 `--include-market-data` 开启但 snapshot 全部失败（`status=error/unavailable` 或 `matched_rows=0`）时，该市场的本轮刷新会写 `kept_count=0` 并保留警告，**不会**用未富化的字母序结果覆盖已有动态池。
   - `--dry-run` 只生成报告，不写回动态池。
   - `--legacy` 显式回到老 `prepare()` 流程（同时刷新 dynamic + static），需要替换源文件时仍可配合 `--dynamic-source` / `--static-source`。
-  - 报告输出 `state/runs/candidate_inputs.prepare.report.json`，新版 schema 为 `candidate_prepare_report_v3`，包含 `target_markets`、`market_runs[*].strategy_used`、`knot_status`、`universe_size`、`kept_count`、`top_symbols` 等字段，便于追溯单次刷新的执行路径。
+  - 报告输出 `state/runs/candidate_inputs.prepare.report.json`，schema 为 `candidate_prepare_report_v3`，包含 `target_markets`、`market_runs[*].strategy_used`、`knot_status`、`universe_size`、`universe_preset`、`kept_count`、`top_symbols` 等字段，便于追溯单次刷新的执行路径。
   - 写回前会递归清洗非有限数值；来自 snapshot 或其他 enrich 源的 `NaN` / `Infinity` 会统一落为 `null`，保证产物保持严格 JSON。
 - **`python -m scripts.quant_workflow`**：与上面的脚本入口等价的模块入口，适合统一的一键工作流触发。
 - **`scripts/run_healthcheck.py`**：环境和账户健康检查入口，输出 `state/runs/healthcheck.json`。

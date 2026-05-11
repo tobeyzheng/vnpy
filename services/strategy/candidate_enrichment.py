@@ -10,6 +10,14 @@ from .symbols import normalize_symbol
 
 SUPPORTED_KNOT_RUNTIMES = {"off", "local", "remote", "auto"}
 
+# OpenD's get_market_snapshot caps a single request at 400 codes; we keep a
+# safety margin so retries / quote retransmissions don't push us over.
+SNAPSHOT_BATCH_SIZE = 200
+# When a batch fails we recursively halve it; below this size we assume the
+# remaining symbol(s) are the offending ones and mark them as skipped instead
+# of retrying further.
+SNAPSHOT_MIN_BATCH_SIZE = 1
+
 
 class CandidateMarketDataService:
     source_id = "futu_quote_snapshot"
@@ -56,16 +64,34 @@ class CandidateMarketDataService:
                 "warnings": ["No valid symbols were available for market data enrichment."],
             }
 
-        try:
-            snapshot_rows = self.quote_client.get_snapshot(list(symbol_map.keys()))
-        except Exception as exc:
+        codes = list(symbol_map.keys())
+        snapshot_rows, fetch_warnings, invalid_codes = self._fetch_snapshots_batched(codes)
+        if not snapshot_rows and not invalid_codes and fetch_warnings:
+            # Nothing came back at all and the failure isn't isolated to a few
+            # bad symbols → treat as an outright fetch error so the caller can
+            # decide whether to skip writing the pool.
             return {
                 "enabled": True,
                 "status": "error",
                 "source": self.source_id,
                 "requested_symbols": len(symbol_map),
                 "matched_rows": 0,
-                "warnings": [f"Quote snapshot fetch failed: {exc}"],
+                "warnings": fetch_warnings,
+            }
+        if not snapshot_rows and invalid_codes and len(invalid_codes) >= len(symbol_map):
+            # Every symbol was quarantined → upstream is almost certainly
+            # broken rather than each ticker being individually bad.
+            preview = ", ".join(sorted(invalid_codes)[:5])
+            return {
+                "enabled": True,
+                "status": "error",
+                "source": self.source_id,
+                "requested_symbols": len(symbol_map),
+                "matched_rows": 0,
+                "warnings": [
+                    *fetch_warnings,
+                    f"Quote snapshot fetch failed for every symbol; {len(invalid_codes)} quarantined (e.g. {preview}).",
+                ],
             }
 
         snapshots: dict[str, dict[str, Any]] = {}
@@ -88,7 +114,12 @@ class CandidateMarketDataService:
             self._apply_snapshot_aliases(row, snapshot)
             self._append_market_signal(row, snapshot)
 
-        warnings: list[str] = []
+        warnings: list[str] = list(fetch_warnings)
+        if invalid_codes:
+            preview = ", ".join(sorted(invalid_codes)[:5])
+            warnings.append(
+                f"Skipped {len(invalid_codes)} symbols that the snapshot service rejected: {preview}"
+            )
         missing_symbols = sorted(set(symbol_map.values()) - set(snapshots.keys()))
         if missing_symbols:
             warnings.append(
@@ -101,8 +132,59 @@ class CandidateMarketDataService:
             "requested_symbols": len(symbol_map),
             "snapshot_count": len(snapshots),
             "matched_rows": matched_rows,
+            "batch_size": SNAPSHOT_BATCH_SIZE,
+            "invalid_symbol_count": len(invalid_codes),
             "warnings": warnings,
         }
+
+    def _fetch_snapshots_batched(
+        self, codes: list[str]
+    ) -> tuple[list[dict[str, Any]], list[str], list[str]]:
+        """Pull market snapshots for ``codes`` in bounded batches.
+
+        Returns ``(rows, warnings, invalid_codes)``:
+
+        - ``rows`` are the raw snapshot dicts that came back successfully.
+        - ``warnings`` describe transient batch failures that did not result
+          in any quarantined symbol (e.g. transport hiccups).
+        - ``invalid_codes`` lists single-symbol batches that the upstream
+          rejected — these are quarantined and skipped, but do not abort
+          the rest of the universe.
+        """
+        rows: list[dict[str, Any]] = []
+        warnings: list[str] = []
+        invalid: list[str] = []
+        if not codes:
+            return rows, warnings, invalid
+        for start in range(0, len(codes), SNAPSHOT_BATCH_SIZE):
+            chunk = codes[start : start + SNAPSHOT_BATCH_SIZE]
+            chunk_rows, chunk_warnings, chunk_invalid = self._fetch_chunk_with_split(chunk)
+            rows.extend(chunk_rows)
+            warnings.extend(chunk_warnings)
+            invalid.extend(chunk_invalid)
+        return rows, warnings, invalid
+
+    def _fetch_chunk_with_split(
+        self, codes: list[str]
+    ) -> tuple[list[dict[str, Any]], list[str], list[str]]:
+        if not codes:
+            return [], [], []
+        try:
+            snapshot_rows = self.quote_client.get_snapshot(codes)
+            return list(snapshot_rows or []), [], []
+        except Exception as exc:
+            if len(codes) <= SNAPSHOT_MIN_BATCH_SIZE:
+                # Single bad symbol: quarantine and move on.
+                return [], [], list(codes)
+            mid = len(codes) // 2
+            left_rows, left_warnings, left_invalid = self._fetch_chunk_with_split(codes[:mid])
+            right_rows, right_warnings, right_invalid = self._fetch_chunk_with_split(codes[mid:])
+            warnings = list(left_warnings) + list(right_warnings)
+            if not left_rows and not right_rows and not (left_invalid or right_invalid):
+                # Both halves fully failed without isolating a bad symbol →
+                # surface a single concise warning so we don't spam the report.
+                warnings.append(f"Quote snapshot fetch failed for {len(codes)} symbols: {exc}")
+            return left_rows + right_rows, warnings, left_invalid + right_invalid
 
     def _row_symbol(self, row: Mapping[str, Any]) -> str:
         return normalize_symbol(str(row.get("symbol") or ""), str(row.get("market") or ""))

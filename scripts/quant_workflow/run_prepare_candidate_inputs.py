@@ -16,7 +16,11 @@ from services.strategy.candidate_preparation import (
     SUPPORTED_PREPARE_MARKETS,
     SUPPORTED_PREPARE_STRATEGIES,
 )
-from services.strategy.universe import DEFAULT_UNIVERSE_LIMIT
+from services.strategy.universe import (
+    DEFAULT_UNIVERSE_LIMIT,
+    DEFAULT_UNIVERSE_PRESET,
+    SUPPORTED_UNIVERSE_PRESETS,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -45,6 +49,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--top-n", type=int, default=DEFAULT_TOP_N)
     parser.add_argument("--knot-target-count", type=int, default=DEFAULT_KNOT_TARGET_COUNT)
     parser.add_argument("--universe-limit", type=int, default=DEFAULT_UNIVERSE_LIMIT)
+    parser.add_argument(
+        "--universe-preset",
+        choices=SUPPORTED_UNIVERSE_PRESETS,
+        default=DEFAULT_UNIVERSE_PRESET,
+        help=(
+            "Universe screening preset for the score_first fallback. "
+            "large_cap (default): market-cap descending + liquidity floor; "
+            "momentum_cta: large_cap base + technical overlays; "
+            "none: legacy get_stock_basicinfo listing."
+        ),
+    )
     parser.add_argument(
         "--knot-runtime",
         choices=["off", "local", "remote", "auto"],
@@ -93,6 +108,7 @@ def main() -> int:
             knot_runtime=str(args.knot_runtime or "auto"),
             include_market_data=bool(args.include_market_data),
             universe_limit=int(args.universe_limit or DEFAULT_UNIVERSE_LIMIT),
+            universe_preset=str(args.universe_preset or DEFAULT_UNIVERSE_PRESET),
             dry_run=bool(args.dry_run),
             as_of_date=args.as_of_date,
         )

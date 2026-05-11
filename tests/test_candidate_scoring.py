@@ -257,3 +257,84 @@ def test_candidate_liquidity_score_penalizes_low_liquidity_language_without_coll
     )
 
     assert 0.35 <= score < 0.75
+
+
+class _RecordingQuoteClient:
+    """Stub quote client that records every batch and can simulate failures."""
+
+    def __init__(self, *, fail_codes: set[str] | None = None, fail_whole: bool = False):
+        self.fail_codes = set(fail_codes or set())
+        self.fail_whole = fail_whole
+        self.calls: list[list[str]] = []
+
+    def availability(self) -> tuple[bool, str]:
+        return True, "ok"
+
+    def get_snapshot(self, codes: list[str]) -> list[dict[str, object]]:
+        self.calls.append(list(codes))
+        if self.fail_whole:
+            raise RuntimeError("transport down")
+        bad = self.fail_codes & set(codes)
+        if bad:
+            raise RuntimeError(f"invalid symbol(s): {sorted(bad)}")
+        return [
+            {
+                "code": code,
+                "last_price": 100.0,
+                "change_pct": 1.0,
+                "turnover": 1_000_000,
+                "total_market_val": 10_000_000_000,
+            }
+            for code in codes
+        ]
+
+
+def test_candidate_market_data_service_quarantines_invalid_symbol_via_split_retry():
+    client = _RecordingQuoteClient(fail_codes={"US.BAD"})
+    service = CandidateMarketDataService(quote_client=client)
+    rows = [
+        {"symbol": "NVDA.US", "market": "us", "name": "NVIDIA", "signals": []},
+        {"symbol": "BAD.US", "market": "us", "name": "Broken", "signals": []},
+        {"symbol": "AAPL.US", "market": "us", "name": "Apple", "signals": []},
+    ]
+
+    meta = service.enrich_rows(rows)
+
+    assert meta["status"] == "ok"
+    assert meta["matched_rows"] == 2
+    assert meta["invalid_symbol_count"] == 1
+    # First call is the whole batch (which raises), then halves are retried.
+    assert client.calls[0] == ["US.NVDA", "US.BAD", "US.AAPL"]
+    assert any("Skipped 1 symbols" in w for w in meta["warnings"])
+
+
+def test_candidate_market_data_service_returns_error_when_full_universe_fails():
+    client = _RecordingQuoteClient(fail_whole=True)
+    service = CandidateMarketDataService(quote_client=client)
+    rows = [
+        {"symbol": f"S{i:03d}.US", "market": "us", "name": f"S{i}", "signals": []}
+        for i in range(3)
+    ]
+
+    meta = service.enrich_rows(rows)
+
+    assert meta["status"] == "error"
+    assert meta["matched_rows"] == 0
+    assert meta["warnings"]
+
+
+def test_candidate_market_data_service_batches_large_universe_under_limit():
+    client = _RecordingQuoteClient()
+    service = CandidateMarketDataService(quote_client=client)
+    rows = [
+        {"symbol": f"S{i:04d}.US", "market": "us", "name": f"S{i}", "signals": []}
+        for i in range(420)
+    ]
+
+    meta = service.enrich_rows(rows)
+
+    assert meta["status"] == "ok"
+    # 420 symbols → batches of 200 / 200 / 20 = 3 calls.
+    assert len(client.calls) == 3
+    assert all(len(call) <= 200 for call in client.calls)
+    assert meta["matched_rows"] == 420
