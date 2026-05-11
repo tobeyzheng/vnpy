@@ -4,6 +4,7 @@ from typing import Any, Protocol
 
 from vnpy.trader.constant import Interval
 from vnpy.trader.object import BarData, OrderData, TickData, TradeData
+from vnpy.trader.utility import BarGenerator
 from vnpy_ctastrategy import CtaTemplate, StopOrder
 
 from scripts.classic_multifactor.minute_guard import MinuteTradeGuard, MinuteTradeGuardConfig
@@ -147,6 +148,12 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         self.exchange_tz = market_timezone(resolve_market_from_vt_symbol(vt_symbol))
         self.model = self._build_model()
         self.minute_guard = self._build_minute_guard()
+        # ``BarGenerator`` synthesises 1-minute bars from incoming ticks so
+        # the live runner (FutuGateway pushes QUOTE ticks only) can drive
+        # ``on_bar``. The vn.py CTA backtest engine bypasses ``on_tick`` and
+        # calls ``on_bar`` directly, so this generator is dormant during
+        # backtests and incurs no behaviour change there.
+        self.bg: BarGenerator = BarGenerator(self.on_bar)
 
 
     def on_init(self) -> None:
@@ -167,7 +174,10 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         pass
 
     def on_tick(self, tick: TickData) -> None:
-        pass
+        # Live path: feed ticks into BarGenerator so it can emit 1m bars to
+        # ``on_bar``. Backtest path never reaches this method (the engine
+        # invokes ``on_bar`` directly), so this is a live-only adapter.
+        self.bg.update_tick(tick)
 
     def on_bar(self, bar: BarData) -> None:
         self._update_daily_buf(bar)

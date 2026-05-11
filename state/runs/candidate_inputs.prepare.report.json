@@ -1,79 +1,98 @@
 {
   "schema_version": "candidate_prepare_report_v3",
-  "generated_at": "2026-05-11T22:26:03.044648+08:00",
+  "generated_at": "2026-05-11T23:03:49.116994+08:00",
   "as_of_date": "2026-05-11",
   "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+  "per_market_report_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json"
+  },
+  "per_market_dynamic_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json"
+  },
   "mode": "dynamic_market_scoped",
   "strategy_requested": "knot_first",
   "target_markets": [
-    "hong_kong"
+    "us"
   ],
   "dynamic_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
   "dry_run": false,
   "written": true,
-  "kept_rows_other_markets": 20,
-  "kept_rows_by_market": {
-    "us": 20
-  },
   "market_runs": [
     {
-      "market": "hong_kong",
+      "market": "us",
       "strategy_requested": "knot_first",
-      "strategy_used": "knot_first",
-      "knot_status": "ok",
-      "knot_seed_count": 8,
-      "universe_size": 0,
+      "strategy_used": "score_first",
+      "knot_status": "unavailable_fallback_to_score_first:knot_client_unconfigured",
+      "knot_seed_count": 0,
+      "universe_size": 200,
       "universe_preset": "large_cap",
-      "scored_count": 8,
-      "kept_count": 8,
+      "scored_count": 200,
+      "kept_count": 20,
       "source_files": [
-        "/projects/vnpy/state/runs/candidate_inputs.dynamic.hong_kong.seed.json"
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json"
       ],
-      "warnings": [],
+      "warnings": [
+        "Knot seed unavailable for us; downgraded to score_first (knot_client_unconfigured).",
+        "Skipped 177 symbols that the snapshot service rejected: US.2578256D, US.AABB, US.AACAY, US.AAGC, US.AAGH",
+        "Snapshot lookup missed 177 symbols: 2578256D.US, AABB.US, AACAY.US, AAGC.US, AAGH.US"
+      ],
+      "written": true,
+      "output_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json",
       "top_symbols": [
         {
-          "symbol": "00992.HK",
-          "raw_score": 0.8013
+          "symbol": "AAOI.US",
+          "raw_score": 0.783
         },
         {
-          "symbol": "00981.HK",
-          "raw_score": 0.7723
+          "symbol": "AA.US",
+          "raw_score": 0.6136
         },
         {
-          "symbol": "01024.HK",
-          "raw_score": 0.6886
+          "symbol": "AAON.US",
+          "raw_score": 0.5774
         },
         {
-          "symbol": "01211.HK",
-          "raw_score": 0.6798
+          "symbol": "AAPL.US",
+          "raw_score": 0.5463
         },
         {
-          "symbol": "00700.HK",
-          "raw_score": 0.6367
+          "symbol": "AAL.US",
+          "raw_score": 0.5426
         },
         {
-          "symbol": "09988.HK",
-          "raw_score": 0.6276
+          "symbol": "ADM.US",
+          "raw_score": 0.5444
         },
         {
-          "symbol": "02318.HK",
-          "raw_score": 0.6315
+          "symbol": "ADIWW.US",
+          "raw_score": 0.5444
         },
         {
-          "symbol": "01299.HK",
-          "raw_score": 0.6044
+          "symbol": "ADIL.US",
+          "raw_score": 0.5444
+        },
+        {
+          "symbol": "ADIA.US",
+          "raw_score": 0.5444
+        },
+        {
+          "symbol": "ADI.US",
+          "raw_score": 0.5444
         }
       ]
     }
   ],
   "summary": {
-    "total_items": 28,
+    "total_items": 20,
     "market_counts": {
-      "hong_kong": 8,
       "us": 20
     },
     "include_market_data": true,
     "knot_runtime": "auto",
-    "warnings": []
+    "warnings": [
+      "Knot seed unavailable for us; downgraded to score_first (knot_client_unconfigured).",
+      "Skipped 177 symbols that the snapshot service rejected: US.2578256D, US.AABB, US.AACAY, US.AAGC, US.AAGH",
+      "Snapshot lookup missed 177 symbols: 2578256D.US, AABB.US, AACAY.US, AAGC.US, AAGH.US"
+    ]
   }
 }

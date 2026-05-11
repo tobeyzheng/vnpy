@@ -201,7 +201,7 @@ class IntradayLoopRunner(BaseRunner):
         )
         self._main_engine.connect(futu_setting, GATEWAY_NAME)
         time.sleep(self.args.connect_sleep_seconds)
-        
+
         # 增加连接状态检查
         gateway = self._main_engine.get_gateway(GATEWAY_NAME)
         if gateway:
@@ -325,7 +325,17 @@ class IntradayLoopRunner(BaseRunner):
 
         main_engine = getattr(self, "_main_engine", None)
         gateway = main_engine.get_gateway(GATEWAY_NAME) if main_engine is not None else None
-        gateway_connected = bool(getattr(gateway, "connected", False))
+        # ``BaseGateway`` does not expose a ``connected`` flag; reading it
+        # always returned False even after a successful FutuGateway connect.
+        # We therefore derive two more meaningful flags:
+        # * ``quote_ctx_attached`` -- whether the FutuGateway holds a live
+        #   ``OpenQuoteContext`` (i.e. ``connect_quote()`` finished without
+        #   tearing the context down).
+        # * ``gateway_data_flowing`` -- whether at least one bar has been
+        #   delivered to the strategy in this session, which is the only
+        #   end-to-end signal that the data pipeline is actually alive.
+        quote_ctx_attached = bool(getattr(gateway, "quote_ctx", None) is not None) if gateway is not None else False
+        gateway_data_flowing = self._intraday_bars_seen > 0
 
         return {
             **snapshot,
@@ -334,7 +344,8 @@ class IntradayLoopRunner(BaseRunner):
             "seconds_since_last_bar": seconds_since_last_bar,
             "approved_total": pipeline.approved_count if pipeline is not None else 0,
             "blocked_total": blocked_total,
-            "gateway_connected": gateway_connected,
+            "quote_ctx_attached": quote_ctx_attached,
+            "gateway_data_flowing": gateway_data_flowing,
         }
 
     def _maybe_log_intraday_runtime_heartbeat(self) -> None:
@@ -344,17 +355,20 @@ class IntradayLoopRunner(BaseRunner):
         snapshot = self._intraday_runtime_debug_snapshot(now_monotonic=now_monotonic)
         seconds_since_last_bar = snapshot["seconds_since_last_bar"]
         seconds_text = "none" if seconds_since_last_bar is None else f"{seconds_since_last_bar:.1f}"
-        
-        # 增加网关连接状态信息
-        gateway_connected = snapshot.get("gateway_connected", False)
-        
+
+        # Replaced the old ``gateway_connected`` field which was always False
+        # (BaseGateway has no such attribute) with two real signals.
+        quote_ctx_attached = snapshot.get("quote_ctx_attached", False)
+        gateway_data_flowing = snapshot.get("gateway_data_flowing", False)
+
         logger.info(
             "intraday runtime heartbeat: "
             f"strategy={snapshot['strategy']} "
             f"bars_seen={snapshot['bars_seen']} "
             f"last_bar_time={snapshot['last_bar_time'] or 'none'} "
             f"seconds_since_last_bar={seconds_text} "
-            f"gateway_connected={gateway_connected} "
+            f"quote_ctx_attached={quote_ctx_attached} "
+            f"gateway_data_flowing={gateway_data_flowing} "
             f"last_signal={snapshot['last_signal']} "
             f"pos={snapshot['pos']} "
             f"active_orders={snapshot['active_orders']} "

@@ -1,0 +1,5037 @@
+{
+  "mode": "dynamic_generated",
+  "schema_version": "candidate_inputs_v3",
+  "generated_at": "2026-05-11T23:03:49.116994+08:00",
+  "as_of_date": "2026-05-11",
+  "market": "us",
+  "selection_policy": "dynamic_hybrid_market_complete_v3",
+  "scoring_model": {
+    "mode": "dynamic",
+    "model_id": "dynamic_hybrid_candidate_v3",
+    "selection_policy": "dynamic_hybrid_market_complete_v3",
+    "components": [
+      {
+        "key": "trend_score",
+        "label": "Trend",
+        "weight": 0.22,
+        "role": "positive"
+      },
+      {
+        "key": "relative_strength_score",
+        "label": "Relative Strength",
+        "weight": 0.16,
+        "role": "positive"
+      },
+      {
+        "key": "flow_score",
+        "label": "Flow",
+        "weight": 0.14,
+        "role": "positive"
+      },
+      {
+        "key": "event_score",
+        "label": "Event",
+        "weight": 0.14,
+        "role": "positive"
+      },
+      {
+        "key": "quality_score",
+        "label": "Quality",
+        "weight": 0.1,
+        "role": "positive"
+      },
+      {
+        "key": "liquidity_score",
+        "label": "Liquidity",
+        "weight": 0.08,
+        "role": "positive"
+      },
+      {
+        "key": "regime_fit_score",
+        "label": "Regime Fit",
+        "weight": 0.06,
+        "role": "positive"
+      },
+      {
+        "key": "knot_overlay_score",
+        "label": "Knot Overlay",
+        "weight": 0.1,
+        "role": "positive"
+      },
+      {
+        "key": "risk_penalty",
+        "label": "Risk Penalty",
+        "weight": 0.1,
+        "role": "penalty"
+      }
+    ]
+  },
+  "source_files": [
+    "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json"
+  ],
+  "source_row_counts": {},
+  "item_count": 20,
+  "market_coverage": [
+    "us"
+  ],
+  "market_counts": {
+    "us": 20
+  },
+  "items": [
+    {
+      "symbol": "AAOI.US",
+      "market": "us",
+      "name": "Applied Optoelectronics",
+      "candidate_type": "dynamic",
+      "raw_score": 0.783,
+      "rationale": "Trend 0.82, relative strength 1.00, and event support 0.82 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Prefer pullback entries or breakout confirmation with liquidity support.",
+      "signals": [
+        {
+          "symbol": "AAOI.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.8167,
+          "summary": "snapshot change 26.87%; turnover 1457731179"
+        },
+        {
+          "symbol": "AAOI.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "AAOI.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.783,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "quote": {
+        "code": "US.AAOI",
+        "name": "Applied Optoelectronics",
+        "update_time": "2026-05-11 11:03:50",
+        "last_price": 188.9551,
+        "open_price": 152.26,
+        "high_price": 190.96,
+        "low_price": 150.67,
+        "prev_close_price": 148.94,
+        "volume": 8564442,
+        "turnover": 1457731178.613,
+        "turnover_rate": 11.096,
+        "suspension": false,
+        "listing_date": "1970-01-01",
+        "lot_size": 1,
+        "price_spread": 0.01,
+        "stock_owner": null,
+        "ask_price": 189.11,
+        "bid_price": 188.8,
+        "ask_vol": 123,
+        "bid_vol": 607,
+        "enable_margin": null,
+        "mortgage_ratio": null,
+        "long_margin_initial_ratio": null,
+        "enable_short_sell": null,
+        "short_sell_rate": null,
+        "short_available_volume": null,
+        "short_margin_initial_ratio": null,
+        "amplitude": 27.051,
+        "avg_price": 170.207373535,
+        "bid_ask_ratio": 66.301,
+        "volume_ratio": 2.849,
+        "highest52weeks_price": 191.87,
+        "lowest52weeks_price": 15.06,
+        "highest_history_price": 191.87,
+        "lowest_history_price": 1.48,
+        "close_price_5min": 187.51,
+        "after_volume": 259235,
+        "after_turnover": 38907840.919,
+        "sec_status": "NORMAL",
+        "equity_valid": true,
+        "issued_shares": 80242767,
+        "total_market_val": 15162272038.485,
+        "net_asset": 1105986057.561,
+        "net_profit": -51355370.88,
+        "earning_per_share": -0.64,
+        "outstanding_shares": 77181809,
+        "circular_market_val": 14583896437.7759,
+        "net_asset_per_share": 13.783,
+        "ey_ratio": -0.047,
+        "pe_ratio": -295.242,
+        "pb_ratio": 13.709,
+        "pe_ttm_ratio": -290.7,
+        "dividend_ttm": 0.0,
+        "dividend_ratio_ttm": 0.0,
+        "dividend_lfy": 0.0,
+        "dividend_lfy_ratio": 0.0,
+        "wrt_valid": false,
+        "wrt_conversion_ratio": null,
+        "wrt_type": "N/A",
+        "wrt_strike_price": null,
+        "wrt_maturity_date": null,
+        "wrt_end_trade": null,
+        "wrt_recovery_price": null,
+        "wrt_street_vol": null,
+        "wrt_issue_vol": null,
+        "wrt_street_ratio": null,
+        "wrt_delta": null,
+        "wrt_implied_volatility": null,
+        "wrt_premium": null,
+        "wrt_leverage": null,
+        "wrt_ipop": null,
+        "wrt_break_even_point": null,
+        "wrt_conversion_price": null,
+        "wrt_price_recovery_ratio": null,
+        "wrt_score": null,
+        "wrt_upper_strike_price": null,
+        "wrt_lower_strike_price": null,
+        "wrt_inline_price_status": "N/A",
+        "wrt_issuer_code": null,
+        "option_valid": false,
+        "option_type": "N/A",
+        "strike_time": null,
+        "option_strike_price": null,
+        "option_contract_size": null,
+        "option_open_interest": null,
+        "option_implied_volatility": null,
+        "option_premium": null,
+        "option_delta": null,
+        "option_gamma": null,
+        "option_vega": null,
+        "option_theta": null,
+        "option_rho": null,
+        "option_net_open_interest": null,
+        "option_expiry_date_distance": null,
+        "option_contract_nominal_value": null,
+        "option_owner_lot_multiplier": null,
+        "option_area_type": "N/A",
+        "option_contract_multiplier": null,
+        "index_option_type": "N/A",
+        "index_valid": false,
+        "index_raise_count": null,
+        "index_fall_count": null,
+        "index_equal_count": null,
+        "plate_valid": false,
+        "plate_raise_count": null,
+        "plate_fall_count": null,
+        "plate_equal_count": null,
+        "future_valid": false,
+        "future_last_settle_price": null,
+        "future_position": null,
+        "future_position_change": null,
+        "future_main_contract": null,
+        "future_last_trade_time": null,
+        "trust_valid": false,
+        "trust_dividend_yield": null,
+        "trust_aum": null,
+        "trust_outstanding_units": null,
+        "trust_netAssetValue": null,
+        "trust_premium": null,
+        "trust_assetClass": "N/A",
+        "pre_price": 151.8,
+        "pre_high_price": 156.88,
+        "pre_low_price": 151.8,
+        "pre_volume": 303561,
+        "pre_turnover": 46975381.687,
+        "pre_change_val": 2.86,
+        "pre_change_rate": 1.92,
+        "pre_amplitude": 3.4107,
+        "after_price": 150.43,
+        "after_high_price": 151.17,
+        "after_low_price": 148.8,
+        "after_change_val": 1.49,
+        "after_change_rate": 1.0,
+        "after_amplitude": 1.5912,
+        "overnight_price": 152.37,
+        "overnight_high_price": 156.06,
+        "overnight_low_price": 149.74,
+        "overnight_volume": 185109,
+        "overnight_turnover": 28280270.39,
+        "overnight_change_val": 3.43,
+        "overnight_change_rate": 2.302,
+        "overnight_amplitude": 4.2433,
+        "change_pct": 26.867,
+        "price": 188.9551,
+        "turnover_ratio": 11.096,
+        "market_cap": 15162272038.485
+      },
+      "last_price": 188.9551,
+      "price": 188.9551,
+      "change_pct": 26.867,
+      "turnover": 1457731178.613,
+      "turnover_ratio": 11.096,
+      "market_cap": 15162272038.485,
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.8167,
+      "relative_strength_score": 1.0,
+      "flow_score": 0.8625,
+      "event_score": 0.8167,
+      "quality_score": 0.8167,
+      "liquidity_score": 0.77,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.8778,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.4775,
+      "theme_bucket": "general",
+      "risk_level": "medium",
+      "consensus_score": 0.7912,
+      "strategy_tags": [
+        "trend_following",
+        "event_driven",
+        "quality_growth",
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.8931,
+        "event_driven": 0.8523,
+        "quality_growth": 0.8011,
+        "knot_overlay": 0.7556
+      },
+      "source_breakdown": {
+        "classic": 0.2941,
+        "knot_agent": 0.3529,
+        "research": 0.3529
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.783,
+        "input_scores": {
+          "trend_score": 0.8167,
+          "relative_strength_score": 1.0,
+          "flow_score": 0.8625,
+          "event_score": 0.8167,
+          "quality_score": 0.8167,
+          "liquidity_score": 0.77,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.8778,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.4775
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.8167,
+            "weight": 0.22,
+            "weighted_contribution": 0.1797,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 1.0,
+            "weight": 0.16,
+            "weighted_contribution": 0.16,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.8625,
+            "weight": 0.14,
+            "weighted_contribution": 0.1208,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.8167,
+            "weight": 0.14,
+            "weighted_contribution": 0.1143,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.8167,
+            "weight": 0.1,
+            "weighted_contribution": 0.0817,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.77,
+            "weight": 0.08,
+            "weighted_contribution": 0.0616,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.8778,
+            "weight": 0.06,
+            "weighted_contribution": 0.0527,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.4775,
+            "weight": 0.1,
+            "weighted_contribution": -0.0478,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "trend_following",
+          "event_driven",
+          "quality_growth",
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.8931,
+          "event_driven": 0.8523,
+          "quality_growth": 0.8011,
+          "knot_overlay": 0.7556
+        },
+        "source_breakdown": {
+          "classic": 0.2941,
+          "knot_agent": 0.3529,
+          "research": 0.3529
+        },
+        "consensus_score": 0.7912,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.8167
+    },
+    {
+      "symbol": "AA.US",
+      "market": "us",
+      "name": "美国铝业公司",
+      "candidate_type": "dynamic",
+      "raw_score": 0.6136,
+      "rationale": "Trend 0.68, relative strength 0.70, and event support 0.68 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "AA.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6824,
+          "summary": "snapshot change 3.97%; turnover 97179656"
+        },
+        {
+          "symbol": "AA.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "AA.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.6136,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "quote": {
+        "code": "US.AA",
+        "name": "美国铝业公司",
+        "update_time": "2026-05-11 11:03:45",
+        "last_price": 65.69,
+        "open_price": 64.14,
+        "high_price": 65.78,
+        "low_price": 63.81,
+        "prev_close_price": 63.18,
+        "volume": 1492109,
+        "turnover": 97179655.792,
+        "turnover_rate": 0.568,
+        "suspension": false,
+        "listing_date": "1970-01-01",
+        "lot_size": 1,
+        "price_spread": 0.01,
+        "stock_owner": null,
+        "ask_price": 65.76,
+        "bid_price": 65.7,
+        "ask_vol": 200,
+        "bid_vol": 28,
+        "enable_margin": null,
+        "mortgage_ratio": null,
+        "long_margin_initial_ratio": null,
+        "enable_short_sell": null,
+        "short_sell_rate": null,
+        "short_available_volume": null,
+        "short_margin_initial_ratio": null,
+        "amplitude": 3.118,
+        "avg_price": 65.129059466,
+        "bid_ask_ratio": -75.439,
+        "volume_ratio": 1.726,
+        "highest52weeks_price": 75.6999,
+        "lowest52weeks_price": 25.630758021,
+        "highest_history_price": 93.847968471,
+        "lowest_history_price": 4.920657393,
+        "close_price_5min": 65.48,
+        "after_volume": 490116,
+        "after_turnover": 30965462.405,
+        "sec_status": "NORMAL",
+        "equity_valid": true,
+        "issued_shares": 263889875,
+        "total_market_val": 17334925888.75,
+        "net_asset": 6826039396.625,
+        "net_profit": 1153198753.75,
+        "earning_per_share": 4.37,
+        "outstanding_shares": 262888152,
+        "circular_market_val": 17269122704.88,
+        "net_asset_per_share": 25.867,
+        "ey_ratio": 0.15,
+        "pe_ratio": 15.032,
+        "pb_ratio": 2.539,
+        "pe_ttm_ratio": 16.843,
+        "dividend_ttm": 0.4,
+        "dividend_ratio_ttm": 0.61,
+        "dividend_lfy": 0.4,
+        "dividend_lfy_ratio": 0.608,
+        "wrt_valid": false,
+        "wrt_conversion_ratio": null,
+        "wrt_type": "N/A",
+        "wrt_strike_price": null,
+        "wrt_maturity_date": null,
+        "wrt_end_trade": null,
+        "wrt_recovery_price": null,
+        "wrt_street_vol": null,
+        "wrt_issue_vol": null,
+        "wrt_street_ratio": null,
+        "wrt_delta": null,
+        "wrt_implied_volatility": null,
+        "wrt_premium": null,
+        "wrt_leverage": null,
+        "wrt_ipop": null,
+        "wrt_break_even_point": null,
+        "wrt_conversion_price": null,
+        "wrt_price_recovery_ratio": null,
+        "wrt_score": null,
+        "wrt_upper_strike_price": null,
+        "wrt_lower_strike_price": null,
+        "wrt_inline_price_status": "N/A",
+        "wrt_issuer_code": null,
+        "option_valid": false,
+        "option_type": "N/A",
+        "strike_time": null,
+        "option_strike_price": null,
+        "option_contract_size": null,
+        "option_open_interest": null,
+        "option_implied_volatility": null,
+        "option_premium": null,
+        "option_delta": null,
+        "option_gamma": null,
+        "option_vega": null,
+        "option_theta": null,
+        "option_rho": null,
+        "option_net_open_interest": null,
+        "option_expiry_date_distance": null,
+        "option_contract_nominal_value": null,
+        "option_owner_lot_multiplier": null,
+        "option_area_type": "N/A",
+        "option_contract_multiplier": null,
+        "index_option_type": "N/A",
+        "index_valid": false,
+        "index_raise_count": null,
+        "index_fall_count": null,
+        "index_equal_count": null,
+        "plate_valid": false,
+        "plate_raise_count": null,
+        "plate_fall_count": null,
+        "plate_equal_count": null,
+        "future_valid": false,
+        "future_last_settle_price": null,
+        "future_position": null,
+        "future_position_change": null,
+        "future_main_contract": null,
+        "future_last_trade_time": null,
+        "trust_valid": false,
+        "trust_dividend_yield": null,
+        "trust_aum": null,
+        "trust_outstanding_units": null,
+        "trust_netAssetValue": null,
+        "trust_premium": null,
+        "trust_assetClass": "N/A",
+        "pre_price": 63.93,
+        "pre_high_price": 63.93,
+        "pre_low_price": 62.71,
+        "pre_volume": 12642,
+        "pre_turnover": 803349.133,
+        "pre_change_val": 0.75,
+        "pre_change_rate": 1.187,
+        "pre_amplitude": 1.9309,
+        "after_price": 63.35,
+        "after_high_price": 63.7296,
+        "after_low_price": 62.9367,
+        "after_change_val": 0.17,
+        "after_change_rate": 0.269,
+        "after_amplitude": 1.2549,
+        "overnight_price": 63.16,
+        "overnight_high_price": 63.38,
+        "overnight_low_price": 62.59,
+        "overnight_volume": 8546,
+        "overnight_turnover": 536630.11,
+        "overnight_change_val": -0.02,
+        "overnight_change_rate": -0.031,
+        "overnight_amplitude": 1.2503,
+        "change_pct": 3.973,
+        "price": 65.69,
+        "turnover_ratio": 0.568,
+        "market_cap": 17334925888.75
+      },
+      "last_price": 65.69,
+      "price": 65.69,
+      "change_pct": 3.973,
+      "turnover": 97179655.792,
+      "turnover_ratio": 0.568,
+      "market_cap": 17334925888.75,
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6824,
+      "relative_strength_score": 0.6986,
+      "flow_score": 0.5811,
+      "event_score": 0.6824,
+      "quality_score": 0.6824,
+      "liquidity_score": 0.5119,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6878,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.6389,
+      "strategy_tags": [
+        "knot_overlay",
+        "trend_following",
+        "event_driven",
+        "quality_growth"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.654,
+        "event_driven": 0.6504,
+        "quality_growth": 0.6256,
+        "knot_overlay": 0.7108
+      },
+      "source_breakdown": {
+        "classic": 0.2941,
+        "knot_agent": 0.3529,
+        "research": 0.3529
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.6136,
+        "input_scores": {
+          "trend_score": 0.6824,
+          "relative_strength_score": 0.6986,
+          "flow_score": 0.5811,
+          "event_score": 0.6824,
+          "quality_score": 0.6824,
+          "liquidity_score": 0.5119,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6878,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6824,
+            "weight": 0.22,
+            "weighted_contribution": 0.1501,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6986,
+            "weight": 0.16,
+            "weighted_contribution": 0.1118,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.5811,
+            "weight": 0.14,
+            "weighted_contribution": 0.0814,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6824,
+            "weight": 0.14,
+            "weighted_contribution": 0.0955,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6824,
+            "weight": 0.1,
+            "weighted_contribution": 0.0682,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5119,
+            "weight": 0.08,
+            "weighted_contribution": 0.041,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6878,
+            "weight": 0.06,
+            "weighted_contribution": 0.0413,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.654,
+          "event_driven": 0.6504,
+          "quality_growth": 0.6256,
+          "knot_overlay": 0.7108
+        },
+        "source_breakdown": {
+          "classic": 0.2941,
+          "knot_agent": 0.3529,
+          "research": 0.3529
+        },
+        "consensus_score": 0.6389,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6824
+    },
+    {
+      "symbol": "AAON.US",
+      "market": "us",
+      "name": "艾伦建材",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5774,
+      "rationale": "Trend 0.65, relative strength 0.65, and event support 0.65 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "AAON.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.6479,
+          "summary": "snapshot change 2.94%; turnover 33689139"
+        },
+        {
+          "symbol": "AAON.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "AAON.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5774,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "quote": {
+        "code": "US.AAON",
+        "name": "艾伦建材",
+        "update_time": "2026-05-11 11:03:24",
+        "last_price": 143.76,
+        "open_price": 139.685,
+        "high_price": 144.37,
+        "low_price": 136.0501,
+        "prev_close_price": 139.66,
+        "volume": 239345,
+        "turnover": 33689138.859,
+        "turnover_rate": 0.352,
+        "suspension": false,
+        "listing_date": "1970-01-01",
+        "lot_size": 1,
+        "price_spread": 0.01,
+        "stock_owner": null,
+        "ask_price": 143.84,
+        "bid_price": 143.48,
+        "ask_vol": 118,
+        "bid_vol": 41,
+        "enable_margin": null,
+        "mortgage_ratio": null,
+        "long_margin_initial_ratio": null,
+        "enable_short_sell": null,
+        "short_sell_rate": null,
+        "short_available_volume": null,
+        "short_margin_initial_ratio": null,
+        "amplitude": 5.957,
+        "avg_price": 140.755557287,
+        "bid_ask_ratio": -48.428,
+        "volume_ratio": 0.369,
+        "highest52weeks_price": 149.0,
+        "lowest52weeks_price": 61.780254826,
+        "highest_history_price": 149.0,
+        "lowest_history_price": 0.228549765,
+        "close_price_5min": 143.755,
+        "after_volume": 22231,
+        "after_turnover": 3103627.711,
+        "sec_status": "NORMAL",
+        "equity_valid": true,
+        "issued_shares": 81911710,
+        "total_market_val": 11775627429.6,
+        "net_asset": 934203052.55,
+        "net_profit": 105666105.9,
+        "earning_per_share": 1.29,
+        "outstanding_shares": 68033976,
+        "circular_market_val": 9780564389.76,
+        "net_asset_per_share": 11.405,
+        "ey_ratio": 0.124,
+        "pe_ratio": 111.441,
+        "pb_ratio": 12.604,
+        "pe_ttm_ratio": 101.239,
+        "dividend_ttm": 0.4,
+        "dividend_ratio_ttm": 0.28,
+        "dividend_lfy": 0.4,
+        "dividend_lfy_ratio": 0.278,
+        "wrt_valid": false,
+        "wrt_conversion_ratio": null,
+        "wrt_type": "N/A",
+        "wrt_strike_price": null,
+        "wrt_maturity_date": null,
+        "wrt_end_trade": null,
+        "wrt_recovery_price": null,
+        "wrt_street_vol": null,
+        "wrt_issue_vol": null,
+        "wrt_street_ratio": null,
+        "wrt_delta": null,
+        "wrt_implied_volatility": null,
+        "wrt_premium": null,
+        "wrt_leverage": null,
+        "wrt_ipop": null,
+        "wrt_break_even_point": null,
+        "wrt_conversion_price": null,
+        "wrt_price_recovery_ratio": null,
+        "wrt_score": null,
+        "wrt_upper_strike_price": null,
+        "wrt_lower_strike_price": null,
+        "wrt_inline_price_status": "N/A",
+        "wrt_issuer_code": null,
+        "option_valid": false,
+        "option_type": "N/A",
+        "strike_time": null,
+        "option_strike_price": null,
+        "option_contract_size": null,
+        "option_open_interest": null,
+        "option_implied_volatility": null,
+        "option_premium": null,
+        "option_delta": null,
+        "option_gamma": null,
+        "option_vega": null,
+        "option_theta": null,
+        "option_rho": null,
+        "option_net_open_interest": null,
+        "option_expiry_date_distance": null,
+        "option_contract_nominal_value": null,
+        "option_owner_lot_multiplier": null,
+        "option_area_type": "N/A",
+        "option_contract_multiplier": null,
+        "index_option_type": "N/A",
+        "index_valid": false,
+        "index_raise_count": null,
+        "index_fall_count": null,
+        "index_equal_count": null,
+        "plate_valid": false,
+        "plate_raise_count": null,
+        "plate_fall_count": null,
+        "plate_equal_count": null,
+        "future_valid": false,
+        "future_last_settle_price": null,
+        "future_position": null,
+        "future_position_change": null,
+        "future_main_contract": null,
+        "future_last_trade_time": null,
+        "trust_valid": false,
+        "trust_dividend_yield": null,
+        "trust_aum": null,
+        "trust_outstanding_units": null,
+        "trust_netAssetValue": null,
+        "trust_premium": null,
+        "trust_assetClass": "N/A",
+        "pre_price": 138.818,
+        "pre_high_price": 141.5537,
+        "pre_low_price": 135.02,
+        "pre_volume": 1157,
+        "pre_turnover": 157614.903,
+        "pre_change_val": -0.842,
+        "pre_change_rate": -0.602,
+        "pre_amplitude": 4.6782,
+        "after_price": 139.6262,
+        "after_high_price": 139.66,
+        "after_low_price": 138.95,
+        "after_change_val": -0.0338,
+        "after_change_rate": -0.024,
+        "after_amplitude": 0.5083,
+        "overnight_price": 135.02,
+        "overnight_high_price": 136.41,
+        "overnight_low_price": 135.0,
+        "overnight_volume": 390,
+        "overnight_turnover": 52924.89,
+        "overnight_change_val": -4.64,
+        "overnight_change_rate": -3.322,
+        "overnight_amplitude": 1.0095,
+        "change_pct": 2.936,
+        "price": 143.76,
+        "turnover_ratio": 0.352,
+        "market_cap": 11775627429.6
+      },
+      "last_price": 143.76,
+      "price": 143.76,
+      "change_pct": 2.936,
+      "turnover": 33689138.859,
+      "turnover_ratio": 0.352,
+      "market_cap": 11775627429.6,
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6479,
+      "relative_strength_score": 0.6468,
+      "flow_score": 0.5274,
+      "event_score": 0.6479,
+      "quality_score": 0.6479,
+      "liquidity_score": 0.4876,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6475,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.601,
+      "strategy_tags": [
+        "knot_overlay",
+        "event_driven",
+        "trend_following",
+        "quality_growth"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.6074,
+        "event_driven": 0.6076,
+        "quality_growth": 0.5945,
+        "knot_overlay": 0.6993
+      },
+      "source_breakdown": {
+        "classic": 0.2941,
+        "knot_agent": 0.3529,
+        "research": 0.3529
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5774,
+        "input_scores": {
+          "trend_score": 0.6479,
+          "relative_strength_score": 0.6468,
+          "flow_score": 0.5274,
+          "event_score": 0.6479,
+          "quality_score": 0.6479,
+          "liquidity_score": 0.4876,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6475,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6479,
+            "weight": 0.22,
+            "weighted_contribution": 0.1425,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6468,
+            "weight": 0.16,
+            "weighted_contribution": 0.1035,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.5274,
+            "weight": 0.14,
+            "weighted_contribution": 0.0738,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6479,
+            "weight": 0.14,
+            "weighted_contribution": 0.0907,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6479,
+            "weight": 0.1,
+            "weighted_contribution": 0.0648,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.4876,
+            "weight": 0.08,
+            "weighted_contribution": 0.039,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6475,
+            "weight": 0.06,
+            "weighted_contribution": 0.0388,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay",
+          "event_driven",
+          "trend_following",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6074,
+          "event_driven": 0.6076,
+          "quality_growth": 0.5945,
+          "knot_overlay": 0.6993
+        },
+        "source_breakdown": {
+          "classic": 0.2941,
+          "knot_agent": 0.3529,
+          "research": 0.3529
+        },
+        "consensus_score": 0.601,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6479
+    },
+    {
+      "symbol": "AAPL.US",
+      "market": "us",
+      "name": "苹果",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5463,
+      "rationale": "Trend 0.60, relative strength 0.49, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "AAPL.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5424,
+          "summary": "snapshot change -0.23%; turnover 3425434939"
+        },
+        {
+          "symbol": "AAPL.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "AAPL.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5463,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "quote": {
+        "code": "US.AAPL",
+        "name": "苹果",
+        "update_time": "2026-05-11 11:03:50",
+        "last_price": 292.38,
+        "open_price": 291.979,
+        "high_price": 293.15,
+        "low_price": 290.23,
+        "prev_close_price": 293.05,
+        "volume": 11739296,
+        "turnover": 3425434939.225,
+        "turnover_rate": 0.08,
+        "suspension": false,
+        "listing_date": "1980-12-12",
+        "lot_size": 1,
+        "price_spread": 0.01,
+        "stock_owner": null,
+        "ask_price": 292.39,
+        "bid_price": 292.37,
+        "ask_vol": 100,
+        "bid_vol": 44,
+        "enable_margin": null,
+        "mortgage_ratio": null,
+        "long_margin_initial_ratio": null,
+        "enable_short_sell": null,
+        "short_sell_rate": null,
+        "short_available_volume": null,
+        "short_margin_initial_ratio": null,
+        "amplitude": 0.996,
+        "avg_price": 291.792194287,
+        "bid_ask_ratio": -38.889,
+        "volume_ratio": 0.97,
+        "highest52weeks_price": 294.488674304,
+        "lowest52weeks_price": 192.695526946,
+        "highest_history_price": 294.488674304,
+        "lowest_history_price": 0.053319837,
+        "close_price_5min": 292.65,
+        "after_volume": 7108043,
+        "after_turnover": 2084896350.839,
+        "sec_status": "NORMAL",
+        "equity_valid": true,
+        "issued_shares": 14687356000,
+        "total_market_val": 4294289147280.0,
+        "net_asset": 106498018356.0,
+        "net_profit": 109567675760.0,
+        "earning_per_share": 7.46,
+        "outstanding_shares": 14642591784,
+        "circular_market_val": 4281200985805.92,
+        "net_asset_per_share": 7.251,
+        "ey_ratio": 1.139,
+        "pe_ratio": 39.193,
+        "pb_ratio": 40.322,
+        "pe_ttm_ratio": 35.397,
+        "dividend_ttm": 1.04,
+        "dividend_ratio_ttm": 0.36,
+        "dividend_lfy": 1.02,
+        "dividend_lfy_ratio": 0.348,
+        "wrt_valid": false,
+        "wrt_conversion_ratio": null,
+        "wrt_type": "N/A",
+        "wrt_strike_price": null,
+        "wrt_maturity_date": null,
+        "wrt_end_trade": null,
+        "wrt_recovery_price": null,
+        "wrt_street_vol": null,
+        "wrt_issue_vol": null,
+        "wrt_street_ratio": null,
+        "wrt_delta": null,
+        "wrt_implied_volatility": null,
+        "wrt_premium": null,
+        "wrt_leverage": null,
+        "wrt_ipop": null,
+        "wrt_break_even_point": null,
+        "wrt_conversion_price": null,
+        "wrt_price_recovery_ratio": null,
+        "wrt_score": null,
+        "wrt_upper_strike_price": null,
+        "wrt_lower_strike_price": null,
+        "wrt_inline_price_status": "N/A",
+        "wrt_issuer_code": null,
+        "option_valid": false,
+        "option_type": "N/A",
+        "strike_time": null,
+        "option_strike_price": null,
+        "option_contract_size": null,
+        "option_open_interest": null,
+        "option_implied_volatility": null,
+        "option_premium": null,
+        "option_delta": null,
+        "option_gamma": null,
+        "option_vega": null,
+        "option_theta": null,
+        "option_rho": null,
+        "option_net_open_interest": null,
+        "option_expiry_date_distance": null,
+        "option_contract_nominal_value": null,
+        "option_owner_lot_multiplier": null,
+        "option_area_type": "N/A",
+        "option_contract_multiplier": null,
+        "index_option_type": "N/A",
+        "index_valid": false,
+        "index_raise_count": null,
+        "index_fall_count": null,
+        "index_equal_count": null,
+        "plate_valid": false,
+        "plate_raise_count": null,
+        "plate_fall_count": null,
+        "plate_equal_count": null,
+        "future_valid": false,
+        "future_last_settle_price": null,
+        "future_position": null,
+        "future_position_change": null,
+        "future_main_contract": null,
+        "future_last_trade_time": null,
+        "trust_valid": false,
+        "trust_dividend_yield": null,
+        "trust_aum": null,
+        "trust_outstanding_units": null,
+        "trust_netAssetValue": null,
+        "trust_premium": null,
+        "trust_assetClass": "N/A",
+        "pre_price": 292.16,
+        "pre_high_price": 294.3,
+        "pre_low_price": 291.45,
+        "pre_volume": 284047,
+        "pre_turnover": 83177419.337,
+        "pre_change_val": -0.89,
+        "pre_change_rate": -0.303,
+        "pre_amplitude": 0.9725,
+        "after_price": 293.8595,
+        "after_high_price": 293.86,
+        "after_low_price": 292.68,
+        "after_change_val": 0.5395,
+        "after_change_rate": 0.183,
+        "after_amplitude": 0.4022,
+        "overnight_price": 292.01,
+        "overnight_high_price": 293.93,
+        "overnight_low_price": 290.5,
+        "overnight_volume": 79858,
+        "overnight_turnover": 23304945.37,
+        "overnight_change_val": -1.04,
+        "overnight_change_rate": -0.354,
+        "overnight_amplitude": 1.1704,
+        "change_pct": -0.229,
+        "price": 292.38,
+        "turnover_ratio": 0.08,
+        "market_cap": 4294289147280.0
+      },
+      "last_price": 292.38,
+      "price": 292.38,
+      "change_pct": -0.229,
+      "turnover": 3425434939.225,
+      "turnover_ratio": 0.08,
+      "market_cap": 4294289147280.0,
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.4885,
+      "flow_score": 0.5735,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.6717,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.5628,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5777,
+      "strategy_tags": [
+        "knot_overlay",
+        "quality_growth"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.554,
+        "event_driven": 0.5788,
+        "quality_growth": 0.6239,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "classic": 0.2941,
+        "knot_agent": 0.3529,
+        "research": 0.3529
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5463,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.4885,
+          "flow_score": 0.5735,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.6717,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.5628,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.4885,
+            "weight": 0.16,
+            "weighted_contribution": 0.0782,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.5735,
+            "weight": 0.14,
+            "weighted_contribution": 0.0803,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.6717,
+            "weight": 0.08,
+            "weighted_contribution": 0.0537,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.5628,
+            "weight": 0.06,
+            "weighted_contribution": 0.0338,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.554,
+          "event_driven": 0.5788,
+          "quality_growth": 0.6239,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "classic": 0.2941,
+          "knot_agent": 0.3529,
+          "research": 0.3529
+        },
+        "consensus_score": 0.5777,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "AAL.US",
+      "market": "us",
+      "name": "美国航空",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5426,
+      "rationale": "Trend 0.60, relative strength 0.34, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "AAL.US",
+          "market": "us",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.4426,
+          "summary": "snapshot change -3.22%; turnover 172025129"
+        },
+        {
+          "symbol": "AAL.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "AAL.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5426,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "quote": {
+        "code": "US.AAL",
+        "name": "美国航空",
+        "update_time": "2026-05-11 11:03:46",
+        "last_price": 12.9199,
+        "open_price": 13.005,
+        "high_price": 13.1,
+        "low_price": 12.87,
+        "prev_close_price": 13.35,
+        "volume": 13267411,
+        "turnover": 172025128.82,
+        "turnover_rate": 2.029,
+        "suspension": false,
+        "listing_date": "2013-12-09",
+        "lot_size": 1,
+        "price_spread": 0.01,
+        "stock_owner": null,
+        "ask_price": 12.92,
+        "bid_price": 12.91,
+        "ask_vol": 4017,
+        "bid_vol": 4355,
+        "enable_margin": null,
+        "mortgage_ratio": null,
+        "long_margin_initial_ratio": null,
+        "enable_short_sell": null,
+        "short_sell_rate": null,
+        "short_available_volume": null,
+        "short_margin_initial_ratio": null,
+        "amplitude": 1.723,
+        "avg_price": 12.965990789,
+        "bid_ask_ratio": 4.037,
+        "volume_ratio": 0.973,
+        "highest52weeks_price": 16.5,
+        "lowest52weeks_price": 10.09,
+        "highest_history_price": 57.583191421,
+        "lowest_history_price": 8.25,
+        "close_price_5min": 12.895,
+        "after_volume": 1869391,
+        "after_turnover": 24861616.146,
+        "sec_status": "NORMAL",
+        "equity_valid": true,
+        "issued_shares": 661385137,
+        "total_market_val": 8541789044.355,
+        "net_asset": -4076777984.468,
+        "net_profit": 112435473.29,
+        "earning_per_share": 0.17,
+        "outstanding_shares": 654013572,
+        "circular_market_val": 8449789948.8828,
+        "net_asset_per_share": -6.164,
+        "ey_ratio": -0.05,
+        "pe_ratio": 75.97,
+        "pb_ratio": -2.095,
+        "pe_ttm_ratio": 41.661,
+        "dividend_ttm": 0.0,
+        "dividend_ratio_ttm": 0.0,
+        "dividend_lfy": 0.0,
+        "dividend_lfy_ratio": 0.0,
+        "wrt_valid": false,
+        "wrt_conversion_ratio": null,
+        "wrt_type": "N/A",
+        "wrt_strike_price": null,
+        "wrt_maturity_date": null,
+        "wrt_end_trade": null,
+        "wrt_recovery_price": null,
+        "wrt_street_vol": null,
+        "wrt_issue_vol": null,
+        "wrt_street_ratio": null,
+        "wrt_delta": null,
+        "wrt_implied_volatility": null,
+        "wrt_premium": null,
+        "wrt_leverage": null,
+        "wrt_ipop": null,
+        "wrt_break_even_point": null,
+        "wrt_conversion_price": null,
+        "wrt_price_recovery_ratio": null,
+        "wrt_score": null,
+        "wrt_upper_strike_price": null,
+        "wrt_lower_strike_price": null,
+        "wrt_inline_price_status": "N/A",
+        "wrt_issuer_code": null,
+        "option_valid": false,
+        "option_type": "N/A",
+        "strike_time": null,
+        "option_strike_price": null,
+        "option_contract_size": null,
+        "option_open_interest": null,
+        "option_implied_volatility": null,
+        "option_premium": null,
+        "option_delta": null,
+        "option_gamma": null,
+        "option_vega": null,
+        "option_theta": null,
+        "option_rho": null,
+        "option_net_open_interest": null,
+        "option_expiry_date_distance": null,
+        "option_contract_nominal_value": null,
+        "option_owner_lot_multiplier": null,
+        "option_area_type": "N/A",
+        "option_contract_multiplier": null,
+        "index_option_type": "N/A",
+        "index_valid": false,
+        "index_raise_count": null,
+        "index_fall_count": null,
+        "index_equal_count": null,
+        "plate_valid": false,
+        "plate_raise_count": null,
+        "plate_fall_count": null,
+        "plate_equal_count": null,
+        "future_valid": false,
+        "future_last_settle_price": null,
+        "future_position": null,
+        "future_position_change": null,
+        "future_main_contract": null,
+        "future_last_trade_time": null,
+        "trust_valid": false,
+        "trust_dividend_yield": null,
+        "trust_aum": null,
+        "trust_outstanding_units": null,
+        "trust_netAssetValue": null,
+        "trust_premium": null,
+        "trust_assetClass": "N/A",
+        "pre_price": 13.0,
+        "pre_high_price": 13.2438,
+        "pre_low_price": 12.94,
+        "pre_volume": 717999,
+        "pre_turnover": 9372547.247,
+        "pre_change_val": -0.35,
+        "pre_change_rate": -2.621,
+        "pre_amplitude": 2.2756,
+        "after_price": 13.31,
+        "after_high_price": 13.357,
+        "after_low_price": 13.2507,
+        "after_change_val": -0.04,
+        "after_change_rate": -0.299,
+        "after_amplitude": 0.7962,
+        "overnight_price": 13.22,
+        "overnight_high_price": 13.37,
+        "overnight_low_price": 13.17,
+        "overnight_volume": 43209,
+        "overnight_turnover": 571127.66,
+        "overnight_change_val": -0.13,
+        "overnight_change_rate": -0.973,
+        "overnight_amplitude": 1.4981,
+        "change_pct": -3.222,
+        "price": 12.9199,
+        "turnover_ratio": 2.029,
+        "market_cap": 8541789044.355
+      },
+      "last_price": 12.9199,
+      "price": 12.9199,
+      "change_pct": -3.222,
+      "turnover": 172025128.82,
+      "turnover_ratio": 2.029,
+      "market_cap": 8541789044.355,
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.3389,
+      "flow_score": 0.753,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.649,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.513,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5916,
+      "strategy_tags": [
+        "knot_overlay",
+        "event_driven",
+        "quality_growth"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.564,
+        "event_driven": 0.622,
+        "quality_growth": 0.6163,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "classic": 0.2941,
+        "knot_agent": 0.3529,
+        "research": 0.3529
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5426,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.3389,
+          "flow_score": 0.753,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.649,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.513,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.3389,
+            "weight": 0.16,
+            "weighted_contribution": 0.0542,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.753,
+            "weight": 0.14,
+            "weighted_contribution": 0.1054,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.649,
+            "weight": 0.08,
+            "weighted_contribution": 0.0519,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.513,
+            "weight": 0.06,
+            "weighted_contribution": 0.0308,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.564,
+          "event_driven": 0.622,
+          "quality_growth": 0.6163,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "classic": 0.2941,
+          "knot_agent": 0.3529,
+          "research": 0.3529
+        },
+        "consensus_score": 0.5916,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADM.US",
+      "market": "us",
+      "name": "Archer Daniels Midland",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADM.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADM.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADIWW.US",
+      "market": "us",
+      "name": "ADIWW.US",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADIWW.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADIWW.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADIL.US",
+      "market": "us",
+      "name": "Adial Pharmaceuticals",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADIL.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADIL.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADIA.US",
+      "market": "us",
+      "name": "ADIA NUTRITION INC",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADIA.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADIA.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADI.US",
+      "market": "us",
+      "name": "亚德诺",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADI.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADI.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADHI.US",
+      "market": "us",
+      "name": "ARSENAL DIGITAL HOLDINGS INC",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADHI.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADHI.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADHC.US",
+      "market": "us",
+      "name": "AMERICAN DIVERSIFIED HOLDINGS CORP",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADHC.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADHC.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADGM.US",
+      "market": "us",
+      "name": "Adagio Medical",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADGM.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADGM.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADGL.US",
+      "market": "us",
+      "name": "ALLDIGITAL HLDGS INC",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADGL.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADGL.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADEX.US",
+      "market": "us",
+      "name": "Adit EdTech Acquisition",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADEX.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADEX.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADERY.US",
+      "market": "us",
+      "name": "AIDA ENGINEERING ADR  EACH REPR  10 NPV",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADERY.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADERY.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "ai_compute",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay",
+        "ai_compute"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay",
+          "ai_compute"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADEA.US",
+      "market": "us",
+      "name": "Adeia",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADEA.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADEA.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADDYY.US",
+      "market": "us",
+      "name": "阿迪达斯(ADR)",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADDYY.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADDYY.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADDLY.US",
+      "market": "us",
+      "name": "ADDLY.US",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADDLY.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADDLY.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    },
+    {
+      "symbol": "ADDHY.US",
+      "market": "us",
+      "name": "ADDTECH AB UNSPON ADS EACH REP 0.5 ORD SHS",
+      "candidate_type": "dynamic",
+      "raw_score": 0.5444,
+      "rationale": "Trend 0.60, relative strength 0.60, and event support 0.60 place it in the active opportunity bucket.",
+      "risk": "Normal portfolio and execution review still applies.",
+      "action_hint": "Keep on the active watchlist and refresh after new market evidence.",
+      "signals": [
+        {
+          "symbol": "ADDHY.US",
+          "market": "us",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "关键信息缺失较多，仅观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "ADDHY.US",
+          "market": "us",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5444,
+          "summary": "关键信息缺失较多，仅观察。"
+        }
+      ],
+      "confidence_source": "futu_universe",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json",
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "关键信息缺失较多，仅观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "关键信息缺失较多，仅观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "关键信息缺失较多，仅观察。",
+      "explanation_summary": "关键信息缺失较多，仅观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.6,
+      "flow_score": 0.515,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5,
+      "volatility_score": 0.35,
+      "regime_fit_score": 0.6,
+      "explanation_ready_score": 0.85,
+      "risk_penalty": 0.3575,
+      "theme_bucket": "general",
+      "risk_level": "low",
+      "consensus_score": 0.5692,
+      "strategy_tags": [
+        "knot_overlay"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5717,
+        "event_driven": 0.5717,
+        "quality_growth": 0.5667,
+        "knot_overlay": 0.6833
+      },
+      "source_breakdown": {
+        "knot_agent": 0.5,
+        "research": 0.5
+      },
+      "risk_flags": [],
+      "generated_at": "2026-05-11T23:03:49.116994+08:00",
+      "as_of_date": "2026-05-11",
+      "explanation_ready": true,
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5444,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.6,
+          "flow_score": 0.515,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5,
+          "volatility_score": 0.35,
+          "regime_fit_score": 0.6,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 0.85,
+          "risk_penalty": 0.3575
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.6,
+            "weight": 0.16,
+            "weighted_contribution": 0.096,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.515,
+            "weight": 0.14,
+            "weighted_contribution": 0.0721,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5,
+            "weight": 0.08,
+            "weighted_contribution": 0.04,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.6,
+            "weight": 0.06,
+            "weighted_contribution": 0.036,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.3575,
+            "weight": 0.1,
+            "weighted_contribution": -0.0357,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5717,
+          "event_driven": 0.5717,
+          "quality_growth": 0.5667,
+          "knot_overlay": 0.6833
+        },
+        "source_breakdown": {
+          "knot_agent": 0.5,
+          "research": 0.5
+        },
+        "consensus_score": 0.5692,
+        "risk_flags": []
+      },
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6
+    }
+  ],
+  "warnings": [
+    "Knot seed unavailable for us; downgraded to score_first (knot_client_unconfigured).",
+    "Skipped 177 symbols that the snapshot service rejected: US.2578256D, US.AABB, US.AACAY, US.AAGC, US.AAGH",
+    "Snapshot lookup missed 177 symbols: 2578256D.US, AABB.US, AACAY.US, AAGC.US, AAGH.US"
+  ],
+  "row_requirements": {
+    "required_fields": [
+      "symbol",
+      "market",
+      "name",
+      "candidate_type",
+      "raw_score",
+      "rationale",
+      "risk",
+      "action_hint",
+      "signals",
+      "selection_policy",
+      "strategy_tags",
+      "source_breakdown"
+    ],
+    "recommended_fields": [
+      "confidence_source",
+      "generated_at",
+      "as_of_date",
+      "theme_bucket",
+      "risk_level",
+      "consensus_score",
+      "explanation_ready",
+      "explanation_summary",
+      "research_note",
+      "data_completeness",
+      "max_signal_score",
+      "scoring"
+    ]
+  },
+  "preparation_metadata": {
+    "prepared_by": "CandidateInputPreparationService",
+    "prepared_mode": "dynamic_market_scoped",
+    "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json",
+    "include_market_data": true,
+    "knot_runtime": "auto",
+    "strategy": "knot_first",
+    "target_market": "us",
+    "top_n": 20,
+    "knot_target_count": 20,
+    "universe_limit": 200,
+    "universe_preset": "large_cap",
+    "dry_run": false
+  }
+}

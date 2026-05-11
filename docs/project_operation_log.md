@@ -9,6 +9,10 @@
 
 ### 历史记录
 
+- **2026-05-11**：修复 live intraday 路径下 1m bar 永远收不到 + 心跳字段误报
+  - **代码文件**：[strategy.py](/projects/vnpy/scripts/classic_multifactor/strategy.py)、[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)
+  - **影响摘要**：`ClassicMultiFactorCtaStrategy` 之前 `on_tick` 为空且无 `BarGenerator`，导致 vnpy CtaEngine 在 live 模式下永远不会触发 `on_bar`（FutuGateway 仅订阅 `QUOTE/ORDER_BOOK`，不订 K_1M，也不下发 1m bar），策略恒卡在 `last_signal=warmup`、`bars_seen=0`。本次按 vnpy 官方示例新增 `self.bg = BarGenerator(self.on_bar)` 并在 `on_tick` 中调 `self.bg.update_tick(tick)`，让 live tick 本地合成 1m bar 推给 `on_bar`；回测路径不经 `on_tick`（vnpy `BacktestingEngine` 直接调 `strategy.on_bar`），行为零变化。同时清理 intraday 心跳里的 `gateway_connected` 字段（`BaseGateway` 无此属性，恒为 False 形成误报），替换为 `quote_ctx_attached`（FutuGateway 是否仍持有 `OpenQuoteContext`）+ `gateway_data_flowing`（本会话是否已收到至少 1 根 bar）两个语义正确的字段，并同步刷新 heartbeat 日志格式。
+
 - **2026-05-11**：候选输入产物按市场拆分为 HK / US 独立文件，从根本消除并发覆盖
   - **代码文件**：[candidate_preparation.py](/projects/vnpy/services/strategy/candidate_preparation.py)、[candidate_provider.py](/projects/vnpy/services/strategy/candidate_provider.py)、[candidate_generation.py](/projects/vnpy/services/strategy/candidate_generation.py)、[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[test_candidate_provider.py](/projects/vnpy/tests/test_candidate_provider.py)、[test_candidate_preparation_market_scope.py](/projects/vnpy/tests/test_candidate_preparation_market_scope.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[candidate_input_example.md](/projects/vnpy/docs/protocols/candidate_input_example.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

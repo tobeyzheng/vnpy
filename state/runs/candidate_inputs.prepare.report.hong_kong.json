@@ -1,0 +1,84 @@
+{
+  "schema_version": "candidate_prepare_report_v3",
+  "generated_at": "2026-05-11T22:58:47.774493+08:00",
+  "as_of_date": "2026-05-11",
+  "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.hong_kong.json",
+  "mode": "dynamic_market_scoped",
+  "market": "hong_kong",
+  "strategy_requested": "knot_first",
+  "dynamic_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.hong_kong.json",
+  "dry_run": false,
+  "written": true,
+  "market_run": {
+    "market": "hong_kong",
+    "strategy_requested": "knot_first",
+    "strategy_used": "score_first",
+    "knot_status": "unavailable_fallback_to_score_first:knot_client_unconfigured",
+    "knot_seed_count": 0,
+    "universe_size": 200,
+    "universe_preset": "large_cap",
+    "scored_count": 200,
+    "kept_count": 20,
+    "source_files": [
+      "/projects/vnpy/state/runs/candidate_inputs.dynamic.hong_kong.seed.json"
+    ],
+    "warnings": [
+      "Knot seed unavailable for hong_kong; downgraded to score_first (knot_client_unconfigured)."
+    ],
+    "written": true,
+    "output_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.hong_kong.json",
+    "top_symbols": [
+      {
+        "symbol": "00148.HK",
+        "raw_score": 0.7574
+      },
+      {
+        "symbol": "00169.HK",
+        "raw_score": 0.7402
+      },
+      {
+        "symbol": "00022.HK",
+        "raw_score": 0.7217
+      },
+      {
+        "symbol": "00182.HK",
+        "raw_score": 0.7152
+      },
+      {
+        "symbol": "00133.HK",
+        "raw_score": 0.7147
+      },
+      {
+        "symbol": "00048.HK",
+        "raw_score": 0.7139
+      },
+      {
+        "symbol": "00119.HK",
+        "raw_score": 0.6926
+      },
+      {
+        "symbol": "00201.HK",
+        "raw_score": 0.6863
+      },
+      {
+        "symbol": "00031.HK",
+        "raw_score": 0.6789
+      },
+      {
+        "symbol": "00188.HK",
+        "raw_score": 0.6753
+      }
+    ]
+  },
+  "summary": {
+    "total_items": 20,
+    "market_counts": {
+      "hong_kong": 20
+    },
+    "include_market_data": true,
+    "knot_runtime": "auto",
+    "warnings": [
+      "Knot seed unavailable for hong_kong; downgraded to score_first (knot_client_unconfigured)."
+    ]
+  }
+}
