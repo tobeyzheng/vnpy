@@ -1,0 +1,35 @@
+{
+  "request_id": "classic_multifactor_01810_HK_BUY_01810.SEHK_20260213145900_0a260c",
+  "symbol": "01810",
+  "market": "HK",
+  "side": "BUY",
+  "qty": 270,
+  "status": "approved",
+  "price": 37.01697999999999,
+  "filled_qty": 0,
+  "avg_fill_price": null,
+  "broker_order_id": null,
+  "strategy_id": "classic_multifactor_01810_HK",
+  "reason": "classic_multifactor",
+  "notes": [
+    "pipeline:all_gates_passed",
+    "pipeline:live_risk_ok",
+    "pipeline:approved"
+  ],
+  "snapshots": {
+    "signal": {
+      "vt_symbol": "01810.SEHK",
+      "close_price": 36.98,
+      "bar_datetime": "2026-02-13T14:59:00+08:00",
+      "loop_mode": "intraday"
+    },
+    "risk": {
+      "capital": 30000.0,
+      "equity": 999423.194,
+      "cash": 30000.0,
+      "market_existing_pct": 0.0,
+      "daily_new_pct": 0.0,
+      "current_drawdown_pct": 0.0
+    }
+  }
+}

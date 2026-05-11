@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "purpose": "09992.HK 1d classic_multifactor daily simulation config.",
+    "status": "simulation config for Hong Kong daily rebalance observation; validate with SIM evidence before any live use",
+    "notes": [
+      "Intended for HK SIM daily-rebalance observation only.",
+      "Real-money trading must go through additional gates (see docs/system_integration_guide.md).",
+      "Daily mode must not include intraday-only fields; this file is shaped for run_daily_rebalance.py."
+    ],
+    "created_at_symbol": "09992.HK",
+    "created_at_interval": "1d",
+    "capital": 20000.0,
+    "source_backtest": "state/runs/classic_multifactor/vnpy_cta_backtest_09992_HK.json"
+  },
+  "strategy_class": "ClassicMultiFactorCtaStrategy",
+  "symbol": "09992.HK",
+  "interval": "1d",
+  "loop_mode": "daily",
+  "rebalance_time": "15:55",
+  "max_daily_turnover": 0.25,
+  "daily_new_pct_limit": 0.20,
+  "target_positions": {
+    "09992.HK": 0.20
+  },
+  "setting": {
+    "fast_window": 10,
+    "slow_window": 60,
+    "momentum_window": 20,
+    "atr_window": 14,
+    "entry_score": 0.62,
+    "exit_score": 0.46,
+    "stop_loss_pct": 0.08,
+    "take_profit_pct": 0.22,
+    "trailing_stop_pct": 0.12,
+    "max_position_pct": 0.30,
+    "max_order_value": 5000.0,
+    "capital": 20000.0,
+    "confirm_bars": 1,
+    "min_volume_ratio": 0.0,
+    "min_atr_pct": 0.0,
+    "min_trend_score": 0.55,
+    "regime_filter_mode": "off"
+  }
+}

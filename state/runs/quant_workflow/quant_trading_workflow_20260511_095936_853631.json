@@ -1,0 +1,700 @@
+{
+  "workflow_name": "quant_trading",
+  "mode": "plan",
+  "started_at": "2026-05-11T09:59:09.901886+08:00",
+  "status": "warning",
+  "steps": [
+    {
+      "step": "candidate_prepare",
+      "status": "ok",
+      "message": "Prepared normalized candidate inputs before workflow evaluation.",
+      "outputs": [
+        "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "market_coverage": [
+          "a_share",
+          "hong_kong",
+          "us"
+        ],
+        "written_targets": [
+          "dynamic",
+          "static"
+        ],
+        "include_market_data": true,
+        "knot_runtime": "auto",
+        "generated_at": "2026-05-11T09:59:09.901919+08:00",
+        "missing_required_field_counts": {}
+      }
+    },
+    {
+      "step": "healthcheck",
+      "status": "warning",
+      "message": "Unified healthcheck completed with warnings; downstream stages may continue in evidence-first mode.",
+      "outputs": [
+        "/projects/vnpy/state/runs/healthcheck.json",
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+        "/projects/vnpy/state/runs/candidate_inputs.json",
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json | /projects/vnpy/state/runs/candidate_inputs.json",
+        "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_report.json",
+        "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_report.json",
+        "/projects/vnpy/state/runs/hk_futu_sim_session_report.json",
+        "/projects/vnpy/state/runs/reports/preflight_20260509.json"
+      ],
+      "warnings": [
+        "No simulation reconciliation artifact was found yet; review the first simulation run before upgrading further."
+      ],
+      "meta": {
+        "requires_confirmation": false,
+        "task_type": "simulation",
+        "checks": {
+          "health_snapshot": {
+            "path": "/projects/vnpy/state/runs/healthcheck.json",
+            "exists": true,
+            "required": false,
+            "note": "Cached or active environment health snapshot."
+          },
+          "candidate_inputs_dynamic": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+            "exists": true,
+            "required": false,
+            "note": "Prepared dynamic candidate input artifact."
+          },
+          "candidate_inputs_static": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.json",
+            "exists": true,
+            "required": false,
+            "note": "Prepared static candidate input artifact."
+          },
+          "candidate_inputs_any": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json | /projects/vnpy/state/runs/candidate_inputs.json",
+            "exists": true,
+            "required": true,
+            "note": "Any local candidate input artifact required by candidate/backtest/readiness stages."
+          },
+          "backtest_report": {
+            "path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Local historical backtest report evidence."
+          },
+          "optimization_report": {
+            "path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Local optimization sweep report used to recover best parameters."
+          },
+          "sim_session_report": {
+            "path": "/projects/vnpy/state/runs/hk_futu_sim_session_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Latest simulation session report if simulation evidence has already been collected."
+          },
+          "sim_reconciliation": {
+            "path": "/projects/vnpy/state/runs/futu_sim_position_reconcile.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest simulation reconciliation artifact."
+          },
+          "simulation_preflight": {
+            "path": "/projects/vnpy/state/runs/reports/preflight_20260509.json",
+            "exists": true,
+            "required": false,
+            "note": "Latest simulation preflight pass/fail evidence."
+          },
+          "simulation_diff": {
+            "path": "/projects/vnpy/state/runs/reports/dual_run_diff_<date>.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest simulation dual-run or reconciliation diff evidence."
+          },
+          "live_report": {
+            "path": "/projects/vnpy/state/runs/hk_live_task_report.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest live-task report or audit schema evidence."
+          },
+          "live_reconciliation": {
+            "path": "/projects/vnpy/state/runs/futu_live_position_reconcile.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest live reconciliation evidence."
+          }
+        },
+        "blocking_reasons": [],
+        "health_status": "ok",
+        "health_source": "cached_healthcheck"
+      }
+    },
+    {
+      "step": "candidate_framework",
+      "status": "ok",
+      "message": "Selected observation targets and assigned daily/minute readiness levels from local candidate inputs.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/quant_trading_candidate_framework_artifact_20260511_095910_122952.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "summary": {
+          "counts": {
+            "priority_trade": 0,
+            "active_watch": 2,
+            "research_queue": 3,
+            "exclude": 0
+          },
+          "legacy_counts": {
+            "beginner_watchlist": 0,
+            "observe_only": 2,
+            "validate_only": 3
+          },
+          "trading_level_counts": {
+            "daily": 2,
+            "minute": 3,
+            "needs_review": 0
+          },
+          "hard_block_count": 0,
+          "manual_review_required_count": 3,
+          "backtest_ready_count": 5,
+          "rules": {
+            "stock_pool_scope": [
+              "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+              "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+            ],
+            "liquidity_rules": [
+              "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+              "Require stronger liquidity support for minute-level candidates than daily candidates."
+            ],
+            "cadence_rules": [
+              "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+              "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+              "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+            ],
+            "risk_rules": [
+              "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+              "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+            ],
+            "bucket_rules": [
+              "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+              "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+              "research_queue is for incomplete or lower-ranked names that still merit structured review."
+            ]
+          },
+          "llm_research_pending_count": 0,
+          "low_data_quality_count": 0
+        },
+        "backtest_targets": [
+          {
+            "symbol": "01347.HK",
+            "market": "hong_kong",
+            "selected_as": "observe_only",
+            "bucket": "active_watch",
+            "trading_level": "minute",
+            "backtest_ready": true,
+            "manual_review_required": false,
+            "hard_risk_flags": [],
+            "soft_risk_flags": [],
+            "backtest_target_eligible": true,
+            "backtest_target_reason": "Active-watch candidates are eligible for backtest evidence review once cadence is explicit.",
+            "trading_level_reasons": [
+              "Turnover appears large enough to support minute-level review if the data feed is clean.",
+              "Signal freshness is strong enough to justify an intraday-style candidate review."
+            ]
+          },
+          {
+            "symbol": "00981.HK",
+            "market": "hong_kong",
+            "selected_as": "observe_only",
+            "bucket": "active_watch",
+            "trading_level": "minute",
+            "backtest_ready": true,
+            "manual_review_required": false,
+            "hard_risk_flags": [],
+            "soft_risk_flags": [
+              "policy_uncertainty",
+              "high_textual_risk"
+            ],
+            "backtest_target_eligible": true,
+            "backtest_target_reason": "Active-watch candidates are eligible for backtest evidence review once cadence is explicit.",
+            "trading_level_reasons": [
+              "Turnover appears large enough to support minute-level review if the data feed is clean.",
+              "Signal freshness is strong enough to justify an intraday-style candidate review."
+            ]
+          },
+          {
+            "symbol": "09992.HK",
+            "market": "hong_kong",
+            "selected_as": "validate_only",
+            "bucket": "research_queue",
+            "trading_level": "minute",
+            "backtest_ready": true,
+            "manual_review_required": true,
+            "hard_risk_flags": [],
+            "soft_risk_flags": [
+              "valuation_stretch",
+              "high_textual_risk"
+            ],
+            "backtest_target_eligible": true,
+            "backtest_target_reason": "Research-queue candidates can still enter evidence-first backtest review when cadence is explicit and no hard risk block remains.",
+            "trading_level_reasons": [
+              "Turnover appears large enough to support minute-level review if the data feed is clean.",
+              "Signal freshness is strong enough to justify an intraday-style candidate review."
+            ]
+          },
+          {
+            "symbol": "02432.HK",
+            "market": "hong_kong",
+            "selected_as": "validate_only",
+            "bucket": "research_queue",
+            "trading_level": "daily",
+            "backtest_ready": true,
+            "manual_review_required": true,
+            "hard_risk_flags": [],
+            "soft_risk_flags": [
+              "high_textual_risk"
+            ],
+            "backtest_target_eligible": true,
+            "backtest_target_reason": "Research-queue candidates can still enter evidence-first backtest review when cadence is explicit and no hard risk block remains.",
+            "trading_level_reasons": [
+              "Daily cadence is the default when intraday evidence is not explicit but the row is sufficiently complete."
+            ]
+          },
+          {
+            "symbol": "02382.HK",
+            "market": "hong_kong",
+            "selected_as": "validate_only",
+            "bucket": "research_queue",
+            "trading_level": "daily",
+            "backtest_ready": true,
+            "manual_review_required": true,
+            "hard_risk_flags": [],
+            "soft_risk_flags": [],
+            "backtest_target_eligible": true,
+            "backtest_target_reason": "Research-queue candidates can still enter evidence-first backtest review when cadence is explicit and no hard risk block remains.",
+            "trading_level_reasons": [
+              "Daily cadence is the default when intraday evidence is not explicit but the row is sufficiently complete."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": "backtest",
+      "status": "ok",
+      "message": "Collected historical backtest and optimization evidence for the observation targets.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/quant_trading_backtest_artifact_20260511_095936_848586.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "summary": {
+          "status": "ok",
+          "task_type": "simulation",
+          "target_count": 5,
+          "ok_count": 5,
+          "missing_count": 0,
+          "optimized_count": 5,
+          "daily_count": 2,
+          "minute_count": 3,
+          "execution_mode": "vnpy_automated_execution",
+          "executed_count": 2
+        },
+        "results": [
+          {
+            "symbol": "01347.HK",
+            "market": "hong_kong",
+            "selected_as": "observe_only",
+            "trading_level": "minute",
+            "preferred_interval": "1m",
+            "search_space": {
+              "signal_interval_minutes": [
+                3,
+                5,
+                10
+              ],
+              "entry_score": [
+                0.62,
+                0.64,
+                0.66,
+                0.68
+              ],
+              "max_intraday_trades": [
+                2,
+                4,
+                6
+              ]
+            },
+            "status": "ok",
+            "backtest_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_01347_HK.json",
+            "optimization_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_01347_HK.json",
+            "optimization_status": "ok",
+            "best_params": {
+              "signal_interval_minutes": 9.0,
+              "entry_score": 0.62,
+              "max_intraday_trades": 2.0
+            },
+            "performance": {
+              "status": "ok",
+              "sharpe_ratio": -2.4260900364189486,
+              "return_drawdown_ratio": -0.9091435026715216,
+              "max_drawdown_pct": -29.60724543584554,
+              "total_return_pct": -26.917234820000036,
+              "trade_count": "681",
+              "sample_count": "246",
+              "start_date": "2025-05-12",
+              "end_date": "2026-05-08"
+            },
+            "sample_period": {
+              "start": "2025-05-11T00:00:00",
+              "end": "2026-05-11T00:00:00"
+            },
+            "warnings": [],
+            "execution_mode": "reused",
+            "execution_start": "2025-05-11T00:00:00",
+            "execution_end": "2026-05-11T00:00:00",
+            "execution_errors": [],
+            "capital": null,
+            "rate": 0.0003,
+            "slippage": 0.05,
+            "size": 1,
+            "pricetick": 0.01,
+            "optimize_mode": "ga"
+          },
+          {
+            "symbol": "00981.HK",
+            "market": "hong_kong",
+            "selected_as": "observe_only",
+            "trading_level": "minute",
+            "preferred_interval": "1m",
+            "search_space": {
+              "signal_interval_minutes": [
+                3,
+                5,
+                10
+              ],
+              "entry_score": [
+                0.62,
+                0.64,
+                0.66,
+                0.68
+              ],
+              "max_intraday_trades": [
+                2,
+                4,
+                6
+              ]
+            },
+            "status": "ok",
+            "backtest_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_00981_HK.json",
+            "optimization_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_00981_HK.json",
+            "optimization_status": "ok",
+            "best_params": {
+              "fast_window": 10.0,
+              "slow_window": 30.0,
+              "momentum_window": 20.0,
+              "atr_window": 10.0
+            },
+            "performance": {
+              "status": "ok",
+              "sharpe_ratio": 0.9890628864119333,
+              "return_drawdown_ratio": 1.2471705843535834,
+              "max_drawdown_pct": -7.318430641731942,
+              "total_return_pct": 9.127331419999996,
+              "trade_count": "15",
+              "sample_count": "246",
+              "start_date": "2025-05-12",
+              "end_date": "2026-05-08"
+            },
+            "sample_period": {
+              "start": "2025-05-11T00:00:00",
+              "end": "2026-05-11T00:00:00"
+            },
+            "warnings": [],
+            "execution_mode": "reused",
+            "execution_start": "2025-05-11T00:00:00",
+            "execution_end": "2026-05-11T00:00:00",
+            "execution_errors": [],
+            "capital": null,
+            "rate": 0.0003,
+            "slippage": 0.05,
+            "size": 1,
+            "pricetick": 0.01,
+            "optimize_mode": "ga"
+          },
+          {
+            "symbol": "09992.HK",
+            "market": "hong_kong",
+            "selected_as": "validate_only",
+            "trading_level": "minute",
+            "preferred_interval": "1m",
+            "search_space": {
+              "signal_interval_minutes": [
+                3,
+                5,
+                10
+              ],
+              "entry_score": [
+                0.62,
+                0.64,
+                0.66,
+                0.68
+              ],
+              "max_intraday_trades": [
+                2,
+                4,
+                6
+              ]
+            },
+            "status": "ok",
+            "backtest_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_09992_HK.json",
+            "optimization_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_09992_HK.json",
+            "optimization_status": "ok",
+            "best_params": {
+              "fast_window": 5.0,
+              "slow_window": 60.0,
+              "momentum_window": 10.0,
+              "atr_window": 10.0
+            },
+            "performance": {
+              "status": "ok",
+              "sharpe_ratio": 0.2937688183778438,
+              "return_drawdown_ratio": 0.27883447641282705,
+              "max_drawdown_pct": -5.15167099664263,
+              "total_return_pct": 1.4364634849999947,
+              "trade_count": "6",
+              "sample_count": "246",
+              "start_date": "2025-05-12",
+              "end_date": "2026-05-08"
+            },
+            "sample_period": {
+              "start": "2025-05-11T00:00:00",
+              "end": "2026-05-11T00:00:00"
+            },
+            "warnings": [],
+            "execution_mode": "reused",
+            "execution_start": "2025-05-11T00:00:00",
+            "execution_end": "2026-05-11T00:00:00",
+            "execution_errors": [],
+            "capital": null,
+            "rate": 0.0003,
+            "slippage": 0.05,
+            "size": 1,
+            "pricetick": 0.01,
+            "optimize_mode": "ga"
+          },
+          {
+            "symbol": "02432.HK",
+            "market": "hong_kong",
+            "selected_as": "validate_only",
+            "trading_level": "daily",
+            "preferred_interval": "1d",
+            "search_space": {
+              "fast_window": [
+                5,
+                10,
+                20
+              ],
+              "slow_window": [
+                30,
+                60,
+                90
+              ],
+              "momentum_window": [
+                10,
+                20,
+                30
+              ],
+              "atr_window": [
+                10,
+                14,
+                20
+              ]
+            },
+            "status": "ok",
+            "backtest_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_02432_HK.json",
+            "optimization_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_02432_HK.json",
+            "optimization_status": "ok",
+            "best_params": {
+              "fast_window": 20.0,
+              "slow_window": 60.0,
+              "momentum_window": 20.0,
+              "atr_window": 10.0
+            },
+            "performance": {
+              "status": "ok",
+              "sharpe_ratio": -1.3256314856085027,
+              "return_drawdown_ratio": -0.6775660974945656,
+              "max_drawdown_pct": -8.211857567216361,
+              "total_return_pct": -5.564076285000008,
+              "trade_count": "8",
+              "sample_count": "247",
+              "start_date": "2025-05-12",
+              "end_date": "2026-05-11"
+            },
+            "sample_period": {
+              "start": "2025-05-11T00:00:00",
+              "end": "2026-05-11T00:00:00"
+            },
+            "warnings": [],
+            "execution_mode": "executed",
+            "execution_start": "2025-05-11",
+            "execution_end": "2026-05-11",
+            "execution_errors": [],
+            "capital": 20000.0,
+            "rate": 0.0003,
+            "slippage": 0.05,
+            "size": 1,
+            "pricetick": 0.01,
+            "optimize_mode": "ga"
+          },
+          {
+            "symbol": "02382.HK",
+            "market": "hong_kong",
+            "selected_as": "validate_only",
+            "trading_level": "daily",
+            "preferred_interval": "1d",
+            "search_space": {
+              "fast_window": [
+                5,
+                10,
+                20
+              ],
+              "slow_window": [
+                30,
+                60,
+                90
+              ],
+              "momentum_window": [
+                10,
+                20,
+                30
+              ],
+              "atr_window": [
+                10,
+                14,
+                20
+              ]
+            },
+            "status": "ok",
+            "backtest_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_02382_HK.json",
+            "optimization_report_path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_02382_HK.json",
+            "optimization_status": "ok",
+            "best_params": {
+              "fast_window": 5.0,
+              "slow_window": 60.0,
+              "momentum_window": 20.0,
+              "atr_window": 18.0
+            },
+            "performance": {
+              "status": "ok",
+              "sharpe_ratio": 0.2990866441342276,
+              "return_drawdown_ratio": 0.4549006455165411,
+              "max_drawdown_pct": -3.395670055042452,
+              "total_return_pct": 1.5446925,
+              "trade_count": "2",
+              "sample_count": "247",
+              "start_date": "2025-05-12",
+              "end_date": "2026-05-11"
+            },
+            "sample_period": {
+              "start": "2025-05-11T00:00:00",
+              "end": "2026-05-11T00:00:00"
+            },
+            "warnings": [],
+            "execution_mode": "executed",
+            "execution_start": "2025-05-11",
+            "execution_end": "2026-05-11",
+            "execution_errors": [],
+            "capital": 20000.0,
+            "rate": 0.0003,
+            "slippage": 0.05,
+            "size": 1,
+            "pricetick": 0.01,
+            "optimize_mode": "ga"
+          }
+        ]
+      }
+    },
+    {
+      "step": "readiness",
+      "status": "ok",
+      "message": "Evaluated whether the current health, candidate, and backtest evidence is sufficient for the requested next stage.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/quant_trading_readiness_artifact_20260511_095936_851568.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "task_type": "simulation",
+        "failed_items": [],
+        "next_step_suggestions": [
+          "Evidence for task type simulation is sufficient for the next workflow stage review."
+        ],
+        "simulation_acceptance": {
+          "required_days": 40,
+          "passed_days": 0,
+          "history_points": 1,
+          "latest_preflight_passed": false,
+          "latest_diff_passed": false,
+          "latest_preflight_path": "/projects/vnpy/state/runs/reports/preflight_20260509.json",
+          "latest_report_path": ""
+        },
+        "live_evidence": {
+          "report_schema_ready": false,
+          "approval_switches_documented": false,
+          "reconciliation_recent": false,
+          "risk_guard_auditable": false,
+          "report_path": "",
+          "reconciliation_path": ""
+        }
+      }
+    }
+  ],
+  "outputs": [
+    "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+    "/projects/vnpy/state/runs/quant_workflow/quant_trading_candidate_framework_artifact_20260511_095910_122952.json",
+    "/projects/vnpy/state/runs/quant_workflow/quant_trading_backtest_artifact_20260511_095936_848586.json",
+    "/projects/vnpy/state/runs/quant_workflow/quant_trading_readiness_artifact_20260511_095936_851568.json"
+  ],
+  "warnings": [
+    "No simulation reconciliation artifact was found yet; review the first simulation run before upgrading further."
+  ],
+  "assumptions": [
+    {
+      "name": "task_type",
+      "value": "simulation",
+      "reason": "Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews."
+    },
+    {
+      "name": "preferred_markets",
+      "value": "hong_kong",
+      "reason": "Candidate framework filtering stays aligned with the requested market subset."
+    },
+    {
+      "name": "workflow_mode",
+      "value": "balanced",
+      "reason": "Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning."
+    }
+  ],
+  "workflow_summary": {
+    "step_count": 5,
+    "output_count": 4,
+    "warning_count": 1,
+    "blocked_steps": [],
+    "confirmation_required_steps": [],
+    "warning_steps": [
+      "healthcheck"
+    ]
+  },
+  "traceability": {
+    "slug": "quant_trading",
+    "workflow_name": "quant_trading",
+    "mode": "plan",
+    "started_at": "2026-05-11T09:59:09.901886+08:00",
+    "status": "warning",
+    "assumption_count": 3
+  }
+}

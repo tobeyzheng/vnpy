@@ -1,6 +1,6 @@
 {
   "schema_version": "candidate_prepare_report_v2",
-  "generated_at": "2026-05-11T00:21:02.492765+08:00",
+  "generated_at": "2026-05-11T09:59:09.901919+08:00",
   "as_of_date": "2026-05-11",
   "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
   "targets": {
