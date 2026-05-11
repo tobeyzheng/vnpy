@@ -137,15 +137,15 @@
       ]
     },
     "beginner_quant_backtest": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_backtest_artifact_20260511_071645_704614.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_backtest_artifact_20260511_075905_717437.json",
       "artifact_type": "beginner_quant_backtest",
       "title": "Quant Workflow Backtest Evidence",
-      "generated_at": "2026-05-11T07:16:45.704419+08:00",
+      "generated_at": "2026-05-11T07:59:05.717123+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "beginner_quant_backtest",
         "title": "Quant Workflow Backtest Evidence",
-        "generated_at": "2026-05-11T07:16:45.704419+08:00",
+        "generated_at": "2026-05-11T07:59:05.717123+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
         "research_finding_count": 5,
@@ -159,26 +159,24 @@
         "slug": "beginner_quant_backtest",
         "artifact_type": "beginner_quant_backtest",
         "version": "v1",
-        "generated_at": "2026-05-11T07:16:45.704419+08:00",
+        "generated_at": "2026-05-11T07:59:05.717123+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 2,
         "confirmation_requirement_count": 0,
         "next_step_count": 4
       },
-      "risk_labels": [
-        "risk_prompts_present"
-      ]
+      "risk_labels": []
     },
     "beginner_quant_readiness": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_readiness_artifact_20260511_071645_706620.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_readiness_artifact_20260511_075905_720982.json",
       "artifact_type": "beginner_quant_readiness",
       "title": "Quant Workflow Readiness (simulation)",
-      "generated_at": "2026-05-11T07:16:45.706484+08:00",
+      "generated_at": "2026-05-11T07:59:05.720808+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "beginner_quant_readiness",
         "title": "Quant Workflow Readiness (simulation)",
-        "generated_at": "2026-05-11T07:16:45.706484+08:00",
+        "generated_at": "2026-05-11T07:59:05.720808+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
         "research_finding_count": 1,
@@ -192,11 +190,11 @@
         "slug": "beginner_quant_readiness",
         "artifact_type": "beginner_quant_readiness",
         "version": "v1",
-        "generated_at": "2026-05-11T07:16:45.706484+08:00",
+        "generated_at": "2026-05-11T07:59:05.720808+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 2,
         "confirmation_requirement_count": 0,
-        "next_step_count": 5
+        "next_step_count": 4
       },
       "risk_labels": [
         "risk_prompts_present",
@@ -206,22 +204,21 @@
   },
   "workflow_reports": {
     "beginner_quant": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_workflow_20260511_071645_708112.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/beginner_quant_workflow_20260511_075905_723074.json",
       "workflow_name": "beginner_quant",
       "mode": "plan",
-      "started_at": "2026-05-11T07:16:45.691446+08:00",
+      "started_at": "2026-05-11T07:34:11.598427+08:00",
       "status": "blocked",
       "workflow_summary": {
         "step_count": 4,
         "output_count": 3,
-        "warning_count": 8,
+        "warning_count": 3,
         "blocked_steps": [
           "readiness"
         ],
         "confirmation_required_steps": [],
         "warning_steps": [
           "healthcheck",
-          "backtest",
           "readiness"
         ]
       },
@@ -229,11 +226,11 @@
         "slug": "beginner_quant",
         "workflow_name": "beginner_quant",
         "mode": "plan",
-        "started_at": "2026-05-11T07:16:45.691446+08:00",
+        "started_at": "2026-05-11T07:34:11.598427+08:00",
         "status": "blocked",
         "assumption_count": 3
       }
     }
   },
-  "updated_at": "2026-05-11T07:34:11.603871+08:00"
+  "updated_at": "2026-05-11T07:59:05.724891+08:00"
 }

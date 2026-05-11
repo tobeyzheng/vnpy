@@ -1,0 +1,511 @@
+{
+  "artifact_type": "beginner_quant_readiness",
+  "title": "Quant Workflow Readiness (simulation)",
+  "generated_at": "2026-05-11T07:59:05.720808+08:00",
+  "version": "v1",
+  "assumptions": [
+    {
+      "name": "task_type",
+      "value": "simulation",
+      "reason": "Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews."
+    },
+    {
+      "name": "preferred_markets",
+      "value": "hong_kong",
+      "reason": "Candidate framework filtering stays aligned with the requested market subset."
+    },
+    {
+      "name": "workflow_mode",
+      "value": "conservative",
+      "reason": "Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning."
+    }
+  ],
+  "knowledge_sections": [],
+  "research_findings": [
+    {
+      "topic": "workflow_readiness",
+      "conclusion": "Readiness for task type simulation currently has 2 unmet item(s).",
+      "evidence_level": "mid",
+      "source_kind": "workflow_readiness",
+      "confidence": 0.64,
+      "verification_status": "verified",
+      "invalidation_conditions": [],
+      "references": []
+    }
+  ],
+  "research_conclusions": [
+    "Readiness for task type simulation currently has 2 unmet item(s)."
+  ],
+  "execution_suggestions": [
+    "Refresh candidate inputs and rerun candidate framework selection.",
+    "Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.",
+    "Resolve the failed readiness items before promoting the workflow to the next stage."
+  ],
+  "risk_prompts": [
+    "At least one observation target must survive candidate framework filtering.",
+    "Every promoted observation target should resolve to daily or minute cadence before readiness can pass."
+  ],
+  "invalidation_conditions": [
+    "If healthcheck evidence changes or candidate/backtest artifacts are refreshed, rerun readiness before using the result as a stage gate.",
+    "If any candidate remains cadence=needs_review, keep readiness in review mode until the missing evidence is filled."
+  ],
+  "evidence_items": [],
+  "conflicts": [],
+  "candidate_observations": [
+    {
+      "symbol": "00981.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 74.85,
+      "reasons": [
+        "半导体主线共振增强",
+        "芯片主线偏强",
+        "snapshot change -4.43%; turnover 7803020446",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: ai_compute"
+      ],
+      "primary_risks": [
+        "波动较大且受政策预期影响",
+        "High volatility or narrative-driven price action can make execution and review harder for a beginner."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Use a daily-bar review schedule and confirm the thesis can survive overnight or multi-day holding.",
+        "Review whether recent volatility makes the name unsuitable for a beginner-sized position."
+      ],
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "回调再买",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "daily",
+        "trading_level_reasons": [
+          "Daily cadence is the conservative default when intraday evidence is not explicit."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "quality_growth",
+          "research_priority",
+          "defensive_baseline",
+          "ai_compute"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "风险过高或资金条件不足，阻断交易。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "01347.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 73.75,
+      "reasons": [
+        "半导体链有交易弹性，适合事件驱动观察",
+        "snapshot change -7.50%; turnover 7243010326",
+        "未满足明确开仓模式，先观察。",
+        "Theme bucket: ai_compute",
+        "Suggested trading level: minute"
+      ],
+      "primary_risks": [
+        "波动偏大",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "观察突破",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "defensive_baseline",
+          "research_priority",
+          "quality_growth",
+          "ai_compute"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "未满足明确开仓模式，先观察。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "09992.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 66.89,
+      "reasons": [
+        "消费成长强势，趋势属性较好",
+        "snapshot change 3.64%; turnover 7187465790",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: consumer_growth",
+        "Suggested trading level: daily"
+      ],
+      "primary_risks": [
+        "估值偏高",
+        "High volatility or narrative-driven price action can make execution and review harder for a beginner."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Use a daily-bar review schedule and confirm the thesis can survive overnight or multi-day holding.",
+        "Review whether recent volatility makes the name unsuitable for a beginner-sized position."
+      ],
+      "meta": {
+        "theme": "consumer_growth",
+        "action_hint": "顺势为主",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "daily",
+        "trading_level_reasons": [
+          "Daily cadence is the conservative default when intraday evidence is not explicit."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "research_priority",
+          "quality_growth",
+          "defensive_baseline",
+          "consumer_growth"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "风险过高或资金条件不足，阻断交易。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "00772.HK",
+      "market": "hong_kong",
+      "selected_as": "validate_only",
+      "score": 65.21,
+      "reasons": [
+        "内容资产与AI叙事有补涨空间",
+        "内容与AI叙事",
+        "snapshot change 1.54%; turnover 150292574",
+        "未满足明确开仓模式，先观察。",
+        "风险过高或资金条件不足，阻断交易。"
+      ],
+      "primary_risks": [
+        "量能波动",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity and spread with a fresh quote snapshot before any stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "观察为主",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Prefer liquid names that a reviewer can explain and monitor repeatedly.",
+            "Use a small watchlist and keep candidate outputs directly reusable by backtest and readiness stages."
+          ],
+          "liquidity_rules": [
+            "If local liquidity comfort is weak, downgrade the candidate or mark cadence as needs_review.",
+            "Prefer minute-level candidates only when turnover, signal freshness, and execution context all support it."
+          ],
+          "cadence_rules": [
+            "Use daily cadence as the default when a symbol can be monitored with a low-frequency review routine.",
+            "Promote a symbol to minute cadence only when the input explicitly supports intraday handling.",
+            "Use needs_review when the current local data is not enough to justify daily or minute cadence."
+          ],
+          "volatility_rules": [
+            "Downgrade high-volatility or theme-heavy names to observe_only or validate_only.",
+            "Keep minute-level classification conservative when volatility is high and execution comfort is weak."
+          ],
+          "diversification_rules": [
+            "Avoid stacking too many names from the same theme bucket.",
+            "Keep the watchlist short enough that each name can be reviewed manually."
+          ],
+          "exclusions": [
+            "Exclude low-score or unsupported-market candidates from the actionable watchlist.",
+            "If cadence evidence is incomplete, keep the symbol in observation mode until more structure is available."
+          ]
+        },
+        "supported_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "research_priority",
+          "quality_growth",
+          "ai_compute"
+        ],
+        "original_selected_as": "validate_only",
+        "beginner_bucket": "validation_queue",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "未满足明确开仓模式，先观察。"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "candidate_selector_v1"
+      }
+    }
+  ],
+  "capability_map": [],
+  "capability_gaps": [],
+  "plan_phases": [],
+  "risk_budget": null,
+  "readiness": {
+    "stage": "simulation",
+    "items": [
+      {
+        "name": "healthcheck_status",
+        "passed": true,
+        "severity": "critical",
+        "details": "Unified healthcheck must not be blocked before readiness can pass.",
+        "remediation": "Resolve missing candidate, backtest, or task-type-specific local evidence first."
+      },
+      {
+        "name": "candidate_targets_present",
+        "passed": false,
+        "severity": "high",
+        "details": "At least one observation target must survive candidate framework filtering.",
+        "remediation": "Refresh candidate inputs and rerun candidate framework selection."
+      },
+      {
+        "name": "trading_level_assignment",
+        "passed": false,
+        "severity": "high",
+        "details": "Every promoted observation target should resolve to daily or minute cadence before readiness can pass.",
+        "remediation": "Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves."
+      },
+      {
+        "name": "backtest_evidence",
+        "passed": true,
+        "severity": "high",
+        "details": "Readiness requires at least one local historical backtest evidence record for the promoted targets.",
+        "remediation": "Generate or place the required local backtest report before stage upgrade."
+      },
+      {
+        "name": "optimization_evidence",
+        "passed": true,
+        "severity": "medium",
+        "details": "Optimization evidence should be present so the workflow can track best parameters for each promoted target.",
+        "remediation": "Attach a sweep or optimization artifact for every promoted symbol."
+      },
+      {
+        "name": "backtest_metrics_traceable",
+        "passed": true,
+        "severity": "high",
+        "details": "Backtest evidence should expose both sample period and performance metrics before readiness can pass.",
+        "remediation": "Regenerate or standardize the local backtest reports so period and metrics are complete."
+      },
+      {
+        "name": "simulation_local_state",
+        "passed": true,
+        "severity": "medium",
+        "details": "Simulation readiness is stronger when at least one local simulation session or reconciliation artifact already exists.",
+        "remediation": "After the first SIM run, keep the session report and reconciliation artifact for later stage reviews."
+      }
+    ]
+  },
+  "workflow": null,
+  "rendered_documents": [
+    {
+      "title": "Quant Workflow Readiness (simulation) (markdown)",
+      "format": "markdown",
+      "body": "### Quant Workflow Readiness (simulation)\n\n- Generated at: 2026-05-11T07:59:05.720843+08:00\n- Version: v1\n- Audience: beginner quant trader\n\n### What this note is trying to do\n- Explain the key ideas in plain language.\n- Tell you what to do first, what to avoid for now, and what must be verified before upgrading stages.\n- Keep research, execution advice and risk prompts separate.\n\n### Learning order\n- Understand core concepts and risk language before touching execution settings.\n- Learn the research workflow: hypothesis -> data check -> backtest -> simulation -> review.\n- Study a small candidate set and explain why each name is on the list.\n- Write a risk budget and pause rules before any simulation session.\n\n### Practice order\n- Run the read-only health check first.\n- Review research findings and evidence levels.\n- Check the watchlist or candidate observations and keep only a few names.\n- Review one backtest or validation summary before any simulation idea.\n- Move to simulation only after risk budget and readiness checklist are both clear.\n\n### Current assumptions\n- task_type: simulation — Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews.\n- preferred_markets: hong_kong — Candidate framework filtering stays aligned with the requested market subset.\n- workflow_mode: conservative — Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning.\n\n### Knowledge sections\n\n### Research conclusions\n- [mid] Readiness for task type simulation currently has 2 unmet item(s).\n\n### Common pitfalls\n- Confusing a good story with a tested rule.\n- Looking only at return and ignoring drawdown, turnover and sample quality.\n- Adding too many correlated names and calling it diversification.\n- Letting an LLM summary replace manual review of evidence and risk controls.\n- At least one observation target must survive candidate framework filtering.\n- Every promoted observation target should resolve to daily or minute cadence before readiness can pass.\n\n### Minimum viable start\n- One market, a small watchlist and a low-frequency review habit.\n- A written risk budget with single-position, total-exposure and pause rules.\n- At least one backtest or validation note with data-quality and cost assumptions recorded.\n- A simulation observation period before any live intent.\n- Use the top few beginner_watchlist or observe_only names as the initial review universe.\n\n### Readiness checkpoints\n- Stage simulation: 2 readiness items still need work.\n- candidate_targets_present [high] — At least one observation target must survive candidate framework filtering. Remediation: Refresh candidate inputs and rerun candidate framework selection.\n- trading_level_assignment [high] — Every promoted observation target should resolve to daily or minute cadence before readiness can pass. Remediation: Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.\n\n### What changed from the previous plan\n- No previous plan comparison was available for this run.\n\n### Personalization summary\n- No explicit personalization summary was recorded for this artifact.\n\n### Update scope\n- No scoped profile update information was recorded.\n\n### Next actions\n- Refresh candidate inputs and rerun candidate framework selection.\n- Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.\n- Resolve the failed readiness items before promoting the workflow to the next stage.\n- Do not upgrade stages until the failed readiness items are resolved.\n\n### Local system boundaries\n- Execution-related stages still require explicit confirmation and should default to plan-only mode.\n",
+      "section_count": 10,
+      "version": "v1",
+      "generated_at": "2026-05-11T07:59:05.720843+08:00"
+    },
+    {
+      "title": "Quant Workflow Readiness (simulation) (json)",
+      "format": "json",
+      "body": "{\n  \"title\": \"Quant Workflow Readiness (simulation)\",\n  \"version\": \"v1\",\n  \"generated_at\": \"2026-05-11T07:59:05.720892+08:00\",\n  \"knowledge_sections\": [],\n  \"research_findings\": [\n    {\n      \"topic\": \"workflow_readiness\",\n      \"conclusion\": \"Readiness for task type simulation currently has 2 unmet item(s).\",\n      \"evidence_level\": \"mid\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": []\n    }\n  ],\n  \"practice_order\": [\n    \"Run the read-only health check first.\",\n    \"Review research findings and evidence levels.\",\n    \"Check the watchlist or candidate observations and keep only a few names.\",\n    \"Review one backtest or validation summary before any simulation idea.\",\n    \"Move to simulation only after risk budget and readiness checklist are both clear.\"\n  ],\n  \"assumptions\": [\n    \"task_type: simulation — Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews.\",\n    \"preferred_markets: hong_kong — Candidate framework filtering stays aligned with the requested market subset.\",\n    \"workflow_mode: conservative — Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning.\"\n  ],\n  \"common_pitfalls\": [\n    \"Confusing a good story with a tested rule.\",\n    \"Looking only at return and ignoring drawdown, turnover and sample quality.\",\n    \"Adding too many correlated names and calling it diversification.\",\n    \"Letting an LLM summary replace manual review of evidence and risk controls.\",\n    \"At least one observation target must survive candidate framework filtering.\",\n    \"Every promoted observation target should resolve to daily or minute cadence before readiness can pass.\"\n  ],\n  \"minimum_viable_start\": [\n    \"One market, a small watchlist and a low-frequency review habit.\",\n    \"A written risk budget with single-position, total-exposure and pause rules.\",\n    \"At least one backtest or validation note with data-quality and cost assumptions recorded.\",\n    \"A simulation observation period before any live intent.\",\n    \"Use the top few beginner_watchlist or observe_only names as the initial review universe.\"\n  ],\n  \"readiness\": [\n    \"Stage simulation: 2 readiness items still need work.\",\n    \"candidate_targets_present [high] — At least one observation target must survive candidate framework filtering. Remediation: Refresh candidate inputs and rerun candidate framework selection.\",\n    \"trading_level_assignment [high] — Every promoted observation target should resolve to daily or minute cadence before readiness can pass. Remediation: Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.\"\n  ],\n  \"plan_differences\": [\n    \"No previous plan comparison was available for this run.\"\n  ],\n  \"personalization_summary\": [\n    \"No explicit personalization summary was recorded for this artifact.\"\n  ],\n  \"update_scope\": [\n    \"No scoped profile update information was recorded.\"\n  ],\n  \"next_actions\": [\n    \"Refresh candidate inputs and rerun candidate framework selection.\",\n    \"Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.\",\n    \"Resolve the failed readiness items before promoting the workflow to the next stage.\",\n    \"Do not upgrade stages until the failed readiness items are resolved.\"\n  ],\n  \"local_limits\": [\n    \"Execution-related stages still require explicit confirmation and should default to plan-only mode.\"\n  ]\n}\n",
+      "section_count": 9,
+      "version": "v1",
+      "generated_at": "2026-05-11T07:59:05.720892+08:00"
+    }
+  ],
+  "meta": {
+    "profile": {
+      "capital": null,
+      "hours_per_week": null,
+      "max_drawdown_pct": null,
+      "risk_profile": "conservative",
+      "preferred_market": "hk"
+    },
+    "task_type": "simulation",
+    "preferred_markets": [
+      "hong_kong"
+    ],
+    "simulation_acceptance": {
+      "required_days": 40,
+      "passed_days": 0,
+      "history_points": 1,
+      "latest_preflight_passed": false,
+      "latest_diff_passed": false,
+      "latest_preflight_path": "/projects/vnpy/state/runs/reports/preflight_20260509.json",
+      "latest_report_path": ""
+    },
+    "live_evidence": {
+      "report_schema_ready": false,
+      "approval_switches_documented": false,
+      "reconciliation_recent": false,
+      "risk_guard_auditable": false,
+      "report_path": "",
+      "reconciliation_path": ""
+    },
+    "next_step_suggestions": [
+      "Refresh candidate inputs and rerun candidate framework selection.",
+      "Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.",
+      "Resolve the failed readiness items before promoting the workflow to the next stage."
+    ],
+    "readiness_failed_items": [
+      "candidate_targets_present",
+      "trading_level_assignment"
+    ],
+    "confirmation_requirements": [],
+    "rendered_formats": [
+      "markdown",
+      "json"
+    ],
+    "risk_labels": [
+      "risk_prompts_present",
+      "readiness_blocked"
+    ],
+    "artifact_summary": {
+      "artifact_type": "beginner_quant_readiness",
+      "title": "Quant Workflow Readiness (simulation)",
+      "generated_at": "2026-05-11T07:59:05.720808+08:00",
+      "version": "v1",
+      "knowledge_section_count": 0,
+      "research_finding_count": 1,
+      "candidate_count": 4,
+      "plan_phase_count": 0,
+      "rendered_document_count": 2,
+      "has_risk_budget": false,
+      "has_readiness": true
+    },
+    "traceability": {
+      "slug": "beginner_quant_readiness",
+      "artifact_type": "beginner_quant_readiness",
+      "version": "v1",
+      "generated_at": "2026-05-11T07:59:05.720808+08:00",
+      "current_assumption_count": 3,
+      "invalidation_condition_count": 2,
+      "confirmation_requirement_count": 0,
+      "next_step_count": 4
+    }
+  }
+}

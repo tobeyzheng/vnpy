@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-11**：将 `quant_workflow` 与 evaluation hub 默认语义从 `beginner_*` 迁移到交易导向命名
+  - **代码文件**：[candidate_framework.py](/projects/vnpy/services/evaluation_hub/candidate_framework.py)、[beginner_candidate_selector.py](/projects/vnpy/services/evaluation_hub/beginner_candidate_selector.py)、[models.py](/projects/vnpy/services/evaluation_hub/models.py)、[plan_generator.py](/projects/vnpy/services/evaluation_hub/plan_generator.py)、[doc_renderer.py](/projects/vnpy/services/evaluation_hub/doc_renderer.py)、[readiness_gate.py](/projects/vnpy/services/evaluation_hub/readiness_gate.py)、[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[run_quant_workflow.py](/projects/vnpy/scripts/quant_workflow/run_quant_workflow.py)、[__init__.py](/projects/vnpy/services/evaluation_hub/__init__.py)、[beginner_research.py](/projects/vnpy/services/evaluation_hub/beginner_research.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
+  - **文档/进度文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)、[beginner_quant_planning.md](/projects/vnpy/.codebuddy/task_list/beginner_quant_planning.md)
+  - **影响摘要**：workflow 默认名、artifact slug 与 CLI preset 已切到 `quant_trading*`；候选主 bucket 语义已切到 `priority_trade` / `active_watch` / `research_queue` / `exclude`，workflow/readiness/backtest 资格判断改为消费 `bucket`、`backtest_ready`、`hard_risk_flags` 与 `manual_review_required` 等结构化字段；计划生成器、文档渲染器和导出接口已新增 `Trading*` 类名并保留旧别名兼容，下游可逐步从 `Beginner*` 迁移到交易语义调用。
+
 - **2026-05-11**：为 `quant_workflow` 的 `backtest` 阶段补齐显式可执行的真实回测与自动扫参模式
   - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[run_quant_workflow.py](/projects/vnpy/scripts/quant_workflow/run_quant_workflow.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)、[quant-workflow-refactor.md](/projects/vnpy/.codebuddy/task_list/quant-workflow-refactor.md)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

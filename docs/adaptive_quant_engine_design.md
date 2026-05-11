@@ -203,7 +203,7 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
   - 默认复用本地 `vnpy_cta_backtest_report.json` 和 `*sweep*.json`
   - 对每个观察标记录：交易级别、推荐数据粒度、参数搜索空间、最佳参数、绩效指标、样本区间与本地路径
   - 当前阶段支持两种模式：默认 `evidence-only` 复用本地产物；显式开启 `auto_execute_backtests` 后，则调用 vn.py CTA backtesting engine 执行真实回测与 `bf|ga` 参数搜索，并把 per-symbol 结果落到 `state/runs/classic_multifactor/`
-  - 对港股 `hong_kong` 候选，若仍处于 `validate_only`，但 cadence 已被规则层判定为 `daily` 或 `minute`，则允许先进入 `backtest` 证据整理 / 执行集合；是否升级到更高阶段仍由 readiness 与后续门禁决定
+  - 对港股 `hong_kong` 候选，只要当前 bucket 仍属于活跃候选集合（如 `priority_trade` / `active_watch` / `research_queue`）、不存在 `hard_risk_flags`，且 cadence 已被规则层判定为 `daily` 或 `minute`，就允许先进入 `backtest` 证据整理 / 执行集合；是否升级到更高阶段仍由 readiness 与后续门禁决定
 - **`readiness`**
   - 把 `healthcheck`、观察标交易级别和回测证据合并成 readiness checklist
   - `simulation` 与 `live` 使用不同门槛：`live` 额外要求 `preflight`、`dual_run_diff`、live report schema、approval switches、reconciliation 等证据

@@ -124,7 +124,21 @@ class CandidateObservation:
     reasons: List[str] = field(default_factory=list)
     primary_risks: List[str] = field(default_factory=list)
     validation_points: List[str] = field(default_factory=list)
+    bucket: str = ""
+    trading_level: str = ""
+    hard_risk_flags: List[str] = field(default_factory=list)
+    soft_risk_flags: List[str] = field(default_factory=list)
+    research_confidence: float | None = None
+    liquidity_score: float | None = None
+    risk_penalty: float | None = None
+    raw_score: float | None = None
+    rank_score: float | None = None
+    backtest_ready: bool = False
+    manual_review_required: bool = False
     meta: Dict[str, Any] = field(default_factory=dict)
+
+    def effective_bucket(self) -> str:
+        return self.bucket or self.selected_as
 
 
 @dataclass
@@ -264,7 +278,7 @@ class UnifiedOutputSchema:
             self.knowledge_sections,
             self.research_conclusions,
             self.execution_suggestions,
-            self.risk_prompts
+            self.risk_prompts,
         ]
         return all(field for field in required_fields)
 
@@ -282,7 +296,7 @@ class EvidenceStandardization:
     def get_evidence_level(self) -> str:
         if self.confidence_score >= 0.8:
             return "high"
-        elif self.confidence_score >= 0.6:
+        if self.confidence_score >= 0.6:
             return "medium"
         return "low"
 

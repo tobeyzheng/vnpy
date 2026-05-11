@@ -49,7 +49,7 @@
   - 会在执行前打印解析后的命令、是否触达 OpenD / 账户 / SIM 状态、预期输出文件和交易影响说明
   - 当前**不暴露** `us-live` 直通命令，避免把真实 live 入口误包装成“一键执行”
 - **`scripts/quant_workflow/run_quant_workflow.py`**：当前推荐的总入口。
-  - 默认 `--preset beginner_full`
+  - 默认 `--preset trading_full`
   - 默认 `--mode plan`
   - 默认 `--stage readiness`
   - 默认 `--task-type simulation`
@@ -157,7 +157,7 @@
 
 补充说明：
 
-- 当前主要 workflow artifact 包括 `beginner_quant_candidate_framework`、`beginner_quant_backtest`、`beginner_quant_readiness`
+- 当前主要 workflow artifact 包括 `quant_trading_candidate_framework`、`quant_trading_backtest`、`quant_trading_readiness`
 - 候选输入由 `UnifiedCandidateProvider` 统一读取。
 - `candidate_inputs.dynamic.json` 的优先级仍高于 `candidate_inputs.json`，但当前合并规则已经改为**按 `(market, symbol)` 精细合并**：static 先入池，dynamic 针对同一 symbol 做字段级覆盖，不再整市场覆盖。
 - `CandidateInputPreparationService` 当前会通过 `HybridCandidateGenerationService` + `CandidateScoringService` 重写 dynamic/static 候选，统一输出带 `schema_version`、`generated_at`、`as_of_date`、`market_counts`、`row_requirements`、`scoring_model`、`enrichment` 和结构化候选评分字段的对象格式，兼容 `UnifiedCandidateProvider` 的现有读取方式。
@@ -227,8 +227,8 @@
 ./run.sh research --max-candidates 3
 ./run.sh sim-gate
 ./run.sh live-gate
-python scripts/quant_workflow/run_quant_workflow.py --preset beginner_full --summary-only
-python scripts/quant_workflow/run_quant_workflow.py --preset beginner_full --prepare-candidates --summary-only
+python scripts/quant_workflow/run_quant_workflow.py --preset trading_full --summary-only
+python scripts/quant_workflow/run_quant_workflow.py --preset trading_full --prepare-candidates --summary-only
 python scripts/quant_workflow/run_prepare_candidate_inputs.py
 python -m scripts.quant_workflow --preset health_snapshot --summary-only
 python scripts/run_healthcheck.py

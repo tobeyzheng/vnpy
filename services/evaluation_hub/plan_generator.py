@@ -16,7 +16,7 @@ from .models import (
 )
 
 
-class BeginnerPlanGenerator:
+class TradingPlanGenerator:
     def __init__(self, hub: EvaluationHub | None = None):
         self.hub = hub or EvaluationHub()
 
@@ -42,10 +42,11 @@ class BeginnerPlanGenerator:
             "plan_differences": self._plan_differences(previous_plan, assumptions, risk_budget) if previous_plan else [],
             "personalization_summary": self._personalization_summary(profile, risk_budget),
             "profile_update_scope": self._profile_update_scope(previous_plan, profile),
+            "legacy_artifact_type": "beginner_quant_plan",
         }
         return self.hub.build_planning_artifact(
-            artifact_type="beginner_quant_plan",
-            title="Beginner Quant Personal Plan",
+            artifact_type="quant_trading_plan",
+            title="Quant Trading Plan",
             generated_at=generated_at,
             version=version,
             assumptions=assumptions,
@@ -63,57 +64,67 @@ class BeginnerPlanGenerator:
         drawdown = profile.get("max_drawdown_pct")
         market = profile.get("preferred_market") or "us"
         available_hours = profile.get("hours_per_week")
-        risk_profile = profile.get("risk_profile") or "conservative"
+        risk_profile = profile.get("risk_profile") or "balanced"
         assumptions = [
-            PlanAssumption("preferred_market", str(market), "Use one main market for simpler review and execution alignment."),
-            PlanAssumption("risk_profile", str(risk_profile), "Unknown profile defaults to conservative behaviour."),
+            PlanAssumption("preferred_market", str(market), "Use one main market for review, execution alignment, and artifact traceability."),
+            PlanAssumption("risk_profile", str(risk_profile), "Unknown profile defaults to a balanced trading posture instead of an explicitly conservative tutorial mode."),
         ]
         assumptions.append(
             PlanAssumption(
                 "capital",
-                str(capital if capital not in {None, ""} else "unknown_keep_small"),
-                "When capital is missing, use smaller position sizes and fewer names.",
+                str(capital if capital not in {None, ""} else "unknown_size_controlled"),
+                "When capital is missing, keep position sizing controlled until live constraints are explicit.",
             )
         )
         assumptions.append(
             PlanAssumption(
                 "max_drawdown_pct",
                 str(drawdown if drawdown not in {None, ""} else 8),
-                "Unknown drawdown tolerance defaults to a stricter pause threshold.",
+                "Unknown drawdown tolerance defaults to an 8% review trigger.",
             )
         )
         assumptions.append(
             PlanAssumption(
                 "hours_per_week",
                 str(available_hours if available_hours not in {None, ""} else 5),
-                "Unknown time availability defaults to a low-frequency plan.",
+                "Unknown time availability defaults to a standard weekly review cadence.",
             )
         )
         return assumptions
 
     def _risk_budget(self, profile: dict[str, Any]) -> RiskBudget:
-        risk_profile = str(profile.get("risk_profile") or "conservative").lower()
+        risk_profile = str(profile.get("risk_profile") or "balanced").lower()
         available_hours = float(profile.get("hours_per_week") or 5)
         max_drawdown = float(profile.get("max_drawdown_pct") or 8)
         capital_bucket = str(profile.get("capital_bucket") or "small")
-        cadence = str(profile.get("preferred_cadence") or "low_frequency")
+        cadence = str(profile.get("preferred_cadence") or "daily")
 
         budget = {
-            "single_position_limit_pct": 0.05,
-            "total_exposure_limit_pct": 0.25,
-            "max_positions": 3,
-            "sector_limit_pct": 0.15,
-            "daily_new_risk_budget_pct": 0.08,
+            "single_position_limit_pct": 0.06,
+            "total_exposure_limit_pct": 0.30,
+            "max_positions": 4,
+            "sector_limit_pct": 0.18,
+            "daily_new_risk_budget_pct": 0.10,
         }
 
-        if risk_profile == "moderate":
+        if risk_profile in {"moderate", "balanced"}:
             budget.update(
                 {
                     "single_position_limit_pct": 0.07,
-                    "total_exposure_limit_pct": 0.32,
-                    "max_positions": 4,
-                    "sector_limit_pct": 0.18,
-                    "daily_new_risk_budget_pct": 0.10,
+                    "total_exposure_limit_pct": 0.34,
+                    "max_positions": 5,
+                    "sector_limit_pct": 0.20,
+                    "daily_new_risk_budget_pct": 0.11,
+                }
+            )
+        if risk_profile == "aggressive":
+            budget.update(
+                {
+                    "single_position_limit_pct": 0.08,
+                    "total_exposure_limit_pct": 0.40,
+                    "max_positions": 6,
+                    "sector_limit_pct": 0.24,
+                    "daily_new_risk_budget_pct": 0.13,
                 }
             )
 
@@ -127,49 +138,49 @@ class BeginnerPlanGenerator:
                 }
             )
         elif capital_bucket == "medium":
-            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"] + 0.03, 0.38)
-            budget["sector_limit_pct"] = min(budget["sector_limit_pct"] + 0.02, 0.22)
+            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"] + 0.03, 0.42)
+            budget["sector_limit_pct"] = min(budget["sector_limit_pct"] + 0.02, 0.24)
         elif capital_bucket == "large":
-            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"] + 0.05, 0.40)
-            budget["sector_limit_pct"] = min(budget["sector_limit_pct"] + 0.03, 0.24)
+            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"] + 0.05, 0.45)
+            budget["sector_limit_pct"] = min(budget["sector_limit_pct"] + 0.03, 0.28)
 
         if available_hours < 4:
-            budget["max_positions"] = min(budget["max_positions"], 2)
-            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"], 0.06)
-            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"], 0.22)
+            budget["max_positions"] = min(budget["max_positions"], 3)
+            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"], 0.08)
+            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"], 0.26)
         elif available_hours >= 10:
-            budget["max_positions"] = min(budget["max_positions"] + 1, 5)
-            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"] + 0.02, 0.12)
+            budget["max_positions"] = min(budget["max_positions"] + 1, 6)
+            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"] + 0.02, 0.15)
 
         if max_drawdown <= 6:
             budget["single_position_limit_pct"] = min(budget["single_position_limit_pct"], 0.05)
-            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"], 0.24)
-            budget["sector_limit_pct"] = min(budget["sector_limit_pct"], 0.15)
-            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"], 0.06)
+            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"], 0.26)
+            budget["sector_limit_pct"] = min(budget["sector_limit_pct"], 0.16)
+            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"], 0.07)
         elif max_drawdown >= 12:
-            budget["single_position_limit_pct"] = min(budget["single_position_limit_pct"] + 0.01, 0.08)
-            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"] + 0.04, 0.40)
+            budget["single_position_limit_pct"] = min(budget["single_position_limit_pct"] + 0.01, 0.09)
+            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"] + 0.04, 0.45)
 
-        if cadence != "low_frequency":
+        if cadence in {"intraday", "minute"}:
             budget["single_position_limit_pct"] = min(budget["single_position_limit_pct"], 0.04)
-            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"], 0.18)
-            budget["max_positions"] = min(budget["max_positions"], 2)
-            budget["sector_limit_pct"] = min(budget["sector_limit_pct"], 0.12)
-            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"], 0.05)
+            budget["total_exposure_limit_pct"] = min(budget["total_exposure_limit_pct"], 0.20)
+            budget["max_positions"] = min(budget["max_positions"], 3)
+            budget["sector_limit_pct"] = min(budget["sector_limit_pct"], 0.14)
+            budget["daily_new_risk_budget_pct"] = min(budget["daily_new_risk_budget_pct"], 0.06)
 
         stop_conditions = [
             f"Return to review mode if portfolio drawdown exceeds {max(4, int(round(max_drawdown)))}%.",
-            "Pause the workflow if quote/data anomalies are unresolved.",
-            "Stop execution steps if reconciliation, logging or data checks are not current.",
+            "Pause the workflow if quote, data-quality, or reconciliation anomalies are unresolved.",
+            "Stop execution-stage escalation if logging, approval, or readiness artifacts are stale.",
         ]
-        if risk_profile == "moderate" and max_drawdown > 8:
+        if risk_profile == "aggressive" and max_drawdown > 8:
             stop_conditions.insert(0, "Pause new entries after three consecutive losses.")
         else:
             stop_conditions.insert(0, "Pause new entries after two consecutive losses.")
         if available_hours < 4:
             stop_conditions.append("If review notes are skipped for a week, shrink the active universe before adding new risk.")
-        if cadence != "low_frequency":
-            stop_conditions.append("If turnover or execution sensitivity rises, downgrade the plan back to low-frequency review mode.")
+        if cadence in {"intraday", "minute"}:
+            stop_conditions.append("If turnover or execution sensitivity rises, downgrade the plan back to daily review mode.")
 
         return RiskBudget(
             single_position_limit_pct=budget["single_position_limit_pct"],
@@ -180,49 +191,49 @@ class BeginnerPlanGenerator:
             stop_conditions=stop_conditions,
             pause_conditions=[
                 "Pause adding symbols when multiple names map to the same theme exposure.",
-                "Pause any stage upgrade when current review notes are incomplete.",
+                "Pause any stage upgrade when current review notes or readiness evidence are incomplete.",
             ],
             review_conditions=[
-                "Review position sizing whenever capital, schedule, or drawdown tolerance changes.",
-                "Re-check whether the current plan still fits a low-frequency beginner workflow.",
+                "Review position sizing whenever capital, schedule, drawdown tolerance, or market regime changes.",
+                "Re-check whether the current cadence still matches the intended trading routine.",
             ],
         )
 
     def _phases(self, profile: dict[str, Any], observations: list[CandidateObservation], risk_budget: RiskBudget) -> list[PlanPhase]:
-        watchlist_symbols = [row.symbol for row in observations if row.selected_as == "beginner_watchlist"][:3]
-        review_symbols = watchlist_symbols or [row.symbol for row in observations[:3]]
+        priority_symbols = [row.symbol for row in observations if row.effective_bucket() == "priority_trade"][:3]
+        review_symbols = priority_symbols or [row.symbol for row in observations[:3]]
         available_hours = float(profile.get("hours_per_week") or 5)
-        cadence = str(profile.get("preferred_cadence") or "low_frequency")
+        cadence = str(profile.get("preferred_cadence") or "daily")
         time_bucket = str(profile.get("time_budget_bucket") or "steady")
-        cadence_note = "Keep the workflow low-frequency and reviewable." if cadence == "low_frequency" else "Treat faster cadence ideas as research or validation tasks unless execution assumptions are explicit."
+        cadence_note = "Keep the workflow reviewable and evidence-first." if cadence in {"daily", "swing"} else "Treat faster cadence ideas as trade-universe or backtest tasks until execution assumptions are explicit."
         prep_duration = "2-3 weeks" if time_bucket == "limited" else "1-2 weeks"
         research_duration = "3-5 weeks" if time_bucket == "limited" else ("2-4 weeks" if time_bucket == "steady" else "2-3 weeks")
-        backtest_duration = "3-4 weeks" if cadence != "low_frequency" else ("2-4 weeks" if time_bucket == "limited" else "2-3 weeks")
-        simulation_duration = "5-8 weeks" if cadence != "low_frequency" else ("4-6 weeks" if time_bucket != "limited" else "6-8 weeks")
+        backtest_duration = "3-4 weeks" if cadence in {"intraday", "minute"} else ("2-4 weeks" if time_bucket == "limited" else "2-3 weeks")
+        simulation_duration = "5-8 weeks" if cadence in {"intraday", "minute"} else ("4-6 weeks" if time_bucket != "limited" else "6-8 weeks")
         daily_research_action = (
-            "Review one short research note and rewrite only the most important claim in plain language."
+            "Review one short research note and retain only the claim, evidence, and invalidation rule."
             if available_hours < 4
-            else "Review one research section and rewrite it in your own words."
+            else "Review one research section and restate the thesis, evidence, and invalidation rule in your own words."
         )
-        weekly_watchlist_action = (
-            f"Keep the active review list to no more than {min(risk_budget.max_positions, 2)} names: {', '.join(review_symbols[:2]) if review_symbols else 'choose up to 2 names'}."
+        weekly_universe_action = (
+            f"Keep the active review universe to no more than {min(risk_budget.max_positions, 3)} names: {', '.join(review_symbols[:3]) if review_symbols else 'choose up to 3 names'}."
             if available_hours < 4
-            else f"Keep the active review list to a few names: {', '.join(review_symbols) if review_symbols else 'choose up to 3 names'}."
+            else f"Keep the active review universe focused: {', '.join(review_symbols) if review_symbols else 'choose up to 3 names'}."
         )
         backtest_scope_action = (
-            "Review one backtest slowly and focus on assumptions, not trade count."
+            "Review one backtest carefully and focus on assumptions, sample quality, and transaction costs."
             if available_hours < 4
-            else "Run or review one backtest with clear sample period, fees and slippage assumptions."
+            else "Run or review one backtest with explicit sample period, fees, slippage, and validation-split assumptions."
         )
         simulation_scope_action = (
-            "Use only one or two names from the review universe and keep the session explainable."
-            if cadence != "low_frequency" or available_hours < 4
-            else "Use only a few names from the review universe and keep the session explainable."
+            "Use one or two names from the trade universe and keep the session tightly auditable."
+            if cadence in {"intraday", "minute"} or available_hours < 4
+            else "Use only a few names from the trade universe and keep the session auditable."
         )
         return [
             PlanPhase(
                 name="Preparation",
-                goal="Understand system boundaries and define a small review universe.",
+                goal="Understand system boundaries and define the trade universe.",
                 duration_hint=prep_duration,
                 tasks=[
                     PlanTask(
@@ -230,7 +241,7 @@ class BeginnerPlanGenerator:
                         title="Read-only system check",
                         actions=[
                             "Run health checks or review the latest health report.",
-                            "Keep a short note of any blocked or missing local capability.",
+                            "Keep a short note of blocked or missing local capability.",
                             cadence_note,
                         ],
                         review_points=["No execution-stage blockers remain unexplained."],
@@ -238,14 +249,14 @@ class BeginnerPlanGenerator:
                     ),
                     PlanTask(
                         period="weekly",
-                        title="Watchlist definition",
+                        title="Trade universe construction",
                         actions=[
-                            weekly_watchlist_action,
-                            "Write one sentence for why each name is on the list and one sentence for why it should be removed.",
-                            "If your current ability is limited, split each blocked step into a learning task and a validation task before moving on.",
+                            weekly_universe_action,
+                            "Write one sentence for why each name stays in the universe and one sentence for what invalidates it.",
+                            "Split blocked steps into research, backtest, and readiness subtasks before moving on.",
                         ],
-                        review_points=["Each name has a thesis and an invalidation condition."],
-                        pause_conditions=["If the watchlist grows beyond what you can review manually, cut it back."],
+                        review_points=["Each name has a thesis, a catalyst view, and an invalidation condition."],
+                        pause_conditions=["If the universe grows beyond what you can review manually, cut it back."],
                     ),
                 ],
             ),
@@ -262,19 +273,19 @@ class BeginnerPlanGenerator:
                             "Mark every low-confidence item as to_verify rather than treating it as a fact.",
                             "If a concept is still unclear, rewrite only that chapter instead of regenerating the full plan.",
                         ],
-                        review_points=["You can explain the strategy idea and its failure conditions without jargon."],
+                        review_points=["You can explain the strategy thesis and its failure conditions without ambiguity."],
                         pause_conditions=["If key evidence cannot be verified, do not promote the idea to a trading rule."],
                     ),
                     PlanTask(
                         period="weekly",
-                        title="Candidate explanation",
+                        title="Candidate review",
                         actions=[
-                            "Review candidate observations and classify them into watchlist / observe_only / validate_only.",
+                            "Review candidate observations and classify them into priority_trade / active_watch / research_queue / exclude.",
                             "Check whether multiple names are actually the same theme exposure.",
-                            "For each name, note whether the current data is enough for research only, observation, or simulation planning.",
+                            "For each name, note whether the current data is enough for research only, backtest, or simulation planning.",
                         ],
-                        review_points=["No more than two highly correlated names dominate the watchlist."],
-                        pause_conditions=["If volatility or liquidity assumptions are unclear, downgrade the name to observe_only."],
+                        review_points=["No more than two highly correlated names dominate the active trade universe."],
+                        pause_conditions=["If liquidity or volatility assumptions are unclear, keep the name in research_queue or exclude."],
                     ),
                 ],
             ),
@@ -288,8 +299,8 @@ class BeginnerPlanGenerator:
                         title="Backtest review",
                         actions=[
                             backtest_scope_action,
-                            "Compare return, drawdown, turnover and stability rather than only headline return.",
-                            "If the workflow is faster than daily, add extra notes for latency, slippage, and execution sensitivity.",
+                            "Compare return, drawdown, turnover, and stability rather than only headline return.",
+                            "If the workflow is faster than daily, add explicit notes for latency, slippage, and execution sensitivity.",
                         ],
                         review_points=["At least one out-of-sample or alternative-regime check exists."],
                         pause_conditions=["If the result only works after heavy parameter tuning, send it back to research."],
@@ -300,7 +311,7 @@ class BeginnerPlanGenerator:
                         actions=[
                             "Record what changed between parameter versions.",
                             "Reject upgrades when data-quality or microstructure assumptions are missing.",
-                            "Document whether the current plan update changed sizing, schedule, or scope only, and avoid rewriting stable sections without need.",
+                            "Document whether the current plan update changed sizing, schedule, or scope only.",
                         ],
                         review_points=["The strategy remains understandable after each parameter change."],
                         pause_conditions=["If transaction costs dominate the edge, do not move to simulation."],
@@ -314,7 +325,7 @@ class BeginnerPlanGenerator:
                 tasks=[
                     PlanTask(
                         period="daily",
-                        title="Small simulation routine",
+                        title="Simulation routine",
                         actions=[
                             simulation_scope_action,
                             f"Respect the position budget: max {risk_budget.max_positions} names, {risk_budget.single_position_limit_pct:.0%} per name, {risk_budget.total_exposure_limit_pct:.0%} total exposure.",
@@ -329,7 +340,7 @@ class BeginnerPlanGenerator:
                         actions=[
                             "Review whether the names stayed within the intended theme and risk limits.",
                             "Document execution anomalies, missing data, and what should be improved before another run.",
-                            "If your available time changed, regenerate only the affected sizing and cadence sections and compare differences.",
+                            "If time availability changed, regenerate only the affected sizing and cadence sections and compare differences.",
                         ],
                         review_points=["At least one full recap note exists for each simulation week."],
                         pause_conditions=["If anomalies repeat without a fix, stop and return to preparation or research."],
@@ -362,14 +373,16 @@ class BeginnerPlanGenerator:
         hours = self._as_float(profile.get("hours_per_week"))
         drawdown = self._as_float(profile.get("max_drawdown_pct"))
         preferred_market = str(profile.get("preferred_market") or "us")
-        risk_profile = str(profile.get("risk_profile") or "conservative").lower()
-        cadence = str(profile.get("preferred_cadence") or "low_frequency").lower()
-        if cadence not in {"low_frequency", "swing", "intraday"}:
-            cadence = "low_frequency"
+        risk_profile = str(profile.get("risk_profile") or "balanced").lower()
+        cadence = str(profile.get("preferred_cadence") or "daily").lower()
+        if cadence not in {"daily", "swing", "intraday", "minute"}:
+            cadence = "daily"
+        if risk_profile not in {"conservative", "moderate", "balanced", "aggressive"}:
+            risk_profile = "balanced"
         profile["preferred_market"] = preferred_market
         profile["risk_profile"] = risk_profile
         profile["preferred_cadence"] = cadence
-        profile["capital"] = capital if capital is not None else "unknown_keep_small"
+        profile["capital"] = capital if capital is not None else "unknown_size_controlled"
         profile["hours_per_week"] = hours if hours is not None else 5.0
         profile["max_drawdown_pct"] = drawdown if drawdown is not None else 8.0
         profile["capital_bucket"] = self._capital_bucket(capital)
@@ -378,19 +391,19 @@ class BeginnerPlanGenerator:
 
     def _execution_suggestions(self, profile: dict[str, Any], observations: list[CandidateObservation], risk_budget: RiskBudget) -> list[str]:
         suggestions = [
-            "Default to research and backtest review before any simulation workflow.",
-            f"Keep active names to {risk_budget.max_positions} or fewer and prefer low-frequency reviewable setups.",
-            "Use observation-only names when volatility, liquidity or system support is not clear enough.",
+            "Default to research and backtest review before any simulation or live-adjacent workflow.",
+            f"Keep active names to {risk_budget.max_positions} or fewer and match sizing to the recorded risk budget.",
+            "Use research-queue or excluded names when volatility, liquidity, or execution support is not clear enough.",
         ]
         if observations:
-            top_watchlist = [row.symbol for row in observations if row.selected_as == "beginner_watchlist"][:3]
+            top_watchlist = [row.symbol for row in observations if row.effective_bucket() == "priority_trade"][:3]
             if top_watchlist:
                 suggestions.append("Begin the first tracking cycle with: " + ", ".join(top_watchlist))
         preferred_market = profile.get("preferred_market")
         if preferred_market:
             suggestions.append(f"Stay focused on the preferred market ({preferred_market}) until the routine is stable.")
-        if profile.get("preferred_cadence") != "low_frequency":
-            suggestions.append("Keep faster-than-daily ideas in research or validation mode until execution sensitivity is explicitly reviewed.")
+        if profile.get("preferred_cadence") in {"intraday", "minute"}:
+            suggestions.append("Keep faster-than-daily ideas in research or backtest mode until execution sensitivity is explicitly reviewed.")
         if float(profile.get("hours_per_week") or 5) < 4:
             suggestions.append("Use a smaller review universe and fewer active positions because the weekly review window is limited.")
         return suggestions
@@ -406,9 +419,9 @@ class BeginnerPlanGenerator:
 
     def _invalidation_conditions(self, profile: dict[str, Any]) -> list[str]:
         return [
-            "If the user cannot maintain regular review notes, the plan should fall back to a simpler low-frequency routine.",
+            "If the user cannot maintain regular review notes, the plan should fall back to a simpler trading routine.",
             "If the local system cannot support the requested stage safely, keep the plan in research/backtest/simulation mode.",
-            "If drawdown tolerance, available time or market preference changes, regenerate only the affected plan sections and compare differences.",
+            "If drawdown tolerance, available time, cadence, or market preference changes, regenerate only the affected plan sections and compare differences.",
         ]
 
     def _plan_differences(
@@ -485,3 +498,6 @@ class BeginnerPlanGenerator:
             return float(value)
         except (TypeError, ValueError):
             return None
+
+
+BeginnerPlanGenerator = TradingPlanGenerator

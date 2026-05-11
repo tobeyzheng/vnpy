@@ -13,11 +13,11 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from services.evaluation_hub import CapabilityRegistry
-from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
-from services.evaluation_hub.candidate_framework import BeginnerCandidateFramework
-from services.evaluation_hub.doc_renderer import BeginnerExplanationRenderer
+from services.evaluation_hub.beginner_candidate_selector import TradingCandidateSelector
+from services.evaluation_hub.candidate_framework import TradingCandidateFramework
+from services.evaluation_hub.doc_renderer import TradingExplanationRenderer
 from services.evaluation_hub.evidence_standardizer import EvidenceStandardizer
-from services.evaluation_hub.plan_generator import BeginnerPlanGenerator
+from services.evaluation_hub.plan_generator import TradingPlanGenerator
 from services.evaluation_hub.readiness_gate import ReadinessGateService
 from services.strategy.candidate_preparation import CandidateInputPreparationService
 from scripts.quant_workflow import __main__ as quant_workflow_module
@@ -37,8 +37,8 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertTrue(any(item.capability_id == "live.hk_task" for item in registry.select_for_stage("live")))
         self.assertTrue(any(item.capability_id == "classic_multifactor.vnpy_backtest" for item in registry.select_for_stage("backtest")))
 
-    def test_candidate_framework_downgrades_high_risk_or_unsupported_market(self):
-        framework = BeginnerCandidateFramework()
+    def test_candidate_framework_assigns_trading_buckets_and_excludes_unsupported_market(self):
+        framework = TradingCandidateFramework()
 
         observations = framework.build_observation_list(
             [
@@ -64,8 +64,8 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             max_items=5,
         )
 
-        self.assertIn(observations[0].selected_as, {"beginner_watchlist", "observe_only"})
-        self.assertTrue(any(item.market == "a_share" and item.selected_as == "validate_only" for item in observations))
+        self.assertIn(observations[0].effective_bucket(), {"priority_trade", "active_watch", "research_queue"})
+        self.assertTrue(any(item.market == "a_share" and item.effective_bucket() == "exclude" for item in observations))
 
     def test_readiness_gate_blocks_simulation_without_backtest_metadata(self):
         gate = ReadinessGateService()
@@ -168,8 +168,39 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertFalse(reasons)
         self.assertFalse(checklist.failed_items())
 
+    def test_readiness_gate_validates_candidate_buckets_without_blocking_manual_review_only(self):
+        gate = ReadinessGateService()
+
+        checklist = gate.validate_candidate_readiness(
+            [
+                {
+                    "symbol": "NVDA.US",
+                    "bucket": "priority_trade",
+                    "trading_level": "daily",
+                    "backtest_ready": True,
+                    "manual_review_required": True,
+                    "hard_risk_flags": [],
+                },
+                {
+                    "symbol": "00700.HK",
+                    "bucket": "active_watch",
+                    "trading_level": "minute",
+                    "backtest_ready": True,
+                    "manual_review_required": False,
+                    "hard_risk_flags": [],
+                },
+            ],
+            stage="simulation",
+        )
+
+        blocked, reasons = gate.should_block_upgrade(checklist)
+
+        self.assertFalse(blocked)
+        self.assertFalse(reasons)
+        self.assertFalse(checklist.failed_items())
+
     def test_plan_generator_records_profile_changes_against_previous_plan(self):
-        generator = BeginnerPlanGenerator()
+        generator = TradingPlanGenerator()
         previous = generator.build_plan(profile={"preferred_market": "us", "risk_profile": "conservative"}, observations=[])
 
         current = generator.build_plan(
@@ -182,19 +213,20 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertTrue(any(item["field"] == "preferred_market" for item in diffs))
         self.assertTrue(any(item["field"] == "risk_profile" for item in diffs))
 
-    def test_plan_generator_uses_conservative_defaults_when_profile_is_missing(self):
-        generator = BeginnerPlanGenerator()
+    def test_plan_generator_uses_balanced_defaults_when_profile_is_missing(self):
+        generator = TradingPlanGenerator()
 
         plan = generator.build_plan(profile={}, observations=[])
 
-        self.assertEqual(plan.meta["profile"]["capital"], "unknown_keep_small")
+        self.assertEqual(plan.meta["profile"]["capital"], "unknown_size_controlled")
         self.assertEqual(plan.meta["profile"]["hours_per_week"], 5.0)
         self.assertEqual(plan.meta["profile"]["max_drawdown_pct"], 8.0)
-        self.assertEqual(plan.risk_budget.max_positions, 3)
+        self.assertEqual(plan.meta["profile"]["risk_profile"], "balanced")
+        self.assertEqual(plan.risk_budget.max_positions, 5)
         self.assertIn("full_plan_initialization", plan.meta["profile_update_scope"])
 
     def test_plan_generator_personalization_changes_budget_and_update_scope(self):
-        generator = BeginnerPlanGenerator()
+        generator = TradingPlanGenerator()
         previous = generator.build_plan(
             profile={
                 "preferred_market": "us",
@@ -202,7 +234,7 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 "capital": 30000,
                 "hours_per_week": 6,
                 "max_drawdown_pct": 8,
-                "preferred_cadence": "low_frequency",
+                "preferred_cadence": "daily",
             },
             observations=[],
         )
@@ -224,13 +256,13 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertEqual(current.meta["personalization_summary"]["time_budget_bucket"], "limited")
         self.assertIn("risk_budget", current.meta["profile_update_scope"])
         self.assertIn("phase_schedule", current.meta["profile_update_scope"])
-        self.assertLessEqual(current.risk_budget.max_positions, 2)
-        self.assertLessEqual(current.risk_budget.total_exposure_limit_pct, 0.18)
+        self.assertLessEqual(current.risk_budget.max_positions, 3)
+        self.assertLessEqual(current.risk_budget.total_exposure_limit_pct, 0.20)
         self.assertTrue(any("turnover or execution sensitivity" in item for item in current.risk_budget.stop_conditions))
 
     def test_renderer_includes_plan_differences_and_next_steps(self):
-        generator = BeginnerPlanGenerator()
-        renderer = BeginnerExplanationRenderer()
+        generator = TradingPlanGenerator()
+        renderer = TradingExplanationRenderer()
         previous = generator.build_plan(profile={"preferred_market": "us", "risk_profile": "conservative"}, observations=[])
         current = generator.build_plan(
             profile={"preferred_market": "hong_kong", "risk_profile": "moderate"},
@@ -317,8 +349,8 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         self.assertIn("Research lacks verifiable public references", result.pending_verification_items)
         self.assertEqual(result.evidence_strength, "weak")
 
-    def test_beginner_candidate_selector_downgrades_candidates_without_explanation_or_data(self):
-        selector = BeginnerCandidateSelector()
+    def test_trading_candidate_selector_marks_manual_review_without_forcing_bucket_downgrade(self):
+        selector = TradingCandidateSelector()
         framework_artifact = selector.build_candidate_artifact(
             rows=[
                 {
@@ -344,9 +376,10 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         )
 
         observations = {item.symbol: item for item in framework_artifact.candidate_observations}
-        self.assertEqual(observations["NVDA.US"].selected_as, "observe_only")
+        self.assertIn(observations["NVDA.US"].effective_bucket(), {"priority_trade", "active_watch", "research_queue"})
         self.assertTrue(observations["NVDA.US"].meta["needs_llm_research"])
-        self.assertEqual(observations["AMD.US"].selected_as, "validate_only")
+        self.assertTrue(observations["NVDA.US"].manual_review_required)
+        self.assertEqual(observations["AMD.US"].effective_bucket(), "exclude")
         self.assertGreaterEqual(framework_artifact.meta["framework_summary"]["llm_research_pending_count"], 1)
 
     def test_candidate_preparation_service_rewrites_payload_with_metadata(self):
@@ -553,7 +586,7 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertEqual(result["steps"][0]["meta"]["knot_runtime"], "auto")
             self.assertTrue(result["started_at"].endswith("+08:00"))
             self.assertEqual(datetime.fromisoformat(result["started_at"]).utcoffset().total_seconds(), 8 * 3600)
-            self.assertIn("candidate_prepare_report", _cli_summary(result, preset="beginner_full")["artifacts"])
+            self.assertIn("candidate_prepare_report", _cli_summary(result, preset="trading_full")["artifacts"])
 
     def test_quant_workflow_service_runs_in_plan_mode(self):
         from tempfile import TemporaryDirectory
@@ -883,10 +916,10 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             latest_index = json.loads(latest_index_path.read_text(encoding="utf-8"))
             self.assertIn("artifacts", latest_index)
             self.assertIn("workflow_reports", latest_index)
-            self.assertIn("beginner_quant_candidate_framework", latest_index["artifacts"])
-            self.assertIn("beginner_quant_backtest", latest_index["artifacts"])
-            self.assertIn("beginner_quant_readiness", latest_index["artifacts"])
-            self.assertIn("beginner_quant", latest_index["workflow_reports"])
+            self.assertIn("quant_trading_candidate_framework", latest_index["artifacts"])
+            self.assertIn("quant_trading_backtest", latest_index["artifacts"])
+            self.assertIn("quant_trading_readiness", latest_index["artifacts"])
+            self.assertIn("quant_trading", latest_index["workflow_reports"])
 
     def test_cli_preset_resolution_uses_preset_defaults(self):
         args = argparse.Namespace(
@@ -909,7 +942,7 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
         payload = _cli_summary(
             {
                 "status": "ok",
-                "workflow_name": "beginner_quant",
+                "workflow_name": "quant_trading",
                 "mode": "plan",
                 "task_type": "simulation",
                 "workflow_summary": {"step_count": 4},
@@ -921,10 +954,10 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 "candidate_prepare_report": "/tmp/candidate_prepare_report.json",
                 "warnings": ["offline placeholder"],
             },
-            preset="beginner_full",
+            preset="trading_full",
         )
 
-        self.assertEqual(payload["preset"], "beginner_full")
+        self.assertEqual(payload["preset"], "trading_full")
         self.assertEqual(payload["workflow_summary"]["step_count"], 4)
         self.assertEqual(payload["artifacts"]["readiness_artifact"], "/tmp/readiness.json")
         self.assertEqual(payload["artifacts"]["candidate_prepare_report"], "/tmp/candidate_prepare_report.json")
@@ -1126,9 +1159,9 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertEqual(len(candidate_payload["candidate_observations"]), 1)
             self.assertEqual(candidate_payload["candidate_observations"][0]["market"], "hong_kong")
             self.assertTrue(candidate_payload["meta"]["backtest_targets"][0]["backtest_target_eligible"])
-            self.assertIn("promoted beyond validation-only", candidate_payload["meta"]["backtest_targets"][0]["backtest_target_reason"])
+            self.assertIn("Active-watch candidates", candidate_payload["meta"]["backtest_targets"][0]["backtest_target_reason"])
 
-    def test_quant_workflow_backtest_includes_hk_validate_only_targets_with_explicit_cadence(self):
+    def test_quant_workflow_backtest_includes_hk_active_bucket_targets_with_explicit_cadence(self):
         from tempfile import TemporaryDirectory
 
         with TemporaryDirectory() as temp_dir:
@@ -1187,10 +1220,10 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             observations = {item["symbol"]: item for item in candidate_payload["candidate_observations"]}
             targets = {item["symbol"]: item for item in candidate_payload["meta"]["backtest_targets"]}
 
-            self.assertEqual(observations["00700.HK"]["selected_as"], "validate_only")
+            self.assertEqual(observations["00700.HK"]["bucket"], "active_watch")
             self.assertEqual(observations["00700.HK"]["meta"]["trading_level"], "daily")
             self.assertTrue(targets["00700.HK"]["backtest_target_eligible"])
-            self.assertIn("Hong Kong validate-only names", targets["00700.HK"]["backtest_target_reason"])
+            self.assertIn("Active-watch candidates", targets["00700.HK"]["backtest_target_reason"])
             self.assertEqual(backtest_payload["meta"]["backtest_summary"]["target_count"], 1)
             self.assertEqual(backtest_payload["meta"]["backtest_summary"]["ok_count"], 1)
             self.assertEqual(backtest_payload["meta"]["backtest_results"][0]["symbol"], "00700.HK")

@@ -24,5 +24,5 @@
 - [x] 10. 补充自动化测试、回归样例与现有文档更新
 
 ### 当前执行焦点
-- 当前状态：`beginner_quant_planning` 本轮 1-10 项已全部完成；候选输入链路已进一步升级为模块化 `CandidateScoringService` + `HybridCandidateGenerationService` + `CandidateMarketDataService` / `CandidateKnotEnrichmentService`，且默认 `knot_runtime` 已切到 `auto`，候选准备 / workflow / artifact / renderer 等对外时间戳已统一为北京时间；最新补充了候选 prepare 产物的非有限数值清洗，Futu snapshot 或其他 enrich 源中的 `NaN` / `Infinity` 现在统一写为 `null`，避免下游继续读取到非法 JSON
-- 下一步：如需继续增强，可优先补真实 market regime / universe 数据源、按 `symbol` 精细 merge 规则、Knot 批量调度/缓存，以及 candidate scoring 在更多 workflow / research 场景下的直接复用接口
+- 当前状态：`beginner_quant_planning` 本轮 1-10 项已全部完成；本轮又进一步把 `candidate_framework` / `candidate_selector` / `plan_generator` / `doc_renderer` / `workflow_service` / `readiness_gate` 的默认语义从 `beginner_*` 迁移到 `trade|trading|quant_trading`，同时保留旧类名兼容别名，候选 bucket 主语义已切到 `priority_trade` / `active_watch` / `research_queue` / `exclude`，CLI 预设与 artifact slug 也同步切换到 `quant_trading*`
+- 下一步：如需继续增强，可优先补 `beginner_research.py` 的类名与说明语义彻底迁移、继续压缩旧 `selected_as` 兼容分支、补更多 bucket/readiness 回归测试，并评估是否需要把 task_list / plan 名称整体迁移到 `quant_trading_planning`

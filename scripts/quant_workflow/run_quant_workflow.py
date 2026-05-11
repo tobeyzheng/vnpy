@@ -12,10 +12,10 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.quant_workflow import QuantWorkflowService
 
 PRESET_WORKFLOWS = {
-    "beginner_full": {"workflow": "beginner_quant", "mode": "plan", "stage": "readiness", "task_type": "simulation"},
-    "health_snapshot": {"workflow": "beginner_quant_health_snapshot", "mode": "healthcheck_only", "stage": "healthcheck", "task_type": "simulation"},
-    "simulation_readiness": {"workflow": "beginner_quant_simulation_readiness", "mode": "stage_only", "stage": "readiness", "task_type": "simulation"},
-    "live_readiness": {"workflow": "beginner_quant_live_readiness", "mode": "stage_only", "stage": "readiness", "task_type": "live"},
+    "trading_full": {"workflow": "quant_trading", "mode": "plan", "stage": "readiness", "task_type": "simulation"},
+    "health_snapshot": {"workflow": "quant_trading_health_snapshot", "mode": "healthcheck_only", "stage": "healthcheck", "task_type": "simulation"},
+    "simulation_readiness": {"workflow": "quant_trading_simulation_readiness", "mode": "stage_only", "stage": "readiness", "task_type": "simulation"},
+    "live_readiness": {"workflow": "quant_trading_live_readiness", "mode": "stage_only", "stage": "readiness", "task_type": "live"},
 }
 
 
@@ -27,7 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
     parser.add_argument("--workflow", default=None)
-    parser.add_argument("--preset", choices=sorted(PRESET_WORKFLOWS.keys()), default="beginner_full")
+    parser.add_argument("--preset", choices=sorted(PRESET_WORKFLOWS.keys()), default="trading_full")
     parser.add_argument("--mode", default=None, choices=["plan", "healthcheck_only", "stage_only"])
     parser.add_argument("--stage", default=None, choices=["healthcheck", "candidate_framework", "backtest", "readiness"])
     parser.add_argument("--task-type", default=None, choices=["simulation", "live"])
@@ -35,7 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--capital", type=float, default=None)
     parser.add_argument("--hours-per-week", type=float, default=None)
     parser.add_argument("--max-drawdown-pct", type=float, default=None)
-    parser.add_argument("--risk-profile", default="conservative", choices=["conservative", "moderate"])
+    parser.add_argument("--risk-profile", default="balanced", choices=["conservative", "moderate", "balanced", "aggressive"])
     parser.add_argument("--max-candidates", type=int, default=5)
     parser.add_argument("--summary-only", action="store_true")
     parser.add_argument("--prepare-candidates", action="store_true")
@@ -57,7 +57,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _resolve_workflow_args(args: argparse.Namespace) -> dict[str, str]:
     preset = dict(PRESET_WORKFLOWS.get(args.preset, {}))
     return {
-        "workflow": args.workflow or preset.get("workflow", "beginner_quant"),
+        "workflow": args.workflow or preset.get("workflow", "quant_trading"),
         "mode": args.mode or preset.get("mode", "plan"),
         "stage": args.stage or preset.get("stage", "readiness"),
         "task_type": args.task_type or preset.get("task_type", "simulation"),

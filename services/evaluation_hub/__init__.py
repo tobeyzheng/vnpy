@@ -1,9 +1,9 @@
 from .artifact_store import ArtifactStore
-from .beginner_candidate_selector import BeginnerCandidateSelector
+from .beginner_candidate_selector import BeginnerCandidateSelector, TradingCandidateSelector
 from .beginner_research import BeginnerResearchService
-from .candidate_framework import BeginnerCandidateFramework
+from .candidate_framework import BeginnerCandidateFramework, TradingCandidateFramework
 from .capability_registry import CapabilityRegistry, CapabilityStageResolver
-from .doc_renderer import BeginnerExplanationRenderer
+from .doc_renderer import BeginnerExplanationRenderer, QuantTradingDocumentRenderer, TradingExplanationRenderer
 from .hub import EvaluationHub
 from .models import (
     CandidateObservation,
@@ -27,15 +27,20 @@ from .models import (
     WorkflowRunResult,
     WorkflowStepResult,
 )
-from .plan_generator import BeginnerPlanGenerator
+from .plan_generator import BeginnerPlanGenerator, TradingPlanGenerator
 from .readiness_gate import ReadinessGateService
 
 __all__ = [
     "ArtifactStore",
     "BeginnerCandidateSelector",
+    "TradingCandidateSelector",
     "BeginnerCandidateFramework",
+    "TradingCandidateFramework",
     "BeginnerExplanationRenderer",
+    "TradingExplanationRenderer",
+    "QuantTradingDocumentRenderer",
     "BeginnerPlanGenerator",
+    "TradingPlanGenerator",
     "BeginnerResearchService",
     "CapabilityRegistry",
     "CapabilityStageResolver",

@@ -10,10 +10,11 @@ from scripts.classic_multifactor.cta_backtest import ClassicCtaBacktestRunner, b
 from scripts.classic_multifactor.data import VnpyBarRepository, parse_symbol
 from vnpy_llm.base import beijing_now_isoformat
 from services.evaluation_hub.artifact_store import ArtifactStore
-from services.evaluation_hub.beginner_candidate_selector import BeginnerCandidateSelector
-from services.evaluation_hub.candidate_framework import BeginnerCandidateFramework
-from services.evaluation_hub.doc_renderer import BeginnerExplanationRenderer
+from services.evaluation_hub.beginner_candidate_selector import TradingCandidateSelector
+from services.evaluation_hub.candidate_framework import TradingCandidateFramework
+from services.evaluation_hub.doc_renderer import TradingExplanationRenderer
 from services.evaluation_hub.models import (
+    CandidateObservation,
     PlanAssumption,
     PlanningArtifact,
     ReadinessCheckItem,
@@ -51,9 +52,9 @@ class QuantWorkflowService:
         self.repo_root = Path(repo_root)
         self.allow_remote_checks = bool(allow_remote_checks)
         self.hub = EvaluationHub()
-        self.renderer = BeginnerExplanationRenderer()
-        self.candidate_framework = BeginnerCandidateFramework()
-        self.candidate_selector = BeginnerCandidateSelector(self.candidate_framework, self.hub)
+        self.renderer = TradingExplanationRenderer()
+        self.candidate_framework = TradingCandidateFramework()
+        self.candidate_selector = TradingCandidateSelector(self.candidate_framework, self.hub)
         self.store = ArtifactStore(self.repo_root)
         self.candidate_preparation = CandidateInputPreparationService(self.repo_root)
 
@@ -65,26 +66,34 @@ class QuantWorkflowService:
         normalized = [self._normalize_market(market) for market in (preferred_markets or [])]
         return [market for market in dict.fromkeys(normalized) if market]
 
-    def _is_backtest_target_candidate(self, observation: Any) -> bool:
-        if not observation.meta.get("backtest_ready"):
-            return False
-        if observation.selected_as != "validate_only":
-            return True
-        return self._normalize_market(getattr(observation, "market", "")) == "hong_kong"
+    def _bucket_of(self, observation: CandidateObservation) -> str:
+        return observation.bucket or str(observation.meta.get("bucket") or observation.selected_as)
 
-    def _backtest_target_reason(self, observation: Any) -> str:
-        if not observation.meta.get("backtest_ready"):
+    def _is_backtest_target_candidate(self, observation: CandidateObservation) -> bool:
+        if not (observation.backtest_ready or observation.meta.get("backtest_ready")):
+            return False
+        if observation.hard_risk_flags:
+            return False
+        return self._bucket_of(observation) in {"priority_trade", "active_watch", "research_queue"}
+
+    def _backtest_target_reason(self, observation: CandidateObservation) -> str:
+        if not (observation.backtest_ready or observation.meta.get("backtest_ready")):
             return "Trading cadence is still pending review."
-        if observation.selected_as != "validate_only":
-            return "Selected observation is promoted beyond validation-only and can enter backtest evidence review."
-        if self._normalize_market(getattr(observation, "market", "")) == "hong_kong":
-            return "Hong Kong validate-only names with a concrete daily/minute cadence still enter the evidence-only backtest stage."
-        return "Validation-only names stay outside the backtest target set until they are promoted."
+        if observation.hard_risk_flags:
+            return "Hard risk flags are still unresolved, so the symbol stays outside the backtest target set."
+        bucket = self._bucket_of(observation)
+        if bucket == "priority_trade":
+            return "Priority-trade candidates can enter backtest evidence review immediately."
+        if bucket == "active_watch":
+            return "Active-watch candidates are eligible for backtest evidence review once cadence is explicit."
+        if bucket == "research_queue":
+            return "Research-queue candidates can still enter evidence-first backtest review when cadence is explicit and no hard risk block remains."
+        return "Excluded names stay outside the backtest target set until they are promoted."
 
     def run(
         self,
         *,
-        workflow_name: str = "beginner_quant",
+        workflow_name: str = "quant_trading",
         mode: str = "plan",
         profile: dict[str, Any] | None = None,
         preferred_markets: list[str] | None = None,
@@ -192,8 +201,12 @@ class QuantWorkflowService:
                     "symbol": item.symbol,
                     "market": item.market,
                     "selected_as": item.selected_as,
-                    "trading_level": item.meta.get("trading_level"),
-                    "backtest_ready": bool(item.meta.get("backtest_ready")),
+                    "bucket": self._bucket_of(item),
+                    "trading_level": item.trading_level or item.meta.get("trading_level"),
+                    "backtest_ready": bool(item.backtest_ready or item.meta.get("backtest_ready")),
+                    "manual_review_required": bool(item.manual_review_required or item.meta.get("manual_review_required")),
+                    "hard_risk_flags": list(item.hard_risk_flags or item.meta.get("hard_risk_flags") or []),
+                    "soft_risk_flags": list(item.soft_risk_flags or item.meta.get("soft_risk_flags") or []),
                     "backtest_target_eligible": self._is_backtest_target_candidate(item),
                     "backtest_target_reason": self._backtest_target_reason(item),
                     "trading_level_reasons": list(item.meta.get("trading_level_reasons") or []),
@@ -208,7 +221,7 @@ class QuantWorkflowService:
                 self.renderer.render_markdown(candidate_artifact),
                 self.renderer.render_json(candidate_artifact),
             ]
-            candidate_path = self.store.save_artifact(candidate_artifact, slug="beginner_quant_candidate_framework")
+            candidate_path = self.store.save_artifact(candidate_artifact, slug="quant_trading_candidate_framework")
             artifact_paths["candidate_artifact"] = str(candidate_path)
             outputs.append(str(candidate_path))
             if "candidate_framework" in requested_steps:
@@ -248,7 +261,7 @@ class QuantWorkflowService:
                 backtest_workers=backtest_workers,
             )
             backtest_entries = list(backtest_artifact.meta.get("backtest_results") or [])
-            backtest_path = self.store.save_artifact(backtest_artifact, slug="beginner_quant_backtest")
+            backtest_path = self.store.save_artifact(backtest_artifact, slug="quant_trading_backtest")
             artifact_paths["backtest_artifact"] = str(backtest_path)
             outputs.append(str(backtest_path))
             if "backtest" in requested_steps:
@@ -277,7 +290,7 @@ class QuantWorkflowService:
                 profile=profile,
                 preferred_markets=preferred_markets,
             )
-            readiness_path = self.store.save_artifact(readiness_artifact, slug="beginner_quant_readiness")
+            readiness_path = self.store.save_artifact(readiness_artifact, slug="quant_trading_readiness")
             artifact_paths["readiness_artifact"] = str(readiness_path)
             outputs.append(str(readiness_path))
             readiness = readiness_artifact.readiness
@@ -608,7 +621,7 @@ class QuantWorkflowService:
                     )
                 )
         artifact = self.hub.build_planning_artifact(
-            artifact_type="beginner_quant_backtest",
+            artifact_type="quant_trading_backtest",
             title="Quant Workflow Backtest Evidence",
             generated_at=beijing_now_isoformat(),
             assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
@@ -1090,7 +1103,7 @@ class QuantWorkflowService:
         ]
         next_steps = self._readiness_suggestions(readiness)
         artifact = self.hub.build_planning_artifact(
-            artifact_type="beginner_quant_readiness",
+            artifact_type="quant_trading_readiness",
             title=f"Quant Workflow Readiness ({task_type})",
             generated_at=beijing_now_isoformat(),
             assumptions=self._workflow_assumptions(profile=profile, preferred_markets=preferred_markets, task_type=task_type),
@@ -1128,8 +1141,12 @@ class QuantWorkflowService:
         observations: list[Any],
         backtest_entries: list[dict[str, Any]],
     ) -> ReadinessChecklist:
-        candidate_targets = [item for item in observations if item.selected_as != "validate_only"]
-        cadence_ready = [item for item in candidate_targets if item.meta.get("trading_level") in {"daily", "minute"}]
+        candidate_targets = [
+            item
+            for item in observations
+            if self._bucket_of(item) in {"priority_trade", "active_watch", "research_queue"} and not item.hard_risk_flags
+        ]
+        cadence_ready = [item for item in candidate_targets if (item.trading_level or item.meta.get("trading_level")) in {"daily", "minute"}]
         backtest_ok = [item for item in backtest_entries if item.get("status") == "ok"]
         optimized = [item for item in backtest_ok if item.get("best_params")]
         metrics_ready = [
@@ -1347,7 +1364,7 @@ class QuantWorkflowService:
             warnings=workflow["warnings"],
             assumptions=[PlanAssumption(**item) for item in workflow["assumptions"]],
         )
-        workflow_path = self.store.save_workflow_summary(workflow_obj, slug="beginner_quant")
+        workflow_path = self.store.save_workflow_summary(workflow_obj, slug="quant_trading")
         workflow["outputs"].append(str(workflow_path))
         workflow["workflow_report"] = str(workflow_path)
         latest_index_path = self.store.root / "latest_index.json"

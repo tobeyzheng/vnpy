@@ -60,7 +60,7 @@ class BeginnerResearchService:
                 "beginner-safe practice order",
             ],
             "runner_path": "scripts/classic_multifactor/run_llm_research.py",
-            "schema_hint": "beginner_quant",
+            "schema_hint": "quant_trading",
         }
         if symbol:
             payload["symbol"] = symbol
@@ -90,7 +90,7 @@ class BeginnerResearchService:
         if not findings:
             findings = [
                 ResearchFinding(
-                    topic=str(result.get("topic") or "beginner_quant"),
+                    topic=str(result.get("topic") or "quant_trading"),
                     conclusion="No structured key_findings were returned; keep this result as a draft and verify manually.",
                     evidence_level="low",
                     source_kind="llm_summary",
@@ -123,8 +123,8 @@ class BeginnerResearchService:
             invalidation_conditions.append("The current research result does not contain verifiable public references.")
 
         artifact = self.hub.build_planning_artifact(
-            artifact_type="beginner_quant_research",
-            title=str(result.get("topic") or "Beginner Quant Research"),
+            artifact_type="quant_trading_research",
+            title=str(result.get("topic") or "Quant Trading Research"),
             generated_at=generated_at,
             version=version,
             assumptions=self._default_assumptions(),
@@ -138,7 +138,7 @@ class BeginnerResearchService:
             conflicts=conflicts or self._default_conflicts(),
             meta={
                 "source": "llm_normalized",
-                "schema_hint": "beginner_quant",
+            "schema_hint": "quant_trading",
                 "runner_path": "scripts/classic_multifactor/run_llm_research.py",
             },
         )
@@ -155,7 +155,7 @@ class BeginnerResearchService:
         findings = self._default_findings()
         evidence = self.hub.merge_evidence(*(section.references for section in self._default_sections()))
         return self.hub.build_planning_artifact(
-            artifact_type="beginner_quant_research",
+            artifact_type="quant_trading_research",
             title=title,
             generated_at=generated_at,
             version=version,
@@ -180,7 +180,7 @@ class BeginnerResearchService:
             conflicts=self._default_conflicts(),
             meta={
                 "source": "curated_fallback",
-                "schema_hint": "beginner_quant",
+            "schema_hint": "quant_trading",
                 "runner_path": "scripts/classic_multifactor/run_llm_research.py",
             },
         )
