@@ -6,7 +6,7 @@ import math
 import os
 import sys
 from dataclasses import dataclass
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from statistics import mean
 from time import sleep
@@ -27,6 +27,7 @@ from vnpy.trader.setting import SETTINGS
 from vnpy.trader.utility import round_to
 from vnpy_futu import FutuGateway
 from vnpy_llm.strategy_selector import StrategyDecision, StrategySelector
+from services.strategy.market_rules import is_market_open, market_session_end, market_timezone, normalize_market_name
 
 SETTINGS["log.active"] = True
 SETTINGS["log.console"] = True
@@ -34,8 +35,6 @@ SETTINGS["log.file"] = True
 
 GATEWAY_NAME = "FUTU"
 CN_TZ = ZoneInfo("Asia/Shanghai")
-HK_TZ = ZoneInfo("Asia/Hong_Kong")
-US_TZ = ZoneInfo("America/New_York")
 
 
 @dataclass(frozen=True)
@@ -201,14 +200,7 @@ def rsi(values: list[float], window: int = 14) -> float:
 
 
 def market_is_open(market: str, now: datetime | None = None) -> bool:
-    if market == "HK":
-        dt = now or datetime.now(HK_TZ)
-        return dt.weekday() < 5 and (time(9, 35) <= dt.time() <= time(11, 55) or time(13, 5) <= dt.time() <= time(15, 55))
-    if market == "CN":
-        dt = now or datetime.now(CN_TZ)
-        return dt.weekday() < 5 and (time(9, 35) <= dt.time() <= time(11, 25) or time(13, 5) <= dt.time() <= time(14, 55))
-    dt = now or datetime.now(US_TZ)
-    return dt.weekday() < 5 and time(9, 35) <= dt.time() <= time(15, 55)
+    return is_market_open(normalize_market_name(market), now, delay_open_minutes=5, early_close_minutes=5)
 
 
 class MarketWatchlistTrader:
@@ -512,8 +504,9 @@ class MarketWatchlistTrader:
     def should_stop_at_close(self) -> bool:
         if not self.args.until_us_close or self.args.market != "US":
             return False
-        now = datetime.now(US_TZ)
-        return now.weekday() < 5 and now.time() >= time(16, 0)
+        now = datetime.now(ZoneInfo(market_timezone("us")))
+        session_end = time.fromisoformat(market_session_end("us"))
+        return now.weekday() < 5 and now.time() >= session_end
 
     def run(self) -> None:
         print(f"启动 {self.args.market} 独立观察池交易器，trade={self.args.trade} symbols={[s.vt_symbol for s in self.symbols]}")

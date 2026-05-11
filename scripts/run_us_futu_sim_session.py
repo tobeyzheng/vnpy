@@ -19,6 +19,7 @@ from services.futu_account import FutuAccountProvider, FutuQuoteClient
 from services.futu_sim_trade import FutuSimTradeClient
 from services.strategy.candidate_provider import UnifiedCandidateProvider
 from services.strategy.engine import StrategyEngine
+from services.strategy.market_rules import is_market_open, market_session_end, market_timezone
 from services.trade_state import OrderStateStore
 from services.trade_state.state_machine import OrderStateMachine
 
@@ -66,7 +67,8 @@ class UsFutuSimSession:
             self.start_equity = float(self.args.max_budget)
         snapshot = first
         while True:
-            now_et = datetime.now(ZoneInfo("America/New_York"))
+            now_et = datetime.now(ZoneInfo(market_timezone("us")))
+            session_end = dtime.fromisoformat(market_session_end("us"))
             try:
                 snapshot = self._snapshot()
                 loss = self._current_loss(snapshot)
@@ -80,8 +82,8 @@ class UsFutuSimSession:
             except Exception as exc:
                 self.actions.append({"time": datetime.now().isoformat(timespec="seconds"), "action": "error", "reason": "loop_exception", "error": str(exc)})
 
-            report = self._write_report(snapshot=snapshot, final=now_et.time() >= dtime(16, 0) or self.args.force_once)
-            if self.args.force_once or now_et.time() >= dtime(16, 0):
+            report = self._write_report(snapshot=snapshot, final=now_et.time() >= session_end or self.args.force_once)
+            if self.args.force_once or now_et.time() >= session_end:
                 return report
             time.sleep(max(int(self.args.interval_seconds), 30))
 
@@ -287,7 +289,7 @@ class UsFutuSimSession:
         return text
 
     def _is_regular_session(self, now_et: datetime) -> bool:
-        return now_et.weekday() < 5 and dtime(9, 30) <= now_et.time() < dtime(16, 0)
+        return is_market_open("us", now_et)
 
 
 def main() -> None:

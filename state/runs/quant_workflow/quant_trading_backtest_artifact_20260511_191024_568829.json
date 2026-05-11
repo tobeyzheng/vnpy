@@ -1,0 +1,136 @@
+{
+  "artifact_type": "quant_trading_backtest",
+  "title": "Quant Workflow Backtest Evidence",
+  "generated_at": "2026-05-11T19:10:24.568722+08:00",
+  "version": "v1",
+  "assumptions": [
+    {
+      "name": "task_type",
+      "value": "simulation",
+      "reason": "Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews."
+    },
+    {
+      "name": "preferred_markets",
+      "value": "us",
+      "reason": "Candidate framework filtering stays aligned with the requested market subset."
+    },
+    {
+      "name": "workflow_mode",
+      "value": "balanced",
+      "reason": "Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning."
+    }
+  ],
+  "knowledge_sections": [],
+  "research_findings": [
+    {
+      "topic": "workflow_backtest_summary",
+      "conclusion": "Collected backtest evidence for 0 observation target(s): 0 with report evidence, 0 with optimization evidence, and 0 still missing local backtest artifacts.",
+      "evidence_level": "low",
+      "source_kind": "local_backtest_artifacts",
+      "confidence": 0.42,
+      "verification_status": "verified",
+      "invalidation_conditions": [],
+      "references": []
+    }
+  ],
+  "research_conclusions": [
+    "Collected backtest evidence for 0 observation target(s): 0 with report evidence, 0 with optimization evidence, and 0 still missing local backtest artifacts."
+  ],
+  "execution_suggestions": [],
+  "risk_prompts": [
+    "No observation target is currently marked as backtest-ready."
+  ],
+  "invalidation_conditions": [
+    "If a candidate loses its trading_level assignment or local report path changes, regenerate the backtest evidence artifact.",
+    "If optimization evidence is stale or missing, do not treat the candidate as fully backtest-ready for stage upgrade."
+  ],
+  "evidence_items": [],
+  "conflicts": [],
+  "candidate_observations": [],
+  "capability_map": [],
+  "capability_gaps": [],
+  "plan_phases": [],
+  "risk_budget": null,
+  "readiness": null,
+  "workflow": null,
+  "rendered_documents": [
+    {
+      "title": "Quant Workflow Backtest Evidence (markdown)",
+      "format": "markdown",
+      "body": "### Quant Workflow Backtest Evidence\n\n- Generated at: 2026-05-11T19:10:24.568745+08:00\n- Version: v1\n- Audience: trading workflow reviewer\n\n### What this note is trying to do\n- Explain the current trading evidence, assumptions, and stage gates in plain language.\n- Separate research conclusions, execution suggestions, and risk prompts so the workflow remains auditable.\n- Show what changed, what remains blocked, and what can be acted on next.\n\n### Review order\n- Understand the current evidence set and risk language before touching execution settings.\n- Review the workflow in order: candidate preparation -> healthcheck -> candidate framework -> backtest -> readiness.\n- Check the active trade universe and understand why each name remains in its current bucket.\n- Verify risk budget and pause rules before any simulation or live-adjacent step.\n\n### Workflow order\n- Run the read-only health check first.\n- Review research findings and evidence levels.\n- Check the candidate buckets and keep only the intended trade-universe names active.\n- Review one backtest or validation summary before any simulation idea.\n- Move to simulation or live readiness only after risk budget and readiness checklist are both clear.\n\n### Current assumptions\n- task_type: simulation — Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews.\n- preferred_markets: us — Candidate framework filtering stays aligned with the requested market subset.\n- workflow_mode: balanced — Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning.\n\n### Knowledge sections\n\n### Research conclusions\n- [low] Collected backtest evidence for 0 observation target(s): 0 with report evidence, 0 with optimization evidence, and 0 still missing local backtest artifacts.\n\n### Common pitfalls\n- Confusing a good story with a tested rule.\n- Looking only at return and ignoring drawdown, turnover, and sample quality.\n- Adding too many correlated names and calling it diversification.\n- Letting an LLM summary replace manual review of evidence and risk controls.\n- No observation target is currently marked as backtest-ready.\n\n### Minimum viable start\n- One market, a focused trade universe, and a stable review habit.\n- A written risk budget with single-position, total-exposure, and pause rules.\n- At least one backtest or validation note with data-quality and cost assumptions recorded.\n- A simulation observation period before any live intent.\n\n### Readiness checkpoints\n- No readiness checklist has been attached yet.\n\n### What changed from the previous plan\n- No previous plan comparison was available for this run.\n\n### Personalization summary\n- No explicit personalization summary was recorded for this artifact.\n\n### Update scope\n- No scoped profile update information was recorded.\n\n### Next actions\n- Review the latest artifact before changing the workflow.\n\n### Local system boundaries\n- Execution-related stages still require explicit confirmation and should default to plan-only mode.\n",
+      "section_count": 10,
+      "version": "v1",
+      "generated_at": "2026-05-11T19:10:24.568745+08:00"
+    },
+    {
+      "title": "Quant Workflow Backtest Evidence (json)",
+      "format": "json",
+      "body": "{\n  \"title\": \"Quant Workflow Backtest Evidence\",\n  \"version\": \"v1\",\n  \"generated_at\": \"2026-05-11T19:10:24.568773+08:00\",\n  \"knowledge_sections\": [],\n  \"research_findings\": [\n    {\n      \"topic\": \"workflow_backtest_summary\",\n      \"conclusion\": \"Collected backtest evidence for 0 observation target(s): 0 with report evidence, 0 with optimization evidence, and 0 still missing local backtest artifacts.\",\n      \"evidence_level\": \"low\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": []\n    }\n  ],\n  \"workflow_order\": [\n    \"Run the read-only health check first.\",\n    \"Review research findings and evidence levels.\",\n    \"Check the candidate buckets and keep only the intended trade-universe names active.\",\n    \"Review one backtest or validation summary before any simulation idea.\",\n    \"Move to simulation or live readiness only after risk budget and readiness checklist are both clear.\"\n  ],\n  \"assumptions\": [\n    \"task_type: simulation — Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews.\",\n    \"preferred_markets: us — Candidate framework filtering stays aligned with the requested market subset.\",\n    \"workflow_mode: balanced — Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning.\"\n  ],\n  \"common_pitfalls\": [\n    \"Confusing a good story with a tested rule.\",\n    \"Looking only at return and ignoring drawdown, turnover, and sample quality.\",\n    \"Adding too many correlated names and calling it diversification.\",\n    \"Letting an LLM summary replace manual review of evidence and risk controls.\",\n    \"No observation target is currently marked as backtest-ready.\"\n  ],\n  \"minimum_viable_start\": [\n    \"One market, a focused trade universe, and a stable review habit.\",\n    \"A written risk budget with single-position, total-exposure, and pause rules.\",\n    \"At least one backtest or validation note with data-quality and cost assumptions recorded.\",\n    \"A simulation observation period before any live intent.\"\n  ],\n  \"readiness\": [\n    \"No readiness checklist has been attached yet.\"\n  ],\n  \"plan_differences\": [\n    \"No previous plan comparison was available for this run.\"\n  ],\n  \"personalization_summary\": [\n    \"No explicit personalization summary was recorded for this artifact.\"\n  ],\n  \"update_scope\": [\n    \"No scoped profile update information was recorded.\"\n  ],\n  \"next_actions\": [\n    \"Review the latest artifact before changing the workflow.\"\n  ],\n  \"local_limits\": [\n    \"Execution-related stages still require explicit confirmation and should default to plan-only mode.\"\n  ]\n}\n",
+      "section_count": 9,
+      "version": "v1",
+      "generated_at": "2026-05-11T19:10:24.568773+08:00"
+    }
+  ],
+  "meta": {
+    "profile": {
+      "capital": null,
+      "hours_per_week": null,
+      "max_drawdown_pct": null,
+      "risk_profile": "balanced",
+      "preferred_market": "us"
+    },
+    "task_type": "simulation",
+    "backtest_results": [],
+    "backtest_summary": {
+      "status": "blocked",
+      "task_type": "simulation",
+      "target_count": 0,
+      "ok_count": 0,
+      "missing_count": 0,
+      "optimized_count": 0,
+      "daily_count": 0,
+      "minute_count": 0,
+      "execution_mode": "vnpy_automated_execution",
+      "executed_count": 0
+    },
+    "backtest_warnings": [
+      "No observation target is currently marked as backtest-ready."
+    ],
+    "preferred_markets": [
+      "us"
+    ],
+    "evidence_mode": "vnpy_automated_execution",
+    "next_step_suggestions": [],
+    "confirmation_requirements": [],
+    "rendered_formats": [
+      "markdown",
+      "json"
+    ],
+    "risk_labels": [
+      "risk_prompts_present"
+    ],
+    "artifact_summary": {
+      "artifact_type": "quant_trading_backtest",
+      "title": "Quant Workflow Backtest Evidence",
+      "generated_at": "2026-05-11T19:10:24.568722+08:00",
+      "version": "v1",
+      "knowledge_section_count": 0,
+      "research_finding_count": 1,
+      "candidate_count": 0,
+      "plan_phase_count": 0,
+      "rendered_document_count": 2,
+      "has_risk_budget": false,
+      "has_readiness": false
+    },
+    "traceability": {
+      "slug": "quant_trading_backtest",
+      "artifact_type": "quant_trading_backtest",
+      "version": "v1",
+      "generated_at": "2026-05-11T19:10:24.568722+08:00",
+      "current_assumption_count": 3,
+      "invalidation_condition_count": 2,
+      "confirmation_requirement_count": 0,
+      "next_step_count": 0
+    }
+  }
+}

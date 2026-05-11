@@ -5,7 +5,7 @@ from typing import Any, Mapping
 
 from services.futu_account.quote_client import FutuQuoteClient
 
-from .candidate_scoring import build_explanation_summary, normalize_score
+from .candidate_scoring import build_explanation_summary, is_generated_candidate_score_source, normalize_score
 from .symbols import normalize_symbol
 
 SUPPORTED_KNOT_RUNTIMES = {"off", "local", "remote", "auto"}
@@ -380,7 +380,7 @@ class CandidateKnotEnrichmentService:
             "parsed": parsed,
         }
         current_source = str(row.get("confidence_source") or "").strip().lower()
-        if not current_source or current_source in {"candidate_score_model", "dynamic_hybrid_candidate_v2", "static_hybrid_candidate_v2"}:
+        if not current_source or is_generated_candidate_score_source(current_source):
             row["confidence_source"] = str(result.get("runtime") or self.source_id)
         if reason and not str(row.get("research_note") or "").strip():
             row["research_note"] = reason

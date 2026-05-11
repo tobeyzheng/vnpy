@@ -7,7 +7,7 @@ from pathlib import Path
 from services.futu_account.quote_client import FutuQuoteClient
 from services.strategy.candidate_enrichment import CandidateKnotEnrichmentService, CandidateMarketDataService
 from services.strategy.candidate_generation import HybridCandidateGenerationService
-from services.strategy.candidate_scoring import CandidateScoringService
+from services.strategy.candidate_scoring import CandidateScoringService, compute_candidate_liquidity_score
 from vnpy_llm.base import beijing_now_isoformat
 
 
@@ -75,13 +75,13 @@ def test_candidate_scoring_service_scores_dynamic_candidate_with_consensus_field
     )
 
     assert row["candidate_type"] == "dynamic"
-    assert row["selection_policy"] == "dynamic_hybrid_market_complete_v2"
+    assert row["selection_policy"] == "dynamic_hybrid_market_complete_v3"
     assert row["raw_score"] > 0.7
     assert row["consensus_score"] > 0.6
     assert "strategy_tags" in row and row["strategy_tags"]
     assert "source_breakdown" in row and "classic" in row["source_breakdown"]
     assert row["signals"][-1]["category"] == "candidate_score"
-    assert row["scoring"]["model_id"] == "dynamic_hybrid_candidate_v2"
+    assert row["scoring"]["model_id"] == "dynamic_hybrid_candidate_v3"
 
 
 def test_candidate_market_data_service_attaches_snapshot_aliases_and_signal():
@@ -196,7 +196,7 @@ def test_hybrid_candidate_generation_service_evaluates_single_static_candidate()
     )
 
     assert row["candidate_type"] == "static"
-    assert row["selection_policy"] == "stable_baseline_hybrid_v2"
+    assert row["selection_policy"] == "stable_baseline_hybrid_v3"
     assert row["raw_score"] > 0.55
     assert row["risk_level"] in {"low", "medium", "high"}
     assert row["explanation_ready"] is True
@@ -230,3 +230,30 @@ def test_beijing_now_isoformat_returns_shanghai_offset():
 
     assert ts.endswith("+08:00")
     assert datetime.fromisoformat(ts).utcoffset().total_seconds() == 8 * 3600
+
+
+def test_candidate_liquidity_score_prefers_absolute_turnover_for_large_caps():
+    score = compute_candidate_liquidity_score(
+        {
+            "symbol": "NVDA.US",
+            "market": "us",
+            "turnover_ratio": 0.28,
+            "avg_daily_turnover": 8_500_000_000,
+        }
+    )
+
+    assert score >= 0.7
+
+
+def test_candidate_liquidity_score_penalizes_low_liquidity_language_without_collapsing_large_turnover_names():
+    score = compute_candidate_liquidity_score(
+        {
+            "symbol": "XYZ.US",
+            "market": "us",
+            "turnover_ratio": 0.32,
+            "avg_daily_turnover": 1_200_000_000,
+            "risk": "wide spread and low liquidity in the opening session",
+        }
+    )
+
+    assert 0.35 <= score < 0.75

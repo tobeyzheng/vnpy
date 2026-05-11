@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any, Iterable
 
+from services.strategy.candidate_scoring import compute_candidate_liquidity_score
+
 from .models import CandidateObservation
 
 
@@ -480,23 +482,7 @@ class TradingCandidateFramework:
         return round(sum(1 for item in notes if item) / len(notes), 2)
 
     def _liquidity_score(self, row: dict[str, Any]) -> float:
-        explicit = self._numeric(row.get("liquidity_score"))
-        if explicit is not None:
-            return max(0.0, min(explicit, 1.0))
-        turnover = self._numeric((row.get("quote") or {}).get("turnover")) or self._numeric(row.get("turnover"))
-        if turnover is None:
-            return 0.5 if not self._mentions_low_liquidity(row) else 0.25
-        if turnover >= 200_000_000:
-            return 0.85
-        if turnover >= 100_000_000:
-            return 0.72
-        if turnover >= 50_000_000:
-            return 0.62
-        if turnover >= 20_000_000:
-            return 0.50
-        if turnover >= 5_000_000:
-            return 0.38
-        return 0.24
+        return compute_candidate_liquidity_score(row)
 
     def _risk_penalty(self, row: dict[str, Any]) -> float:
         explicit = self._numeric(row.get("risk_penalty"))

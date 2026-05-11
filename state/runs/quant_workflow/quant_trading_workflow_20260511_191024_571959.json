@@ -1,0 +1,380 @@
+{
+  "workflow_name": "quant_trading",
+  "mode": "plan",
+  "started_at": "2026-05-11T19:10:24.533779+08:00",
+  "status": "blocked",
+  "steps": [
+    {
+      "step": "candidate_prepare",
+      "status": "ok",
+      "message": "Prepared normalized candidate inputs before workflow evaluation.",
+      "outputs": [
+        "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "market_coverage": [
+          "a_share",
+          "hong_kong",
+          "us"
+        ],
+        "written_targets": [
+          "dynamic",
+          "static"
+        ],
+        "include_market_data": false,
+        "knot_runtime": "auto",
+        "generated_at": "2026-05-11T19:10:24.533819+08:00",
+        "missing_required_field_counts": {}
+      }
+    },
+    {
+      "step": "healthcheck",
+      "status": "warning",
+      "message": "Unified healthcheck completed with warnings; downstream stages may continue in evidence-first mode.",
+      "outputs": [
+        "/projects/vnpy/state/runs/healthcheck.json",
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+        "/projects/vnpy/state/runs/candidate_inputs.json",
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json | /projects/vnpy/state/runs/candidate_inputs.json",
+        "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_report.json",
+        "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_report.json",
+        "/projects/vnpy/state/runs/hk_futu_sim_session_report.json",
+        "/projects/vnpy/state/runs/reports/preflight_20260509.json"
+      ],
+      "warnings": [
+        "No simulation reconciliation artifact was found yet; review the first simulation run before upgrading further."
+      ],
+      "meta": {
+        "requires_confirmation": false,
+        "task_type": "simulation",
+        "checks": {
+          "health_snapshot": {
+            "path": "/projects/vnpy/state/runs/healthcheck.json",
+            "exists": true,
+            "required": false,
+            "note": "Cached or active environment health snapshot."
+          },
+          "candidate_inputs_dynamic": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+            "exists": true,
+            "required": false,
+            "note": "Prepared dynamic candidate input artifact."
+          },
+          "candidate_inputs_static": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.json",
+            "exists": true,
+            "required": false,
+            "note": "Prepared static candidate input artifact."
+          },
+          "candidate_inputs_any": {
+            "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json | /projects/vnpy/state/runs/candidate_inputs.json",
+            "exists": true,
+            "required": true,
+            "note": "Any local candidate input artifact required by candidate/backtest/readiness stages."
+          },
+          "backtest_report": {
+            "path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_backtest_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Local historical backtest report evidence."
+          },
+          "optimization_report": {
+            "path": "/projects/vnpy/state/runs/classic_multifactor/vnpy_cta_sweep_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Local optimization sweep report used to recover best parameters."
+          },
+          "sim_session_report": {
+            "path": "/projects/vnpy/state/runs/hk_futu_sim_session_report.json",
+            "exists": true,
+            "required": false,
+            "note": "Latest simulation session report if simulation evidence has already been collected."
+          },
+          "sim_reconciliation": {
+            "path": "/projects/vnpy/state/runs/futu_sim_position_reconcile.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest simulation reconciliation artifact."
+          },
+          "simulation_preflight": {
+            "path": "/projects/vnpy/state/runs/reports/preflight_20260509.json",
+            "exists": true,
+            "required": false,
+            "note": "Latest simulation preflight pass/fail evidence."
+          },
+          "simulation_diff": {
+            "path": "/projects/vnpy/state/runs/reports/dual_run_diff_<date>.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest simulation dual-run or reconciliation diff evidence."
+          },
+          "live_report": {
+            "path": "/projects/vnpy/state/runs/hk_live_task_report.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest live-task report or audit schema evidence."
+          },
+          "live_reconciliation": {
+            "path": "/projects/vnpy/state/runs/futu_live_position_reconcile.json",
+            "exists": false,
+            "required": false,
+            "note": "Latest live reconciliation evidence."
+          }
+        },
+        "blocking_reasons": [],
+        "health_status": "ok",
+        "health_source": "cached_healthcheck"
+      }
+    },
+    {
+      "step": "candidate_framework",
+      "status": "ok",
+      "message": "Selected observation targets and assigned daily/minute readiness levels from local candidate inputs.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/quant_trading_candidate_framework_artifact_20260511_191024_567088.json"
+      ],
+      "warnings": [],
+      "meta": {
+        "requires_confirmation": false,
+        "summary": {
+          "counts": {
+            "priority_trade": 0,
+            "active_watch": 0,
+            "research_queue": 0,
+            "exclude": 3
+          },
+          "legacy_counts": {
+            "beginner_watchlist": 0,
+            "observe_only": 0,
+            "validate_only": 3
+          },
+          "trading_level_counts": {
+            "daily": 0,
+            "minute": 0,
+            "needs_review": 3
+          },
+          "hard_block_count": 3,
+          "manual_review_required_count": 3,
+          "backtest_ready_count": 0,
+          "rules": {
+            "stock_pool_scope": [
+              "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+              "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+            ],
+            "liquidity_rules": [
+              "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+              "Require stronger liquidity support for minute-level candidates than daily candidates."
+            ],
+            "cadence_rules": [
+              "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+              "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+              "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+            ],
+            "risk_rules": [
+              "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+              "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+            ],
+            "bucket_rules": [
+              "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+              "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+              "research_queue is for incomplete or lower-ranked names that still merit structured review."
+            ]
+          },
+          "llm_research_pending_count": 0,
+          "low_data_quality_count": 0
+        },
+        "backtest_targets": [
+          {
+            "symbol": "NVDA.US",
+            "market": "us",
+            "selected_as": "validate_only",
+            "bucket": "exclude",
+            "trading_level": "needs_review",
+            "backtest_ready": false,
+            "manual_review_required": true,
+            "hard_risk_flags": [
+              "thin_liquidity"
+            ],
+            "soft_risk_flags": [],
+            "backtest_target_eligible": false,
+            "backtest_target_reason": "Trading cadence is still pending review.",
+            "trading_level_reasons": [
+              "Liquidity comfort is weak, so cadence should stay pending until spreads and turnover are reviewed."
+            ]
+          },
+          {
+            "symbol": "AVGO.US",
+            "market": "us",
+            "selected_as": "validate_only",
+            "bucket": "exclude",
+            "trading_level": "needs_review",
+            "backtest_ready": false,
+            "manual_review_required": true,
+            "hard_risk_flags": [
+              "thin_liquidity"
+            ],
+            "soft_risk_flags": [],
+            "backtest_target_eligible": false,
+            "backtest_target_reason": "Trading cadence is still pending review.",
+            "trading_level_reasons": [
+              "Liquidity comfort is weak, so cadence should stay pending until spreads and turnover are reviewed."
+            ]
+          },
+          {
+            "symbol": "MSFT.US",
+            "market": "us",
+            "selected_as": "validate_only",
+            "bucket": "exclude",
+            "trading_level": "needs_review",
+            "backtest_ready": false,
+            "manual_review_required": true,
+            "hard_risk_flags": [
+              "thin_liquidity"
+            ],
+            "soft_risk_flags": [],
+            "backtest_target_eligible": false,
+            "backtest_target_reason": "Trading cadence is still pending review.",
+            "trading_level_reasons": [
+              "Liquidity comfort is weak, so cadence should stay pending until spreads and turnover are reviewed."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": "backtest",
+      "status": "blocked",
+      "message": "Collected historical backtest and optimization evidence for the observation targets.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/quant_trading_backtest_artifact_20260511_191024_568829.json"
+      ],
+      "warnings": [
+        "No observation target is currently marked as backtest-ready."
+      ],
+      "meta": {
+        "requires_confirmation": false,
+        "summary": {
+          "status": "blocked",
+          "task_type": "simulation",
+          "target_count": 0,
+          "ok_count": 0,
+          "missing_count": 0,
+          "optimized_count": 0,
+          "daily_count": 0,
+          "minute_count": 0,
+          "execution_mode": "vnpy_automated_execution",
+          "executed_count": 0
+        },
+        "results": []
+      }
+    },
+    {
+      "step": "readiness",
+      "status": "blocked",
+      "message": "Evaluated whether the current health, candidate, and backtest evidence is sufficient for the requested next stage.",
+      "outputs": [
+        "/projects/vnpy/state/runs/quant_workflow/quant_trading_readiness_artifact_20260511_191024_570233.json"
+      ],
+      "warnings": [
+        "At least one observation target must survive candidate framework filtering.",
+        "Every promoted observation target should resolve to daily or minute cadence before readiness can pass.",
+        "Readiness requires at least one local historical backtest evidence record for the promoted targets.",
+        "Optimization evidence should be present so the workflow can track best parameters for each promoted target.",
+        "Backtest evidence should expose both sample period and performance metrics before readiness can pass."
+      ],
+      "meta": {
+        "requires_confirmation": false,
+        "task_type": "simulation",
+        "failed_items": [
+          "candidate_targets_present",
+          "trading_level_assignment",
+          "backtest_evidence",
+          "optimization_evidence",
+          "backtest_metrics_traceable"
+        ],
+        "next_step_suggestions": [
+          "Refresh candidate inputs and rerun candidate framework selection.",
+          "Keep cadence=needs_review symbols in observation mode until liquidity, signal, and review evidence improves.",
+          "Generate or place the required local backtest report before stage upgrade.",
+          "Attach a sweep or optimization artifact for every promoted symbol.",
+          "Regenerate or standardize the local backtest reports so period and metrics are complete.",
+          "Resolve the failed readiness items before promoting the workflow to the next stage."
+        ],
+        "simulation_acceptance": {
+          "required_days": 40,
+          "passed_days": 0,
+          "history_points": 1,
+          "latest_preflight_passed": false,
+          "latest_diff_passed": false,
+          "latest_preflight_path": "/projects/vnpy/state/runs/reports/preflight_20260509.json",
+          "latest_report_path": ""
+        },
+        "live_evidence": {
+          "report_schema_ready": false,
+          "approval_switches_documented": false,
+          "reconciliation_recent": false,
+          "risk_guard_auditable": false,
+          "report_path": "",
+          "reconciliation_path": ""
+        }
+      }
+    }
+  ],
+  "outputs": [
+    "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+    "/projects/vnpy/state/runs/quant_workflow/quant_trading_candidate_framework_artifact_20260511_191024_567088.json",
+    "/projects/vnpy/state/runs/quant_workflow/quant_trading_backtest_artifact_20260511_191024_568829.json",
+    "/projects/vnpy/state/runs/quant_workflow/quant_trading_readiness_artifact_20260511_191024_570233.json"
+  ],
+  "warnings": [
+    "No simulation reconciliation artifact was found yet; review the first simulation run before upgrading further.",
+    "No observation target is currently marked as backtest-ready.",
+    "At least one observation target must survive candidate framework filtering.",
+    "Every promoted observation target should resolve to daily or minute cadence before readiness can pass.",
+    "Readiness requires at least one local historical backtest evidence record for the promoted targets.",
+    "Optimization evidence should be present so the workflow can track best parameters for each promoted target.",
+    "Backtest evidence should expose both sample period and performance metrics before readiness can pass."
+  ],
+  "assumptions": [
+    {
+      "name": "task_type",
+      "value": "simulation",
+      "reason": "Healthcheck and readiness evidence requirements differ for simulation and live-oriented reviews."
+    },
+    {
+      "name": "preferred_markets",
+      "value": "us",
+      "reason": "Candidate framework filtering stays aligned with the requested market subset."
+    },
+    {
+      "name": "workflow_mode",
+      "value": "balanced",
+      "reason": "Risk profile is retained as user context even though the workflow now focuses on evidence gathering instead of personal planning."
+    }
+  ],
+  "workflow_summary": {
+    "step_count": 5,
+    "output_count": 4,
+    "warning_count": 7,
+    "blocked_steps": [
+      "backtest",
+      "readiness"
+    ],
+    "confirmation_required_steps": [],
+    "warning_steps": [
+      "healthcheck",
+      "backtest",
+      "readiness"
+    ]
+  },
+  "traceability": {
+    "slug": "quant_trading",
+    "workflow_name": "quant_trading",
+    "mode": "plan",
+    "started_at": "2026-05-11T19:10:24.533779+08:00",
+    "status": "blocked",
+    "assumption_count": 3
+  }
+}

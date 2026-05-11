@@ -202,19 +202,19 @@
       ]
     },
     "quant_trading_candidate_framework": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_candidate_framework_artifact_20260511_095910_122952.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_candidate_framework_artifact_20260511_194121_742564.json",
       "artifact_type": "trading_candidate_framework",
       "title": "Trading Candidate Framework",
-      "generated_at": "2026-05-11T09:59:10.121719+08:00",
+      "generated_at": "2026-05-11T19:41:21.741698+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "trading_candidate_framework",
         "title": "Trading Candidate Framework",
-        "generated_at": "2026-05-11T09:59:10.121719+08:00",
+        "generated_at": "2026-05-11T19:41:21.741698+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
-        "research_finding_count": 2,
-        "candidate_count": 5,
+        "research_finding_count": 1,
+        "candidate_count": 3,
         "plan_phase_count": 0,
         "rendered_document_count": 2,
         "has_risk_budget": false,
@@ -224,30 +224,30 @@
         "slug": "quant_trading_candidate_framework",
         "artifact_type": "trading_candidate_framework",
         "version": "v1",
-        "generated_at": "2026-05-11T09:59:10.121719+08:00",
+        "generated_at": "2026-05-11T19:41:21.741698+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 3,
         "confirmation_requirement_count": 0,
-        "next_step_count": 9
+        "next_step_count": 5
       },
       "risk_labels": [
         "risk_prompts_present"
       ]
     },
     "quant_trading_backtest": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_backtest_artifact_20260511_095936_848586.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_backtest_artifact_20260511_191024_568829.json",
       "artifact_type": "quant_trading_backtest",
       "title": "Quant Workflow Backtest Evidence",
-      "generated_at": "2026-05-11T09:59:36.848346+08:00",
+      "generated_at": "2026-05-11T19:10:24.568722+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "quant_trading_backtest",
         "title": "Quant Workflow Backtest Evidence",
-        "generated_at": "2026-05-11T09:59:36.848346+08:00",
+        "generated_at": "2026-05-11T19:10:24.568722+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
-        "research_finding_count": 6,
-        "candidate_count": 5,
+        "research_finding_count": 1,
+        "candidate_count": 0,
         "plan_phase_count": 0,
         "rendered_document_count": 2,
         "has_risk_budget": false,
@@ -257,28 +257,30 @@
         "slug": "quant_trading_backtest",
         "artifact_type": "quant_trading_backtest",
         "version": "v1",
-        "generated_at": "2026-05-11T09:59:36.848346+08:00",
+        "generated_at": "2026-05-11T19:10:24.568722+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 2,
         "confirmation_requirement_count": 0,
-        "next_step_count": 5
+        "next_step_count": 0
       },
-      "risk_labels": []
+      "risk_labels": [
+        "risk_prompts_present"
+      ]
     },
     "quant_trading_readiness": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_readiness_artifact_20260511_095936_851568.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_readiness_artifact_20260511_191024_570233.json",
       "artifact_type": "quant_trading_readiness",
       "title": "Quant Workflow Readiness (simulation)",
-      "generated_at": "2026-05-11T09:59:36.851414+08:00",
+      "generated_at": "2026-05-11T19:10:24.570102+08:00",
       "version": "v1",
       "artifact_summary": {
         "artifact_type": "quant_trading_readiness",
         "title": "Quant Workflow Readiness (simulation)",
-        "generated_at": "2026-05-11T09:59:36.851414+08:00",
+        "generated_at": "2026-05-11T19:10:24.570102+08:00",
         "version": "v1",
         "knowledge_section_count": 0,
         "research_finding_count": 1,
-        "candidate_count": 5,
+        "candidate_count": 3,
         "plan_phase_count": 0,
         "rendered_document_count": 2,
         "has_risk_budget": false,
@@ -288,13 +290,16 @@
         "slug": "quant_trading_readiness",
         "artifact_type": "quant_trading_readiness",
         "version": "v1",
-        "generated_at": "2026-05-11T09:59:36.851414+08:00",
+        "generated_at": "2026-05-11T19:10:24.570102+08:00",
         "current_assumption_count": 3,
         "invalidation_condition_count": 2,
         "confirmation_requirement_count": 0,
-        "next_step_count": 1
+        "next_step_count": 7
       },
-      "risk_labels": []
+      "risk_labels": [
+        "risk_prompts_present",
+        "readiness_blocked"
+      ]
     }
   },
   "workflow_reports": {
@@ -327,30 +332,35 @@
       }
     },
     "quant_trading": {
-      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_workflow_20260511_095936_853631.json",
+      "path": "/projects/vnpy/state/runs/quant_workflow/quant_trading_workflow_20260511_191024_571959.json",
       "workflow_name": "quant_trading",
       "mode": "plan",
-      "started_at": "2026-05-11T09:59:09.901886+08:00",
-      "status": "warning",
+      "started_at": "2026-05-11T19:10:24.533779+08:00",
+      "status": "blocked",
       "workflow_summary": {
         "step_count": 5,
         "output_count": 4,
-        "warning_count": 1,
-        "blocked_steps": [],
+        "warning_count": 7,
+        "blocked_steps": [
+          "backtest",
+          "readiness"
+        ],
         "confirmation_required_steps": [],
         "warning_steps": [
-          "healthcheck"
+          "healthcheck",
+          "backtest",
+          "readiness"
         ]
       },
       "traceability": {
         "slug": "quant_trading",
         "workflow_name": "quant_trading",
         "mode": "plan",
-        "started_at": "2026-05-11T09:59:09.901886+08:00",
-        "status": "warning",
+        "started_at": "2026-05-11T19:10:24.533779+08:00",
+        "status": "blocked",
         "assumption_count": 3
       }
     }
   },
-  "updated_at": "2026-05-11T09:59:36.855091+08:00"
+  "updated_at": "2026-05-11T19:41:21.743810+08:00"
 }

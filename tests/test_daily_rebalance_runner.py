@@ -62,7 +62,7 @@ def test_intraday_config_rejected_by_daily_runner():
 
 
 def test_daily_runner_requires_rebalance_time():
-    # Config without rebalance_time, CLI also missing → should raise.
+    # Config without rebalance_time, CLI also missing → should fall back to the market default.
     with tempfile.TemporaryDirectory() as td:
         bad_cfg = Path(td) / "no_rebalance.json"
         bad_cfg.write_text(json.dumps({
@@ -72,12 +72,21 @@ def test_daily_runner_requires_rebalance_time():
             "setting": {"capital": 5000.0},
         }), encoding="utf-8")
         args = _make_args({"config": str(bad_cfg), "state_root": td})
-        try:
-            DailyRebalanceRunner(args)
-        except ValueError as exc:
-            assert "rebalance_time" in str(exc)
-            return
-        raise AssertionError("missing rebalance_time not rejected")
+        runner = DailyRebalanceRunner(args)
+        assert runner.rebalance_time_local.strftime("%H:%M") == "15:55"
+
+
+def test_daily_runner_derives_hk_market_default_rebalance_time():
+    cfg = REPO_ROOT / "configs" / "classic_multifactor" / "09992_hk_d01.json"
+    with tempfile.TemporaryDirectory() as td:
+        custom_cfg = Path(td) / "hk_daily_no_rebalance.json"
+        payload = json.loads(cfg.read_text(encoding="utf-8"))
+        payload.pop("rebalance_time", None)
+        custom_cfg.write_text(json.dumps(payload), encoding="utf-8")
+        args = _make_args({"config": str(custom_cfg), "state_root": td})
+        runner = DailyRebalanceRunner(args)
+        assert runner.rebalance_time_local.strftime("%H:%M") == "15:55"
+        assert runner.session_tz == "Asia/Hong_Kong"
 
 
 def test_daily_runner_hard_switch_gating():

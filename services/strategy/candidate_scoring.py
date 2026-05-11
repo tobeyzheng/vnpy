@@ -34,11 +34,26 @@ MEDIUM_RISK_KEYWORDS = (
     "macro",
 )
 VALUATION_HOT_KEYWORDS = ("估值偏高", "估值过热", "valuation hot", "overvalued", "multiple expansion")
+LOW_LIQUIDITY_KEYWORDS = (
+    "illiquid",
+    "low liquidity",
+    "wide spread",
+    "thin",
+    "流动性不足",
+    "缺少流动性",
+)
 SIGNAL_SOURCE_BUCKETS: dict[str, tuple[str, ...]] = {
     "classic": ("classic", "multifactor", "trend", "technical", "raw_score", "quality", "prepared_signal_pack"),
     "knot_agent": ("knot", "agent", "llm"),
     "event": ("event", "news", "catalyst", "earnings"),
     "research": ("research", "analysis", "report"),
+}
+GENERATED_CANDIDATE_SCORE_SOURCES = {
+    "candidate_score_model",
+    "dynamic_hybrid_candidate_v2",
+    "static_hybrid_candidate_v2",
+    "dynamic_hybrid_candidate_v3",
+    "static_hybrid_candidate_v3",
 }
 
 
@@ -115,6 +130,10 @@ def normalize_score(value: Any, *, default: float = 0.5) -> float:
     except (TypeError, ValueError):
         return round(default, 4)
     return round(max(0.0, min(1.0, score)), 4)
+
+
+def is_generated_candidate_score_source(source: Any) -> bool:
+    return str(source or "").strip().lower() in GENERATED_CANDIDATE_SCORE_SOURCES
 
 
 def infer_theme_bucket(row: Mapping[str, Any]) -> str:
@@ -233,8 +252,8 @@ class WeightedCandidateScoreModel:
 
 class DynamicCandidateScoreModel(WeightedCandidateScoreModel):
     mode = "dynamic"
-    model_id = "dynamic_hybrid_candidate_v2"
-    selection_policy = "dynamic_hybrid_market_complete_v2"
+    model_id = "dynamic_hybrid_candidate_v3"
+    selection_policy = "dynamic_hybrid_market_complete_v3"
     component_specs = (
         ScoreComponentSpec("trend_score", 0.22, "Trend"),
         ScoreComponentSpec("relative_strength_score", 0.16, "Relative Strength"),
@@ -283,8 +302,8 @@ class DynamicCandidateScoreModel(WeightedCandidateScoreModel):
 
 class StaticCandidateScoreModel(WeightedCandidateScoreModel):
     mode = "static"
-    model_id = "static_hybrid_candidate_v2"
-    selection_policy = "stable_baseline_hybrid_v2"
+    model_id = "static_hybrid_candidate_v3"
+    selection_policy = "stable_baseline_hybrid_v3"
     component_specs = (
         ScoreComponentSpec("quality_score", 0.24, "Quality"),
         ScoreComponentSpec("stability_score", 0.18, "Stability"),
@@ -564,28 +583,144 @@ def _relative_strength_score(row: Mapping[str, Any], *, fallback: float) -> floa
     return normalize_score(fallback, default=0.5)
 
 
-def _flow_score(row: Mapping[str, Any]) -> float:
-    direct = _nested_value(row, "flow_score", "capital_score")
+def _generated_score_source(row: Mapping[str, Any]) -> str:
+    return str(_nested_value(row, "scoring.model_id", "confidence_source") or "").strip().lower()
+
+
+def _trusted_override(row: Mapping[str, Any], *paths: str) -> Any:
+    value = _nested_value(row, *paths)
+    if value is None:
+        return None
+    if is_generated_candidate_score_source(_generated_score_source(row)):
+        return None
+    return value
+
+
+def _weighted_score(
+    components: Iterable[tuple[float, float | None]],
+    *,
+    default: float = 0.5,
+    missing_default: float = 0.5,
+) -> float:
+    parts = list(components)
+    if not parts or all(score is None for _, score in parts):
+        return normalize_score(default, default=default)
+    total_weight = sum(weight for weight, _ in parts) or 1.0
+    blended = sum(weight * (score if score is not None else missing_default) for weight, score in parts) / total_weight
+    return normalize_score(blended, default=default)
+
+
+def _absolute_turnover_score(row: Mapping[str, Any]) -> float | None:
+    turnover = _as_float(_nested_value(row, "avg_daily_turnover", "avg_daily_value", "quote.turnover", "turnover"))
+    if turnover is None:
+        return None
+    if turnover >= 10_000_000_000:
+        return 0.98
+    if turnover >= 5_000_000_000:
+        return 0.94
+    if turnover >= 2_000_000_000:
+        return 0.88
+    if turnover >= 1_000_000_000:
+        return 0.80
+    if turnover >= 300_000_000:
+        return 0.68
+    if turnover >= 100_000_000:
+        return 0.58
+    if turnover >= 30_000_000:
+        return 0.46
+    if turnover >= 10_000_000:
+        return 0.34
+    if turnover >= 5_000_000:
+        return 0.26
+    return 0.18
+
+
+def _turnover_ratio_score(row: Mapping[str, Any]) -> float | None:
+    turnover_ratio = _as_float(_nested_value(row, "turnover_ratio", "quote.turnover_ratio"))
+    if turnover_ratio is None:
+        return None
+    bounded = max(0.0, min(turnover_ratio, 1.5))
+    return normalize_score(0.18 + (bounded / 1.5) ** 0.5 * 0.74, default=0.5)
+
+
+def _spread_bps(row: Mapping[str, Any]) -> float | None:
+    direct = _as_float(_trusted_override(row, "spread_bps", "relative_spread_bps", "bid_ask_spread_bps"))
+    if direct is not None:
+        return max(0.0, direct)
+    relative = _as_float(_trusted_override(row, "relative_spread", "bid_ask_spread"))
+    if relative is None:
+        return None
+    relative = abs(relative)
+    if relative <= 0.01:
+        return relative * 10_000.0
+    if relative <= 1.0:
+        return relative * 100.0
+    return relative
+
+
+def _spread_score(row: Mapping[str, Any]) -> float | None:
+    direct = _trusted_override(row, "spread_score")
     if direct is not None:
         return normalize_score(direct, default=0.5)
-    turnover_ratio = _as_float(_nested_value(row, "turnover_ratio", "quote.turnover_ratio"))
-    if turnover_ratio is not None:
-        return normalize_score(turnover_ratio / 2.0, default=0.5)
-    turnover = _as_float(_nested_value(row, "avg_daily_turnover", "avg_daily_value", "quote.turnover", "turnover"))
-    if turnover is not None:
-        if turnover >= 5_000_000_000:
-            return 0.95
-        if turnover >= 2_000_000_000:
-            return 0.85
-        if turnover >= 1_000_000_000:
-            return 0.75
-        if turnover >= 300_000_000:
-            return 0.62
-        if turnover >= 100_000_000:
-            return 0.5
-        return 0.32
-    signal_score = _best_signal_score(row, categories=("flow", "liquidity"), sources=("event", "classic"))
-    return normalize_score(signal_score, default=0.5)
+    spread_bps = _spread_bps(row)
+    if spread_bps is None:
+        return None
+    if spread_bps <= 5:
+        return 0.95
+    if spread_bps <= 10:
+        return 0.85
+    if spread_bps <= 20:
+        return 0.72
+    if spread_bps <= 35:
+        return 0.58
+    if spread_bps <= 50:
+        return 0.45
+    if spread_bps <= 100:
+        return 0.25
+    return 0.12
+
+
+def _depth_score(row: Mapping[str, Any]) -> float | None:
+    direct = _trusted_override(row, "depth_score", "order_book_depth_score", "liquidity_depth_score")
+    if direct is not None:
+        return normalize_score(direct, default=0.5)
+    depth = _as_float(_trusted_override(row, "order_book_depth", "quote.order_book_depth"))
+    if depth is None:
+        return None
+    if depth <= 1.0:
+        return normalize_score(depth, default=0.5)
+    if depth >= 50_000_000:
+        return 0.92
+    if depth >= 10_000_000:
+        return 0.78
+    if depth >= 1_000_000:
+        return 0.64
+    if depth >= 100_000:
+        return 0.48
+    return 0.32
+
+
+def _mentions_low_liquidity(row: Mapping[str, Any]) -> bool:
+    text = _row_text(row).lower()
+    return any(keyword.lower() in text for keyword in LOW_LIQUIDITY_KEYWORDS)
+
+
+def _flow_score(row: Mapping[str, Any]) -> float:
+    direct = _trusted_override(row, "flow_score", "capital_score")
+    if direct is not None:
+        return normalize_score(direct, default=0.5)
+    participation = _turnover_ratio_score(row)
+    scale = _absolute_turnover_score(row)
+    signal_score = _best_signal_score(row, categories=("flow", "liquidity"), sources=("event", "classic", "market_data"))
+    return _weighted_score(
+        (
+            (0.50, participation),
+            (0.35, scale),
+            (0.15, signal_score),
+        ),
+        default=0.5,
+        missing_default=0.5,
+    )
 
 
 def _event_score(row: Mapping[str, Any]) -> float:
@@ -626,11 +761,34 @@ def _quality_score(row: Mapping[str, Any]) -> float:
     return normalize_score(row.get("max_signal_score"), default=0.55)
 
 
+def compute_candidate_liquidity_score(row: Mapping[str, Any]) -> float:
+    return _liquidity_score(row)
+
+
 def _liquidity_score(row: Mapping[str, Any]) -> float:
-    direct = _nested_value(row, "liquidity_score")
+    manual_override = _nested_value(row, "liquidity_override_score", "liquidity_score_override", "manual_liquidity_score")
+    if manual_override is not None:
+        return normalize_score(manual_override, default=0.5)
+    direct = _trusted_override(row, "liquidity_score", "liquidity")
     if direct is not None:
         return normalize_score(direct, default=0.5)
-    return _flow_score(row)
+    absolute_turnover = _absolute_turnover_score(row)
+    turnover_ratio = _turnover_ratio_score(row)
+    spread = _spread_score(row)
+    depth = _depth_score(row)
+    liquidity = _weighted_score(
+        (
+            (0.55, absolute_turnover),
+            (0.25, turnover_ratio),
+            (0.12, spread),
+            (0.08, depth),
+        ),
+        default=0.5,
+        missing_default=0.5,
+    )
+    if _mentions_low_liquidity(row):
+        liquidity = normalize_score(liquidity - 0.18, default=0.5)
+    return liquidity
 
 
 def _volatility_score(row: Mapping[str, Any]) -> float:

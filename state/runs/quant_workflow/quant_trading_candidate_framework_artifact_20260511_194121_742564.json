@@ -1,0 +1,554 @@
+{
+  "artifact_type": "trading_candidate_framework",
+  "title": "Trading Candidate Framework",
+  "generated_at": "2026-05-11T19:41:21.741698+08:00",
+  "version": "v1",
+  "assumptions": [
+    {
+      "name": "candidate_scope",
+      "value": "us",
+      "reason": "Keep the active review universe aligned with the preferred market set while the trading routine stabilizes."
+    },
+    {
+      "name": "selection_method",
+      "value": "rules_plus_structured_review_overlay",
+      "reason": "Primary buckets come from trading rules; research notes and explanation quality only affect manual review priority."
+    },
+    {
+      "name": "research_attachment",
+      "value": "missing",
+      "reason": "The candidate framework is stronger when it can reuse the same evidence and risk language as the research artifact."
+    }
+  ],
+  "knowledge_sections": [],
+  "research_findings": [
+    {
+      "topic": "candidate_framework",
+      "conclusion": "The current trading candidate framework produced 3 priority-trade names, 0 active-watch names, 0 research-queue names, and 0 excluded names.",
+      "evidence_level": "mid",
+      "source_kind": "local_candidate_rules",
+      "confidence": 0.78,
+      "verification_status": "verified",
+      "invalidation_conditions": [
+        "If candidate inputs or risk notes change materially, regenerate the candidate framework before using it in planning."
+      ],
+      "references": []
+    }
+  ],
+  "research_conclusions": [
+    "The current trading candidate framework produced 3 priority-trade names, 0 active-watch names, 0 research-queue names, and 0 excluded names."
+  ],
+  "execution_suggestions": [
+    "Review NVDA.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.",
+    "Review AVGO.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.",
+    "Review MSFT.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.",
+    "Keep the candidate review universe aligned with the preferred markets until the routine is stable.",
+    "Attach the latest research artifact so candidate notes can reuse the same evidence language."
+  ],
+  "risk_prompts": [
+    "高位波动放大",
+    "Minute-level candidates need tighter execution and liquidity discipline than daily candidates.",
+    "高位滞涨后或先消化",
+    "防守风格下弹性或偏弱"
+  ],
+  "invalidation_conditions": [
+    "If the local candidate feed no longer contains stable score, rationale, or signal data, regenerate the candidate framework before reuse.",
+    "If hard risk flags such as thin liquidity or unsupported execution remain unresolved, keep the symbol outside active trading buckets.",
+    "If liquidity or volatility checks are stale, do not promote the symbol toward simulation planning."
+  ],
+  "evidence_items": [],
+  "conflicts": [],
+  "candidate_observations": [
+    {
+      "symbol": "NVDA.US",
+      "market": "us",
+      "selected_as": "beginner_watchlist",
+      "score": 84.07,
+      "reasons": [
+        "趋势、事件催化与龙头属性共振",
+        "AI龙头趋势完整",
+        "snapshot change 1.75%; turnover 29406902542",
+        "未满足明确开仓模式，先观察。",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: general"
+      ],
+      "primary_risks": [
+        "高位波动放大",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity, spread, and turnover assumptions with a fresh quote snapshot before stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "bucket": "priority_trade",
+      "trading_level": "minute",
+      "hard_risk_flags": [],
+      "soft_risk_flags": [],
+      "research_confidence": 0.85,
+      "liquidity_score": 0.7995,
+      "risk_penalty": 0.3575,
+      "raw_score": 0.7547,
+      "rank_score": 84.07,
+      "backtest_ready": true,
+      "manual_review_required": false,
+      "meta": {
+        "theme": "general",
+        "action_hint": "回调再买",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+            "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+          ],
+          "liquidity_rules": [
+            "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+            "Require stronger liquidity support for minute-level candidates than daily candidates."
+          ],
+          "cadence_rules": [
+            "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+            "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+            "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+          ],
+          "risk_rules": [
+            "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+            "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+          ],
+          "bucket_rules": [
+            "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+            "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+            "research_queue is for incomplete or lower-ranked names that still merit structured review."
+          ]
+        },
+        "supported_market": true,
+        "preferred_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "quality_growth",
+          "research_priority",
+          "defensive_baseline"
+        ],
+        "legacy_selected_as": "beginner_watchlist",
+        "bucket": "priority_trade",
+        "hard_risk_flags": [],
+        "soft_risk_flags": [],
+        "liquidity_score": 0.7995,
+        "risk_penalty": 0.3575,
+        "raw_score": 0.7547,
+        "rank_score": 84.07,
+        "research_confidence": 0.85,
+        "manual_review_required": false,
+        "original_selected_as": "beginner_watchlist",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "未满足明确开仓模式，先观察。",
+          "趋势、事件催化与龙头属性共振"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "trading_candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "AVGO.US",
+      "market": "us",
+      "selected_as": "beginner_watchlist",
+      "score": 83.97,
+      "reasons": [
+        "AI链景气度延续",
+        "AI链强势延续",
+        "snapshot change 4.23%; turnover 9632063239",
+        "趋势健康且不过热，可顺势跟随。",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: ai_compute"
+      ],
+      "primary_risks": [
+        "高位滞涨后或先消化",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity, spread, and turnover assumptions with a fresh quote snapshot before stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "bucket": "priority_trade",
+      "trading_level": "minute",
+      "hard_risk_flags": [],
+      "soft_risk_flags": [],
+      "research_confidence": 0.85,
+      "liquidity_score": 0.7675,
+      "risk_penalty": 0.3575,
+      "raw_score": 0.7557,
+      "rank_score": 83.97,
+      "backtest_ready": true,
+      "manual_review_required": false,
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "可小仓试错",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+            "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+          ],
+          "liquidity_rules": [
+            "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+            "Require stronger liquidity support for minute-level candidates than daily candidates."
+          ],
+          "cadence_rules": [
+            "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+            "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+            "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+          ],
+          "risk_rules": [
+            "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+            "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+          ],
+          "bucket_rules": [
+            "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+            "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+            "research_queue is for incomplete or lower-ranked names that still merit structured review."
+          ]
+        },
+        "supported_market": true,
+        "preferred_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "research_priority",
+          "quality_growth",
+          "defensive_baseline",
+          "ai_compute"
+        ],
+        "legacy_selected_as": "beginner_watchlist",
+        "bucket": "priority_trade",
+        "hard_risk_flags": [],
+        "soft_risk_flags": [],
+        "liquidity_score": 0.7675,
+        "risk_penalty": 0.3575,
+        "raw_score": 0.7557,
+        "rank_score": 83.97,
+        "research_confidence": 0.85,
+        "manual_review_required": false,
+        "original_selected_as": "beginner_watchlist",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "趋势健康且不过热，可顺势跟随。",
+          "AI链景气度延续"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "trading_candidate_selector_v1"
+      }
+    },
+    {
+      "symbol": "MSFT.US",
+      "market": "us",
+      "selected_as": "beginner_watchlist",
+      "score": 80.05,
+      "reasons": [
+        "软件与AI应用双重属性",
+        "AI应用兑现能力较强",
+        "snapshot change -1.34%; turnover 13880315248",
+        "未满足明确开仓模式，先观察。",
+        "风险过高或资金条件不足，阻断交易。",
+        "Theme bucket: ai_compute"
+      ],
+      "primary_risks": [
+        "防守风格下弹性或偏弱",
+        "Minute-level candidates need tighter execution and liquidity discipline than daily candidates."
+      ],
+      "validation_points": [
+        "Confirm current liquidity, spread, and turnover assumptions with a fresh quote snapshot before stage upgrade.",
+        "Write down one concrete invalidation condition for the name.",
+        "Validate minute-bar data coverage, turnover, and intraday execution assumptions before optimization."
+      ],
+      "bucket": "priority_trade",
+      "trading_level": "minute",
+      "hard_risk_flags": [],
+      "soft_risk_flags": [],
+      "research_confidence": 0.85,
+      "liquidity_score": 0.7853,
+      "risk_penalty": 0.3575,
+      "raw_score": 0.7205,
+      "rank_score": 80.05,
+      "backtest_ready": true,
+      "manual_review_required": false,
+      "meta": {
+        "theme": "ai_compute",
+        "action_hint": "继续观察",
+        "framework_rules": {
+          "stock_pool_scope": [
+            "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+            "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+          ],
+          "liquidity_rules": [
+            "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+            "Require stronger liquidity support for minute-level candidates than daily candidates."
+          ],
+          "cadence_rules": [
+            "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+            "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+            "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+          ],
+          "risk_rules": [
+            "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+            "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+          ],
+          "bucket_rules": [
+            "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+            "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+            "research_queue is for incomplete or lower-ranked names that still merit structured review."
+          ]
+        },
+        "supported_market": true,
+        "preferred_market": true,
+        "trading_level": "minute",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ],
+        "data_sufficiency": 1.0,
+        "backtest_ready": true,
+        "candidate_source": "static",
+        "strategy_tags": [
+          "quality_growth",
+          "research_priority",
+          "defensive_baseline",
+          "ai_compute"
+        ],
+        "legacy_selected_as": "beginner_watchlist",
+        "bucket": "priority_trade",
+        "hard_risk_flags": [],
+        "soft_risk_flags": [],
+        "liquidity_score": 0.7853,
+        "risk_penalty": 0.3575,
+        "raw_score": 0.7205,
+        "rank_score": 80.05,
+        "research_confidence": 0.85,
+        "manual_review_required": false,
+        "original_selected_as": "beginner_watchlist",
+        "needs_llm_research": false,
+        "llm_research_connected": true,
+        "llm_research_notes": [
+          "未满足明确开仓模式，先观察。",
+          "软件与AI应用双重属性"
+        ],
+        "data_completeness": 1.0,
+        "selector_version": "trading_candidate_selector_v1"
+      }
+    }
+  ],
+  "capability_map": [],
+  "capability_gaps": [],
+  "plan_phases": [],
+  "risk_budget": null,
+  "readiness": null,
+  "workflow": null,
+  "rendered_documents": [
+    {
+      "title": "Trading Candidate Framework (markdown)",
+      "format": "markdown",
+      "body": "### Trading Candidate Framework\n\n- Generated at: 2026-05-11T19:41:21.742429+08:00\n- Version: v1\n- Audience: trading workflow reviewer\n\n### What this note is trying to do\n- Explain the current trading evidence, assumptions, and stage gates in plain language.\n- Separate research conclusions, execution suggestions, and risk prompts so the workflow remains auditable.\n- Show what changed, what remains blocked, and what can be acted on next.\n\n### Review order\n- Understand the current evidence set and risk language before touching execution settings.\n- Review the workflow in order: candidate preparation -> healthcheck -> candidate framework -> backtest -> readiness.\n- Check the active trade universe and understand why each name remains in its current bucket.\n- Verify risk budget and pause rules before any simulation or live-adjacent step.\n\n### Workflow order\n- Run the read-only health check first.\n- Review research findings and evidence levels.\n- Check the candidate buckets and keep only the intended trade-universe names active.\n- Review one backtest or validation summary before any simulation idea.\n- Move to simulation or live readiness only after risk budget and readiness checklist are both clear.\n\n### Current assumptions\n- candidate_scope: us — Keep the active review universe aligned with the preferred market set while the trading routine stabilizes.\n- selection_method: rules_plus_structured_review_overlay — Primary buckets come from trading rules; research notes and explanation quality only affect manual review priority.\n- research_attachment: missing — The candidate framework is stronger when it can reuse the same evidence and risk language as the research artifact.\n\n### Knowledge sections\n\n### Research conclusions\n- [mid] The current trading candidate framework produced 3 priority-trade names, 0 active-watch names, 0 research-queue names, and 0 excluded names.\n\n### Common pitfalls\n- Confusing a good story with a tested rule.\n- Looking only at return and ignoring drawdown, turnover, and sample quality.\n- Adding too many correlated names and calling it diversification.\n- Letting an LLM summary replace manual review of evidence and risk controls.\n- 高位波动放大\n- Minute-level candidates need tighter execution and liquidity discipline than daily candidates.\n\n### Minimum viable start\n- One market, a focused trade universe, and a stable review habit.\n- A written risk budget with single-position, total-exposure, and pause rules.\n- At least one backtest or validation note with data-quality and cost assumptions recorded.\n- A simulation observation period before any live intent.\n- Use the top few priority_trade or active_watch names as the initial review universe.\n\n### Readiness checkpoints\n- No readiness checklist has been attached yet.\n\n### What changed from the previous plan\n- No previous plan comparison was available for this run.\n\n### Personalization summary\n- No explicit personalization summary was recorded for this artifact.\n\n### Update scope\n- No scoped profile update information was recorded.\n\n### Next actions\n- Review NVDA.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.\n- Review AVGO.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.\n- Review MSFT.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.\n- Keep the candidate review universe aligned with the preferred markets until the routine is stable.\n- Attach the latest research artifact so candidate notes can reuse the same evidence language.\n\n### Local system boundaries\n- Execution-related stages still require explicit confirmation and should default to plan-only mode.\n",
+      "section_count": 10,
+      "version": "v1",
+      "generated_at": "2026-05-11T19:41:21.742429+08:00"
+    },
+    {
+      "title": "Trading Candidate Framework (json)",
+      "format": "json",
+      "body": "{\n  \"title\": \"Trading Candidate Framework\",\n  \"version\": \"v1\",\n  \"generated_at\": \"2026-05-11T19:41:21.742478+08:00\",\n  \"knowledge_sections\": [],\n  \"research_findings\": [\n    {\n      \"topic\": \"candidate_framework\",\n      \"conclusion\": \"The current trading candidate framework produced 3 priority-trade names, 0 active-watch names, 0 research-queue names, and 0 excluded names.\",\n      \"evidence_level\": \"mid\",\n      \"verification_status\": \"verified\",\n      \"invalidation_conditions\": [\n        \"If candidate inputs or risk notes change materially, regenerate the candidate framework before using it in planning.\"\n      ]\n    }\n  ],\n  \"workflow_order\": [\n    \"Run the read-only health check first.\",\n    \"Review research findings and evidence levels.\",\n    \"Check the candidate buckets and keep only the intended trade-universe names active.\",\n    \"Review one backtest or validation summary before any simulation idea.\",\n    \"Move to simulation or live readiness only after risk budget and readiness checklist are both clear.\"\n  ],\n  \"assumptions\": [\n    \"candidate_scope: us — Keep the active review universe aligned with the preferred market set while the trading routine stabilizes.\",\n    \"selection_method: rules_plus_structured_review_overlay — Primary buckets come from trading rules; research notes and explanation quality only affect manual review priority.\",\n    \"research_attachment: missing — The candidate framework is stronger when it can reuse the same evidence and risk language as the research artifact.\"\n  ],\n  \"common_pitfalls\": [\n    \"Confusing a good story with a tested rule.\",\n    \"Looking only at return and ignoring drawdown, turnover, and sample quality.\",\n    \"Adding too many correlated names and calling it diversification.\",\n    \"Letting an LLM summary replace manual review of evidence and risk controls.\",\n    \"高位波动放大\",\n    \"Minute-level candidates need tighter execution and liquidity discipline than daily candidates.\"\n  ],\n  \"minimum_viable_start\": [\n    \"One market, a focused trade universe, and a stable review habit.\",\n    \"A written risk budget with single-position, total-exposure, and pause rules.\",\n    \"At least one backtest or validation note with data-quality and cost assumptions recorded.\",\n    \"A simulation observation period before any live intent.\",\n    \"Use the top few priority_trade or active_watch names as the initial review universe.\"\n  ],\n  \"readiness\": [\n    \"No readiness checklist has been attached yet.\"\n  ],\n  \"plan_differences\": [\n    \"No previous plan comparison was available for this run.\"\n  ],\n  \"personalization_summary\": [\n    \"No explicit personalization summary was recorded for this artifact.\"\n  ],\n  \"update_scope\": [\n    \"No scoped profile update information was recorded.\"\n  ],\n  \"next_actions\": [\n    \"Review NVDA.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.\",\n    \"Review AVGO.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.\",\n    \"Review MSFT.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.\",\n    \"Keep the candidate review universe aligned with the preferred markets until the routine is stable.\",\n    \"Attach the latest research artifact so candidate notes can reuse the same evidence language.\"\n  ],\n  \"local_limits\": [\n    \"Execution-related stages still require explicit confirmation and should default to plan-only mode.\"\n  ]\n}\n",
+      "section_count": 9,
+      "version": "v1",
+      "generated_at": "2026-05-11T19:41:21.742478+08:00"
+    }
+  ],
+  "meta": {
+    "framework_summary": {
+      "counts": {
+        "priority_trade": 3,
+        "active_watch": 0,
+        "research_queue": 0,
+        "exclude": 0
+      },
+      "legacy_counts": {
+        "beginner_watchlist": 3,
+        "observe_only": 0,
+        "validate_only": 0
+      },
+      "trading_level_counts": {
+        "daily": 0,
+        "minute": 3,
+        "needs_review": 0
+      },
+      "hard_block_count": 0,
+      "manual_review_required_count": 0,
+      "backtest_ready_count": 3,
+      "rules": {
+        "stock_pool_scope": [
+          "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+          "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+        ],
+        "liquidity_rules": [
+          "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+          "Require stronger liquidity support for minute-level candidates than daily candidates."
+        ],
+        "cadence_rules": [
+          "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+          "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+          "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+        ],
+        "risk_rules": [
+          "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+          "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+        ],
+        "bucket_rules": [
+          "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+          "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+          "research_queue is for incomplete or lower-ranked names that still merit structured review."
+        ]
+      },
+      "llm_research_pending_count": 0,
+      "low_data_quality_count": 0
+    },
+    "framework_rules": {
+      "stock_pool_scope": [
+        "Rank candidates with trading-oriented thresholds first, then cap the displayed universe without changing the underlying bucket.",
+        "Keep outputs directly reusable by backtest, readiness, and workflow evidence stages."
+      ],
+      "liquidity_rules": [
+        "Hard-block unsupported or thin-liquidity candidates from active trading buckets.",
+        "Require stronger liquidity support for minute-level candidates than daily candidates."
+      ],
+      "cadence_rules": [
+        "Use daily cadence when the thesis supports multi-day review and no intraday-specific evidence is present.",
+        "Use minute cadence only when turnover, signal freshness, and intraday language all support it.",
+        "Keep cadence as needs_review when the local row is too incomplete for a reliable assignment."
+      ],
+      "risk_rules": [
+        "Separate hard risk flags from soft risk flags so unsupported execution and thin liquidity block promotion cleanly.",
+        "Use risk_penalty as the primary quantitative penalty instead of explanation quality or teaching-oriented wording."
+      ],
+      "bucket_rules": [
+        "priority_trade requires high score, adequate liquidity, and bounded risk_penalty.",
+        "active_watch keeps sub-threshold but still monitorable names visible without forcing them into a validation bucket.",
+        "research_queue is for incomplete or lower-ranked names that still merit structured review."
+      ]
+    },
+    "preferred_markets": [
+      "us"
+    ],
+    "research_artifact_attached": false,
+    "next_step_suggestions": [
+      "Review NVDA.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.",
+      "Review AVGO.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.",
+      "Review MSFT.US as a minute priority trade candidate and confirm one invalidation rule before backtesting.",
+      "Keep the candidate review universe aligned with the preferred markets until the routine is stable.",
+      "Attach the latest research artifact so candidate notes can reuse the same evidence language."
+    ],
+    "legacy_artifact_type": "beginner_candidate_framework",
+    "profile": {
+      "capital": null,
+      "hours_per_week": null,
+      "max_drawdown_pct": null,
+      "risk_profile": "balanced",
+      "preferred_market": "us"
+    },
+    "task_type": "simulation",
+    "backtest_targets": [
+      {
+        "symbol": "NVDA.US",
+        "market": "us",
+        "selected_as": "beginner_watchlist",
+        "bucket": "priority_trade",
+        "trading_level": "minute",
+        "backtest_ready": true,
+        "manual_review_required": false,
+        "hard_risk_flags": [],
+        "soft_risk_flags": [],
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Priority-trade candidates can enter backtest evidence review immediately.",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ]
+      },
+      {
+        "symbol": "AVGO.US",
+        "market": "us",
+        "selected_as": "beginner_watchlist",
+        "bucket": "priority_trade",
+        "trading_level": "minute",
+        "backtest_ready": true,
+        "manual_review_required": false,
+        "hard_risk_flags": [],
+        "soft_risk_flags": [],
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Priority-trade candidates can enter backtest evidence review immediately.",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ]
+      },
+      {
+        "symbol": "MSFT.US",
+        "market": "us",
+        "selected_as": "beginner_watchlist",
+        "bucket": "priority_trade",
+        "trading_level": "minute",
+        "backtest_ready": true,
+        "manual_review_required": false,
+        "hard_risk_flags": [],
+        "soft_risk_flags": [],
+        "backtest_target_eligible": true,
+        "backtest_target_reason": "Priority-trade candidates can enter backtest evidence review immediately.",
+        "trading_level_reasons": [
+          "Turnover appears large enough to support minute-level review if the data feed is clean.",
+          "Signal freshness is strong enough to justify an intraday-style candidate review."
+        ]
+      }
+    ],
+    "confirmation_requirements": [],
+    "rendered_formats": [
+      "markdown",
+      "json"
+    ],
+    "risk_labels": [
+      "risk_prompts_present"
+    ],
+    "artifact_summary": {
+      "artifact_type": "trading_candidate_framework",
+      "title": "Trading Candidate Framework",
+      "generated_at": "2026-05-11T19:41:21.741698+08:00",
+      "version": "v1",
+      "knowledge_section_count": 0,
+      "research_finding_count": 1,
+      "candidate_count": 3,
+      "plan_phase_count": 0,
+      "rendered_document_count": 2,
+      "has_risk_budget": false,
+      "has_readiness": false
+    },
+    "traceability": {
+      "slug": "quant_trading_candidate_framework",
+      "artifact_type": "trading_candidate_framework",
+      "version": "v1",
+      "generated_at": "2026-05-11T19:41:21.741698+08:00",
+      "current_assumption_count": 3,
+      "invalidation_condition_count": 3,
+      "confirmation_requirement_count": 0,
+      "next_step_count": 5
+    }
+  }
+}

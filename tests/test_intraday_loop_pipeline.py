@@ -15,6 +15,7 @@ These tests do NOT spin up MainEngine / FutuGateway. They verify:
 import json
 import sys
 import tempfile
+import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -41,6 +42,12 @@ from services.execution_guard.reconciliation import ReconciliationGuard
 from services.risk_engine import LiveRiskGuard
 from services.trade_state import OrderStateStore
 from scripts.classic_multifactor.strategy import ClassicMultiFactorCtaStrategy
+from scripts.classic_multifactor.run_intraday_loop import build_parser as build_intraday_parser
+from services.strategy.market_rules import (
+    is_market_open,
+    market_session_end,
+    market_timezone,
+)
 
 
 class FakeBar:
@@ -121,6 +128,15 @@ def _read_events(path: Path) -> list[dict]:
     if not path.exists():
         return []
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def _make_args_for_runner(overrides: dict) -> argparse.Namespace:
+    parser = build_intraday_parser()
+    base = ["--config", overrides.pop("config", "")]
+    for k, v in overrides.items():
+        flag = "--" + k.replace("_", "-")
+        base.extend([flag, str(v)])
+    return parser.parse_args(base)
 
 
 # ---------------------------------------------------------------------------
@@ -452,6 +468,48 @@ def test_warmup_load_days_converts_minute_bar_requirement_to_natural_days():
 def test_warmup_load_days_keeps_daily_mode_as_day_count():
     assert ClassicMultiFactorCtaStrategy.warmup_load_days(62, "1d") == 62
     assert ClassicMultiFactorCtaStrategy.resolve_warmup_load_interval("1d").value == "d"
+
+
+# ---------------------------------------------------------------------------
+# 7. Market session helpers
+# ---------------------------------------------------------------------------
+def test_market_session_helpers_cover_us_and_hk_defaults():
+    assert market_timezone("us") == "America/New_York"
+    assert market_timezone("hong_kong") == "Asia/Hong_Kong"
+    assert market_session_end("us") == "16:00"
+    assert market_session_end("hong_kong") == "16:00"
+
+    assert is_market_open("us", datetime.fromisoformat("2026-05-12T10:00:00-04:00")) is True
+    assert is_market_open("us", datetime.fromisoformat("2026-05-12T16:00:00-04:00")) is False
+    assert is_market_open("hong_kong", datetime.fromisoformat("2026-05-12T10:00:00+08:00")) is True
+    assert is_market_open("hong_kong", datetime.fromisoformat("2026-05-12T12:15:00+08:00")) is False
+
+
+# ---------------------------------------------------------------------------
+# 8. Session timezone derivation
+# ---------------------------------------------------------------------------
+def test_intraday_runner_derives_us_session_timezone_from_config():
+    from scripts.classic_multifactor.run_intraday_loop import IntradayLoopRunner
+
+    cfg = REPO_ROOT / "configs" / "classic_multifactor" / "nvda_g09.json"
+    with tempfile.TemporaryDirectory() as td:
+        args = _make_args_for_runner({"config": str(cfg), "state_root": td})
+        runner = IntradayLoopRunner(args)
+        assert runner.session_tz == "America/New_York"
+        assert runner.session_end_local.strftime("%H:%M") == "16:00"
+        assert runner.session_start_local.strftime("%H:%M") == "09:30"
+
+
+def test_intraday_runner_derives_hk_session_timezone_from_config():
+    from scripts.classic_multifactor.run_intraday_loop import IntradayLoopRunner
+
+    cfg = REPO_ROOT / "configs" / "classic_multifactor" / "xiaomi_hk_g01.json"
+    with tempfile.TemporaryDirectory() as td:
+        args = _make_args_for_runner({"config": str(cfg), "state_root": td})
+        runner = IntradayLoopRunner(args)
+        assert runner.session_tz == "Asia/Hong_Kong"
+        assert runner.session_end_local.strftime("%H:%M") == "16:00"
+        assert runner.session_start_local.strftime("%H:%M") == "09:30"
 
 
 # ---------------------------------------------------------------------------

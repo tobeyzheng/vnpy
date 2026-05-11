@@ -1,13 +1,13 @@
 {
   "mode": "dynamic_generated",
   "schema_version": "candidate_inputs_v3",
-  "generated_at": "2026-05-11T09:59:09.901919+08:00",
+  "generated_at": "2026-05-11T19:41:21.228503+08:00",
   "as_of_date": "2026-05-11",
-  "selection_policy": "dynamic_hybrid_market_complete_v2",
+  "selection_policy": "dynamic_hybrid_market_complete_v3",
   "scoring_model": {
     "mode": "dynamic",
-    "model_id": "dynamic_hybrid_candidate_v2",
-    "selection_policy": "dynamic_hybrid_market_complete_v2",
+    "model_id": "dynamic_hybrid_candidate_v3",
+    "selection_policy": "dynamic_hybrid_market_complete_v3",
     "components": [
       {
         "key": "trend_score",
@@ -85,10 +85,10 @@
       "name": "Tencent Holdings",
       "rationale": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。",
       "risk": "互联网监管变化、游戏审批节奏波动、宏观消费与广告需求走弱。",
-      "raw_score": 0.4333,
+      "raw_score": 0.5502,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "关注回调后的分批布局机会，适合中线跟踪",
-      "generated_at": "2026-05-11T09:59:09.901919+08:00",
+      "generated_at": "2026-05-11T19:41:21.228503+08:00",
       "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
@@ -235,6 +235,69 @@
           "source": "dynamic_hybrid_candidate_v2",
           "category": "candidate_score",
           "score": 0.4333,
+          "summary": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4333,
+          "summary": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5502,
+          "summary": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。"
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00700.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5502,
           "summary": "高质量互联网龙头，现金流稳健，游戏与广告业务具备韧性，AI与企业服务带来中期重估空间，适合作为港股核心配置候选。"
         }
       ],
@@ -401,10 +464,10 @@
       "market_cap": 4298221257210.4,
       "knot_overlay_score": 0.6,
       "strategy_selection": {
-        "strategy_id": "block_trade",
+        "strategy_id": "watch_only",
         "allow_trade": false,
         "confidence": 0.78,
-        "reason": "风险过高或资金条件不足，阻断交易。",
+        "reason": "未满足明确开仓模式，先观察。",
         "risk_flags": [],
         "source": "remote-knot-fallback"
       },
@@ -414,9 +477,9 @@
         "fallback_used": true,
         "schema_validated": true,
         "parsed": {
-          "strategy": "block_trade",
+          "strategy": "watch_only",
           "confidence": 0.78,
-          "reason": "风险过高或资金条件不足，阻断交易。",
+          "reason": "未满足明确开仓模式，先观察。",
           "risk_flags": [],
           "use_task_planning": false,
           "format_ok": true,
@@ -424,33 +487,35 @@
         }
       },
       "research_note": "未满足明确开仓模式，先观察。",
-      "selection_policy": "dynamic_hybrid_market_complete_v2",
-      "legacy_raw_score": 0.4333,
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5502,
       "trend_score": 0.6,
       "relative_strength_score": 0.4372,
-      "flow_score": 0.138,
+      "flow_score": 0.6467,
       "event_score": 0.6,
       "quality_score": 0.6,
-      "liquidity_score": 0.138,
+      "liquidity_score": 0.7084,
       "volatility_score": 1.0,
       "regime_fit_score": 0.5457,
       "explanation_ready_score": 1.0,
       "risk_penalty": 0.3575,
-      "consensus_score": 0.4143,
+      "consensus_score": 0.5891,
       "strategy_tags": [
         "knot_overlay",
+        "quality_growth",
+        "event_driven",
         "ai_compute"
       ],
       "strategy_votes": {
-        "trend_following": 0.3917,
-        "event_driven": 0.4279,
-        "quality_growth": 0.446,
+        "trend_following": 0.5613,
+        "event_driven": 0.5975,
+        "quality_growth": 0.6361,
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.4054,
-        "knot_agent": 0.3604,
-        "research": 0.2342
+        "classic": 0.3797,
+        "knot_agent": 0.3544,
+        "research": 0.2658
       },
       "risk_flags": [
         "high_volatility",
@@ -458,16 +523,16 @@
       ],
       "scoring": {
         "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v2",
-        "selection_policy": "dynamic_hybrid_market_complete_v2",
-        "score": 0.4333,
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5502,
         "input_scores": {
           "trend_score": 0.6,
           "relative_strength_score": 0.4372,
-          "flow_score": 0.138,
+          "flow_score": 0.6467,
           "event_score": 0.6,
           "quality_score": 0.6,
-          "liquidity_score": 0.138,
+          "liquidity_score": 0.7084,
           "volatility_score": 1.0,
           "regime_fit_score": 0.5457,
           "knot_overlay_score": 0.6,
@@ -494,9 +559,9 @@
           {
             "key": "flow_score",
             "label": "Flow",
-            "score": 0.138,
+            "score": 0.6467,
             "weight": 0.14,
-            "weighted_contribution": 0.0193,
+            "weighted_contribution": 0.0905,
             "role": "positive"
           },
           {
@@ -518,9 +583,9 @@
           {
             "key": "liquidity_score",
             "label": "Liquidity",
-            "score": 0.138,
+            "score": 0.7084,
             "weight": 0.08,
-            "weighted_contribution": 0.011,
+            "weighted_contribution": 0.0567,
             "role": "positive"
           },
           {
@@ -550,20 +615,22 @@
         ],
         "strategy_tags": [
           "knot_overlay",
+          "quality_growth",
+          "event_driven",
           "ai_compute"
         ],
         "strategy_votes": {
-          "trend_following": 0.3917,
-          "event_driven": 0.4279,
-          "quality_growth": 0.446,
+          "trend_following": 0.5613,
+          "event_driven": 0.5975,
+          "quality_growth": 0.6361,
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.4054,
-          "knot_agent": 0.3604,
-          "research": 0.2342
+          "classic": 0.3797,
+          "knot_agent": 0.3544,
+          "research": 0.2658
         },
-        "consensus_score": 0.4143,
+        "consensus_score": 0.5891,
         "risk_flags": [
           "high_volatility",
           "thin_liquidity"
@@ -576,10 +643,10 @@
       "name": "Meituan",
       "rationale": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。",
       "risk": "竞争补贴加剧、消费疲弱、监管对平台经济影响。",
-      "raw_score": 0.4248,
+      "raw_score": 0.5159,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "观察利润率与订单增速趋势，适合逢调整分批关注",
-      "generated_at": "2026-05-11T09:59:09.901919+08:00",
+      "generated_at": "2026-05-11T19:41:21.228503+08:00",
       "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
@@ -726,6 +793,69 @@
           "source": "dynamic_hybrid_candidate_v2",
           "category": "candidate_score",
           "score": 0.4248,
+          "summary": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。"
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4248,
+          "summary": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。"
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5159,
+          "summary": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。"
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "03690.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5159,
           "summary": "本地生活平台护城河较强，到店酒旅与外卖业务具备规模优势，若消费复苏和效率优化延续，利润释放潜力较好。"
         }
       ],
@@ -892,10 +1022,10 @@
       "market_cap": 518976727454.3,
       "knot_overlay_score": 0.6,
       "strategy_selection": {
-        "strategy_id": "block_trade",
+        "strategy_id": "watch_only",
         "allow_trade": false,
         "confidence": 0.78,
-        "reason": "风险过高或资金条件不足，阻断交易。",
+        "reason": "未满足明确开仓模式，先观察。",
         "risk_flags": [],
         "source": "remote-knot-fallback"
       },
@@ -905,9 +1035,9 @@
         "fallback_used": true,
         "schema_validated": true,
         "parsed": {
-          "strategy": "block_trade",
+          "strategy": "watch_only",
           "confidence": 0.78,
-          "reason": "风险过高或资金条件不足，阻断交易。",
+          "reason": "未满足明确开仓模式，先观察。",
           "risk_flags": [],
           "use_task_planning": false,
           "format_ok": true,
@@ -915,33 +1045,35 @@
         }
       },
       "research_note": "未满足明确开仓模式，先观察。",
-      "selection_policy": "dynamic_hybrid_market_complete_v2",
-      "legacy_raw_score": 0.4248,
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5159,
       "trend_score": 0.6,
       "relative_strength_score": 0.4881,
-      "flow_score": 0.1955,
+      "flow_score": 0.6069,
       "event_score": 0.6,
       "quality_score": 0.6,
-      "liquidity_score": 0.1955,
+      "liquidity_score": 0.6135,
       "volatility_score": 1.0,
       "regime_fit_score": 0.5627,
       "explanation_ready_score": 1.0,
       "risk_penalty": 0.661,
-      "consensus_score": 0.4434,
+      "consensus_score": 0.5811,
       "strategy_tags": [
         "knot_overlay",
+        "quality_growth",
+        "event_driven",
         "platform_internet"
       ],
       "strategy_votes": {
-        "trend_following": 0.4279,
-        "event_driven": 0.4527,
-        "quality_growth": 0.4652,
+        "trend_following": 0.565,
+        "event_driven": 0.5899,
+        "quality_growth": 0.6045,
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.4054,
-        "knot_agent": 0.3604,
-        "research": 0.2342
+        "classic": 0.3797,
+        "knot_agent": 0.3544,
+        "research": 0.2658
       },
       "risk_flags": [
         "high_volatility",
@@ -949,16 +1081,16 @@
       ],
       "scoring": {
         "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v2",
-        "selection_policy": "dynamic_hybrid_market_complete_v2",
-        "score": 0.4248,
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5159,
         "input_scores": {
           "trend_score": 0.6,
           "relative_strength_score": 0.4881,
-          "flow_score": 0.1955,
+          "flow_score": 0.6069,
           "event_score": 0.6,
           "quality_score": 0.6,
-          "liquidity_score": 0.1955,
+          "liquidity_score": 0.6135,
           "volatility_score": 1.0,
           "regime_fit_score": 0.5627,
           "knot_overlay_score": 0.6,
@@ -985,9 +1117,9 @@
           {
             "key": "flow_score",
             "label": "Flow",
-            "score": 0.1955,
+            "score": 0.6069,
             "weight": 0.14,
-            "weighted_contribution": 0.0274,
+            "weighted_contribution": 0.085,
             "role": "positive"
           },
           {
@@ -1009,9 +1141,9 @@
           {
             "key": "liquidity_score",
             "label": "Liquidity",
-            "score": 0.1955,
+            "score": 0.6135,
             "weight": 0.08,
-            "weighted_contribution": 0.0156,
+            "weighted_contribution": 0.0491,
             "role": "positive"
           },
           {
@@ -1041,20 +1173,22 @@
         ],
         "strategy_tags": [
           "knot_overlay",
+          "quality_growth",
+          "event_driven",
           "platform_internet"
         ],
         "strategy_votes": {
-          "trend_following": 0.4279,
-          "event_driven": 0.4527,
-          "quality_growth": 0.4652,
+          "trend_following": 0.565,
+          "event_driven": 0.5899,
+          "quality_growth": 0.6045,
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.4054,
-          "knot_agent": 0.3604,
-          "research": 0.2342
+          "classic": 0.3797,
+          "knot_agent": 0.3544,
+          "research": 0.2658
         },
-        "consensus_score": 0.4434,
+        "consensus_score": 0.5811,
         "risk_flags": [
           "high_volatility",
           "thin_liquidity"
@@ -1067,10 +1201,10 @@
       "name": "AIA Group",
       "rationale": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。",
       "risk": "资本市场波动影响投资收益、新业务价值增长放缓、区域经济复苏不及预期。",
-      "raw_score": 0.4226,
+      "raw_score": 0.5188,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "适合作为组合中的稳健配置，关注新业务价值与回购节奏",
-      "generated_at": "2026-05-11T09:59:09.901919+08:00",
+      "generated_at": "2026-05-11T19:41:21.228503+08:00",
       "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
@@ -1217,6 +1351,69 @@
           "source": "dynamic_hybrid_candidate_v2",
           "category": "candidate_score",
           "score": 0.4226,
+          "summary": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。"
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4226,
+          "summary": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。"
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5188,
+          "summary": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。"
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01299.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5188,
           "summary": "保险龙头，受益于亚洲长期保障需求与利率环境改善，财务质量高、分红与回购预期较稳，偏防御兼具成长。"
         }
       ],
@@ -1383,10 +1580,10 @@
       "market_cap": 905205348403.4,
       "knot_overlay_score": 0.6,
       "strategy_selection": {
-        "strategy_id": "block_trade",
+        "strategy_id": "watch_only",
         "allow_trade": false,
         "confidence": 0.78,
-        "reason": "风险过高或资金条件不足，阻断交易。",
+        "reason": "未满足明确开仓模式，先观察。",
         "risk_flags": [],
         "source": "remote-knot-fallback"
       },
@@ -1396,9 +1593,9 @@
         "fallback_used": true,
         "schema_validated": true,
         "parsed": {
-          "strategy": "block_trade",
+          "strategy": "watch_only",
           "confidence": 0.78,
-          "reason": "风险过高或资金条件不足，阻断交易。",
+          "reason": "未满足明确开仓模式，先观察。",
           "risk_flags": [],
           "use_task_planning": false,
           "format_ok": true,
@@ -1406,33 +1603,34 @@
         }
       },
       "research_note": "未满足明确开仓模式，先观察。",
-      "selection_policy": "dynamic_hybrid_market_complete_v2",
-      "legacy_raw_score": 0.4226,
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5188,
       "trend_score": 0.6,
       "relative_strength_score": 0.357,
-      "flow_score": 0.155,
+      "flow_score": 0.5862,
       "event_score": 0.6,
       "quality_score": 0.6,
-      "liquidity_score": 0.155,
+      "liquidity_score": 0.6031,
       "volatility_score": 1.0,
       "regime_fit_score": 0.519,
       "explanation_ready_score": 1.0,
       "risk_penalty": 0.3575,
-      "consensus_score": 0.4045,
+      "consensus_score": 0.5495,
       "strategy_tags": [
         "knot_overlay",
+        "quality_growth",
         "ai_compute"
       ],
       "strategy_votes": {
-        "trend_following": 0.3707,
-        "event_driven": 0.4247,
-        "quality_growth": 0.4517,
+        "trend_following": 0.5144,
+        "event_driven": 0.5684,
+        "quality_growth": 0.601,
         "knot_overlay": 0.7333
       },
       "source_breakdown": {
-        "classic": 0.4054,
-        "knot_agent": 0.3604,
-        "research": 0.2342
+        "classic": 0.3797,
+        "knot_agent": 0.3544,
+        "research": 0.2658
       },
       "risk_flags": [
         "high_volatility",
@@ -1440,16 +1638,16 @@
       ],
       "scoring": {
         "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v2",
-        "selection_policy": "dynamic_hybrid_market_complete_v2",
-        "score": 0.4226,
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5188,
         "input_scores": {
           "trend_score": 0.6,
           "relative_strength_score": 0.357,
-          "flow_score": 0.155,
+          "flow_score": 0.5862,
           "event_score": 0.6,
           "quality_score": 0.6,
-          "liquidity_score": 0.155,
+          "liquidity_score": 0.6031,
           "volatility_score": 1.0,
           "regime_fit_score": 0.519,
           "knot_overlay_score": 0.6,
@@ -1476,9 +1674,9 @@
           {
             "key": "flow_score",
             "label": "Flow",
-            "score": 0.155,
+            "score": 0.5862,
             "weight": 0.14,
-            "weighted_contribution": 0.0217,
+            "weighted_contribution": 0.0821,
             "role": "positive"
           },
           {
@@ -1500,9 +1698,9 @@
           {
             "key": "liquidity_score",
             "label": "Liquidity",
-            "score": 0.155,
+            "score": 0.6031,
             "weight": 0.08,
-            "weighted_contribution": 0.0124,
+            "weighted_contribution": 0.0482,
             "role": "positive"
           },
           {
@@ -1532,20 +1730,575 @@
         ],
         "strategy_tags": [
           "knot_overlay",
+          "quality_growth",
           "ai_compute"
         ],
         "strategy_votes": {
-          "trend_following": 0.3707,
-          "event_driven": 0.4247,
-          "quality_growth": 0.4517,
+          "trend_following": 0.5144,
+          "event_driven": 0.5684,
+          "quality_growth": 0.601,
           "knot_overlay": 0.7333
         },
         "source_breakdown": {
-          "classic": 0.4054,
-          "knot_agent": 0.3604,
-          "research": 0.2342
+          "classic": 0.3797,
+          "knot_agent": 0.3544,
+          "research": 0.2658
         },
-        "consensus_score": 0.4045,
+        "consensus_score": 0.5495,
+        "risk_flags": [
+          "high_volatility",
+          "thin_liquidity"
+        ]
+      }
+    },
+    {
+      "symbol": "00388.HK",
+      "market": "hong_kong",
+      "name": "Hong Kong Exchanges and Clearing",
+      "rationale": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。",
+      "risk": "市场成交低迷、新股发行不振、外部地缘与政策扰动影响估值。",
+      "raw_score": 0.5062,
+      "confidence_source": "knot_agent_dynamic",
+      "action_hint": "适合用作市场活跃度修复的代表标的，关注成交额与IPO回暖信号",
+      "generated_at": "2026-05-11T19:41:21.228503+08:00",
+      "as_of_date": "2026-05-11",
+      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+      "signals": [
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5281,
+          "summary": "snapshot change -0.66%; turnover 1437536301"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "local-fallback-until-remote-hooked",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5281,
+          "summary": "snapshot change -0.66%; turnover 1437536301"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5281,
+          "summary": "snapshot change -0.66%; turnover 1437536301"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5281,
+          "summary": "snapshot change -0.66%; turnover 1437536301"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "futu_quote_snapshot",
+          "category": "market_data",
+          "score": 0.5359,
+          "summary": "snapshot change -0.42%; turnover 421848289"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4075,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5062,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.6,
+          "summary": "未满足明确开仓模式，先观察。",
+          "metadata": {
+            "strategy": "watch_only",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "00388.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.5062,
+          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
+        }
+      ],
+      "theme_bucket": "general",
+      "risk_level": "medium",
+      "explanation_summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。",
+      "explanation_ready": true,
+      "data_completeness": 1.0,
+      "max_signal_score": 0.6,
+      "candidate_type": "dynamic",
+      "quote": {
+        "code": "HK.00388",
+        "name": "香港交易所",
+        "update_time": "2026-05-11 09:57:58",
+        "last_price": 422.4,
+        "open_price": 423.0,
+        "high_price": 423.0,
+        "low_price": 420.2,
+        "prev_close_price": 424.2,
+        "volume": 999004,
+        "turnover": 421848289.0,
+        "turnover_rate": 0.079,
+        "suspension": false,
+        "listing_date": "2000-06-27",
+        "lot_size": 100,
+        "price_spread": 0.2,
+        "stock_owner": null,
+        "ask_price": 422.4,
+        "bid_price": 422.2,
+        "ask_vol": 900,
+        "bid_vol": 15200,
+        "enable_margin": null,
+        "mortgage_ratio": null,
+        "long_margin_initial_ratio": null,
+        "enable_short_sell": null,
+        "short_sell_rate": null,
+        "short_available_volume": null,
+        "short_margin_initial_ratio": null,
+        "amplitude": 0.66,
+        "avg_price": 422.268868793,
+        "bid_ask_ratio": 28.113,
+        "volume_ratio": 3.262,
+        "highest52weeks_price": 453.68,
+        "lowest52weeks_price": 360.48,
+        "highest_history_price": 536.34,
+        "lowest_history_price": -117.27,
+        "close_price_5min": 421.4,
+        "after_volume": 0,
+        "after_turnover": 0.0,
+        "sec_status": "NORMAL",
+        "equity_valid": true,
+        "issued_shares": 1267836895,
+        "total_market_val": 535534304448.0,
+        "net_asset": 55150904932.5,
+        "net_profit": 17753520040.685,
+        "earning_per_share": 14.003,
+        "outstanding_shares": 1267836895,
+        "circular_market_val": 535534304448.0,
+        "net_asset_per_share": 43.5,
+        "ey_ratio": 0.342,
+        "pe_ratio": 30.164,
+        "pb_ratio": 9.71,
+        "pe_ttm_ratio": 28.387,
+        "dividend_ttm": 12.52,
+        "dividend_ratio_ttm": 2.96,
+        "dividend_lfy": 12.52,
+        "dividend_lfy_ratio": 2.964,
+        "wrt_valid": false,
+        "wrt_conversion_ratio": null,
+        "wrt_type": "N/A",
+        "wrt_strike_price": null,
+        "wrt_maturity_date": null,
+        "wrt_end_trade": null,
+        "wrt_recovery_price": null,
+        "wrt_street_vol": null,
+        "wrt_issue_vol": null,
+        "wrt_street_ratio": null,
+        "wrt_delta": null,
+        "wrt_implied_volatility": null,
+        "wrt_premium": null,
+        "wrt_leverage": null,
+        "wrt_ipop": null,
+        "wrt_break_even_point": null,
+        "wrt_conversion_price": null,
+        "wrt_price_recovery_ratio": null,
+        "wrt_score": null,
+        "wrt_upper_strike_price": null,
+        "wrt_lower_strike_price": null,
+        "wrt_inline_price_status": "N/A",
+        "wrt_issuer_code": null,
+        "option_valid": false,
+        "option_type": "N/A",
+        "strike_time": null,
+        "option_strike_price": null,
+        "option_contract_size": null,
+        "option_open_interest": null,
+        "option_implied_volatility": null,
+        "option_premium": null,
+        "option_delta": null,
+        "option_gamma": null,
+        "option_vega": null,
+        "option_theta": null,
+        "option_rho": null,
+        "option_net_open_interest": null,
+        "option_expiry_date_distance": null,
+        "option_contract_nominal_value": null,
+        "option_owner_lot_multiplier": null,
+        "option_area_type": "N/A",
+        "option_contract_multiplier": null,
+        "index_option_type": "N/A",
+        "index_valid": false,
+        "index_raise_count": null,
+        "index_fall_count": null,
+        "index_equal_count": null,
+        "plate_valid": false,
+        "plate_raise_count": null,
+        "plate_fall_count": null,
+        "plate_equal_count": null,
+        "future_valid": false,
+        "future_last_settle_price": null,
+        "future_position": null,
+        "future_position_change": null,
+        "future_main_contract": null,
+        "future_last_trade_time": null,
+        "trust_valid": false,
+        "trust_dividend_yield": null,
+        "trust_aum": null,
+        "trust_outstanding_units": null,
+        "trust_netAssetValue": null,
+        "trust_premium": null,
+        "trust_assetClass": "N/A",
+        "pre_price": "N/A",
+        "pre_high_price": "N/A",
+        "pre_low_price": "N/A",
+        "pre_volume": "N/A",
+        "pre_turnover": "N/A",
+        "pre_change_val": "N/A",
+        "pre_change_rate": "N/A",
+        "pre_amplitude": "N/A",
+        "after_price": "N/A",
+        "after_high_price": "N/A",
+        "after_low_price": "N/A",
+        "after_change_val": "N/A",
+        "after_change_rate": "N/A",
+        "after_amplitude": "N/A",
+        "overnight_price": "N/A",
+        "overnight_high_price": "N/A",
+        "overnight_low_price": "N/A",
+        "overnight_volume": "N/A",
+        "overnight_turnover": "N/A",
+        "overnight_change_val": "N/A",
+        "overnight_change_rate": "N/A",
+        "overnight_amplitude": "N/A",
+        "change_pct": -0.424,
+        "price": 422.4,
+        "turnover_ratio": 0.079,
+        "market_cap": 535534304448.0
+      },
+      "last_price": 424.2,
+      "price": 424.2,
+      "change_pct": -0.656,
+      "turnover": 1437536301.0,
+      "turnover_ratio": 0.268,
+      "market_cap": 537816410859.0,
+      "knot_overlay_score": 0.6,
+      "strategy_selection": {
+        "strategy_id": "watch_only",
+        "allow_trade": false,
+        "confidence": 0.78,
+        "reason": "未满足明确开仓模式，先观察。",
+        "risk_flags": [],
+        "source": "remote-knot-fallback"
+      },
+      "knot_evaluation": {
+        "task_type": "strategy_select",
+        "runtime": "remote-knot-fallback",
+        "fallback_used": true,
+        "schema_validated": true,
+        "parsed": {
+          "strategy": "watch_only",
+          "confidence": 0.78,
+          "reason": "未满足明确开仓模式，先观察。",
+          "risk_flags": [],
+          "use_task_planning": false,
+          "format_ok": true,
+          "fallback_used": true
+        }
+      },
+      "research_note": "未满足明确开仓模式，先观察。",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.5062,
+      "trend_score": 0.6,
+      "relative_strength_score": 0.4672,
+      "flow_score": 0.5744,
+      "event_score": 0.6,
+      "quality_score": 0.6,
+      "liquidity_score": 0.5972,
+      "volatility_score": 1.0,
+      "regime_fit_score": 0.5557,
+      "explanation_ready_score": 1.0,
+      "risk_penalty": 0.661,
+      "consensus_score": 0.5675,
+      "strategy_tags": [
+        "knot_overlay",
+        "quality_growth"
+      ],
+      "strategy_votes": {
+        "trend_following": 0.5472,
+        "event_driven": 0.5767,
+        "quality_growth": 0.5991,
+        "knot_overlay": 0.7333
+      },
+      "source_breakdown": {
+        "classic": 0.3797,
+        "knot_agent": 0.3544,
+        "research": 0.2658
+      },
+      "risk_flags": [
+        "high_volatility",
+        "thin_liquidity"
+      ],
+      "scoring": {
+        "mode": "dynamic",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.5062,
+        "input_scores": {
+          "trend_score": 0.6,
+          "relative_strength_score": 0.4672,
+          "flow_score": 0.5744,
+          "event_score": 0.6,
+          "quality_score": 0.6,
+          "liquidity_score": 0.5972,
+          "volatility_score": 1.0,
+          "regime_fit_score": 0.5557,
+          "knot_overlay_score": 0.6,
+          "explanation_ready_score": 1.0,
+          "risk_penalty": 0.661
+        },
+        "components": [
+          {
+            "key": "trend_score",
+            "label": "Trend",
+            "score": 0.6,
+            "weight": 0.22,
+            "weighted_contribution": 0.132,
+            "role": "positive"
+          },
+          {
+            "key": "relative_strength_score",
+            "label": "Relative Strength",
+            "score": 0.4672,
+            "weight": 0.16,
+            "weighted_contribution": 0.0748,
+            "role": "positive"
+          },
+          {
+            "key": "flow_score",
+            "label": "Flow",
+            "score": 0.5744,
+            "weight": 0.14,
+            "weighted_contribution": 0.0804,
+            "role": "positive"
+          },
+          {
+            "key": "event_score",
+            "label": "Event",
+            "score": 0.6,
+            "weight": 0.14,
+            "weighted_contribution": 0.084,
+            "role": "positive"
+          },
+          {
+            "key": "quality_score",
+            "label": "Quality",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "liquidity_score",
+            "label": "Liquidity",
+            "score": 0.5972,
+            "weight": 0.08,
+            "weighted_contribution": 0.0478,
+            "role": "positive"
+          },
+          {
+            "key": "regime_fit_score",
+            "label": "Regime Fit",
+            "score": 0.5557,
+            "weight": 0.06,
+            "weighted_contribution": 0.0333,
+            "role": "positive"
+          },
+          {
+            "key": "knot_overlay_score",
+            "label": "Knot Overlay",
+            "score": 0.6,
+            "weight": 0.1,
+            "weighted_contribution": 0.06,
+            "role": "positive"
+          },
+          {
+            "key": "risk_penalty",
+            "label": "Risk Penalty",
+            "score": 0.661,
+            "weight": 0.1,
+            "weighted_contribution": -0.0661,
+            "role": "penalty"
+          }
+        ],
+        "strategy_tags": [
+          "knot_overlay",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.5472,
+          "event_driven": 0.5767,
+          "quality_growth": 0.5991,
+          "knot_overlay": 0.7333
+        },
+        "source_breakdown": {
+          "classic": 0.3797,
+          "knot_agent": 0.3544,
+          "research": 0.2658
+        },
+        "consensus_score": 0.5675,
         "risk_flags": [
           "high_volatility",
           "thin_liquidity"
@@ -1558,10 +2311,10 @@
       "name": "Xiaomi Group",
       "rationale": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。",
       "risk": "汽车业务投入大导致利润承压、行业竞争激烈、新品销量不及预期。",
-      "raw_score": 0.4105,
+      "raw_score": 0.4935,
       "confidence_source": "knot_agent_dynamic",
       "action_hint": "适合高波动成长型仓位，等待销量或业绩催化确认",
-      "generated_at": "2026-05-11T09:59:09.901919+08:00",
+      "generated_at": "2026-05-11T19:41:21.228503+08:00",
       "as_of_date": "2026-05-11",
       "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "signals": [
@@ -1708,6 +2461,69 @@
           "source": "dynamic_hybrid_candidate_v2",
           "category": "candidate_score",
           "score": 0.4105,
+          "summary": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v2",
+          "category": "candidate_score",
+          "score": 0.4105,
+          "summary": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.4935,
+          "summary": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。"
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "remote-knot-fallback",
+          "category": "research",
+          "score": 0.432,
+          "summary": "风险过高或资金条件不足，阻断交易。",
+          "metadata": {
+            "strategy": "block_trade",
+            "confidence": 0.78,
+            "task_type": "strategy_select"
+          }
+        },
+        {
+          "symbol": "01810.HK",
+          "market": "hong_kong",
+          "source": "dynamic_hybrid_candidate_v3",
+          "category": "candidate_score",
+          "score": 0.4935,
           "summary": "手机基本盘修复叠加汽车业务打开新成长叙事，品牌生态协同增强，若高端化与智能电动车兑现，估值弹性较大。"
         }
       ],
@@ -1897,33 +2713,35 @@
         }
       },
       "research_note": "风险过高或资金条件不足，阻断交易。",
-      "selection_policy": "dynamic_hybrid_market_complete_v2",
-      "legacy_raw_score": 0.4105,
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
+      "legacy_raw_score": 0.4935,
       "trend_score": 0.61,
       "relative_strength_score": 0.5899,
-      "flow_score": 0.255,
+      "flow_score": 0.6352,
       "event_score": 0.61,
       "quality_score": 0.61,
-      "liquidity_score": 0.255,
+      "liquidity_score": 0.6269,
       "volatility_score": 1.0,
       "regime_fit_score": 0.6033,
       "explanation_ready_score": 1.0,
       "risk_penalty": 1.0,
-      "consensus_score": 0.4878,
+      "consensus_score": 0.6138,
       "strategy_tags": [
         "knot_overlay",
-        "consumer_growth"
+        "event_driven",
+        "quality_growth",
+        "trend_following"
       ],
       "strategy_votes": {
-        "trend_following": 0.485,
-        "event_driven": 0.4894,
-        "quality_growth": 0.4917,
+        "trend_following": 0.6117,
+        "event_driven": 0.6162,
+        "quality_growth": 0.6156,
         "knot_overlay": 0.6807
       },
       "source_breakdown": {
-        "classic": 0.4091,
-        "knot_agent": 0.3636,
-        "research": 0.2273
+        "classic": 0.3871,
+        "knot_agent": 0.3548,
+        "research": 0.2581
       },
       "risk_flags": [
         "high_risk_penalty",
@@ -1932,16 +2750,16 @@
       ],
       "scoring": {
         "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v2",
-        "selection_policy": "dynamic_hybrid_market_complete_v2",
-        "score": 0.4105,
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "score": 0.4935,
         "input_scores": {
           "trend_score": 0.61,
           "relative_strength_score": 0.5899,
-          "flow_score": 0.255,
+          "flow_score": 0.6352,
           "event_score": 0.61,
           "quality_score": 0.61,
-          "liquidity_score": 0.255,
+          "liquidity_score": 0.6269,
           "volatility_score": 1.0,
           "regime_fit_score": 0.6033,
           "knot_overlay_score": 0.432,
@@ -1968,9 +2786,9 @@
           {
             "key": "flow_score",
             "label": "Flow",
-            "score": 0.255,
+            "score": 0.6352,
             "weight": 0.14,
-            "weighted_contribution": 0.0357,
+            "weighted_contribution": 0.0889,
             "role": "positive"
           },
           {
@@ -1992,9 +2810,9 @@
           {
             "key": "liquidity_score",
             "label": "Liquidity",
-            "score": 0.255,
+            "score": 0.6269,
             "weight": 0.08,
-            "weighted_contribution": 0.0204,
+            "weighted_contribution": 0.0502,
             "role": "positive"
           },
           {
@@ -2024,511 +2842,24 @@
         ],
         "strategy_tags": [
           "knot_overlay",
-          "consumer_growth"
+          "event_driven",
+          "quality_growth",
+          "trend_following"
         ],
         "strategy_votes": {
-          "trend_following": 0.485,
-          "event_driven": 0.4894,
-          "quality_growth": 0.4917,
+          "trend_following": 0.6117,
+          "event_driven": 0.6162,
+          "quality_growth": 0.6156,
           "knot_overlay": 0.6807
         },
         "source_breakdown": {
-          "classic": 0.4091,
-          "knot_agent": 0.3636,
-          "research": 0.2273
+          "classic": 0.3871,
+          "knot_agent": 0.3548,
+          "research": 0.2581
         },
-        "consensus_score": 0.4878,
+        "consensus_score": 0.6138,
         "risk_flags": [
           "high_risk_penalty",
-          "high_volatility",
-          "thin_liquidity"
-        ]
-      }
-    },
-    {
-      "symbol": "00388.HK",
-      "market": "hong_kong",
-      "name": "Hong Kong Exchanges and Clearing",
-      "rationale": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。",
-      "risk": "市场成交低迷、新股发行不振、外部地缘与政策扰动影响估值。",
-      "raw_score": 0.4075,
-      "confidence_source": "knot_agent_dynamic",
-      "action_hint": "适合用作市场活跃度修复的代表标的，关注成交额与IPO回暖信号",
-      "generated_at": "2026-05-11T09:59:09.901919+08:00",
-      "as_of_date": "2026-05-11",
-      "source_file": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
-      "signals": [
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "futu_quote_snapshot",
-          "category": "market_data",
-          "score": 0.5281,
-          "summary": "snapshot change -0.66%; turnover 1437536301"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "local-fallback-until-remote-hooked",
-          "category": "research",
-          "score": 0.6,
-          "summary": "未满足明确开仓模式，先观察。",
-          "metadata": {
-            "strategy": "watch_only",
-            "confidence": 0.78,
-            "task_type": "strategy_select"
-          }
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "dynamic_hybrid_candidate_v2",
-          "category": "candidate_score",
-          "score": 0.4075,
-          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "futu_quote_snapshot",
-          "category": "market_data",
-          "score": 0.5281,
-          "summary": "snapshot change -0.66%; turnover 1437536301"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "remote-knot-fallback",
-          "category": "research",
-          "score": 0.432,
-          "summary": "风险过高或资金条件不足，阻断交易。",
-          "metadata": {
-            "strategy": "block_trade",
-            "confidence": 0.78,
-            "task_type": "strategy_select"
-          }
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "dynamic_hybrid_candidate_v2",
-          "category": "candidate_score",
-          "score": 0.4075,
-          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "futu_quote_snapshot",
-          "category": "market_data",
-          "score": 0.5281,
-          "summary": "snapshot change -0.66%; turnover 1437536301"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "remote-knot-fallback",
-          "category": "research",
-          "score": 0.432,
-          "summary": "风险过高或资金条件不足，阻断交易。",
-          "metadata": {
-            "strategy": "block_trade",
-            "confidence": 0.78,
-            "task_type": "strategy_select"
-          }
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "dynamic_hybrid_candidate_v2",
-          "category": "candidate_score",
-          "score": 0.4075,
-          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "futu_quote_snapshot",
-          "category": "market_data",
-          "score": 0.5281,
-          "summary": "snapshot change -0.66%; turnover 1437536301"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "remote-knot-fallback",
-          "category": "research",
-          "score": 0.432,
-          "summary": "风险过高或资金条件不足，阻断交易。",
-          "metadata": {
-            "strategy": "block_trade",
-            "confidence": 0.78,
-            "task_type": "strategy_select"
-          }
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "dynamic_hybrid_candidate_v2",
-          "category": "candidate_score",
-          "score": 0.4075,
-          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "futu_quote_snapshot",
-          "category": "market_data",
-          "score": 0.5359,
-          "summary": "snapshot change -0.42%; turnover 421848289"
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "remote-knot-fallback",
-          "category": "research",
-          "score": 0.432,
-          "summary": "风险过高或资金条件不足，阻断交易。",
-          "metadata": {
-            "strategy": "block_trade",
-            "confidence": 0.78,
-            "task_type": "strategy_select"
-          }
-        },
-        {
-          "symbol": "00388.HK",
-          "market": "hong_kong",
-          "source": "dynamic_hybrid_candidate_v2",
-          "category": "candidate_score",
-          "score": 0.4075,
-          "summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。"
-        }
-      ],
-      "theme_bucket": "general",
-      "risk_level": "medium",
-      "explanation_summary": "港交所受益于资本市场活跃度回升、南北向资金流与新股周期改善，具备稀缺金融基础设施属性。",
-      "explanation_ready": true,
-      "data_completeness": 1.0,
-      "max_signal_score": 0.6,
-      "candidate_type": "dynamic",
-      "quote": {
-        "code": "HK.00388",
-        "name": "香港交易所",
-        "update_time": "2026-05-11 09:57:58",
-        "last_price": 422.4,
-        "open_price": 423.0,
-        "high_price": 423.0,
-        "low_price": 420.2,
-        "prev_close_price": 424.2,
-        "volume": 999004,
-        "turnover": 421848289.0,
-        "turnover_rate": 0.079,
-        "suspension": false,
-        "listing_date": "2000-06-27",
-        "lot_size": 100,
-        "price_spread": 0.2,
-        "stock_owner": null,
-        "ask_price": 422.4,
-        "bid_price": 422.2,
-        "ask_vol": 900,
-        "bid_vol": 15200,
-        "enable_margin": null,
-        "mortgage_ratio": null,
-        "long_margin_initial_ratio": null,
-        "enable_short_sell": null,
-        "short_sell_rate": null,
-        "short_available_volume": null,
-        "short_margin_initial_ratio": null,
-        "amplitude": 0.66,
-        "avg_price": 422.268868793,
-        "bid_ask_ratio": 28.113,
-        "volume_ratio": 3.262,
-        "highest52weeks_price": 453.68,
-        "lowest52weeks_price": 360.48,
-        "highest_history_price": 536.34,
-        "lowest_history_price": -117.27,
-        "close_price_5min": 421.4,
-        "after_volume": 0,
-        "after_turnover": 0.0,
-        "sec_status": "NORMAL",
-        "equity_valid": true,
-        "issued_shares": 1267836895,
-        "total_market_val": 535534304448.0,
-        "net_asset": 55150904932.5,
-        "net_profit": 17753520040.685,
-        "earning_per_share": 14.003,
-        "outstanding_shares": 1267836895,
-        "circular_market_val": 535534304448.0,
-        "net_asset_per_share": 43.5,
-        "ey_ratio": 0.342,
-        "pe_ratio": 30.164,
-        "pb_ratio": 9.71,
-        "pe_ttm_ratio": 28.387,
-        "dividend_ttm": 12.52,
-        "dividend_ratio_ttm": 2.96,
-        "dividend_lfy": 12.52,
-        "dividend_lfy_ratio": 2.964,
-        "wrt_valid": false,
-        "wrt_conversion_ratio": null,
-        "wrt_type": "N/A",
-        "wrt_strike_price": null,
-        "wrt_maturity_date": null,
-        "wrt_end_trade": null,
-        "wrt_recovery_price": null,
-        "wrt_street_vol": null,
-        "wrt_issue_vol": null,
-        "wrt_street_ratio": null,
-        "wrt_delta": null,
-        "wrt_implied_volatility": null,
-        "wrt_premium": null,
-        "wrt_leverage": null,
-        "wrt_ipop": null,
-        "wrt_break_even_point": null,
-        "wrt_conversion_price": null,
-        "wrt_price_recovery_ratio": null,
-        "wrt_score": null,
-        "wrt_upper_strike_price": null,
-        "wrt_lower_strike_price": null,
-        "wrt_inline_price_status": "N/A",
-        "wrt_issuer_code": null,
-        "option_valid": false,
-        "option_type": "N/A",
-        "strike_time": null,
-        "option_strike_price": null,
-        "option_contract_size": null,
-        "option_open_interest": null,
-        "option_implied_volatility": null,
-        "option_premium": null,
-        "option_delta": null,
-        "option_gamma": null,
-        "option_vega": null,
-        "option_theta": null,
-        "option_rho": null,
-        "option_net_open_interest": null,
-        "option_expiry_date_distance": null,
-        "option_contract_nominal_value": null,
-        "option_owner_lot_multiplier": null,
-        "option_area_type": "N/A",
-        "option_contract_multiplier": null,
-        "index_option_type": "N/A",
-        "index_valid": false,
-        "index_raise_count": null,
-        "index_fall_count": null,
-        "index_equal_count": null,
-        "plate_valid": false,
-        "plate_raise_count": null,
-        "plate_fall_count": null,
-        "plate_equal_count": null,
-        "future_valid": false,
-        "future_last_settle_price": null,
-        "future_position": null,
-        "future_position_change": null,
-        "future_main_contract": null,
-        "future_last_trade_time": null,
-        "trust_valid": false,
-        "trust_dividend_yield": null,
-        "trust_aum": null,
-        "trust_outstanding_units": null,
-        "trust_netAssetValue": null,
-        "trust_premium": null,
-        "trust_assetClass": "N/A",
-        "pre_price": "N/A",
-        "pre_high_price": "N/A",
-        "pre_low_price": "N/A",
-        "pre_volume": "N/A",
-        "pre_turnover": "N/A",
-        "pre_change_val": "N/A",
-        "pre_change_rate": "N/A",
-        "pre_amplitude": "N/A",
-        "after_price": "N/A",
-        "after_high_price": "N/A",
-        "after_low_price": "N/A",
-        "after_change_val": "N/A",
-        "after_change_rate": "N/A",
-        "after_amplitude": "N/A",
-        "overnight_price": "N/A",
-        "overnight_high_price": "N/A",
-        "overnight_low_price": "N/A",
-        "overnight_volume": "N/A",
-        "overnight_turnover": "N/A",
-        "overnight_change_val": "N/A",
-        "overnight_change_rate": "N/A",
-        "overnight_amplitude": "N/A",
-        "change_pct": -0.424,
-        "price": 422.4,
-        "turnover_ratio": 0.079,
-        "market_cap": 535534304448.0
-      },
-      "last_price": 424.2,
-      "price": 424.2,
-      "change_pct": -0.656,
-      "turnover": 1437536301.0,
-      "turnover_ratio": 0.268,
-      "market_cap": 537816410859.0,
-      "knot_overlay_score": 0.6,
-      "strategy_selection": {
-        "strategy_id": "block_trade",
-        "allow_trade": false,
-        "confidence": 0.78,
-        "reason": "风险过高或资金条件不足，阻断交易。",
-        "risk_flags": [],
-        "source": "remote-knot-fallback"
-      },
-      "knot_evaluation": {
-        "task_type": "strategy_select",
-        "runtime": "remote-knot-fallback",
-        "fallback_used": true,
-        "schema_validated": true,
-        "parsed": {
-          "strategy": "block_trade",
-          "confidence": 0.78,
-          "reason": "风险过高或资金条件不足，阻断交易。",
-          "risk_flags": [],
-          "use_task_planning": false,
-          "format_ok": true,
-          "fallback_used": true
-        }
-      },
-      "research_note": "未满足明确开仓模式，先观察。",
-      "selection_policy": "dynamic_hybrid_market_complete_v2",
-      "legacy_raw_score": 0.4075,
-      "trend_score": 0.6,
-      "relative_strength_score": 0.4672,
-      "flow_score": 0.134,
-      "event_score": 0.6,
-      "quality_score": 0.6,
-      "liquidity_score": 0.134,
-      "volatility_score": 1.0,
-      "regime_fit_score": 0.5557,
-      "explanation_ready_score": 1.0,
-      "risk_penalty": 0.661,
-      "consensus_score": 0.4188,
-      "strategy_tags": [
-        "knot_overlay"
-      ],
-      "strategy_votes": {
-        "trend_following": 0.4004,
-        "event_driven": 0.4299,
-        "quality_growth": 0.4447,
-        "knot_overlay": 0.7333
-      },
-      "source_breakdown": {
-        "classic": 0.4054,
-        "knot_agent": 0.3604,
-        "research": 0.2342
-      },
-      "risk_flags": [
-        "high_volatility",
-        "thin_liquidity"
-      ],
-      "scoring": {
-        "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v2",
-        "selection_policy": "dynamic_hybrid_market_complete_v2",
-        "score": 0.4075,
-        "input_scores": {
-          "trend_score": 0.6,
-          "relative_strength_score": 0.4672,
-          "flow_score": 0.134,
-          "event_score": 0.6,
-          "quality_score": 0.6,
-          "liquidity_score": 0.134,
-          "volatility_score": 1.0,
-          "regime_fit_score": 0.5557,
-          "knot_overlay_score": 0.6,
-          "explanation_ready_score": 1.0,
-          "risk_penalty": 0.661
-        },
-        "components": [
-          {
-            "key": "trend_score",
-            "label": "Trend",
-            "score": 0.6,
-            "weight": 0.22,
-            "weighted_contribution": 0.132,
-            "role": "positive"
-          },
-          {
-            "key": "relative_strength_score",
-            "label": "Relative Strength",
-            "score": 0.4672,
-            "weight": 0.16,
-            "weighted_contribution": 0.0748,
-            "role": "positive"
-          },
-          {
-            "key": "flow_score",
-            "label": "Flow",
-            "score": 0.134,
-            "weight": 0.14,
-            "weighted_contribution": 0.0188,
-            "role": "positive"
-          },
-          {
-            "key": "event_score",
-            "label": "Event",
-            "score": 0.6,
-            "weight": 0.14,
-            "weighted_contribution": 0.084,
-            "role": "positive"
-          },
-          {
-            "key": "quality_score",
-            "label": "Quality",
-            "score": 0.6,
-            "weight": 0.1,
-            "weighted_contribution": 0.06,
-            "role": "positive"
-          },
-          {
-            "key": "liquidity_score",
-            "label": "Liquidity",
-            "score": 0.134,
-            "weight": 0.08,
-            "weighted_contribution": 0.0107,
-            "role": "positive"
-          },
-          {
-            "key": "regime_fit_score",
-            "label": "Regime Fit",
-            "score": 0.5557,
-            "weight": 0.06,
-            "weighted_contribution": 0.0333,
-            "role": "positive"
-          },
-          {
-            "key": "knot_overlay_score",
-            "label": "Knot Overlay",
-            "score": 0.6,
-            "weight": 0.1,
-            "weighted_contribution": 0.06,
-            "role": "positive"
-          },
-          {
-            "key": "risk_penalty",
-            "label": "Risk Penalty",
-            "score": 0.661,
-            "weight": 0.1,
-            "weighted_contribution": -0.0661,
-            "role": "penalty"
-          }
-        ],
-        "strategy_tags": [
-          "knot_overlay"
-        ],
-        "strategy_votes": {
-          "trend_following": 0.4004,
-          "event_driven": 0.4299,
-          "quality_growth": 0.4447,
-          "knot_overlay": 0.7333
-        },
-        "source_breakdown": {
-          "classic": 0.4054,
-          "knot_agent": 0.3604,
-          "research": 0.2342
-        },
-        "consensus_score": 0.4188,
-        "risk_flags": [
           "high_volatility",
           "thin_liquidity"
         ]
@@ -2538,12 +2869,10 @@
   "warnings": [],
   "enrichment": {
     "market_data": {
-      "enabled": true,
-      "status": "ok",
+      "enabled": false,
+      "status": "skipped",
       "source": "futu_quote_snapshot",
-      "requested_symbols": 5,
-      "snapshot_count": 5,
-      "matched_rows": 5,
+      "matched_rows": 0,
       "warnings": []
     },
     "knot": {
@@ -2597,7 +2926,7 @@
     "prepared_by": "CandidateInputPreparationService",
     "prepared_mode": "dynamic",
     "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
-    "include_market_data": true,
+    "include_market_data": false,
     "knot_runtime": "auto"
   }
 }

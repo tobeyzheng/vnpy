@@ -61,6 +61,7 @@ from scripts.classic_multifactor.minute_guard import (
 )
 from vnpy.trader.logger import logger
 from vnpy.trader.object import BarData
+from services.strategy.market_rules import market_session_end, market_timezone
 
 
 # Re-export legacy symbols so existing call-sites that imported them from
@@ -101,10 +102,10 @@ def build_parser() -> argparse.ArgumentParser:
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _derive_session_end(setting: dict[str, Any]) -> dtime:
+def _derive_session_end(setting: dict[str, Any], market_name: str) -> dtime:
     cutoff = parse_hhmm(str(setting.get("no_new_entry_after", "")))
     if cutoff is None:
-        return dtime(16, 30)
+        return parse_hhmm(market_session_end(market_name)) or dtime(16, 0)
     total = cutoff.hour * 60 + cutoff.minute + 30
     total = min(total, 23 * 60 + 59)
     return dtime(total // 60, total % 60)
@@ -130,9 +131,12 @@ class IntradayLoopRunner(BaseRunner):
     def __init__(self, args: argparse.Namespace):
         super().__init__(args)
         self.session_end_local: dtime = (
-            parse_hhmm(args.session_end) or _derive_session_end(self.setting)
+            parse_hhmm(args.session_end) or _derive_session_end(self.setting, self.market_name)
         )
-        self.session_start_local: dtime | None = parse_hhmm(args.session_start)
+        default_start = parse_hhmm(args.session_start)
+        if default_start is None and self.session_tz == market_timezone(self.market_name):
+            default_start = parse_hhmm("09:30")
+        self.session_start_local: dtime | None = default_start
 
         self.stats = RunnerStats(
             strategy_name=self.strategy_name,

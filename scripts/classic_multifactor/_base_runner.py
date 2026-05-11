@@ -65,6 +65,7 @@ from services.futu_account import FutuAccountProvider
 from services.risk_engine import LiveRiskGuard
 from services.trade_state import OmsEventRecorder, OrderStateStore
 from services.common.config_loader import load_yaml_limits_block
+from services.strategy.market_rules import market_timezone, resolve_market_from_vt_symbol
 
 GATEWAY_NAME = "FUTU"
 STRATEGY_CLASS = "ClassicMultiFactorCtaStrategy"
@@ -133,7 +134,8 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config", required=True, type=str)
     parser.add_argument("--strategy-name", type=str, default="")
 
-    parser.add_argument("--session-tz", type=str, default="America/New_York")
+    parser.add_argument("--session-tz", type=str, default="",
+                        help="IANA timezone; empty = derive from the config market")
 
     parser.add_argument("--live-submit", action="store_true",
                         help="Must be combined with env hard-switches to submit real orders")
@@ -201,8 +203,6 @@ class BaseRunner(ABC):
         self.orders_root = self.execution_state_root / "orders"
         self.orders_root.mkdir(parents=True, exist_ok=True)
 
-        self.tz = ZoneInfo(args.session_tz)
-
         self.config_path = Path(args.config).resolve()
         if not self.config_path.exists():
             raise FileNotFoundError(f"config not found: {self.config_path}")
@@ -216,6 +216,10 @@ class BaseRunner(ABC):
             raise ValueError("config missing 'symbol' (e.g. 'NVDA.US')")
         self.vt_symbol = map_vt_symbol(self.raw_vt_symbol)
         self.market = self.raw_vt_symbol.split(".")[-1].upper()
+        self.market_name = resolve_market_from_vt_symbol(self.raw_vt_symbol)
+        self.session_tz = args.session_tz or market_timezone(self.market_name)
+        self.args.session_tz = self.session_tz
+        self.tz = ZoneInfo(self.session_tz)
 
         symbol_token = self.raw_vt_symbol.replace(".", "_")
         if self.loop_mode == "daily":
@@ -382,7 +386,7 @@ class BaseRunner(ABC):
             loop_mode=self.loop_mode,
             live_submit=self.live_submit,
             execution_env=self.execution_env,
-            exchange_tz=self.args.session_tz,
+            exchange_tz=self.session_tz,
             oms_recorder=self._oms_recorder,
             **extras,
         )

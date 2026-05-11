@@ -54,6 +54,7 @@ from scripts.classic_multifactor.minute_guard import (
     MinuteTradeGuardConfig,
 )
 from vnpy.trader.logger import logger
+from services.strategy.market_rules import market_daily_rebalance_time
 
 
 # ---------------------------------------------------------------------------
@@ -103,7 +104,11 @@ class DailyRebalanceRunner(BaseRunner):
 
     def __init__(self, args: argparse.Namespace):
         super().__init__(args)
-        rebalance_text = args.rebalance_time or str(self.payload.get("rebalance_time", ""))
+        rebalance_text = (
+            args.rebalance_time
+            or str(self.payload.get("rebalance_time", ""))
+            or market_daily_rebalance_time(self.market_name)
+        )
         rebalance_local = parse_hhmm(rebalance_text)
         if rebalance_local is None:
             raise ValueError(

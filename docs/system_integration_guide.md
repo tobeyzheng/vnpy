@@ -66,13 +66,19 @@
   - 若未显式传 `--prepare-knot-runtime`，当前默认使用 `auto`：优先尝试 remote，初始化不可用时退回 local
   - 默认不会自动启动 SIM/live 脚本
 - **`scripts/quant_workflow/run_prepare_candidate_inputs.py`**：候选输入前置准备入口。
-  - 默认读取并重写 `state/runs/candidate_inputs.dynamic.json` 与 `state/runs/candidate_inputs.json`
-  - 当前会先通过 `HybridCandidateGenerationService` 生成/补齐 dynamic/static 候选，再由 `CandidateInputPreparationService` 统一写回
-  - 可选通过 `--include-market-data` 批量补 Futu snapshot 字段，通过 `--knot-runtime off|local|remote|auto` 批量补 Knot 结构化评估
-  - 若未显式传 `--knot-runtime`，当前默认使用 `auto`：优先尝试 remote，初始化不可用时退回 local
-  - 输出 `state/runs/candidate_inputs.prepare.report.json`
-  - 写回前会递归清洗非有限数值；来自 snapshot 或其他 enrich 源的 `NaN` / `Infinity` 会统一落为 `null`，保证产物保持严格 JSON
-  - 可通过 `--dynamic-source` / `--static-source` 指定替代输入源
+  - 默认走**按市场独立刷新动态池**的新流程：每次只重写 `state/runs/candidate_inputs.dynamic.json` 中目标市场的行，其他市场已有的行保持不变；静态池 `state/runs/candidate_inputs.json` 本流程**不再触碰**，留给后续按月刷新工作流。
+  - `--market` 可选 `all` / `hong_kong` / `us`，默认 `all`，`all` 时按市场依次跑。
+  - `--strategy` 可选 `knot_first`（默认）/ `score_first` / `merge_existing`：
+    - `knot_first`：先调用远端 Knot agent 生成 ~20 个候选，再走本地 multifactor 评分 + Futu snapshot enrich，取 Top-N 写回。
+    - `score_first`：直接通过 `FutuMarketUniverseProvider` 拉对应市场的全市场标的，按 `universe_limit` 截断，本地多因子评分后取 Top-N，再做一轮 Knot 富化。
+    - 当 `knot_first` 失败（远端 Knot 不可用、未配置、返回空）时，会**自动降级为 `score_first`**，并在 `market_runs[*].knot_status` 标注降级原因。
+    - `merge_existing`：仅基于动态池里已有的目标市场行重新打分（兼容老行为）。
+  - `--top-n`（默认 20）控制每市场最终保留的候选数；`--knot-target-count`（默认 20）控制让 Knot 提议的候选数；`--universe-limit`（默认 800）限制 score_first 拉到的全市场标的上限。
+  - `--include-market-data` 默认开启（`--no-include-market-data` 关闭）；`--knot-runtime` 仍支持 `off|local|remote|auto`，默认 `auto`。
+  - `--dry-run` 只生成报告，不写回动态池。
+  - `--legacy` 显式回到老 `prepare()` 流程（同时刷新 dynamic + static），需要替换源文件时仍可配合 `--dynamic-source` / `--static-source`。
+  - 报告输出 `state/runs/candidate_inputs.prepare.report.json`，新版 schema 为 `candidate_prepare_report_v3`，包含 `target_markets`、`market_runs[*].strategy_used`、`knot_status`、`universe_size`、`kept_count`、`top_symbols` 等字段，便于追溯单次刷新的执行路径。
+  - 写回前会递归清洗非有限数值；来自 snapshot 或其他 enrich 源的 `NaN` / `Infinity` 会统一落为 `null`，保证产物保持严格 JSON。
 - **`python -m scripts.quant_workflow`**：与上面的脚本入口等价的模块入口，适合统一的一键工作流触发。
 - **`scripts/run_healthcheck.py`**：环境和账户健康检查入口，输出 `state/runs/healthcheck.json`。
 - **`scripts/run_portfolio_brief.py`**：组合摘要入口，聚合 HK/US close report 与 healthcheck，输出 `state/runs/portfolio_brief.json`。
@@ -80,6 +86,7 @@
 - **`scripts/classic_multifactor/run_vnpy_cta_backtest.py`**：官方 vn.py CTA 回测入口，输出 `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`。
 - **`scripts/classic_multifactor/run_intraday_loop.py`**：分钟级主线 runner，带执行保护，属于 simulation/live 邻近入口。
   - 共享 `BaseRunner.map_vt_symbol()` 会在会话启动前把 classic config 中的美股 `NVDA.US` 规范化为 `NVDA.SMART`，并把港股 `00700.HK` 规范化为 `00700.SEHK`，避免 vn.py/Futu 会话因交易所后缀不匹配而无法创建策略实例。
+  - 当调用方未显式传 `--session-tz`、`--session-start`、`--session-end` 时，runner 现在会根据 `services/strategy/market_rules.py` 里由 `symbol/vt_symbol` 解析出的 market 自动推导默认交易所时区和常规 session 边界；当前 HK 会落到 `Asia/Hong_Kong` + `09:30~16:00`，US 会落到 `America/New_York` + `09:30~16:00`，从而避免 HK 配置误沿用美股时区。
   - classic strategy 的 `on_init() -> load_bar()` warmup 历史 bar 当前只用于指标/模型预热，不再通过 execution hook 写入正式 `OrderStateStore`；初始化阶段出现的历史信号不会污染正式 dry-run / Futu 模拟 / Futu 实盘订单目录。
   - warmup 载入现在会按策略 `data_interval` 显式换算 `load_bar(days=...)` 所需的自然日天数：`1m` 分钟策略会把模型所需 warmup bar 数折算成一个保守的交易日窗口（并附带周末/节假日缓冲），然后用 `Interval.MINUTE` 预热；`1d` 日级策略则继续按所需 bar 数直接加载日线天数。这样可避免把 `480` 根 `1m` 预热 bar 误当成 `480` 个自然日去回放，导致启动长时间停留在 `warmup`。
   - runner 现仅在**真实决策点**或**有意义状态变化**时输出 `intraday bar result` 日志：`warmup` bar 不打印，普通非决策 `1m` bar 不打印；仅当当前 `bar.datetime` 命中策略信号评估边界（例如 `signal_interval_minutes=15` 时的 `:00/:15/:30/:45` 分钟边界），或本轮出现审批通过、风控拦截、异常、活跃订单变化时，才记录 `result`、`last_signal`、`approved_delta`、`blocked_delta`、`blocked_by_gate`、`pos` 与 `active_orders`。这样既能保留排障所需的关键轨迹，又避免启动 warmup 和日常非决策 bar 刷屏，同时不会再因策略内部 `bars` 缓冲区截断而错过后续决策点日志。
@@ -87,6 +94,7 @@
   - `state/runs/<execution_env>/events.jsonl` 记录 execution hook 的正式事件轨迹，例如 `order_approved`、`order_blocked`、`order_submitted`；这些事件由 `ExecutionGuardPipeline` 在订单审批链路中逐条追加，用于事后审计、排查某次信号为什么被拒绝/批准，以及供 dual-run / preflight / reconciliation 等只读工具统计最近运行痕迹。
   - `state/runs/<execution_env>/orders/*.json` 保存每个被正式审批过的 `OrderState` 快照；其主要用途是跨重启幂等、防止重复请求、以及把后续 OMS / broker 回报与项目内 `request_id` 重新关联。它不会直接触发下单，但会影响后续同一请求是否被视为重复、以及恢复阶段如何识别“哪些订单已经进入正式生命周期”。
 - **`scripts/classic_multifactor/run_daily_rebalance.py`**：日频再平衡 runner，带执行保护，属于 simulation/live 邻近入口。
+  - 当 CLI 与 config 都未提供 `rebalance_time` 时，runner 现在会从 `services/strategy/market_rules.py` 按 market 自动回退到默认日频调仓时间（当前 HK / US 默认均为 `15:55`），减少日频配置重复写死时间参数。
   - 当当前时间尚未到 `rebalance_time` 时，runner 会先输出一条 `daily runner waiting` 启动等待日志，并在等待期间每 10 分钟输出一条 `daily runner heartbeat`，记录当前本地时间、目标调仓时间和剩余分钟数，便于确认任务仍在静默等待而非假死。
 - **`scripts/run_us_sim_task.py`**：US SIM 任务入口；默认保留 legacy SIM 路径，同时支持显式转发到 `run_intraday_loop.py` 新主线。
 - **`scripts/run_us_futu_sim_session.py`**：US Futu SIM session 入口。
@@ -174,6 +182,8 @@
 - 候选输入由 `UnifiedCandidateProvider` 统一读取。
 - `candidate_inputs.dynamic.json` 的优先级仍高于 `candidate_inputs.json`，但当前合并规则已经改为**按 `(market, symbol)` 精细合并**：static 先入池，dynamic 针对同一 symbol 做字段级覆盖，不再整市场覆盖。
 - `CandidateInputPreparationService` 当前会通过 `HybridCandidateGenerationService` + `CandidateScoringService` 重写 dynamic/static 候选，统一输出带 `schema_version`、`generated_at`、`as_of_date`、`market_counts`、`row_requirements`、`scoring_model`、`enrichment` 和结构化候选评分字段的对象格式，兼容 `UnifiedCandidateProvider` 的现有读取方式。
+- `CandidateScoringService` 当前的 `liquidity_score` / `flow_score` 已升级为多因子启发式口径：优先看绝对成交额，再结合换手率、点差/深度代理和文本低流动性惩罚，避免仅凭 `turnover_ratio / 2` 把大票误判为 `thin_liquidity`。
+- `services/evaluation_hub/candidate_framework.py` 当前直接复用 `CandidateScoringService` 暴露的共享流动性 helper，因此候选评分层与 workflow 观察层对 `thin_liquidity` 的判断口径已保持一致。
 - 候选准备、workflow summary、artifact store、renderer、Knot `decision_time` 等对外时间戳当前统一按北京时间（`Asia/Shanghai`，`+08:00`）写入，便于直接与本机时间对齐。
 - `state/runs/candidate_inputs.prepare.report.json` 会记录本轮写入目标、market 覆盖、`provider_merge_policy=symbol_merge_dynamic_preferred`、缺失字段统计、评分模型信息、是否请求 `include_market_data` / `knot_runtime`、以及各目标的 enrich 元数据与 warning，便于追溯“这次 workflow 看到了什么候选池”。
 - `enrichment.knot` 当前会额外记录 `requested_runtime_mode`、`runtimes_used`、`single_runtime_effective` 与 `fallback_used`，用于审计这次 prepare 是否保持单一 runtime、是否发生 runtime fallback。

@@ -9,6 +9,12 @@ from typing import Any, Iterable
 from vnpy_llm.base import beijing_now_isoformat
 
 from .candidate_generation import HybridCandidateGenerationService
+from .candidate_seed import KnotCandidateSeedService
+from .universe import (
+    DEFAULT_UNIVERSE_LIMIT,
+    FutuMarketUniverseProvider,
+    UniverseUnavailableError,
+)
 
 REQUIRED_ROW_FIELDS = (
     "symbol",
@@ -39,15 +45,34 @@ RECOMMENDED_ROW_FIELDS = (
     "scoring",
 )
 
+SUPPORTED_PREPARE_MARKETS = ("hong_kong", "us")
+SUPPORTED_PREPARE_STRATEGIES = ("knot_first", "score_first", "merge_existing")
+DEFAULT_TOP_N = 20
+DEFAULT_KNOT_TARGET_COUNT = 20
+
 
 class CandidateInputPreparationService:
-    def __init__(self, repo_root: Path):
+    def __init__(
+        self,
+        repo_root: Path,
+        *,
+        seed_service: KnotCandidateSeedService | None = None,
+        universe_provider: FutuMarketUniverseProvider | None = None,
+    ):
         self.repo_root = Path(repo_root)
         self.runs_root = self.repo_root / "state" / "runs"
         self.dynamic_path = self.runs_root / "candidate_inputs.dynamic.json"
         self.static_path = self.runs_root / "candidate_inputs.json"
         self.report_path = self.runs_root / "candidate_inputs.prepare.report.json"
         self.generation_service = HybridCandidateGenerationService(self.repo_root)
+        self.seed_service = seed_service or KnotCandidateSeedService()
+        self._universe_provider = universe_provider
+
+    @property
+    def universe_provider(self) -> FutuMarketUniverseProvider:
+        if self._universe_provider is None:
+            self._universe_provider = FutuMarketUniverseProvider()
+        return self._universe_provider
 
     def prepare(
         self,
@@ -127,6 +152,347 @@ class CandidateInputPreparationService:
             encoding="utf-8",
         )
         return sanitized_report
+
+    def prepare_market(
+        self,
+        *,
+        market: str = "all",
+        strategy: str = "knot_first",
+        top_n: int = DEFAULT_TOP_N,
+        knot_target_count: int = DEFAULT_KNOT_TARGET_COUNT,
+        knot_runtime: str = "auto",
+        include_market_data: bool = True,
+        universe_limit: int = DEFAULT_UNIVERSE_LIMIT,
+        dry_run: bool = False,
+        generated_at: str | None = None,
+        as_of_date: str | None = None,
+    ) -> dict[str, Any]:
+        """Refresh the dynamic candidate pool one market at a time.
+
+        - ``market='all'`` → run for every supported market in turn (HK + US),
+          merging each market's results back into ``candidate_inputs.dynamic.json``
+          without disturbing rows that belong to other markets.
+        - ``strategy='knot_first'`` (default) → ask the remote Knot agent for
+          a short list of candidates, then score/enrich them locally. If Knot
+          is unavailable the workflow automatically downgrades to
+          ``score_first`` for that market.
+        - ``strategy='score_first'`` → enumerate the full Futu universe,
+          score everything locally, keep the Top-N and re-run the Knot
+          enrichment pass on the survivors.
+        - ``strategy='merge_existing'`` → re-process the rows already present
+          in the dynamic pool (preserves the legacy refresh semantics).
+
+        The static pool is intentionally **not** touched in this method; the
+        prepare-static refresh remains a separate (monthly) workflow.
+        """
+        generated_at = generated_at or beijing_now_isoformat()
+        as_of_date = as_of_date or generated_at.split("T", 1)[0]
+        self.runs_root.mkdir(parents=True, exist_ok=True)
+
+        strategy_key = (strategy or "knot_first").strip().lower()
+        if strategy_key not in SUPPORTED_PREPARE_STRATEGIES:
+            raise ValueError(
+                f"Unsupported prepare strategy: {strategy}; expected one of {SUPPORTED_PREPARE_STRATEGIES}."
+            )
+        market_key = (market or "all").strip().lower()
+        if market_key == "all":
+            target_markets = list(SUPPORTED_PREPARE_MARKETS)
+        else:
+            if market_key not in SUPPORTED_PREPARE_MARKETS:
+                raise ValueError(
+                    f"Unsupported market: {market}; expected one of {SUPPORTED_PREPARE_MARKETS} or 'all'."
+                )
+            target_markets = [market_key]
+
+        bounded_top_n = max(1, int(top_n or DEFAULT_TOP_N))
+        bounded_target_count = max(bounded_top_n, int(knot_target_count or DEFAULT_KNOT_TARGET_COUNT))
+        bounded_universe_limit = max(50, int(universe_limit or DEFAULT_UNIVERSE_LIMIT))
+
+        existing_payload = self._load_dynamic_payload()
+        kept_rows = [
+            row
+            for row in existing_payload.get("items", [])
+            if isinstance(row, dict)
+            and str(row.get("market") or "").strip().lower() not in target_markets
+        ]
+        kept_rows_by_market = Counter(str(row.get("market") or "") for row in kept_rows)
+
+        market_runs: list[dict[str, Any]] = []
+        all_warnings: list[str] = []
+        new_rows: list[dict[str, Any]] = []
+
+        for market_name in target_markets:
+            run_result = self._prepare_single_market(
+                market=market_name,
+                strategy=strategy_key,
+                top_n=bounded_top_n,
+                knot_target_count=bounded_target_count,
+                knot_runtime=knot_runtime,
+                include_market_data=include_market_data,
+                universe_limit=bounded_universe_limit,
+                generated_at=generated_at,
+                as_of_date=as_of_date,
+            )
+            market_runs.append(run_result)
+            new_rows.extend(run_result.get("rows", []))
+            all_warnings.extend(run_result.get("warnings", []))
+
+        merged_rows = list(kept_rows) + list(new_rows)
+        deduped_rows = self.generation_service._dedupe_rows(merged_rows)
+        sorted_rows = sorted(deduped_rows, key=self.generation_service._rank_key, reverse=True)
+        market_counts = Counter(str(row.get("market") or "") for row in sorted_rows if row.get("market"))
+        scoring_meta = self.generation_service.scoring_service.model_metadata("dynamic")
+        merged_payload: dict[str, Any] = {
+            "mode": "dynamic_generated",
+            "schema_version": "candidate_inputs_v3",
+            "generated_at": generated_at,
+            "as_of_date": as_of_date,
+            "selection_policy": scoring_meta["selection_policy"],
+            "scoring_model": scoring_meta,
+            "source_files": sorted(
+                {entry for run in market_runs for entry in run.get("source_files", [])}
+            ),
+            "source_row_counts": {},
+            "item_count": len(sorted_rows),
+            "market_coverage": sorted(market_counts.keys()),
+            "market_counts": dict(market_counts),
+            "items": sorted_rows,
+            "warnings": list(dict.fromkeys(all_warnings)),
+            "row_requirements": {
+                "required_fields": list(REQUIRED_ROW_FIELDS),
+                "recommended_fields": list(RECOMMENDED_ROW_FIELDS),
+            },
+            "preparation_metadata": {
+                "prepared_by": self.__class__.__name__,
+                "prepared_mode": "dynamic_market_scoped",
+                "report_path": str(self.report_path),
+                "include_market_data": bool(include_market_data),
+                "knot_runtime": str(knot_runtime or "auto"),
+                "strategy": strategy_key,
+                "target_markets": list(target_markets),
+                "top_n": bounded_top_n,
+                "knot_target_count": bounded_target_count,
+                "universe_limit": bounded_universe_limit,
+                "dry_run": bool(dry_run),
+            },
+        }
+        sanitized_payload = self._sanitize_json_data(merged_payload)
+
+        written = False
+        if not dry_run:
+            self.dynamic_path.write_text(
+                json.dumps(sanitized_payload, ensure_ascii=False, indent=2, allow_nan=False),
+                encoding="utf-8",
+            )
+            written = True
+
+        report = {
+            "schema_version": "candidate_prepare_report_v3",
+            "generated_at": generated_at,
+            "as_of_date": as_of_date,
+            "report_path": str(self.report_path),
+            "mode": "dynamic_market_scoped",
+            "strategy_requested": strategy_key,
+            "target_markets": list(target_markets),
+            "dynamic_path": str(self.dynamic_path),
+            "dry_run": bool(dry_run),
+            "written": written,
+            "kept_rows_other_markets": len(kept_rows),
+            "kept_rows_by_market": dict(kept_rows_by_market),
+            "market_runs": [self._strip_run_rows(run) for run in market_runs],
+            "summary": {
+                "total_items": len(sorted_rows),
+                "market_counts": dict(market_counts),
+                "include_market_data": bool(include_market_data),
+                "knot_runtime": str(knot_runtime or "auto"),
+                "warnings": list(dict.fromkeys(all_warnings)),
+            },
+        }
+        sanitized_report = self._sanitize_json_data(report)
+        self.report_path.write_text(
+            json.dumps(sanitized_report, ensure_ascii=False, indent=2, allow_nan=False),
+            encoding="utf-8",
+        )
+        return sanitized_report
+
+    def _prepare_single_market(
+        self,
+        *,
+        market: str,
+        strategy: str,
+        top_n: int,
+        knot_target_count: int,
+        knot_runtime: str,
+        include_market_data: bool,
+        universe_limit: int,
+        generated_at: str,
+        as_of_date: str,
+    ) -> dict[str, Any]:
+        warnings: list[str] = []
+        strategy_used = strategy
+        knot_status = "skipped"
+        knot_seed_count = 0
+        universe_size = 0
+
+        seed_rows: list[dict[str, Any]] = []
+        if strategy == "knot_first":
+            seed_result = self.seed_service.generate_candidates(
+                market=market,
+                target_count=knot_target_count,
+                runtime_mode=knot_runtime,
+            )
+            knot_seed_count = len(seed_result.rows)
+            if seed_result.is_empty():
+                strategy_used = "score_first"
+                knot_status = f"unavailable_fallback_to_score_first:{seed_result.fallback_reason or 'unknown'}"
+                warnings.append(
+                    f"Knot seed unavailable for {market}; downgraded to score_first ({seed_result.fallback_reason})."
+                )
+            else:
+                knot_status = "ok"
+                seed_rows = seed_result.rows
+        elif strategy == "merge_existing":
+            seed_rows = self._existing_rows_for_market(market)
+            if not seed_rows:
+                strategy_used = "score_first"
+                warnings.append(
+                    f"No existing rows for {market}; downgraded merge_existing to score_first."
+                )
+
+        if strategy_used == "score_first":
+            try:
+                universe_rows = self.universe_provider.list_symbols(market)
+            except (UniverseUnavailableError, ValueError) as exc:
+                warnings.append(f"Universe unavailable for {market}: {exc}")
+                return {
+                    "market": market,
+                    "strategy_requested": strategy,
+                    "strategy_used": strategy_used,
+                    "knot_status": knot_status,
+                    "knot_seed_count": knot_seed_count,
+                    "universe_size": 0,
+                    "scored_count": 0,
+                    "kept_count": 0,
+                    "rows": [],
+                    "source_files": [],
+                    "warnings": warnings,
+                }
+            if universe_limit and len(universe_rows) > universe_limit:
+                universe_rows = universe_rows[:universe_limit]
+            seed_rows = [self._universe_row_to_seed(item) for item in universe_rows]
+            universe_size = len(seed_rows)
+
+        if not seed_rows:
+            return {
+                "market": market,
+                "strategy_requested": strategy,
+                "strategy_used": strategy_used,
+                "knot_status": knot_status,
+                "knot_seed_count": knot_seed_count,
+                "universe_size": universe_size,
+                "scored_count": 0,
+                "kept_count": 0,
+                "rows": [],
+                "source_files": [],
+                "warnings": warnings,
+            }
+
+        tmp_source = self.runs_root / f"candidate_inputs.dynamic.{market}.seed.json"
+        tmp_payload = {
+            "schema_version": "candidate_inputs_v3_seed",
+            "generated_at": generated_at,
+            "as_of_date": as_of_date,
+            "market": market,
+            "strategy_used": strategy_used,
+            "items": seed_rows,
+        }
+        tmp_source.write_text(
+            json.dumps(self._sanitize_json_data(tmp_payload), ensure_ascii=False, indent=2, allow_nan=False),
+            encoding="utf-8",
+        )
+
+        try:
+            generated = self.generation_service.generate(
+                mode="dynamic",
+                sources=[tmp_source],
+                generated_at=generated_at,
+                as_of_date=as_of_date,
+                include_market_data=include_market_data,
+                knot_runtime=knot_runtime,
+            )
+        finally:
+            try:
+                tmp_source.unlink()
+            except FileNotFoundError:
+                pass
+
+        scored_items = [
+            item for item in generated.get("items", [])
+            if isinstance(item, dict) and str(item.get("market") or "").strip().lower() == market
+        ]
+        kept = scored_items[:top_n]
+        warnings.extend(generated.get("warnings", []))
+
+        return {
+            "market": market,
+            "strategy_requested": strategy,
+            "strategy_used": strategy_used,
+            "knot_status": knot_status,
+            "knot_seed_count": knot_seed_count,
+            "universe_size": universe_size,
+            "scored_count": len(scored_items),
+            "kept_count": len(kept),
+            "rows": kept,
+            "source_files": [str(tmp_source)],
+            "warnings": list(dict.fromkeys(warnings)),
+        }
+
+    def _strip_run_rows(self, run: dict[str, Any]) -> dict[str, Any]:
+        stripped = {key: value for key, value in run.items() if key != "rows"}
+        stripped["top_symbols"] = [
+            {"symbol": str(row.get("symbol") or ""), "raw_score": row.get("raw_score")}
+            for row in run.get("rows", [])[:10]
+        ]
+        return stripped
+
+    def _load_dynamic_payload(self) -> dict[str, Any]:
+        if not self.dynamic_path.exists():
+            return {"items": []}
+        try:
+            data = json.loads(self.dynamic_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {"items": []}
+        if isinstance(data, dict):
+            items = data.get("items", [])
+            if isinstance(items, list):
+                return {"items": [dict(row) for row in items if isinstance(row, dict)]}
+            return {"items": []}
+        if isinstance(data, list):
+            return {"items": [dict(row) for row in data if isinstance(row, dict)]}
+        return {"items": []}
+
+    def _existing_rows_for_market(self, market: str) -> list[dict[str, Any]]:
+        payload = self._load_dynamic_payload()
+        return [
+            dict(row)
+            for row in payload.get("items", [])
+            if isinstance(row, dict)
+            and str(row.get("market") or "").strip().lower() == market
+        ]
+
+    def _universe_row_to_seed(self, row: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "symbol": row.get("symbol"),
+            "market": row.get("market"),
+            "name": row.get("name") or row.get("symbol"),
+            "candidate_type": "dynamic",
+            "raw_score": 0.5,
+            "rationale": "",
+            "risk": "",
+            "action_hint": "",
+            "signals": [],
+            "confidence_source": "futu_universe",
+        }
 
     def _prepare_target(
         self,

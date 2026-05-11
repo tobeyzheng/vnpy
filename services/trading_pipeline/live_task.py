@@ -34,6 +34,7 @@ from services.strategy.classic_adapter import (
 from services.strategy.engine import StrategyEngine
 from services.strategy.external_selection import ExternalStrategySelectionStore
 from services.strategy.selection_store import StrategySelectionStore
+from services.strategy.market_rules import market_no_new_entry_after, market_timezone
 from services.trade_state import OrderStateStore
 from services.trade_state.strategy_state import StrategyStateStore
 from scripts.classic_multifactor.minute_guard import MinuteGuardDecision, MinuteTradeGuard, MinuteTradeGuardConfig  # noqa: F401
@@ -68,7 +69,7 @@ class LiveTaskConfig:
     gateway_password_env_var_name: str = "FUTU_TRADE_UNLOCK_PASSWORD"
     gateway_connect_wait_seconds: float = 2.0
     order_finalize_timeout_seconds: float = 30.0
-    no_new_entry_timezone: str = "America/New_York"
+    no_new_entry_timezone: str = ""
     # live-strict account selection (Plan C)
     live_account_strict: bool = False
     expected_acc_type: str = "MARGIN"
@@ -108,7 +109,7 @@ class LiveTradingPipeline:
             "max_intraday_trades": limits.get("max_intraday_trades", 4),
             "entry_cooldown_minutes": limits.get("entry_cooldown_minutes", 30),
             "min_hold_minutes": limits.get("min_hold_minutes", 20),
-            "no_new_entry_after": limits.get("no_new_entry_after", "15:30"),
+            "no_new_entry_after": limits.get("no_new_entry_after", market_no_new_entry_after(config.market)),
         })
         self.minute_guard = MinuteTradeGuard(self.default_minute_guard_config)
 
@@ -489,24 +490,17 @@ class LiveTradingPipeline:
         return MinuteTradeGuard(override)
 
     def _guard_now(self) -> datetime:
-        """Return the 'now' timestamp that MinuteTradeGuard should use for its
-        no_new_entry_after cutoff. For US live trading this has to be the
-        exchange local time (America/New_York), not Beijing local time.
-
-        Unlike the previous implementation we keep ``tzinfo`` attached so
-        downstream guards can also normalise ``trade_times`` to the same
-        exchange timezone when counting ``max_intraday_trades``.
-        """
+        """Return the exchange-local timestamp used by MinuteTradeGuard."""
         try:
             from zoneinfo import ZoneInfo
-            tz_name = self.config.no_new_entry_timezone or "America/New_York"
+            tz_name = self.config.no_new_entry_timezone or market_timezone(self.config.market)
             return datetime.now(ZoneInfo(tz_name))
         except Exception:
             return datetime.now()
 
     def _guard_exchange_tz(self) -> str:
         """Exchange timezone string passed into MinuteTradeGuard.can_enter."""
-        return self.config.no_new_entry_timezone or "America/New_York"
+        return self.config.no_new_entry_timezone or market_timezone(self.config.market)
 
     # ------------------------------------------------------------------
     # Classic multifactor adapter plumbing

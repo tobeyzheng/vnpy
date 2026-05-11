@@ -28,13 +28,15 @@
 - **`services/strategy/candidate_scoring.py`**：定义可复用的候选评分接口、dynamic/static 混合评分模型，以及单标候选 enrich 能力。
 - **`services/strategy/candidate_enrichment.py`**：定义可复用的候选 enrich 层，负责可选接入真实市场快照与 Knot 结构化评估。
 - **`services/strategy/candidate_generation.py`**：基于评分接口生成 dynamic/static payload，也可单独评估一个候选行。
-- **`services/strategy/candidate_preparation.py`**：调用生成服务重写候选输入，并补充 `row_requirements`、准备元信息和追溯报告。
+- **`services/strategy/candidate_seed.py`**：调用远端 Knot agent 直接生成动态候选种子（按市场过滤、按 candidate schema 标准化），是 prepare 流程 `knot_first` 策略的入口；当远端 Knot 不可用时返回空结果，由 `CandidateInputPreparationService` 自动降级到 `score_first`。
+- **`services/strategy/universe.py`**：通过 Futu OpenD 列举 HK / US 全市场标的并归一化为 dotted symbol，是 `score_first` 策略和 `knot_first` 降级路径的全市场来源；带最大数量保护与 `UniverseUnavailableError` 显式失败语义。
+- **`services/strategy/candidate_preparation.py`**：调用生成服务重写候选输入，并补充 `row_requirements`、准备元信息和追溯报告；新增 `prepare_market(market, strategy, top_n, dry_run, ...)` 入口支持按市场独立刷新动态池（HK / US 互不影响），静态池由独立工作流维护。
 - **`services/strategy/candidate_provider.py`**：统一读取和标准化候选输入。
 - **`services/strategy/raw_score.py`**：定义 `RawScoreFeatures` 和 `RawScoreEngine`。
 - **`services/strategy/timing.py`**：定义入场和退出择时规则。
 - **`services/strategy/strategy_selector.py`**：根据结构化因子做确定性策略选择和阻断。
 - **`services/strategy/engine.py`**：把候选、行情、事件催化、外部选择结果整合成 `StrategyEvaluation`，并复用候选评分接口。
-- **`services/strategy/market_rules.py`**：给港股/美股提供基础的市场参数。
+- **`services/strategy/market_rules.py`**：给港股/美股提供基础的市场参数，并集中维护默认交易所时区、regular session 窗口、`no_new_entry_after` 与 `daily rebalance` 默认时间。
 - **`services/strategy/registry.py`**：定义当前默认 `strategy_id`、可交易动作和最低 `raw_score` 门槛。
 - **`services/evaluation_hub/candidate_framework.py`**：把候选输入筛成观察标，并进一步判断 `daily` / `minute` / `needs_review` 交易级别，作为 workflow 中 `candidate_framework` 与 `backtest` 的桥接层。
 
@@ -120,7 +122,7 @@
 
 当前 dynamic/static 评分模型分别是：
 
-- **dynamic**：`dynamic_hybrid_candidate_v2`
+- **dynamic**：`dynamic_hybrid_candidate_v3`
   - `trend_score`
   - `relative_strength_score`
   - `flow_score`
@@ -130,7 +132,7 @@
   - `regime_fit_score`
   - `knot_overlay_score`
   - `risk_penalty`
-- **static**：`static_hybrid_candidate_v2`
+- **static**：`static_hybrid_candidate_v3`
   - `quality_score`
   - `stability_score`
   - `liquidity_score`
@@ -140,6 +142,15 @@
   - `knot_research_score`
   - `explanation_ready_score`
   - `risk_penalty`
+
+当前 `liquidity_score` / `flow_score` 已不再使用简单的 `turnover_ratio / 2` 口径，而是改为更接近业界的多因子启发式合成：
+
+- `liquidity_score`：优先尊重人工或外部显式覆盖值；若无可信显式值，则综合绝对成交额、换手率、点差代理与深度代理后映射到 `0~1`
+- `flow_score`：优先使用外部显式资金参与度字段；若无，则综合换手参与度、绝对成交额与流动性/资金相关信号打分
+- 若文本证据中明确出现 `wide spread`、`low liquidity`、`流动性不足` 等低流动性提示，会在合成后的 `liquidity_score` 上额外施加惩罚
+- `candidate_framework` 当前直接复用同一套 `liquidity_score` helper，不再维护与评分层分叉的独立 turnover 阈值表
+
+这意味着当前流动性口径已经从“单指标压缩”升级为“绝对容量优先、再叠加参与度与交易成本代理”的启发式模型，更适合统一处理港股与美股的大票候选。
 
 `StrategyEngine.evaluate_candidate()` 现在会先调用 candidate scoring 接口 enrich 候选，再把其中一部分字段映射到 `RawScoreFeatures`。
 
@@ -303,7 +314,16 @@ final = clip((1 - 0.35) * base + 0.35 * legacy_score, 0, 1)
 
 ### 港股 / 美股市场规则当前状态
 
-`get_market_rules()` 目前提供的是轻量级 market profile：
+`get_market_rules()` 目前提供的是轻量级 market profile，并承担当前 HK / US 默认交易时段口径的集中维护：
+
+- `timezone`
+- `regular_sessions`
+- `default_session_start`
+- `default_session_end`
+- `default_no_new_entry_after`
+- `default_daily_rebalance_time`
+
+classic intraday / daily runner、legacy `LiveTradingTask`、以及部分 Futu 示例脚本现在都会优先从这层读取默认时区与 session 边界；调用方仍可通过 CLI 或 config 显式覆盖，但不再需要在多个入口里重复硬编码 HK / US 时间常量。
 
 #### 港股 `hong_kong`
 

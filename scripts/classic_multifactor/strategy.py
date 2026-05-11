@@ -8,6 +8,7 @@ from vnpy_ctastrategy import CtaTemplate, StopOrder
 
 from scripts.classic_multifactor.minute_guard import MinuteTradeGuard, MinuteTradeGuardConfig
 from scripts.classic_multifactor.model import ClassicMultiFactorConfig, ClassicMultiFactorModel
+from services.strategy.market_rules import market_timezone, resolve_market_from_vt_symbol
 
 
 class ExecutionHook(Protocol):
@@ -143,6 +144,7 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         #              "low": float, "close": float, "prev_close": float|None}
         self.daily_buf: list[dict] = []
         self._cur_day: object | None = None
+        self.exchange_tz = market_timezone(resolve_market_from_vt_symbol(vt_symbol))
         self.model = self._build_model()
         self.minute_guard = self._build_minute_guard()
 
@@ -203,7 +205,7 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
                 bar.datetime,
                 trade_times=self.trade_times,
                 last_trade_at=self.last_trade_at,
-                exchange_tz="America/New_York",
+                exchange_tz=self.exchange_tz,
             )
             if not guard.allowed:
                 self.last_signal = guard.reason

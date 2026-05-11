@@ -1,6 +1,6 @@
 {
   "schema_version": "candidate_prepare_report_v2",
-  "generated_at": "2026-05-11T09:59:09.901919+08:00",
+  "generated_at": "2026-05-11T19:41:21.228503+08:00",
   "as_of_date": "2026-05-11",
   "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
   "targets": {
@@ -8,11 +8,11 @@
       "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
       "written": true,
       "mode": "dynamic_generated",
-      "selection_policy": "dynamic_hybrid_market_complete_v2",
+      "selection_policy": "dynamic_hybrid_market_complete_v3",
       "scoring_model": {
         "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v2",
-        "selection_policy": "dynamic_hybrid_market_complete_v2",
+        "model_id": "dynamic_hybrid_candidate_v3",
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
         "components": [
           {
             "key": "trend_score",
@@ -72,12 +72,10 @@
       },
       "enrichment": {
         "market_data": {
-          "enabled": true,
-          "status": "ok",
+          "enabled": false,
+          "status": "skipped",
           "source": "futu_quote_snapshot",
-          "requested_symbols": 5,
-          "snapshot_count": 5,
-          "matched_rows": 5,
+          "matched_rows": 0,
           "warnings": []
         },
         "knot": {
@@ -114,11 +112,11 @@
       "path": "/projects/vnpy/state/runs/candidate_inputs.json",
       "written": true,
       "mode": "static_generated",
-      "selection_policy": "stable_baseline_hybrid_v2",
+      "selection_policy": "stable_baseline_hybrid_v3",
       "scoring_model": {
         "mode": "static",
-        "model_id": "static_hybrid_candidate_v2",
-        "selection_policy": "stable_baseline_hybrid_v2",
+        "model_id": "static_hybrid_candidate_v3",
+        "selection_policy": "stable_baseline_hybrid_v3",
         "components": [
           {
             "key": "quality_score",
@@ -178,12 +176,10 @@
       },
       "enrichment": {
         "market_data": {
-          "enabled": true,
-          "status": "ok",
+          "enabled": false,
+          "status": "skipped",
           "source": "futu_quote_snapshot",
-          "requested_symbols": 17,
-          "snapshot_count": 17,
-          "matched_rows": 17,
+          "matched_rows": 0,
           "warnings": []
         },
         "knot": {
@@ -213,8 +209,8 @@
         "us"
       ],
       "market_counts": {
-        "a_share": 3,
         "us": 3,
+        "a_share": 3,
         "hong_kong": 11
       },
       "warnings": [],
@@ -233,7 +229,7 @@
     ],
     "provider_merge_policy": "symbol_merge_dynamic_preferred",
     "total_items": 22,
-    "include_market_data": true,
+    "include_market_data": false,
     "knot_runtime": "auto",
     "warnings": [],
     "missing_required_field_counts": {}
