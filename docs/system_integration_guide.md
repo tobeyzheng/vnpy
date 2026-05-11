@@ -66,7 +66,8 @@
   - 若未显式传 `--prepare-knot-runtime`，当前默认使用 `auto`：优先尝试 remote，初始化不可用时退回 local
   - 默认不会自动启动 SIM/live 脚本
 - **`scripts/quant_workflow/run_prepare_candidate_inputs.py`**：候选输入前置准备入口。
-  - 默认走**按市场独立刷新动态池**的新流程：每次只重写 `state/runs/candidate_inputs.dynamic.json` 中目标市场的行，其他市场已有的行保持不变；静态池 `state/runs/candidate_inputs.json` 本流程**不再触碰**，留给后续按月刷新工作流。
+  - 默认走**按市场独立刷新动态池**的新流程：每个市场写入各自的 `state/runs/candidate_inputs.dynamic.{hong_kong,us}.json`，其它市场的文件**完全不被触碰**（文件级隔离，HK 与 US 可并发刷新而不互相覆盖）；静态池 `state/runs/candidate_inputs.static.{hong_kong,us}.json` 本流程**不再触碰**，留给后续按月刷新工作流。
+  - 兼容窗口期内仍保留旧的 `candidate_inputs.dynamic.json` / `candidate_inputs.json` 作为只读 fallback；当目标市场对应的新文件不存在时，`UnifiedCandidateProvider` 会回退读老文件。
   - `--market` 可选 `all` / `hong_kong` / `us`，默认 `all`，`all` 时按市场依次跑。
   - `--strategy` 可选 `knot_first`（默认）/ `score_first` / `merge_existing`：
     - `knot_first`：先调用远端 Knot agent 生成 ~20 个候选，再走本地 multifactor 评分 + Futu snapshot enrich，取 Top-N 写回。
@@ -83,7 +84,7 @@
   - **零 enrichment 守护**：当 `score_first` 路径下 `--include-market-data` 开启但 snapshot 全部失败（`status=error/unavailable` 或 `matched_rows=0`）时，该市场的本轮刷新会写 `kept_count=0` 并保留警告，**不会**用未富化的字母序结果覆盖已有动态池。
   - `--dry-run` 只生成报告，不写回动态池。
   - `--legacy` 显式回到老 `prepare()` 流程（同时刷新 dynamic + static），需要替换源文件时仍可配合 `--dynamic-source` / `--static-source`。
-  - 报告输出 `state/runs/candidate_inputs.prepare.report.json`，schema 为 `candidate_prepare_report_v3`，包含 `target_markets`、`market_runs[*].strategy_used`、`knot_status`、`universe_size`、`universe_preset`、`kept_count`、`top_symbols` 等字段，便于追溯单次刷新的执行路径。
+  - 报告输出 `state/runs/candidate_inputs.prepare.report.{hong_kong,us}.json`（按 market 拆分以避免并发覆盖），同时仍写一份聚合 `state/runs/candidate_inputs.prepare.report.json` 作为 back-compat 摘要；schema 仍为 `candidate_prepare_report_v3`，新增 `per_market_report_paths` / `per_market_dynamic_paths` 字段，便于追溯单次刷新的执行路径。
   - 写回前会递归清洗非有限数值；来自 snapshot 或其他 enrich 源的 `NaN` / `Infinity` 会统一落为 `null`，保证产物保持严格 JSON。
 - **`python -m scripts.quant_workflow`**：与上面的脚本入口等价的模块入口，适合统一的一键工作流触发。
 - **`scripts/run_healthcheck.py`**：环境和账户健康检查入口，输出 `state/runs/healthcheck.json`。
@@ -165,8 +166,9 @@
 #### 工作流主要输入
 
 - `state/runs/healthcheck.json`
-- `state/runs/candidate_inputs.dynamic.json`
-- `state/runs/candidate_inputs.json`
+- `state/runs/candidate_inputs.dynamic.{hong_kong,us}.json`（per-market 主路径）
+- `state/runs/candidate_inputs.static.{hong_kong,us}.json`（per-market 静态池主路径）
+- `state/runs/candidate_inputs.dynamic.json` / `state/runs/candidate_inputs.json`（兼容窗口期的 legacy fallback，只读）
 - `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`
 - `state/runs/classic_multifactor/*sweep*.json`
 - `state/runs/reports/preflight_*.json`
@@ -180,13 +182,14 @@
 - `state/runs/quant_workflow/*_artifact_*.json`
 - `state/runs/quant_workflow/*_workflow_*.json`
 - `state/runs/quant_workflow/latest_index.json`
-- `state/runs/candidate_inputs.prepare.report.json`
+- `state/runs/candidate_inputs.prepare.report.{hong_kong,us}.json`（per-market 权威报告）
+- `state/runs/candidate_inputs.prepare.report.json`（兼容窗口期的聚合摘要）
 
 补充说明：
 
 - 当前主要 workflow artifact 包括 `quant_trading_candidate_framework`、`quant_trading_backtest`、`quant_trading_readiness`
-- 候选输入由 `UnifiedCandidateProvider` 统一读取。
-- `candidate_inputs.dynamic.json` 的优先级仍高于 `candidate_inputs.json`，但当前合并规则已经改为**按 `(market, symbol)` 精细合并**：static 先入池，dynamic 针对同一 symbol 做字段级覆盖，不再整市场覆盖。
+- 候选输入由 `UnifiedCandidateProvider` 统一读取，先按市场分别读 `candidate_inputs.dynamic.{market}.json` / `candidate_inputs.static.{market}.json`，新文件全缺失时回退读 legacy `candidate_inputs.dynamic.json` / `candidate_inputs.json`。
+- 同 symbol 的合并规则保持不变：static 先入池，dynamic 针对同一 `(market, symbol)` 做字段级覆盖，不再整市场覆盖。
 - `CandidateInputPreparationService` 当前会通过 `HybridCandidateGenerationService` + `CandidateScoringService` 重写 dynamic/static 候选，统一输出带 `schema_version`、`generated_at`、`as_of_date`、`market_counts`、`row_requirements`、`scoring_model`、`enrichment` 和结构化候选评分字段的对象格式，兼容 `UnifiedCandidateProvider` 的现有读取方式。
 - `CandidateScoringService` 当前的 `liquidity_score` / `flow_score` 已升级为多因子启发式口径：优先看绝对成交额，再结合换手率、点差/深度代理和文本低流动性惩罚，避免仅凭 `turnover_ratio / 2` 把大票误判为 `thin_liquidity`。
 - `services/evaluation_hub/candidate_framework.py` 当前直接复用 `CandidateScoringService` 暴露的共享流动性 helper，因此候选评分层与 workflow 观察层对 `thin_liquidity` 的判断口径已保持一致。

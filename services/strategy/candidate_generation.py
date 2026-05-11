@@ -105,12 +105,33 @@ class HybridCandidateGenerationService:
         if sources is not None:
             resolved = [Path(item) for item in sources if str(item).strip()]
             return [path for path in resolved if path.exists()]
-        default_path = self._default_path_for_mode(mode)
-        if default_path.exists():
-            return [default_path]
+        return self._default_paths_for_mode(mode)
+
+    def _default_paths_for_mode(self, mode: str) -> list[Path]:
+        """Resolve default per-market candidate-input paths for ``mode``.
+
+        Falls back to the legacy combined files when no per-market files
+        exist yet, preserving backwards compatibility during the transition
+        to the HK / US split layout.
+        """
+        markets = ("hong_kong", "us")
+        if mode == "static":
+            per_market = [self.runs_root / f"candidate_inputs.static.{m}.json" for m in markets]
+            legacy = self.runs_root / "candidate_inputs.json"
+        else:
+            per_market = [self.runs_root / f"candidate_inputs.dynamic.{m}.json" for m in markets]
+            legacy = self.runs_root / "candidate_inputs.dynamic.json"
+        existing = [path for path in per_market if path.exists()]
+        if existing:
+            return existing
+        if legacy.exists():
+            return [legacy]
         return []
 
     def _default_path_for_mode(self, mode: str) -> Path:
+        # Backwards-compatible single-path helper retained for callers that
+        # still expect the legacy combined-file layout (e.g. external scripts
+        # that have not migrated to the per-market layout yet).
         if mode == "static":
             return self.runs_root / "candidate_inputs.json"
         return self.runs_root / "candidate_inputs.dynamic.json"

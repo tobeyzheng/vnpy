@@ -433,13 +433,16 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
 
             self.assertTrue(Path(report["report_path"]).exists())
             self.assertEqual(report["summary"]["market_coverage"], ["hong_kong", "us"])
-            self.assertIn("static", report["summary"]["written_targets"])
-            self.assertIn("dynamic", report["summary"]["written_targets"])
+            written_targets = report["summary"]["written_targets"]
+            self.assertIn("dynamic_hong_kong", written_targets)
+            self.assertIn("dynamic_us", written_targets)
+            self.assertIn("static_hong_kong", written_targets)
+            self.assertIn("static_us", written_targets)
             self.assertFalse(report["summary"]["include_market_data"])
             self.assertEqual(report["summary"]["knot_runtime"], "auto")
 
-            dynamic_payload = json.loads((runs / "candidate_inputs.dynamic.json").read_text(encoding="utf-8"))
-            static_payload = json.loads((runs / "candidate_inputs.json").read_text(encoding="utf-8"))
+            dynamic_payload = json.loads((runs / "candidate_inputs.dynamic.hong_kong.json").read_text(encoding="utf-8"))
+            static_payload = json.loads((runs / "candidate_inputs.static.us.json").read_text(encoding="utf-8"))
             self.assertEqual(dynamic_payload["schema_version"], "candidate_inputs_v3")
             self.assertEqual(static_payload["schema_version"], "candidate_inputs_v3")
             self.assertTrue(dynamic_payload["generated_at"].endswith("+08:00"))
@@ -513,8 +516,12 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             report = service.prepare(as_of_date="2026-05-10", include_market_data=False)
 
             for path in (
-                runs / "candidate_inputs.dynamic.json",
-                runs / "candidate_inputs.json",
+                runs / "candidate_inputs.dynamic.us.json",
+                runs / "candidate_inputs.static.us.json",
+                runs / "candidate_inputs.dynamic.hong_kong.json",
+                runs / "candidate_inputs.static.hong_kong.json",
+                runs / "candidate_inputs.prepare.report.us.json",
+                runs / "candidate_inputs.prepare.report.hong_kong.json",
                 runs / "candidate_inputs.prepare.report.json",
             ):
                 text = path.read_text(encoding="utf-8")
@@ -522,11 +529,11 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
                 self.assertNotIn("Infinity", text)
                 json.loads(text, parse_constant=reject_invalid_json_constant)
 
-            dynamic_payload = json.loads((runs / "candidate_inputs.dynamic.json").read_text(encoding="utf-8"))
+            dynamic_payload = json.loads((runs / "candidate_inputs.dynamic.us.json").read_text(encoding="utf-8"))
             self.assertIsNone(dynamic_payload["items"][0]["quote"]["stock_owner"])
             self.assertIsNone(dynamic_payload["items"][0]["quote"]["future_position"])
             self.assertIsNone(dynamic_payload["enrichment"]["market_data"]["nan_ratio"])
-            self.assertIsNone(report["targets"]["dynamic"]["enrichment"]["market_data"]["nan_ratio"])
+            self.assertIsNone(report["targets"]["dynamic_us"]["enrichment"]["market_data"]["nan_ratio"])
 
     def test_quant_workflow_prepare_candidates_adds_prepare_step_and_artifact(self):
         from tempfile import TemporaryDirectory
@@ -579,7 +586,8 @@ class BeginnerQuantWorkflowTests(unittest.TestCase):
             self.assertEqual(result["steps"][0]["step"], "candidate_prepare")
             self.assertTrue(any(step["step"] == "candidate_framework" for step in result["steps"]))
             prepare_report = json.loads(Path(result["candidate_prepare_report"]).read_text(encoding="utf-8"))
-            self.assertIn("static", prepare_report["summary"]["written_targets"])
+            written_targets = prepare_report["summary"]["written_targets"]
+            self.assertTrue(any(name.startswith("static_") for name in written_targets))
             self.assertTrue(prepare_report["summary"]["include_market_data"])
             self.assertEqual(prepare_report["summary"]["knot_runtime"], "auto")
             self.assertTrue(result["steps"][0]["meta"]["include_market_data"])

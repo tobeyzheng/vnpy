@@ -1,237 +1,79 @@
 {
-  "schema_version": "candidate_prepare_report_v2",
-  "generated_at": "2026-05-11T19:41:21.228503+08:00",
+  "schema_version": "candidate_prepare_report_v3",
+  "generated_at": "2026-05-11T22:26:03.044648+08:00",
   "as_of_date": "2026-05-11",
   "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
-  "targets": {
-    "dynamic": {
-      "path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
-      "written": true,
-      "mode": "dynamic_generated",
-      "selection_policy": "dynamic_hybrid_market_complete_v3",
-      "scoring_model": {
-        "mode": "dynamic",
-        "model_id": "dynamic_hybrid_candidate_v3",
-        "selection_policy": "dynamic_hybrid_market_complete_v3",
-        "components": [
-          {
-            "key": "trend_score",
-            "label": "Trend",
-            "weight": 0.22,
-            "role": "positive"
-          },
-          {
-            "key": "relative_strength_score",
-            "label": "Relative Strength",
-            "weight": 0.16,
-            "role": "positive"
-          },
-          {
-            "key": "flow_score",
-            "label": "Flow",
-            "weight": 0.14,
-            "role": "positive"
-          },
-          {
-            "key": "event_score",
-            "label": "Event",
-            "weight": 0.14,
-            "role": "positive"
-          },
-          {
-            "key": "quality_score",
-            "label": "Quality",
-            "weight": 0.1,
-            "role": "positive"
-          },
-          {
-            "key": "liquidity_score",
-            "label": "Liquidity",
-            "weight": 0.08,
-            "role": "positive"
-          },
-          {
-            "key": "regime_fit_score",
-            "label": "Regime Fit",
-            "weight": 0.06,
-            "role": "positive"
-          },
-          {
-            "key": "knot_overlay_score",
-            "label": "Knot Overlay",
-            "weight": 0.1,
-            "role": "positive"
-          },
-          {
-            "key": "risk_penalty",
-            "label": "Risk Penalty",
-            "weight": 0.1,
-            "role": "penalty"
-          }
-        ]
-      },
-      "enrichment": {
-        "market_data": {
-          "enabled": false,
-          "status": "skipped",
-          "source": "futu_quote_snapshot",
-          "matched_rows": 0,
-          "warnings": []
-        },
-        "knot": {
-          "enabled": true,
-          "status": "ok",
-          "source": "knot_agent",
-          "runtime_mode": "auto",
-          "requested_runtime_mode": "auto",
-          "runtimes_used": [
-            "remote-knot-fallback"
-          ],
-          "single_runtime_effective": true,
-          "fallback_used": true,
-          "evaluated_rows": 5,
-          "fallback_count": 5,
-          "warnings": []
-        },
-        "warnings": []
-      },
-      "source_files": [
-        "/projects/vnpy/state/runs/candidate_inputs.dynamic.json"
-      ],
-      "item_count": 5,
-      "market_coverage": [
-        "hong_kong"
-      ],
-      "market_counts": {
-        "hong_kong": 5
-      },
-      "warnings": [],
-      "missing_required_field_counts": {}
-    },
-    "static": {
-      "path": "/projects/vnpy/state/runs/candidate_inputs.json",
-      "written": true,
-      "mode": "static_generated",
-      "selection_policy": "stable_baseline_hybrid_v3",
-      "scoring_model": {
-        "mode": "static",
-        "model_id": "static_hybrid_candidate_v3",
-        "selection_policy": "stable_baseline_hybrid_v3",
-        "components": [
-          {
-            "key": "quality_score",
-            "label": "Quality",
-            "weight": 0.24,
-            "role": "positive"
-          },
-          {
-            "key": "stability_score",
-            "label": "Stability",
-            "weight": 0.18,
-            "role": "positive"
-          },
-          {
-            "key": "liquidity_score",
-            "label": "Liquidity",
-            "weight": 0.14,
-            "role": "positive"
-          },
-          {
-            "key": "sector_leadership_score",
-            "label": "Sector Leadership",
-            "weight": 0.12,
-            "role": "positive"
-          },
-          {
-            "key": "trend_health_score",
-            "label": "Trend Health",
-            "weight": 0.1,
-            "role": "positive"
-          },
-          {
-            "key": "valuation_score",
-            "label": "Valuation",
-            "weight": 0.08,
-            "role": "positive"
-          },
-          {
-            "key": "knot_research_score",
-            "label": "Knot Research",
-            "weight": 0.08,
-            "role": "positive"
-          },
-          {
-            "key": "explanation_ready_score",
-            "label": "Explanation Ready",
-            "weight": 0.06,
-            "role": "positive"
-          },
-          {
-            "key": "risk_penalty",
-            "label": "Risk Penalty",
-            "weight": 0.1,
-            "role": "penalty"
-          }
-        ]
-      },
-      "enrichment": {
-        "market_data": {
-          "enabled": false,
-          "status": "skipped",
-          "source": "futu_quote_snapshot",
-          "matched_rows": 0,
-          "warnings": []
-        },
-        "knot": {
-          "enabled": true,
-          "status": "ok",
-          "source": "knot_agent",
-          "runtime_mode": "auto",
-          "requested_runtime_mode": "auto",
-          "runtimes_used": [
-            "remote-knot-fallback"
-          ],
-          "single_runtime_effective": true,
-          "fallback_used": true,
-          "evaluated_rows": 17,
-          "fallback_count": 17,
-          "warnings": []
-        },
-        "warnings": []
-      },
-      "source_files": [
-        "/projects/vnpy/state/runs/candidate_inputs.json"
-      ],
-      "item_count": 17,
-      "market_coverage": [
-        "a_share",
-        "hong_kong",
-        "us"
-      ],
-      "market_counts": {
-        "us": 3,
-        "a_share": 3,
-        "hong_kong": 11
-      },
-      "warnings": [],
-      "missing_required_field_counts": {}
-    }
+  "mode": "dynamic_market_scoped",
+  "strategy_requested": "knot_first",
+  "target_markets": [
+    "hong_kong"
+  ],
+  "dynamic_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+  "dry_run": false,
+  "written": true,
+  "kept_rows_other_markets": 20,
+  "kept_rows_by_market": {
+    "us": 20
   },
+  "market_runs": [
+    {
+      "market": "hong_kong",
+      "strategy_requested": "knot_first",
+      "strategy_used": "knot_first",
+      "knot_status": "ok",
+      "knot_seed_count": 8,
+      "universe_size": 0,
+      "universe_preset": "large_cap",
+      "scored_count": 8,
+      "kept_count": 8,
+      "source_files": [
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.hong_kong.seed.json"
+      ],
+      "warnings": [],
+      "top_symbols": [
+        {
+          "symbol": "00992.HK",
+          "raw_score": 0.8013
+        },
+        {
+          "symbol": "00981.HK",
+          "raw_score": 0.7723
+        },
+        {
+          "symbol": "01024.HK",
+          "raw_score": 0.6886
+        },
+        {
+          "symbol": "01211.HK",
+          "raw_score": 0.6798
+        },
+        {
+          "symbol": "00700.HK",
+          "raw_score": 0.6367
+        },
+        {
+          "symbol": "09988.HK",
+          "raw_score": 0.6276
+        },
+        {
+          "symbol": "02318.HK",
+          "raw_score": 0.6315
+        },
+        {
+          "symbol": "01299.HK",
+          "raw_score": 0.6044
+        }
+      ]
+    }
+  ],
   "summary": {
-    "written_targets": [
-      "dynamic",
-      "static"
-    ],
-    "market_coverage": [
-      "a_share",
-      "hong_kong",
-      "us"
-    ],
-    "provider_merge_policy": "symbol_merge_dynamic_preferred",
-    "total_items": 22,
-    "include_market_data": false,
+    "total_items": 28,
+    "market_counts": {
+      "hong_kong": 8,
+      "us": 20
+    },
+    "include_market_data": true,
     "knot_runtime": "auto",
-    "warnings": [],
-    "missing_required_field_counts": {}
+    "warnings": []
   }
 }

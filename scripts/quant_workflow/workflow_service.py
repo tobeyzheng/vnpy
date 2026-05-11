@@ -404,6 +404,12 @@ class QuantWorkflowService:
 
         dynamic_candidate_path = runs_root / "candidate_inputs.dynamic.json"
         static_candidate_path = runs_root / "candidate_inputs.json"
+        market_dynamic_paths = [
+            runs_root / f"candidate_inputs.dynamic.{m}.json" for m in ("hong_kong", "us")
+        ]
+        market_static_paths = [
+            runs_root / f"candidate_inputs.static.{m}.json" for m in ("hong_kong", "us")
+        ]
         backtest_path = runs_root / "classic_multifactor" / "vnpy_cta_backtest_report.json"
         sweep_path = runs_root / "classic_multifactor" / "vnpy_cta_sweep_report.json"
         sim_session_path = runs_root / "hk_futu_sim_session_report.json"
@@ -427,21 +433,27 @@ class QuantWorkflowService:
         add_check(
             "candidate_inputs_dynamic",
             path=str(dynamic_candidate_path),
-            exists=dynamic_candidate_path.exists(),
+            exists=dynamic_candidate_path.exists() or any(p.exists() for p in market_dynamic_paths),
             required=False,
-            note="Prepared dynamic candidate input artifact.",
+            note="Prepared dynamic candidate input artifact (per-market files preferred).",
         )
         add_check(
             "candidate_inputs_static",
             path=str(static_candidate_path),
-            exists=static_candidate_path.exists(),
+            exists=static_candidate_path.exists() or any(p.exists() for p in market_static_paths),
             required=False,
-            note="Prepared static candidate input artifact.",
+            note="Prepared static candidate input artifact (per-market files preferred).",
         )
+        candidate_any_paths = [
+            dynamic_candidate_path,
+            static_candidate_path,
+            *market_dynamic_paths,
+            *market_static_paths,
+        ]
         add_check(
             "candidate_inputs_any",
-            path=f"{dynamic_candidate_path} | {static_candidate_path}",
-            exists=dynamic_candidate_path.exists() or static_candidate_path.exists(),
+            path=" | ".join(str(p) for p in candidate_any_paths),
+            exists=any(p.exists() for p in candidate_any_paths),
             required=requires_candidates,
             note="Any local candidate input artifact required by candidate/backtest/readiness stages.",
         )

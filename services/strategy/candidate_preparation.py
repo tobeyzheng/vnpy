@@ -63,12 +63,32 @@ class CandidateInputPreparationService:
     ):
         self.repo_root = Path(repo_root)
         self.runs_root = self.repo_root / "state" / "runs"
-        self.dynamic_path = self.runs_root / "candidate_inputs.dynamic.json"
-        self.static_path = self.runs_root / "candidate_inputs.json"
-        self.report_path = self.runs_root / "candidate_inputs.prepare.report.json"
+        # Legacy combined paths (read-only fallback only). The prepare
+        # workflow now writes per-market files to avoid concurrent-overwrite
+        # corruption when HK and US are refreshed in parallel.
+        self.legacy_dynamic_path = self.runs_root / "candidate_inputs.dynamic.json"
+        self.legacy_static_path = self.runs_root / "candidate_inputs.json"
+        self.legacy_report_path = self.runs_root / "candidate_inputs.prepare.report.json"
+        # Backwards-compatible attribute names retained for callers that
+        # still reference them (treated as legacy fallbacks).
+        self.dynamic_path = self.legacy_dynamic_path
+        self.static_path = self.legacy_static_path
+        self.report_path = self.legacy_report_path
         self.generation_service = HybridCandidateGenerationService(self.repo_root)
         self.seed_service = seed_service or KnotCandidateSeedService()
         self._universe_provider = universe_provider
+
+    # ------------------------------------------------------------------
+    # Per-market path helpers
+    # ------------------------------------------------------------------
+    def dynamic_path_for(self, market: str) -> Path:
+        return self.runs_root / f"candidate_inputs.dynamic.{market}.json"
+
+    def static_path_for(self, market: str) -> Path:
+        return self.runs_root / f"candidate_inputs.static.{market}.json"
+
+    def report_path_for(self, market: str) -> Path:
+        return self.runs_root / f"candidate_inputs.prepare.report.{market}.json"
 
     @property
     def universe_provider(self) -> FutuMarketUniverseProvider:
@@ -90,66 +110,94 @@ class CandidateInputPreparationService:
         as_of_date = as_of_date or generated_at.split("T", 1)[0]
         self.runs_root.mkdir(parents=True, exist_ok=True)
 
-        resolved_dynamic_sources = self._resolve_sources(dynamic_sources, fallback=self.dynamic_path)
-        resolved_static_sources = self._resolve_sources(static_sources, fallback=self.static_path)
+        # Legacy prepare() now produces per-market dynamic + static files.
+        # Source resolution still honours the legacy combined paths so that
+        # historical inputs continue to work.
+        resolved_dynamic_sources = self._resolve_sources(dynamic_sources, fallback=self.legacy_dynamic_path)
+        resolved_static_sources = self._resolve_sources(static_sources, fallback=self.legacy_static_path)
 
-        dynamic_result = self._prepare_target(
-            target_path=self.dynamic_path,
-            mode="dynamic",
-            sources=resolved_dynamic_sources,
-            generated_at=generated_at,
-            as_of_date=as_of_date,
-            include_market_data=include_market_data,
-            knot_runtime=knot_runtime,
-        )
-        static_result = self._prepare_target(
-            target_path=self.static_path,
-            mode="static",
-            sources=resolved_static_sources,
-            generated_at=generated_at,
-            as_of_date=as_of_date,
-            include_market_data=include_market_data,
-            knot_runtime=knot_runtime,
-        )
+        targets: dict[str, dict[str, Any]] = {}
+        all_warnings: list[str] = []
+        market_coverage: set[str] = set()
+        total_items = 0
+        missing_field_counts: dict[str, int] = {}
+        report_paths: list[str] = []
+
+        for market_name in SUPPORTED_PREPARE_MARKETS:
+            dyn_target = self.dynamic_path_for(market_name)
+            sta_target = self.static_path_for(market_name)
+            dyn_result = self._prepare_target(
+                target_path=dyn_target,
+                mode="dynamic",
+                sources=resolved_dynamic_sources,
+                generated_at=generated_at,
+                as_of_date=as_of_date,
+                include_market_data=include_market_data,
+                knot_runtime=knot_runtime,
+                market_filter=market_name,
+            )
+            sta_result = self._prepare_target(
+                target_path=sta_target,
+                mode="static",
+                sources=resolved_static_sources,
+                generated_at=generated_at,
+                as_of_date=as_of_date,
+                include_market_data=include_market_data,
+                knot_runtime=knot_runtime,
+                market_filter=market_name,
+            )
+            targets[f"dynamic_{market_name}"] = dyn_result
+            targets[f"static_{market_name}"] = sta_result
+            for piece in (dyn_result, sta_result):
+                all_warnings.extend(piece.get("warnings", []))
+                market_coverage.update(piece.get("market_coverage", []))
+                total_items += int(piece.get("item_count", 0) or 0)
+                missing_field_counts = self._merge_counters(
+                    missing_field_counts,
+                    piece.get("missing_required_field_counts", {}),
+                )
+
+        # Per-market reports (avoid concurrent overwrite when HK and US run
+        # in parallel). The legacy combined report path is still written as
+        # a back-compat aggregate.
+        for market_name in SUPPORTED_PREPARE_MARKETS:
+            per_market_report = {
+                "schema_version": "candidate_prepare_report_v2",
+                "generated_at": generated_at,
+                "as_of_date": as_of_date,
+                "market": market_name,
+                "report_path": str(self.report_path_for(market_name)),
+                "targets": {
+                    "dynamic": targets.get(f"dynamic_{market_name}", {}),
+                    "static": targets.get(f"static_{market_name}", {}),
+                },
+            }
+            self.report_path_for(market_name).write_text(
+                json.dumps(self._sanitize_json_data(per_market_report), ensure_ascii=False, indent=2, allow_nan=False),
+                encoding="utf-8",
+            )
+            report_paths.append(str(self.report_path_for(market_name)))
 
         report = {
             "schema_version": "candidate_prepare_report_v2",
             "generated_at": generated_at,
             "as_of_date": as_of_date,
-            "report_path": str(self.report_path),
-            "targets": {
-                "dynamic": dynamic_result,
-                "static": static_result,
-            },
+            "report_path": str(self.legacy_report_path),
+            "per_market_report_paths": report_paths,
+            "targets": targets,
             "summary": {
-                "written_targets": [
-                    name
-                    for name, item in (("dynamic", dynamic_result), ("static", static_result))
-                    if item.get("written")
-                ],
-                "market_coverage": sorted(
-                    set(dynamic_result.get("market_coverage", [])) | set(static_result.get("market_coverage", []))
-                ),
+                "written_targets": [name for name, item in targets.items() if item.get("written")],
+                "market_coverage": sorted(market_coverage),
                 "provider_merge_policy": "symbol_merge_dynamic_preferred",
-                "total_items": int(dynamic_result.get("item_count", 0) or 0) + int(static_result.get("item_count", 0) or 0),
+                "total_items": total_items,
                 "include_market_data": bool(include_market_data),
                 "knot_runtime": str(knot_runtime or "auto"),
-                "warnings": list(
-                    dict.fromkeys(
-                        [
-                            *dynamic_result.get("warnings", []),
-                            *static_result.get("warnings", []),
-                        ]
-                    )
-                ),
-                "missing_required_field_counts": self._merge_counters(
-                    dynamic_result.get("missing_required_field_counts", {}),
-                    static_result.get("missing_required_field_counts", {}),
-                ),
+                "warnings": list(dict.fromkeys(all_warnings)),
+                "missing_required_field_counts": missing_field_counts,
             },
         }
         sanitized_report = self._sanitize_json_data(report)
-        self.report_path.write_text(
+        self.legacy_report_path.write_text(
             json.dumps(sanitized_report, ensure_ascii=False, indent=2, allow_nan=False),
             encoding="utf-8",
         )
@@ -214,18 +262,13 @@ class CandidateInputPreparationService:
         if preset_key not in SUPPORTED_UNIVERSE_PRESETS:
             preset_key = DEFAULT_UNIVERSE_PRESET
 
-        existing_payload = self._load_dynamic_payload()
-        kept_rows = [
-            row
-            for row in existing_payload.get("items", [])
-            if isinstance(row, dict)
-            and str(row.get("market") or "").strip().lower() not in target_markets
-        ]
-        kept_rows_by_market = Counter(str(row.get("market") or "") for row in kept_rows)
-
         market_runs: list[dict[str, Any]] = []
         all_warnings: list[str] = []
-        new_rows: list[dict[str, Any]] = []
+        market_dynamic_paths: dict[str, str] = {}
+        market_report_paths: dict[str, str] = {}
+        total_items = 0
+        market_counts: Counter = Counter()
+        scoring_meta = self.generation_service.scoring_service.model_metadata("dynamic")
 
         for market_name in target_markets:
             run_result = self._prepare_single_market(
@@ -241,75 +284,109 @@ class CandidateInputPreparationService:
                 as_of_date=as_of_date,
             )
             market_runs.append(run_result)
-            new_rows.extend(run_result.get("rows", []))
             all_warnings.extend(run_result.get("warnings", []))
 
-        merged_rows = list(kept_rows) + list(new_rows)
-        deduped_rows = self.generation_service._dedupe_rows(merged_rows)
-        sorted_rows = sorted(deduped_rows, key=self.generation_service._rank_key, reverse=True)
-        market_counts = Counter(str(row.get("market") or "") for row in sorted_rows if row.get("market"))
-        scoring_meta = self.generation_service.scoring_service.model_metadata("dynamic")
-        merged_payload: dict[str, Any] = {
-            "mode": "dynamic_generated",
-            "schema_version": "candidate_inputs_v3",
-            "generated_at": generated_at,
-            "as_of_date": as_of_date,
-            "selection_policy": scoring_meta["selection_policy"],
-            "scoring_model": scoring_meta,
-            "source_files": sorted(
-                {entry for run in market_runs for entry in run.get("source_files", [])}
-            ),
-            "source_row_counts": {},
-            "item_count": len(sorted_rows),
-            "market_coverage": sorted(market_counts.keys()),
-            "market_counts": dict(market_counts),
-            "items": sorted_rows,
-            "warnings": list(dict.fromkeys(all_warnings)),
-            "row_requirements": {
-                "required_fields": list(REQUIRED_ROW_FIELDS),
-                "recommended_fields": list(RECOMMENDED_ROW_FIELDS),
-            },
-            "preparation_metadata": {
-                "prepared_by": self.__class__.__name__,
-                "prepared_mode": "dynamic_market_scoped",
-                "report_path": str(self.report_path),
-                "include_market_data": bool(include_market_data),
-                "knot_runtime": str(knot_runtime or "auto"),
-                "strategy": strategy_key,
-                "target_markets": list(target_markets),
-                "top_n": bounded_top_n,
-                "knot_target_count": bounded_target_count,
-                "universe_limit": bounded_universe_limit,
-                "universe_preset": preset_key,
-                "dry_run": bool(dry_run),
-            },
-        }
-        sanitized_payload = self._sanitize_json_data(merged_payload)
+            new_rows = list(run_result.get("rows", []))
+            dyn_target_path = self.dynamic_path_for(market_name)
+            rep_target_path = self.report_path_for(market_name)
+            market_dynamic_paths[market_name] = str(dyn_target_path)
+            market_report_paths[market_name] = str(rep_target_path)
 
-        written = False
-        if not dry_run:
-            self.dynamic_path.write_text(
-                json.dumps(sanitized_payload, ensure_ascii=False, indent=2, allow_nan=False),
+            deduped_rows = self.generation_service._dedupe_rows(new_rows)
+            sorted_rows = sorted(deduped_rows, key=self.generation_service._rank_key, reverse=True)
+            market_market_counts = Counter(
+                str(row.get("market") or "") for row in sorted_rows if row.get("market")
+            )
+            market_counts.update(market_market_counts)
+            total_items += len(sorted_rows)
+
+            payload: dict[str, Any] = {
+                "mode": "dynamic_generated",
+                "schema_version": "candidate_inputs_v3",
+                "generated_at": generated_at,
+                "as_of_date": as_of_date,
+                "market": market_name,
+                "selection_policy": scoring_meta["selection_policy"],
+                "scoring_model": scoring_meta,
+                "source_files": sorted(set(run_result.get("source_files", []))),
+                "source_row_counts": {},
+                "item_count": len(sorted_rows),
+                "market_coverage": sorted(market_market_counts.keys()),
+                "market_counts": dict(market_market_counts),
+                "items": sorted_rows,
+                "warnings": list(dict.fromkeys(run_result.get("warnings", []))),
+                "row_requirements": {
+                    "required_fields": list(REQUIRED_ROW_FIELDS),
+                    "recommended_fields": list(RECOMMENDED_ROW_FIELDS),
+                },
+                "preparation_metadata": {
+                    "prepared_by": self.__class__.__name__,
+                    "prepared_mode": "dynamic_market_scoped",
+                    "report_path": str(rep_target_path),
+                    "include_market_data": bool(include_market_data),
+                    "knot_runtime": str(knot_runtime or "auto"),
+                    "strategy": strategy_key,
+                    "target_market": market_name,
+                    "top_n": bounded_top_n,
+                    "knot_target_count": bounded_target_count,
+                    "universe_limit": bounded_universe_limit,
+                    "universe_preset": preset_key,
+                    "dry_run": bool(dry_run),
+                },
+            }
+            sanitized_payload = self._sanitize_json_data(payload)
+
+            if not dry_run:
+                dyn_target_path.write_text(
+                    json.dumps(sanitized_payload, ensure_ascii=False, indent=2, allow_nan=False),
+                    encoding="utf-8",
+                )
+                run_result["written"] = True
+            else:
+                run_result["written"] = False
+            run_result["output_path"] = str(dyn_target_path)
+
+            per_market_report = {
+                "schema_version": "candidate_prepare_report_v3",
+                "generated_at": generated_at,
+                "as_of_date": as_of_date,
+                "report_path": str(rep_target_path),
+                "mode": "dynamic_market_scoped",
+                "market": market_name,
+                "strategy_requested": strategy_key,
+                "dynamic_path": str(dyn_target_path),
+                "dry_run": bool(dry_run),
+                "written": bool(run_result.get("written")),
+                "market_run": self._strip_run_rows(run_result),
+                "summary": {
+                    "total_items": len(sorted_rows),
+                    "market_counts": dict(market_market_counts),
+                    "include_market_data": bool(include_market_data),
+                    "knot_runtime": str(knot_runtime or "auto"),
+                    "warnings": list(dict.fromkeys(run_result.get("warnings", []))),
+                },
+            }
+            rep_target_path.write_text(
+                json.dumps(self._sanitize_json_data(per_market_report), ensure_ascii=False, indent=2, allow_nan=False),
                 encoding="utf-8",
             )
-            written = True
 
         report = {
             "schema_version": "candidate_prepare_report_v3",
             "generated_at": generated_at,
             "as_of_date": as_of_date,
-            "report_path": str(self.report_path),
+            "report_path": str(self.legacy_report_path),
+            "per_market_report_paths": market_report_paths,
+            "per_market_dynamic_paths": market_dynamic_paths,
             "mode": "dynamic_market_scoped",
             "strategy_requested": strategy_key,
             "target_markets": list(target_markets),
-            "dynamic_path": str(self.dynamic_path),
+            "dynamic_path": str(self.legacy_dynamic_path),
             "dry_run": bool(dry_run),
-            "written": written,
-            "kept_rows_other_markets": len(kept_rows),
-            "kept_rows_by_market": dict(kept_rows_by_market),
+            "written": (not dry_run) and bool(target_markets),
             "market_runs": [self._strip_run_rows(run) for run in market_runs],
             "summary": {
-                "total_items": len(sorted_rows),
+                "total_items": total_items,
                 "market_counts": dict(market_counts),
                 "include_market_data": bool(include_market_data),
                 "knot_runtime": str(knot_runtime or "auto"),
@@ -317,7 +394,9 @@ class CandidateInputPreparationService:
             },
         }
         sanitized_report = self._sanitize_json_data(report)
-        self.report_path.write_text(
+        # Legacy aggregate report retained as a back-compat marker; per-market
+        # reports above are the authoritative artifacts.
+        self.legacy_report_path.write_text(
             json.dumps(sanitized_report, ensure_ascii=False, indent=2, allow_nan=False),
             encoding="utf-8",
         )
@@ -543,24 +622,44 @@ class CandidateInputPreparationService:
         ]
         return stripped
 
-    def _load_dynamic_payload(self) -> dict[str, Any]:
-        if not self.dynamic_path.exists():
-            return {"items": []}
-        try:
-            data = json.loads(self.dynamic_path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            return {"items": []}
-        if isinstance(data, dict):
-            items = data.get("items", [])
-            if isinstance(items, list):
-                return {"items": [dict(row) for row in items if isinstance(row, dict)]}
-            return {"items": []}
-        if isinstance(data, list):
-            return {"items": [dict(row) for row in data if isinstance(row, dict)]}
+    def _load_dynamic_payload(self, market: str | None = None) -> dict[str, Any]:
+        """Return rows from the dynamic candidate pool for ``market``.
+
+        Reads the per-market file ``candidate_inputs.dynamic.{market}.json``
+        when available, falling back to the legacy combined file (filtering
+        by market when provided).
+        """
+        market_key = (market or "").strip().lower() or None
+        candidate_paths: list[Path] = []
+        if market_key is not None:
+            candidate_paths.append(self.dynamic_path_for(market_key))
+        candidate_paths.append(self.legacy_dynamic_path)
+
+        for path in candidate_paths:
+            if not path.exists():
+                continue
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            if isinstance(data, dict):
+                items = data.get("items", [])
+            elif isinstance(data, list):
+                items = data
+            else:
+                items = []
+            normalized = [dict(row) for row in items if isinstance(row, dict)]
+            if market_key is not None:
+                normalized = [
+                    row
+                    for row in normalized
+                    if str(row.get("market") or "").strip().lower() == market_key
+                ]
+            return {"items": normalized}
         return {"items": []}
 
     def _existing_rows_for_market(self, market: str) -> list[dict[str, Any]]:
-        payload = self._load_dynamic_payload()
+        payload = self._load_dynamic_payload(market=market)
         return [
             dict(row)
             for row in payload.get("items", [])
@@ -592,6 +691,7 @@ class CandidateInputPreparationService:
         as_of_date: str,
         include_market_data: bool,
         knot_runtime: str,
+        market_filter: str | None = None,
     ) -> dict[str, Any]:
         warnings: list[str] = []
         if not sources:
@@ -616,6 +716,26 @@ class CandidateInputPreparationService:
             include_market_data=include_market_data,
             knot_runtime=knot_runtime,
         )
+        if market_filter is not None:
+            market_key = market_filter.strip().lower()
+            filtered_items = [
+                row
+                for row in payload.get("items", [])
+                if isinstance(row, dict)
+                and str(row.get("market") or "").strip().lower() == market_key
+            ]
+            payload["items"] = filtered_items
+            payload["item_count"] = len(filtered_items)
+            new_counts = Counter(
+                str(row.get("market") or "") for row in filtered_items if row.get("market")
+            )
+            payload["market_counts"] = dict(new_counts)
+            payload["market_coverage"] = sorted(new_counts.keys())
+            payload["market_filter"] = market_key
+        if market_filter is not None and not payload.get("items"):
+            warnings.append(
+                f"No rows for market={market_filter} in source(s); wrote empty {target_path.name}."
+            )
         payload["row_requirements"] = {
             "required_fields": list(REQUIRED_ROW_FIELDS),
             "recommended_fields": list(RECOMMENDED_ROW_FIELDS),
@@ -623,9 +743,12 @@ class CandidateInputPreparationService:
         payload["preparation_metadata"] = {
             "prepared_by": self.__class__.__name__,
             "prepared_mode": mode,
-            "report_path": str(self.report_path),
+            "report_path": str(
+                self.report_path_for(market_filter) if market_filter is not None else self.legacy_report_path
+            ),
             "include_market_data": bool(include_market_data),
             "knot_runtime": str(knot_runtime or "auto"),
+            "market_filter": market_filter,
         }
 
         missing_fields = Counter()

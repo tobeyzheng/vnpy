@@ -2,7 +2,12 @@
 
 The file provider reads candidate inputs from JSON.
 
-Default expected location:
+Default expected locations (per-market layout, primary):
+- `state/runs/candidate_inputs.dynamic.{hong_kong,us}.json`
+- `state/runs/candidate_inputs.static.{hong_kong,us}.json`
+
+Legacy combined locations (read-only fallback during the migration window):
+- `state/runs/candidate_inputs.dynamic.json`
 - `state/runs/candidate_inputs.json`
 
 A sample file is provided at:

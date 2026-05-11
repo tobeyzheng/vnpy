@@ -64,11 +64,14 @@ def _seed_row(symbol, market, name, raw_score, rationale):
     }
 
 
-def _seed_existing_dynamic_pool(repo_root: Path) -> Path:
+def _seed_existing_per_market_pools(repo_root: Path) -> tuple[Path, Path]:
+    """Seed per-market dynamic pools so we can verify isolation after a refresh."""
+
     runs_root = repo_root / "state" / "runs"
     runs_root.mkdir(parents=True, exist_ok=True)
-    dynamic_path = runs_root / "candidate_inputs.dynamic.json"
-    dynamic_path.write_text(
+    us_path = runs_root / "candidate_inputs.dynamic.us.json"
+    hk_path = runs_root / "candidate_inputs.dynamic.hong_kong.json"
+    us_path.write_text(
         json.dumps(
             {
                 "schema_version": "candidate_inputs_v3",
@@ -84,6 +87,18 @@ def _seed_existing_dynamic_pool(repo_root: Path) -> Path:
                         "action_hint": "n/a",
                         "signals": [],
                     },
+                ],
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    hk_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "candidate_inputs_v3",
+                "items": [
                     {
                         "symbol": "00700.HK",
                         "market": "hong_kong",
@@ -102,7 +117,7 @@ def _seed_existing_dynamic_pool(repo_root: Path) -> Path:
         ),
         encoding="utf-8",
     )
-    return dynamic_path
+    return us_path, hk_path
 
 
 @pytest.fixture
@@ -111,8 +126,9 @@ def repo_root(tmp_path):
     return tmp_path
 
 
-def test_prepare_market_knot_first_us_only_keeps_other_market_rows(repo_root):
-    _seed_existing_dynamic_pool(repo_root)
+def test_prepare_market_knot_first_us_only_does_not_touch_hk_file(repo_root):
+    us_path, hk_path = _seed_existing_per_market_pools(repo_root)
+    hk_original = hk_path.read_text()
     seed_rows = [
         _seed_row("NVDA.US", "us", "NVIDIA", 0.86, "AI tailwind"),
         _seed_row("AAPL.US", "us", "Apple", 0.78, "AI PC cycle"),
@@ -141,18 +157,17 @@ def test_prepare_market_knot_first_us_only_keeps_other_market_rows(repo_root):
     assert market_run["knot_status"] == "ok"
     assert market_run["kept_count"] == 2
 
-    dynamic_payload = json.loads((repo_root / "state" / "runs" / "candidate_inputs.dynamic.json").read_text())
-    symbols_by_market = {}
-    for row in dynamic_payload["items"]:
-        symbols_by_market.setdefault(row["market"], []).append(row["symbol"])
-    assert "00700.HK" in symbols_by_market["hong_kong"]
-    assert "OLD.US" not in symbols_by_market.get("us", [])
-    assert set(symbols_by_market["us"]) == {"NVDA.US", "AAPL.US"}
-    assert universe.calls == []  # knot succeeded, score_first not invoked
+    us_payload = json.loads(us_path.read_text(encoding="utf-8"))
+    us_symbols = {row["symbol"] for row in us_payload["items"]}
+    assert us_symbols == {"NVDA.US", "AAPL.US"}
+
+    # HK file must remain untouched – this is the whole point of file-level isolation.
+    assert hk_path.read_text() == hk_original
+    assert universe.calls == []
 
 
 def test_prepare_market_falls_back_to_score_first_when_knot_unavailable(repo_root):
-    _seed_existing_dynamic_pool(repo_root)
+    us_path, _hk_path = _seed_existing_per_market_pools(repo_root)
     seed_service = _StubSeedService({
         "us": KnotCandidateSeedResult(available=False, fallback_reason="knot_call_failed:OSError"),
     })
@@ -176,7 +191,7 @@ def test_prepare_market_falls_back_to_score_first_when_knot_unavailable(repo_roo
         strategy="knot_first",
         top_n=2,
         knot_target_count=5,
-        knot_runtime="off",  # ensures Knot enrichment doesn't try the network
+        knot_runtime="off",
         include_market_data=False,
     )
 
@@ -189,7 +204,7 @@ def test_prepare_market_falls_back_to_score_first_when_knot_unavailable(repo_roo
 
 
 def test_prepare_market_dry_run_does_not_write_pool(repo_root):
-    _seed_existing_dynamic_pool(repo_root)
+    us_path, _hk_path = _seed_existing_per_market_pools(repo_root)
     seed_service = _StubSeedService({
         "us": KnotCandidateSeedResult(
             rows=[_seed_row("NVDA.US", "us", "NVIDIA", 0.9, "AI surge")],
@@ -202,8 +217,7 @@ def test_prepare_market_dry_run_does_not_write_pool(repo_root):
         seed_service=seed_service,
         universe_provider=universe,
     )
-    dynamic_path = repo_root / "state" / "runs" / "candidate_inputs.dynamic.json"
-    original_content = dynamic_path.read_text()
+    original_content = us_path.read_text()
 
     report = service.prepare_market(
         market="us",
@@ -216,11 +230,11 @@ def test_prepare_market_dry_run_does_not_write_pool(repo_root):
     )
 
     assert report["written"] is False
-    assert dynamic_path.read_text() == original_content
+    assert us_path.read_text() == original_content
 
 
 def test_prepare_market_all_iterates_each_market_independently(repo_root):
-    _seed_existing_dynamic_pool(repo_root)
+    us_path, hk_path = _seed_existing_per_market_pools(repo_root)
     seed_service = _StubSeedService(
         {
             "us": KnotCandidateSeedResult(
@@ -252,13 +266,14 @@ def test_prepare_market_all_iterates_each_market_independently(repo_root):
     assert report["target_markets"] == ["hong_kong", "us"]
     assert {(call[0]) for call in seed_service.calls} == {"hong_kong", "us"}
 
-    dynamic_payload = json.loads((repo_root / "state" / "runs" / "candidate_inputs.dynamic.json").read_text())
-    symbols = {row["symbol"] for row in dynamic_payload["items"]}
-    assert symbols == {"NVDA.US", "00700.HK"}
+    us_payload = json.loads(us_path.read_text(encoding="utf-8"))
+    hk_payload = json.loads(hk_path.read_text(encoding="utf-8"))
+    assert {row["symbol"] for row in us_payload["items"]} == {"NVDA.US"}
+    assert {row["symbol"] for row in hk_payload["items"]} == {"00700.HK"}
 
 
 def test_prepare_market_score_first_explicit_uses_universe_only(repo_root):
-    _seed_existing_dynamic_pool(repo_root)
+    _us_path, hk_path = _seed_existing_per_market_pools(repo_root)
     seed_service = _StubSeedService({})  # should not be called for explicit score_first
     universe = _StubUniverseProvider(
         {
@@ -288,3 +303,5 @@ def test_prepare_market_score_first_explicit_uses_universe_only(repo_root):
     assert market_run["strategy_used"] == "score_first"
     assert market_run["universe_size"] == 2
     assert market_run["kept_count"] == 2
+    hk_payload = json.loads(hk_path.read_text(encoding="utf-8"))
+    assert {row["symbol"] for row in hk_payload["items"]} == {"00700.HK", "09988.HK"}

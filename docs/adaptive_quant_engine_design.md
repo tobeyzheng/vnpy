@@ -46,8 +46,9 @@
 
 候选输入目前仍由 `UnifiedCandidateProvider` 负责读取：
 
-- 动态文件：`state/runs/candidate_inputs.dynamic.json`
-- 静态文件：`state/runs/candidate_inputs.json`
+- 动态文件（per-market 主路径）：`state/runs/candidate_inputs.dynamic.{hong_kong,us}.json`
+- 静态文件（per-market 主路径）：`state/runs/candidate_inputs.static.{hong_kong,us}.json`
+- 兼容 fallback（只读）：`state/runs/candidate_inputs.dynamic.json` / `state/runs/candidate_inputs.json`
 
 但在 provider 之前，当前已经不是“只清洗旧 JSON”，而是由一条**生成 + enrich + 收敛**链路负责产出候选：
 
@@ -363,7 +364,7 @@ classic intraday / daily runner、legacy `LiveTradingTask`、以及部分 Futu �
 ### 当前仍然是缺口或扩展点的部分
 
 - **动态 universe discovery 还不是这层自动完成的**
-  - 当前仍依赖上游把候选写入 `state/runs/candidate_inputs.dynamic.json`
+  - 当前仍依赖上游把候选写入 per-market `state/runs/candidate_inputs.dynamic.{hong_kong,us}.json`（新主路径）或 legacy `state/runs/candidate_inputs.dynamic.json`（只读 fallback）
 - **真实市场数据与 Knot 接入已支持为可选 enrich，但默认并不自动开启**
   - 需要显式启用 CLI / workflow 参数才会尝试请求 snapshot 或调用 Knot runtime
   - Futu SDK 不可用、远端 Knot 未配置或 schema 校验失败时，会降级为 warning / fallback，而不是替代本地安全规则层
