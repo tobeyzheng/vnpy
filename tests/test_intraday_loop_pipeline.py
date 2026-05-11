@@ -40,6 +40,7 @@ from services.execution_guard.idempotency import OrderIdempotencyGuard
 from services.execution_guard.reconciliation import ReconciliationGuard
 from services.risk_engine import LiveRiskGuard
 from services.trade_state import OrderStateStore
+from scripts.classic_multifactor.strategy import ClassicMultiFactorCtaStrategy
 
 
 class FakeBar:
@@ -278,6 +279,179 @@ def test_live_submit_gating_requires_all_env_vars(monkeypatch=None):
                 os.environ.pop(k, None)
             else:
                 os.environ[k] = v
+
+
+# ---------------------------------------------------------------------------
+# 5. Intraday log filtering
+# ---------------------------------------------------------------------------
+def _make_runner_for_log_filter(*, live_submit: bool = False):
+    from scripts.classic_multifactor.run_intraday_loop import IntradayLoopRunner
+
+    runner = IntradayLoopRunner.__new__(IntradayLoopRunner)
+    runner.live_submit = live_submit
+    runner._pipeline = SimpleNamespace(approved_count=0, blocked_by_gate={})
+    runner._strategy_instance = None
+    runner._intraday_bars_seen = 0
+    runner._last_bar_monotonic_at = None
+    runner._last_bar_exchange_time = ""
+    runner._runtime_debug_heartbeat_seconds = 60.0
+    runner._next_runtime_debug_heartbeat_at = 60.0
+    return runner
+
+
+def _make_strategy_for_log_filter(
+    *,
+    last_signal: str,
+    bars_count: int,
+    signal_interval_minutes: int = 15,
+    pos: int = 0,
+    raw_score: float = 0.0,
+    active_orderids: set[str] | None = None,
+):
+    return SimpleNamespace(
+        strategy_name="classic_multifactor_01810_HK",
+        last_signal=last_signal,
+        pos=pos,
+        raw_score=raw_score,
+        active_orderids=active_orderids or set(),
+        bars=[object()] * bars_count,
+        model=SimpleNamespace(config=SimpleNamespace(signal_interval_minutes=signal_interval_minutes)),
+    )
+
+
+def _make_bar_for_log_filter(*, minute: int) -> FakeBar:
+    return FakeBar(
+        "01810.SEHK",
+        datetime(2026, 5, 11, 13, minute, tzinfo=timezone.utc),
+        34.5,
+    )
+
+
+def test_intraday_log_filter_skips_warmup_and_non_decision_bar():
+    runner = _make_runner_for_log_filter(live_submit=False)
+    warmup_strategy = _make_strategy_for_log_filter(last_signal="warmup", bars_count=480)
+    non_decision_strategy = _make_strategy_for_log_filter(last_signal="classic_multifactor_hold", bars_count=16)
+
+    assert runner._should_log_intraday_bar_result(
+        warmup_strategy,
+        bar=_make_bar_for_log_filter(minute=15),
+        approved_delta=0,
+        blocked_total_delta=0,
+        active_before=0,
+        active_after=0,
+        error_text="",
+    ) is False
+    assert runner._should_log_intraday_bar_result(
+        non_decision_strategy,
+        bar=_make_bar_for_log_filter(minute=16),
+        approved_delta=0,
+        blocked_total_delta=0,
+        active_before=0,
+        active_after=0,
+        error_text="",
+    ) is False
+
+
+def test_intraday_log_filter_keeps_decision_bar_and_meaningful_transitions():
+    runner = _make_runner_for_log_filter(live_submit=False)
+    decision_strategy = _make_strategy_for_log_filter(last_signal="classic_multifactor_hold", bars_count=15)
+    transition_strategy = _make_strategy_for_log_filter(last_signal="waiting_order", bars_count=16)
+
+    assert runner._should_log_intraday_bar_result(
+        decision_strategy,
+        bar=_make_bar_for_log_filter(minute=15),
+        approved_delta=0,
+        blocked_total_delta=0,
+        active_before=0,
+        active_after=0,
+        error_text="",
+    ) is True
+    assert runner._should_log_intraday_bar_result(
+        transition_strategy,
+        bar=_make_bar_for_log_filter(minute=16),
+        approved_delta=0,
+        blocked_total_delta=0,
+        active_before=0,
+        active_after=1,
+        error_text="",
+    ) is True
+    assert runner._should_log_intraday_bar_result(
+        transition_strategy,
+        bar=_make_bar_for_log_filter(minute=16),
+        approved_delta=1,
+        blocked_total_delta=0,
+        active_before=0,
+        active_after=0,
+        error_text="",
+    ) is True
+    assert runner._should_log_intraday_bar_result(
+        transition_strategy,
+        bar=_make_bar_for_log_filter(minute=16),
+        approved_delta=0,
+        blocked_total_delta=1,
+        active_before=0,
+        active_after=0,
+        error_text="",
+    ) is True
+    assert runner._should_log_intraday_bar_result(
+        transition_strategy,
+        bar=_make_bar_for_log_filter(minute=16),
+        approved_delta=0,
+        blocked_total_delta=0,
+        active_before=0,
+        active_after=0,
+        error_text="boom",
+    ) is True
+
+
+def test_intraday_debug_checkpoint_tracks_bar_progress():
+    runner = _make_runner_for_log_filter(live_submit=False)
+    strategy = _make_strategy_for_log_filter(last_signal="classic_multifactor_hold", bars_count=16)
+    runner._strategy_instance = strategy
+    bar = _make_bar_for_log_filter(minute=17)
+
+    runner._log_intraday_bar_checkpoint("on_bar_enter", strategy, bar)
+
+    assert runner._intraday_bars_seen == 1
+    assert runner._last_bar_exchange_time == bar.datetime.isoformat()
+    snapshot = runner._intraday_runtime_debug_snapshot(
+        now_monotonic=runner._last_bar_monotonic_at,
+    )
+    assert snapshot["bars_seen"] == 1
+    assert snapshot["last_bar_time"] == bar.datetime.isoformat()
+    assert snapshot["seconds_since_last_bar"] == 0.0
+
+
+def test_intraday_runtime_debug_snapshot_summarises_bar_gap_and_pipeline_totals():
+    runner = _make_runner_for_log_filter(live_submit=False)
+    strategy = _make_strategy_for_log_filter(last_signal="hook_blocked:minute_guard", bars_count=25)
+    runner._strategy_instance = strategy
+    runner._pipeline = SimpleNamespace(approved_count=2, blocked_by_gate={"minute_guard": 3, "live_risk": 1})
+    runner._intraday_bars_seen = 8
+    runner._last_bar_monotonic_at = 100.0
+    runner._last_bar_exchange_time = "2026-05-11T14:30:00+00:00"
+
+    snapshot = runner._intraday_runtime_debug_snapshot(now_monotonic=112.5)
+
+    assert snapshot["bars_seen"] == 8
+    assert snapshot["last_bar_time"] == "2026-05-11T14:30:00+00:00"
+    assert snapshot["seconds_since_last_bar"] == 12.5
+    assert snapshot["approved_total"] == 2
+    assert snapshot["blocked_total"] == 4
+    assert snapshot["last_signal"] == "hook_blocked:minute_guard"
+
+
+# ---------------------------------------------------------------------------
+# 6. Warmup load conversion
+# ---------------------------------------------------------------------------
+def test_warmup_load_days_converts_minute_bar_requirement_to_natural_days():
+    assert ClassicMultiFactorCtaStrategy.warmup_load_days(480, "1m") == 4
+    assert ClassicMultiFactorCtaStrategy.resolve_warmup_load_interval("1m").value == "1m"
+
+
+def test_warmup_load_days_keeps_daily_mode_as_day_count():
+    assert ClassicMultiFactorCtaStrategy.warmup_load_days(62, "1d") == 62
+    assert ClassicMultiFactorCtaStrategy.resolve_warmup_load_interval("1d").value == "d"
 
 
 # ---------------------------------------------------------------------------

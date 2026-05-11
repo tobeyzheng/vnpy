@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-05-11T05:15:53.959949+00:00",
+  "ended_at": "2026-05-11T07:55:20.197933+00:00",
+  "exit_reason": "signal",
+  "approved": 0,
+  "blocked": {},
+  "live_submit": false,
+  "strategy_name": "classic_multifactor_daily_09992_HK",
+  "vt_symbol": "09992.SEHK",
+  "config_path": "/projects/vnpy/configs/classic_multifactor/09992_hk_d01.json",
+  "loop_mode": "daily",
+  "rebalance_time": "15:55",
+  "bars_consumed": 41,
+  "symbol_count": 1,
+  "target_positions": {
+    "09992.HK": 0.2
+  }
+}

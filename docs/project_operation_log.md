@@ -9,6 +9,31 @@
 
 ### 历史记录
 
+- **2026-05-11**：为 classic intraday runner 增加分钟任务关键点排障日志
+  - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：分钟级 runner 现在会在 live `on_bar` 的入口/出口输出 `intraday debug checkpoint`，并在主循环内每 60 秒输出 `intraday runtime heartbeat`，补充 `bars_seen`、`last_bar_time`、`seconds_since_last_bar`、`bars_cached`、审批/拦截累计值等关键上下文；这样当任务重启后再次出现“进程存活但日志静默”时，可以更快区分是行情 bar 根本没进策略，还是策略内部某个早退/决策阶段没有继续推进。
+
+- **2026-05-11**：修复 classic intraday runner 的分钟决策点日志边界判断
+  - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：分钟级 runner 的 `intraday bar result` 决策点判断现改为基于当前 `bar.datetime` 的分钟边界（如 `15m` 策略对应 `:00/:15/:30/:45`），不再依赖会被截断的 `bars` 缓冲区长度取模；这样在 warmup 完成且 bar 缓冲区封顶后，后续 live 决策点日志仍会持续输出，便于继续观测分钟任务是否正常接收行情与触发策略评估。
+
+- **2026-05-11**：修复 classic strategy warmup 历史加载语义，避免分钟任务误回放数百天历史
+  - **代码文件**：[strategy.py](/projects/vnpy/scripts/classic_multifactor/strategy.py)、[_base_runner.py](/projects/vnpy/scripts/classic_multifactor/_base_runner.py)、[cta_backtest.py](/projects/vnpy/scripts/classic_multifactor/cta_backtest.py)、[run_vnpy_cta_backtest.py](/projects/vnpy/scripts/classic_multifactor/run_vnpy_cta_backtest.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：classic strategy 现在会根据 `data_interval` 把 warmup 所需 bar 数显式换算为 vn.py `load_bar(days=...)` 需要的自然日天数；`1m` 分钟策略不再把 `480` 根预热 bar 误当成 `480` 天历史回放，从而显著缩短启动预热阶段并避免长时间停留在 `last_signal=warmup`。共享 runner 与回测入口也会把 `interval` 透传给策略设置，确保实盘/模拟/回测的 warmup 行为一致。
+
+- **2026-05-11**：收敛 classic intraday runner 的分钟日志口径，并补充审批/事件产物说明
+  - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：分钟级 runner 现在不会再为 warmup 历史 bar 或普通非决策 `1m` bar 输出 `intraday bar result`；仅在真实信号评估边界、审批通过、风控拦截、异常或订单状态变化时记录关键日志，减少启动与运行期刷屏。同时补充了 `state/runs/<execution_env>/events.jsonl` 与 `orders/*.json` 的职责说明，明确前者用于审批/提交事件审计，后者用于正式订单状态持久化、跨重启幂等与 OMS 回报关联。
+
+- **2026-05-11**：增强 classic intraday/daily runner 的运行可观测性
+  - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[run_daily_rebalance.py](/projects/vnpy/scripts/classic_multifactor/run_daily_rebalance.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：分钟级 runner 现在会为每根进入策略的 bar 输出 `intraday bar result` 摘要日志，覆盖 `approved_dry_run`、`approved_or_submitted`、`blocked`、`no_action` 等本轮结果，即使没有实际下单也可追踪策略动作；日级 runner 在等待 `rebalance_time` 期间会先输出启动等待日志，并每 10 分钟输出一次心跳日志，降低“进程活着但日志空白”带来的排障歧义。
+
 - **2026-05-11**：补齐 dual-run / preflight 工具对新执行环境目录布局的兼容，并同步修正文档说明
   - **代码文件**：[diff_dual_run.py](/projects/vnpy/scripts/diff_dual_run.py)、[dual_run_preflight.py](/projects/vnpy/scripts/dual_run_preflight.py)、[execution_pipeline.py](/projects/vnpy/scripts/classic_multifactor/execution_pipeline.py)、[oms_recorder.py](/projects/vnpy/services/trade_state/oms_recorder.py)、[test_dual_run_layout_compat.py](/projects/vnpy/tests/test_dual_run_layout_compat.py)
   - **文档文件**：[USAGE_GUIDE.md](/projects/vnpy/scripts/classic_multifactor/USAGE_GUIDE.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

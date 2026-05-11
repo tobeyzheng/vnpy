@@ -375,8 +375,9 @@ def _run_single(args: argparse.Namespace, config: dict[str, Any]) -> None:
 
     rt = _resolve_runtime(args, config)
     setting = _merge_setting_from_cli_and_config(config)
-    # Ensure capital is consistent in the strategy setting.
+    # Ensure capital and interval are consistent in the strategy setting.
     setting.setdefault("capital", rt["capital"])
+    setting.setdefault("data_interval", rt["interval"])
 
     VnpyBarRepository(fetch_futu_history=True).load_bars(
         rt["symbol"], rt["start"], rt["end"], rt["interval"]
@@ -419,6 +420,7 @@ def _run_sweep(args: argparse.Namespace, config: dict[str, Any]) -> None:
     rt = _resolve_runtime(args, config)
     base_setting = _merge_setting_from_cli_and_config(config)
     base_setting.setdefault("capital", rt["capital"])
+    base_setting.setdefault("data_interval", rt["interval"])
 
     if not args.opt_param:
         raise SystemExit("--optimize requires at least one --opt-param (KEY=START:END:STEP)")

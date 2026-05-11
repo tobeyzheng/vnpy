@@ -208,7 +208,9 @@ class BaseRunner(ABC):
             raise FileNotFoundError(f"config not found: {self.config_path}")
         self.payload = json.loads(self.config_path.read_text(encoding="utf-8"))
         validate_loop_mode(self.payload, self.loop_mode, config_path=self.config_path)
+        self.config_interval = str(self.payload.get("interval") or "1m")
         self.setting: dict[str, Any] = dict(self.payload.get("setting") or {})
+        self.setting.setdefault("data_interval", self.config_interval)
         self.raw_vt_symbol = str(self.payload.get("symbol") or self.payload.get("vt_symbol") or "")
         if not self.raw_vt_symbol:
             raise ValueError("config missing 'symbol' (e.g. 'NVDA.US')")

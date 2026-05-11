@@ -71,6 +71,7 @@ def main() -> None:
         "max_order_value": args.max_order_value,
 
         "capital": args.capital,
+        "data_interval": args.interval,
         "signal_interval_minutes": args.signal_interval_minutes,
         "confirm_bars": args.confirm_bars,
         "min_volume_ratio": args.min_volume_ratio,

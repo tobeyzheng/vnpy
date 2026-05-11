@@ -1,19 +1,26 @@
-[run_hk_futu_sim_session] vnpy-mainline forward: /usr/bin/python3 /projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py --config /projects/vnpy/configs/classic_multifactor/xiaomi_hk_g01.json --session-start 09:30 --session-end 16:10 --session-tz Asia/Hong_Kong --report-filename hk_futu_sim_session_report.json --futu-env 模拟 --futu-market HK
 没有配置要使用的数据服务，请修改全局配置中的datafeed相关内容
-2026-05-11 10:13:36.866 | INFO | Logger | connecting FutuGateway at 127.0.0.1:11111 env=模拟
-2026-05-11 10:13:36.867 | INFO | MainEngine | 连接登录 -> FUTU
-2026-05-11 10:13:36,870 | 1127084 | 140517226927936 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459425450696838996(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7fcc29485f10>
-2026-05-11 10:13:36.870 | INFO | FUTU | 行情接口连接成功
-2026-05-11 10:13:36,872 | 1127084 | 140517226927936 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459425450705101479(2) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7fcc2bf4cb50>
-2026-05-11 10:13:36.878 | INFO | FUTU | 交易接口连接成功
-2026-05-11 10:13:41.703 | INFO | FUTU | 合约信息查询成功
-2026-05-11 10:13:41.709 | INFO | FUTU | 查询成交失败：模拟交易不支持成交数据
-2026-05-11 10:13:51.883 | INFO | CtaStrategy | CtaEngine initialized
-2026-05-11 10:13:51.884 | INFO | Logger | added strategy classic_multifactor_01810_HK on 01810.SEHK
-2026-05-11 10:13:51.887 | INFO | CtaStrategy | classic_multifactor_01810_HK starts initializing
-2026-05-11 10:13:51.888 | INFO | MainEngine | 查询K线 -> FUTU：HistoryRequest(symbol='01810', exchange=<Exchange.SEHK: 'SEHK'>, start=datetime.datetime(2025, 1, 16, 10, 13, 51, 886508, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), end=datetime.datetime(2026, 5, 11, 10, 13, 51, 886508, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), interval=<Interval.MINUTE: '1m'>)
-2026-05-11 10:14:33.853 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='01810', exchange=<Exchange.SEHK: 'SEHK'>)
-2026-05-11 10:14:33.856 | INFO | FUTU | 订阅行情成功：01810.SEHK
-2026-05-11 10:14:33.856 | INFO | Logger | strategy initialised: classic_multifactor_01810_HK
-2026-05-11 10:14:33.856 | INFO | CtaStrategy | classic_multifactor_01810_HK initialization completed
-2026-05-11 10:14:33.857 | INFO | Logger | strategy started: classic_multifactor_01810_HK (loop_mode=intraday, live_submit=False)
+2026-05-11 16:00:01.292 | INFO | Logger | connecting FutuGateway at 127.0.0.1:11111 env=模拟
+2026-05-11 16:00:01.292 | INFO | MainEngine | 连接登录 -> FUTU
+2026-05-11 16:00:01,294 | 1397473 | 140304378373952 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459512626892318193(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7f9a9a8670d0>
+2026-05-11 16:00:01.294 | INFO | FUTU | 行情接口连接成功
+2026-05-11 16:00:01,296 | 1397473 | 140304378373952 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459512626900686308(2) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f9a9b9a1310>
+2026-05-11 16:00:01.300 | INFO | FUTU | 交易接口连接成功
+2026-05-11 16:00:07.305 | INFO | FUTU | 合约信息查询成功
+2026-05-11 16:00:07.310 | INFO | FUTU | 查询成交失败：模拟交易不支持成交数据
+2026-05-11 16:00:16.301 | INFO | Logger | FutuGateway连接状态检查: <vnpy_futu.futu_gateway.FutuGateway object at 0x7f9aa2d807d0>
+2026-05-11 16:00:16.301 | INFO | Logger | 合约订阅状态检查: 01810.SEHK
+2026-05-11 16:00:16.306 | INFO | CtaStrategy | Failed to create strategy instance, strategy class ClassicMultiFactorCtaStrategy not found
+2026-05-11 16:00:16.307 | INFO | CtaStrategy | Failed to create strategy instance, strategy class ClassicMultiFactorCtaStrategy not found
+2026-05-11 16:00:16.307 | INFO | CtaStrategy | Failed to create strategy instance, strategy class ClassicMultiFactorCtaStrategy not found
+2026-05-11 16:00:16.307 | INFO | CtaStrategy | CtaEngine initialized
+2026-05-11 16:00:16.307 | INFO | Logger | added strategy classic_multifactor_01810_HK on 01810.SEHK
+2026-05-11 16:00:16.308 | INFO | CtaStrategy | classic_multifactor_01810_HK starts initializing
+2026-05-11 16:00:16.309 | INFO | CtaStrategy | 查询K线数据失败：没有正确配置数据服务
+2026-05-11 16:00:16.309 | INFO | CtaStrategy | [classic_multifactor_01810_HK]  Subscription failed, unable to find contract 01810.SEHK
+2026-05-11 16:00:16.309 | INFO | Logger | strategy initialised: classic_multifactor_01810_HK
+2026-05-11 16:00:16.309 | INFO | CtaStrategy | classic_multifactor_01810_HK initialization completed
+2026-05-11 16:00:16.309 | INFO | Logger | strategy started: classic_multifactor_01810_HK (loop_mode=intraday, live_submit=False)
+2026-05-11 16:00:16.309 | INFO | Logger | exit condition met: session_end
+2026-05-11 16:00:17,292 | 1397473 | 140301983508160 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+2026-05-11 16:00:17.292 | INFO | Logger | report written to /projects/vnpy/state/runs/xiaomi_hk_intraday_report.json
+2026-05-11 16:00:17,293 | 1397473 | 140301983508160 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(2) reason=CallClose

@@ -53,6 +53,7 @@ from scripts.classic_multifactor.minute_guard import (
     MinuteTradeGuard,
     MinuteTradeGuardConfig,
 )
+from vnpy.trader.logger import logger
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +124,7 @@ class DailyRebalanceRunner(BaseRunner):
 
         self._bars_consumed = 0
         self._deadline: float | None = None
+        self._wait_heartbeat_seconds = 10 * 60
 
         self.stats = DailyRunnerStats(
             strategy_name=self.strategy_name,
@@ -238,12 +240,35 @@ class DailyRebalanceRunner(BaseRunner):
 
             instance.on_bar = _make_wrapped(original_on_bar)  # type: ignore[assignment]
 
+    def _log_waiting_status(self, *, heartbeat: bool) -> None:
+        now_local = datetime.now(self.tz)
+        now_minutes = now_local.hour * 60 + now_local.minute
+        rebalance_minutes = self.rebalance_time_local.hour * 60 + self.rebalance_time_local.minute
+        remaining_minutes = max(rebalance_minutes - now_minutes, 0)
+        phase = "daily runner heartbeat" if heartbeat else "daily runner waiting"
+        logger.info(
+            f"{phase}: strategy={self.strategy_name} "
+            f"rebalance_time={self.rebalance_time_local.strftime('%H:%M')} "
+            f"now={now_local.strftime('%Y-%m-%d %H:%M:%S %Z')} "
+            f"remaining_minutes={remaining_minutes} "
+            f"live_submit={self.live_submit}"
+        )
+
     def _wait_for_session_start(self) -> None:
         # Daily mode waits until rebalance_time in session_tz.
+        self._log_waiting_status(heartbeat=False)
+        next_heartbeat_at = time.monotonic() + float(self._wait_heartbeat_seconds)
         while not self._stop_requested:
             now_local = datetime.now(self.tz).time()
             if now_local >= self.rebalance_time_local:
+                logger.info(
+                    f"daily runner reached rebalance_time={self.rebalance_time_local.strftime('%H:%M')} "
+                    f"strategy={self.strategy_name}; starting engine"
+                )
                 return
+            if time.monotonic() >= next_heartbeat_at:
+                self._log_waiting_status(heartbeat=True)
+                next_heartbeat_at = time.monotonic() + float(self._wait_heartbeat_seconds)
             time.sleep(5.0)
 
     def _on_pre_start_failure(self) -> str | None:

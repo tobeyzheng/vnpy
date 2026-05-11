@@ -1,0 +1,66 @@
+2026-05-11 12:18:46.745 | INFO | Logger | received signal 15, requesting graceful stop
+nohup: ignoring input
+Traceback (most recent call last):
+  File "/projects/vnpy/scripts/classic_multifactor/run_daily_rebalance.py", line 306, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/projects/vnpy/scripts/classic_multifactor/run_daily_rebalance.py", line 302, in main
+    return runner_main(build_parser, DailyRebalanceRunner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/vnpy/scripts/classic_multifactor/_base_runner.py", line 616, in runner_main
+    return runner.run()
+           ^^^^^^^^^^^^
+  File "/projects/vnpy/scripts/classic_multifactor/_base_runner.py", line 566, in run
+    self._wait_for_session_start()
+  File "/projects/vnpy/scripts/classic_multifactor/run_daily_rebalance.py", line 258, in _wait_for_session_start
+    self._log_waiting_status(heartbeat=False)
+  File "/projects/vnpy/scripts/classic_multifactor/run_daily_rebalance.py", line 248, in _log_waiting_status
+    logger.info(
+    ^^^^^^
+NameError: name 'logger' is not defined
+2026-05-11 12:19:28.862 | INFO | Logger | daily runner waiting: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 12:19:28 HKT remaining_minutes=216 live_submit=False
+2026-05-11 12:29:28.879 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 12:29:28 HKT remaining_minutes=206 live_submit=False
+2026-05-11 12:39:28.896 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 12:39:28 HKT remaining_minutes=196 live_submit=False
+2026-05-11 12:49:28.916 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 12:49:28 HKT remaining_minutes=186 live_submit=False
+2026-05-11 12:59:28.933 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 12:59:28 HKT remaining_minutes=176 live_submit=False
+2026-05-11 13:09:28.949 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 13:09:28 HKT remaining_minutes=166 live_submit=False
+2026-05-11 13:15:53.448 | INFO | Logger | received signal 15, requesting graceful stop
+nohup: ignoring input
+2026-05-11 13:15:53.960 | INFO | Logger | daily runner waiting: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 13:15:53 HKT remaining_minutes=160 live_submit=False
+2026-05-11 13:25:53.974 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 13:25:53 HKT remaining_minutes=150 live_submit=False
+2026-05-11 13:35:53.988 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 13:35:53 HKT remaining_minutes=140 live_submit=False
+2026-05-11 13:45:54.003 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 13:45:54 HKT remaining_minutes=130 live_submit=False
+2026-05-11 13:55:54.016 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 13:55:54 HKT remaining_minutes=120 live_submit=False
+2026-05-11 14:05:54.031 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 14:05:54 HKT remaining_minutes=110 live_submit=False
+2026-05-11 14:15:54.045 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 14:15:54 HKT remaining_minutes=100 live_submit=False
+2026-05-11 14:25:54.060 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 14:25:54 HKT remaining_minutes=90 live_submit=False
+2026-05-11 14:35:54.074 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 14:35:54 HKT remaining_minutes=80 live_submit=False
+2026-05-11 14:45:54.090 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 14:45:54 HKT remaining_minutes=70 live_submit=False
+2026-05-11 14:55:54.104 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 14:55:54 HKT remaining_minutes=60 live_submit=False
+2026-05-11 15:05:54.119 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 15:05:54 HKT remaining_minutes=50 live_submit=False
+2026-05-11 15:15:54.134 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 15:15:54 HKT remaining_minutes=40 live_submit=False
+2026-05-11 15:25:54.148 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 15:25:54 HKT remaining_minutes=30 live_submit=False
+2026-05-11 15:35:54.163 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 15:35:54 HKT remaining_minutes=20 live_submit=False
+2026-05-11 15:45:54.178 | INFO | Logger | daily runner heartbeat: strategy=classic_multifactor_daily_09992_HK rebalance_time=15:55 now=2026-05-11 15:45:54 HKT remaining_minutes=10 live_submit=False
+2026-05-11 15:55:04.191 | INFO | Logger | daily runner reached rebalance_time=15:55 strategy=classic_multifactor_daily_09992_HK; starting engine
+没有配置要使用的数据服务，请修改全局配置中的datafeed相关内容
+2026-05-11 15:55:04.203 | INFO | Logger | connecting FutuGateway at 127.0.0.1:11111 env=模拟
+2026-05-11 15:55:04.215 | INFO | MainEngine | 连接登录 -> FUTU
+2026-05-11 15:55:04,218 | 1268072 | 140639283582784 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459511380862370521(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7fe895d903d0>
+2026-05-11 15:55:04.218 | INFO | FUTU | 行情接口连接成功
+2026-05-11 15:55:04,220 | 1268072 | 140639283582784 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7459511380873665079(2) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7fe8a739d410>
+2026-05-11 15:55:04.224 | INFO | FUTU | 交易接口连接成功
+2026-05-11 15:55:09.058 | INFO | FUTU | 合约信息查询成功
+2026-05-11 15:55:09.063 | INFO | FUTU | 查询成交失败：模拟交易不支持成交数据
+2026-05-11 15:55:19.230 | INFO | CtaStrategy | CtaEngine initialized
+2026-05-11 15:55:19.232 | INFO | Logger | added strategy classic_multifactor_daily_09992_HK on 09992.SEHK
+2026-05-11 15:55:19.233 | INFO | CtaStrategy | classic_multifactor_daily_09992_HK starts initializing
+2026-05-11 15:55:19.234 | INFO | MainEngine | 查询K线 -> FUTU：HistoryRequest(symbol='09992', exchange=<Exchange.SEHK: 'SEHK'>, start=datetime.datetime(2026, 3, 10, 15, 55, 19, 232918, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), end=datetime.datetime(2026, 5, 11, 15, 55, 19, 232918, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), interval=<Interval.DAILY: 'd'>)
+2026-05-11 15:55:19.343 | INFO | MainEngine | 订阅行情 -> FUTU：SubscribeRequest(symbol='09992', exchange=<Exchange.SEHK: 'SEHK'>)
+2026-05-11 15:55:19.345 | INFO | Logger | strategy initialised: classic_multifactor_daily_09992_HK
+2026-05-11 15:55:19.345 | INFO | FUTU | 订阅行情成功：09992.SEHK
+2026-05-11 15:55:19.345 | INFO | Logger | strategy started: classic_multifactor_daily_09992_HK (loop_mode=daily, live_submit=False)
+2026-05-11 15:55:19.345 | INFO | CtaStrategy | classic_multifactor_daily_09992_HK initialization completed
+2026-05-11 15:55:20.198 | INFO | Logger | report written to /projects/vnpy/state/runs/classic_multifactor_daily_report.json
+2026-05-11 15:55:20,198 | 1268072 | 140636816664256 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+2026-05-11 15:55:20,199 | 1268072 | 140636816664256 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(2) reason=CallClose

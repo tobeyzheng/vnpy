@@ -1,15 +1,15 @@
 {
-  "started_at": "2026-05-10T16:31:45.279298+00:00",
-  "ended_at": "2026-05-10T16:32:47.401661+00:00",
+  "started_at": "2026-05-10T16:26:01.174340+00:00",
+  "ended_at": "2026-05-11T08:00:09.509483+00:00",
   "exit_reason": "session_end",
-  "approved": 5193,
+  "approved": 144,
   "blocked": {
-    "minute_guard": 2519
+    "minute_guard": 124
   },
   "live_submit": true,
   "strategy_name": "classic_multifactor_00700_HK",
   "vt_symbol": "00700.SEHK",
   "config_path": "/projects/vnpy/configs/classic_multifactor/tencent_hk_g01.json",
   "loop_mode": "intraday",
-  "session_end": "00:28"
+  "session_end": "16:00"
 }

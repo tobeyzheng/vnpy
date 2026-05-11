@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
+from vnpy.trader.constant import Interval
 from vnpy.trader.object import BarData, OrderData, TickData, TradeData
 from vnpy_ctastrategy import CtaTemplate, StopOrder
 
@@ -58,6 +59,7 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
     price_add: float = 0.001
     fixed_size: int = 1
     signal_interval_minutes: int = 1
+    data_interval: str = "1m"
     confirm_bars: int = 1
     min_volume_ratio: float = 0.0
     min_atr_pct: float = 0.0
@@ -105,6 +107,7 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         "price_add",
         "fixed_size",
         "signal_interval_minutes",
+        "data_interval",
         "confirm_bars",
         "min_volume_ratio",
         "min_atr_pct",
@@ -148,7 +151,10 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         self.model = self._build_model()
         self.minute_guard = self._build_minute_guard()
         self._is_warmup = True
-        self.load_bar(self.model.config.warmup_window)
+        self.load_bar(
+            self._warmup_load_days(),
+            interval=self._warmup_load_interval(),
+        )
         self._is_warmup = False
 
 
@@ -299,6 +305,36 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
                 "no_new_entry_after": self.no_new_entry_after,
             })
         )
+
+    @staticmethod
+    def warmup_load_days(required_bars: int, data_interval: str) -> int:
+        """Convert required warmup bars into load_bar(days=...) semantics.
+
+        vn.py ``load_bar`` expects natural-day count, not number of bars.
+        For minute strategies we therefore convert the required 1m warmup bars
+        into a conservative day window with weekend/holiday slack instead of
+        mistakenly requesting hundreds of natural days.
+        """
+        bars = max(int(required_bars or 0), 1)
+        interval_text = str(data_interval or "1m").strip().lower()
+        if interval_text == "1d":
+            return bars
+        minutes_per_trading_day = 240
+        buffer_days = 2
+        return max(1, (bars + minutes_per_trading_day - 1) // minutes_per_trading_day + buffer_days)
+
+    @staticmethod
+    def resolve_warmup_load_interval(data_interval: str) -> Interval:
+        interval_text = str(data_interval or "1m").strip().lower()
+        if interval_text == "1d":
+            return Interval.DAILY
+        return Interval.MINUTE
+
+    def _warmup_load_days(self) -> int:
+        return self.warmup_load_days(self.model.config.warmup_window, self.data_interval)
+
+    def _warmup_load_interval(self) -> Interval:
+        return self.resolve_warmup_load_interval(self.data_interval)
 
     # ------------------------------------------------------------------
     # Market regime filter helpers

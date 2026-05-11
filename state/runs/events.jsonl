@@ -20499,3 +20499,17 @@
 {"ts": "2026-05-11T02:14:33.833672+00:00", "event": "order_blocked", "request_id": "classic_multifactor_01810_HK_BUY_01810.SEHK_20260508155800_172562", "gate": "minute_guard", "reason": "no_new_entry_after_cutoff", "side": "BUY", "qty": 315, "price": 31.751719999999995, "vt_symbol": "01810.SEHK", "strategy_id": "classic_multifactor_01810_HK", "loop_mode": "intraday", "details": {}}
 {"ts": "2026-05-11T02:14:33.833972+00:00", "event": "order_blocked", "request_id": "classic_multifactor_01810_HK_BUY_01810.SEHK_20260508155900_647020", "gate": "minute_guard", "reason": "no_new_entry_after_cutoff", "side": "BUY", "qty": 315, "price": 31.751719999999995, "vt_symbol": "01810.SEHK", "strategy_id": "classic_multifactor_01810_HK", "loop_mode": "intraday", "details": {}}
 {"ts": "2026-05-11T02:14:33.834277+00:00", "event": "order_blocked", "request_id": "classic_multifactor_01810_HK_BUY_01810.SEHK_20260508160000_0b3dde", "gate": "minute_guard", "reason": "no_new_entry_after_cutoff", "side": "BUY", "qty": 315, "price": 31.711679999999998, "vt_symbol": "01810.SEHK", "strategy_id": "classic_multifactor_01810_HK", "loop_mode": "intraday", "details": {}}
+{"ts": "2026-05-11T03:46:33.476531+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8025F197DFA000", "status": "SUBMITTING"}
+{"ts": "2026-05-11T03:46:33.476814+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8025F197DFA000", "status": "SUBMITTING"}
+{"ts": "2026-05-11T03:46:33.519568+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8025F197DFA000", "status": "NOTTRADED"}
+{"ts": "2026-05-11T03:46:33.519551+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8025F197DFA000", "status": "NOTTRADED"}
+{"ts": "2026-05-11T03:46:43.889034+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8025F197DFA000", "status": "CANCELLED"}
+{"ts": "2026-05-11T03:46:43.889277+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8025F197DFA000", "status": "CANCELLED"}
+{"ts": "2026-05-11T03:47:12.316396+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "status": "SUBMITTING"}
+{"ts": "2026-05-11T03:47:12.316728+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "status": "SUBMITTING"}
+{"ts": "2026-05-11T03:47:12.388246+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "status": "NOTTRADED"}
+{"ts": "2026-05-11T03:47:12.388661+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "status": "NOTTRADED"}
+{"ts": "2026-05-11T03:47:15.265262+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "status": "ALLTRADED"}
+{"ts": "2026-05-11T03:47:15.265260+00:00", "event": "order_status_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "status": "ALLTRADED"}
+{"ts": "2026-05-11T03:47:15.274478+00:00", "event": "order_fill_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "vt_tradeid": "FUTU.8021095351955468832", "volume": 100.0}
+{"ts": "2026-05-11T03:47:15.274559+00:00", "event": "order_fill_orphan", "vt_orderid": "FUTU.FH1C8026178A2E8000", "vt_tradeid": "FUTU.8021095351955468832", "volume": 100.0}

@@ -81,7 +81,13 @@
 - **`scripts/classic_multifactor/run_intraday_loop.py`**：分钟级主线 runner，带执行保护，属于 simulation/live 邻近入口。
   - 共享 `BaseRunner.map_vt_symbol()` 会在会话启动前把 classic config 中的美股 `NVDA.US` 规范化为 `NVDA.SMART`，并把港股 `00700.HK` 规范化为 `00700.SEHK`，避免 vn.py/Futu 会话因交易所后缀不匹配而无法创建策略实例。
   - classic strategy 的 `on_init() -> load_bar()` warmup 历史 bar 当前只用于指标/模型预热，不再通过 execution hook 写入正式 `OrderStateStore`；初始化阶段出现的历史信号不会污染正式 dry-run / Futu 模拟 / Futu 实盘订单目录。
+  - warmup 载入现在会按策略 `data_interval` 显式换算 `load_bar(days=...)` 所需的自然日天数：`1m` 分钟策略会把模型所需 warmup bar 数折算成一个保守的交易日窗口（并附带周末/节假日缓冲），然后用 `Interval.MINUTE` 预热；`1d` 日级策略则继续按所需 bar 数直接加载日线天数。这样可避免把 `480` 根 `1m` 预热 bar 误当成 `480` 个自然日去回放，导致启动长时间停留在 `warmup`。
+  - runner 现仅在**真实决策点**或**有意义状态变化**时输出 `intraday bar result` 日志：`warmup` bar 不打印，普通非决策 `1m` bar 不打印；仅当当前 `bar.datetime` 命中策略信号评估边界（例如 `signal_interval_minutes=15` 时的 `:00/:15/:30/:45` 分钟边界），或本轮出现审批通过、风控拦截、异常、活跃订单变化时，才记录 `result`、`last_signal`、`approved_delta`、`blocked_delta`、`blocked_by_gate`、`pos` 与 `active_orders`。这样既能保留排障所需的关键轨迹，又避免启动 warmup 和日常非决策 bar 刷屏，同时不会再因策略内部 `bars` 缓冲区截断而错过后续决策点日志。
+  - 为了继续排查“进程活着但分钟日志静默”的场景，intraday runner 还会在非 warmup 的 live `on_bar` 入口/出口输出 `intraday debug checkpoint`，记录 `phase`、`bar_time`、`decision_bar`、`bars_seen`、`bars_cached`、`last_signal`、`pos`、`active_orders` 与 `raw_score`；同时主循环每 60 秒输出一次 `intraday runtime heartbeat`，汇总 `bars_seen`、`last_bar_time`、`seconds_since_last_bar`、审批/拦截累计值等，用来区分“根本没收到新 bar”与“已经收到 bar 但卡在策略内部某一步”。
+  - `state/runs/<execution_env>/events.jsonl` 记录 execution hook 的正式事件轨迹，例如 `order_approved`、`order_blocked`、`order_submitted`；这些事件由 `ExecutionGuardPipeline` 在订单审批链路中逐条追加，用于事后审计、排查某次信号为什么被拒绝/批准，以及供 dual-run / preflight / reconciliation 等只读工具统计最近运行痕迹。
+  - `state/runs/<execution_env>/orders/*.json` 保存每个被正式审批过的 `OrderState` 快照；其主要用途是跨重启幂等、防止重复请求、以及把后续 OMS / broker 回报与项目内 `request_id` 重新关联。它不会直接触发下单，但会影响后续同一请求是否被视为重复、以及恢复阶段如何识别“哪些订单已经进入正式生命周期”。
 - **`scripts/classic_multifactor/run_daily_rebalance.py`**：日频再平衡 runner，带执行保护，属于 simulation/live 邻近入口。
+  - 当当前时间尚未到 `rebalance_time` 时，runner 会先输出一条 `daily runner waiting` 启动等待日志，并在等待期间每 10 分钟输出一条 `daily runner heartbeat`，记录当前本地时间、目标调仓时间和剩余分钟数，便于确认任务仍在静默等待而非假死。
 - **`scripts/run_us_sim_task.py`**：US SIM 任务入口；默认保留 legacy SIM 路径，同时支持显式转发到 `run_intraday_loop.py` 新主线。
 - **`scripts/run_us_futu_sim_session.py`**：US Futu SIM session 入口。
 - **`scripts/run_us_live_task.py`**：US live task 顶层包装入口；当前不再直接调用 `LiveTradingPipeline`，而是转发到 `scripts/classic_multifactor/run_intraday_loop.py`。该包装层本身不连接 OpenD、不直接下单，真实提交仍需 `--live-submit` 与下游 `VNPY_LIVE_*` 硬开关同时满足。

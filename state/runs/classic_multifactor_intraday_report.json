@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-05-11T10:22:41.759227+00:00",
+  "ended_at": "2026-05-11T10:23:27.766822+00:00",
+  "exit_reason": "signal",
+  "approved": 0,
+  "blocked": {},
+  "live_submit": false,
+  "strategy_name": "classic_multifactor_01810_HK",
+  "vt_symbol": "01810.SEHK",
+  "config_path": "/projects/vnpy/configs/classic_multifactor/xiaomi_hk_g01.json",
+  "loop_mode": "intraday",
+  "session_end": "16:00"
+}
