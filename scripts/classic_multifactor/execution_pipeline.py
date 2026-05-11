@@ -50,6 +50,12 @@ def _utc_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _phase_for_bar(bar: BarData, *, live_submit: bool) -> str:
+    if getattr(bar, "datetime", None) is None:
+        return "unknown"
+    return "live_session"
+
+
 @dataclass
 class PipelineContext:
     """Mutable per-bar context supplied by the runner to the pipeline.
@@ -124,6 +130,7 @@ class ExecutionGuardPipeline:
         market: str,
         loop_mode: str,
         live_submit: bool,
+        execution_env: str = "dry_run",
         trade_times_provider=lambda: [],
         last_trade_provider=lambda: None,
         entry_at_provider=lambda: None,
@@ -141,6 +148,7 @@ class ExecutionGuardPipeline:
         self.market = market
         self.loop_mode = loop_mode
         self.live_submit = bool(live_submit)
+        self.execution_env = execution_env
         self.trade_times_provider = trade_times_provider
         self.last_trade_provider = last_trade_provider
         self.entry_at_provider = entry_at_provider
@@ -206,6 +214,7 @@ class ExecutionGuardPipeline:
                 "vt_symbol": bar.vt_symbol,
                 "strategy_id": self.strategy_id,
                 "loop_mode": self.loop_mode,
+                "execution_env": self.execution_env,
                 "request_id": request_id,
             }
         )
@@ -322,6 +331,10 @@ class ExecutionGuardPipeline:
                 "daily_new_pct": ctx.daily_new_pct,
                 "current_drawdown_pct": ctx.current_drawdown_pct,
             },
+            execution_channel="futu",
+            execution_env=self.execution_env,
+            source_phase=_phase_for_bar(bar, live_submit=self.live_submit),
+            submitted_to_broker=self.live_submit,
         )
         state = self._machine.create(intent)
         state = self._machine.transition(state, "validated", note="pipeline:all_gates_passed")
@@ -343,6 +356,7 @@ class ExecutionGuardPipeline:
                 "strategy_id": self.strategy_id,
                 "loop_mode": self.loop_mode,
                 "live_submit": self.live_submit,
+                "execution_env": self.execution_env,
             }
         )
 
@@ -375,6 +389,7 @@ class ExecutionGuardPipeline:
                 "vt_symbol": bar.vt_symbol,
                 "strategy_id": self.strategy_id,
                 "loop_mode": self.loop_mode,
+                "execution_env": self.execution_env,
                 "details": details or {},
             }
         )

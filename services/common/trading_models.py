@@ -24,6 +24,10 @@ OrderStatus = Literal[
     "failed",
 ]
 
+ExecutionChannel = Literal["local_sim", "futu", "vnpy_executor", "vnpy_gateway", "unknown"]
+ExecutionEnvironment = Literal["local_sim", "dry_run", "futu_sim", "futu_real", "paper", "unknown"]
+SourcePhase = Literal["warmup", "live_session", "unknown"]
+
 
 @dataclass
 class StrategySignal:
@@ -53,6 +57,10 @@ class OrderIntent:
     reason: str = ""
     signal_snapshot: dict[str, Any] = field(default_factory=dict)
     risk_snapshot: dict[str, Any] = field(default_factory=dict)
+    execution_channel: ExecutionChannel = "unknown"
+    execution_env: ExecutionEnvironment = "unknown"
+    source_phase: SourcePhase = "unknown"
+    submitted_to_broker: bool = False
 
 
 @dataclass
@@ -71,3 +79,7 @@ class OrderState:
     reason: str = ""
     notes: list[str] = field(default_factory=list)
     snapshots: dict[str, Any] = field(default_factory=dict)
+    execution_channel: ExecutionChannel = "unknown"
+    execution_env: ExecutionEnvironment = "unknown"
+    source_phase: SourcePhase = "unknown"
+    submitted_to_broker: bool = False

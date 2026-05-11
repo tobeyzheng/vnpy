@@ -24,6 +24,7 @@
 ### 当前核心模块
 
 - **`scripts/run_hk_sim_task.py` / `scripts/run_hk_futu_sim_session.py` / `scripts/run_hk_live_task.py`**：新增 HK 顶层包装入口，统一把 HK `SIM` / `session` / `live` 接到 vnpy intraday 主线，并保持 preview-first / evidence-first 的安全边界。
+- **`scripts/classic_multifactor/strategy.py` / `scripts/classic_multifactor/execution_pipeline.py` / `scripts/classic_multifactor/_base_runner.py`**：classic mainline 执行主链；当前会把 warmup 与 live session 明确隔离，`on_init()` 历史 bar 预热不会写正式订单状态，而正式 dry-run / Futu SIM / Futu REAL 状态会按执行环境拆分到 `state/runs/<execution_env>/`。
 - **`services/strategy/candidate_scoring.py`**：定义可复用的候选评分接口、dynamic/static 混合评分模型，以及单标候选 enrich 能力。
 - **`services/strategy/candidate_enrichment.py`**：定义可复用的候选 enrich 层，负责可选接入真实市场快照与 Knot 结构化评估。
 - **`services/strategy/candidate_generation.py`**：基于评分接口生成 dynamic/static payload，也可单独评估一个候选行。

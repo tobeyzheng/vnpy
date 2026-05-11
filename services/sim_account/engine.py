@@ -99,6 +99,10 @@ class SimTradingEngine:
             target_position_pct=0.0,
             reason=order.reason,
             signal_snapshot={"submit_status": order.submit_status},
+            execution_channel="local_sim",
+            execution_env="local_sim",
+            source_phase="live_session",
+            submitted_to_broker=False,
         )
         state = self.order_state_machine.create(intent)
         state = self.order_state_machine.transition(state, "validated", note="sim_order_created")

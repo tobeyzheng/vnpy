@@ -41,6 +41,10 @@ class OrderStateMachine:
             strategy_id=intent.strategy_id,
             reason=intent.reason,
             snapshots={"signal": intent.signal_snapshot, "risk": intent.risk_snapshot},
+            execution_channel=intent.execution_channel,
+            execution_env=intent.execution_env,
+            source_phase=intent.source_phase,
+            submitted_to_broker=bool(intent.submitted_to_broker),
         )
 
     def transition(self, state: OrderState, status: OrderStatus, note: str = "", snapshot: dict[str, Any] | None = None) -> OrderState:
@@ -72,6 +76,7 @@ class OrderStateMachine:
             broker_order_id=broker_order_id or next_state.broker_order_id,
             filled_qty=max(next_state.filled_qty, int(filled_qty or 0)),
             avg_fill_price=avg_fill_price if avg_fill_price is not None else next_state.avg_fill_price,
+            submitted_to_broker=True,
         )
 
     def _map_broker_status(self, broker_status: str, filled_qty: int, qty: int) -> OrderStatus:

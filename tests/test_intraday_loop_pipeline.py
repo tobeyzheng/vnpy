@@ -111,6 +111,7 @@ def _make_pipeline(tmp: Path, *, live_submit: bool = True, limits: dict | None =
         market="US",
         loop_mode="intraday",
         live_submit=live_submit,
+        execution_env="futu_real" if live_submit else "dry_run",
     )
     return pipeline, events_log, order_store
 
@@ -180,8 +181,16 @@ def test_pipeline_dry_run_blocks_submission_but_records_approved():
         events = _read_events(events_log)
         kinds = [e["event"] for e in events]
         assert "order_approved" in kinds
+        approved = next(e for e in events if e["event"] == "order_approved")
+        assert approved["execution_env"] == "dry_run"
         stored = list(store.root.glob("*.json"))
         assert len(stored) == 1, "approved order must persist to order store"
+        state = store.load(stored[0].stem)
+        assert state is not None
+        assert state.execution_env == "dry_run"
+        assert state.execution_channel == "futu"
+        assert state.source_phase == "live_session"
+        assert state.submitted_to_broker is False
 
 
 # ---------------------------------------------------------------------------

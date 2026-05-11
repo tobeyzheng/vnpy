@@ -8,8 +8,8 @@ same four-gate ``ExecutionGuardPipeline`` but consumes ``interval=1d`` bars
 and exits after a configurable number of EOD bars (default 1) or a hard
 timeout. Suitable for cron-style invocations of the form::
 
-    python3 scripts/classic_multifactor/run_daily_rebalance.py \\
-        --config configs/classic_multifactor/daily_example.json \\
+    python3 scripts/classic_multifactor/run_daily_rebalance.py \
+        --config configs/classic_multifactor/daily_example.json \
         --rebalance-time 16:05
 
 Daily-only schema fields (``rebalance_time`` / ``max_daily_turnover`` /
@@ -18,8 +18,11 @@ Daily-only schema fields (``rebalance_time`` / ``max_daily_turnover`` /
 
 Status: **skeleton**. Real EOD closed-loop validation is part of Task 7
 (S5). For now the runner is wired end-to-end (gateway, pipeline, gates,
-order-state persistence, events.jsonl) so the daily input surface is
-exercisable, but it does not perform multi-symbol portfolio rebalancing.
+order-state persistence, execution-environment-specific ``events.jsonl`` /
+``orders/`` directories) so the daily input surface is exercisable, but it
+does not perform multi-symbol portfolio rebalancing. Warmup bars loaded by
+strategy ``on_init()`` are only used for preheat and do not write formal
+order-state records.
 
 Refactor (C1 / R3): the ``MainEngine + FutuGateway + CtaEngine`` scaffold is
 shared with ``run_intraday_loop.py`` via ``_base_runner.BaseRunner``; this

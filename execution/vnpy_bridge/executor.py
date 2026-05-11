@@ -97,6 +97,10 @@ class VnpyExecutor:
             target_position_pct=float(draft.target_position_pct or 0.0),
             reason=draft.reason,
             signal_snapshot=asdict(draft),
+            execution_channel="vnpy_executor",
+            execution_env="paper" if self.mode == "paper" else ("futu_sim" if self.mode in {"sim", "sim_submit"} else "futu_real"),
+            source_phase="live_session",
+            submitted_to_broker=self.mode in {"sim_submit", "live_submit"},
         )
 
     def intent_from_paper_intent(self, intent: PaperTradeIntent) -> OrderIntent:
@@ -116,6 +120,10 @@ class VnpyExecutor:
             target_position_pct=float(intent.target_position_pct or 0.0),
             reason=intent.reason,
             signal_snapshot=asdict(intent),
+            execution_channel="vnpy_executor",
+            execution_env="paper",
+            source_phase="live_session",
+            submitted_to_broker=False,
         )
 
     def _to_order_request(self, intent: OrderIntent) -> OrderRequest:
@@ -179,6 +187,10 @@ class VnpyGatewayEventBridge:
                 status="submitted",
                 strategy_id="vnpy_gateway_event",
                 reason="order_event",
+                execution_channel="vnpy_gateway",
+                execution_env="unknown",
+                source_phase="live_session",
+                submitted_to_broker=True,
             )
 
         status = str(getattr(getattr(order, "status", None), "name", getattr(order, "status", "submitted")))

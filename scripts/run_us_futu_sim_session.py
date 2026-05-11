@@ -46,11 +46,13 @@ class UsFutuSimSession:
         self.runs = REPO_ROOT / "state" / "runs"
         self.report_path = self.runs / "us_futu_sim_session_report.json"
         self.state_path = self.runs / "us_futu_sim_session_state.json"
+        self.execution_state_root = self.runs / "futu_sim"
+        self.execution_state_root.mkdir(parents=True, exist_ok=True)
         self.quote_client = FutuQuoteClient()
         self.account_provider = FutuAccountProvider()
         self.trade_client = FutuSimTradeClient()
         self.strategy_engine = StrategyEngine(enable_strategy_selection=True)
-        self.order_store = OrderStateStore(self.runs / "orders")
+        self.order_store = OrderStateStore(self.execution_state_root / "orders")
         self.order_machine = OrderStateMachine()
         self.orders: list[dict[str, Any]] = []
         self.actions: list[dict[str, Any]] = []
@@ -198,6 +200,10 @@ class UsFutuSimSession:
             target_position_pct=min(float(payload["qty"]) * float(payload.get("submitted_price") or 0) / max(self.args.max_budget, 1.0), 1.0),
             reason=reason,
             signal_snapshot={"futu_sim_submit": payload},
+            execution_channel="futu",
+            execution_env="futu_sim",
+            source_phase="live_session",
+            submitted_to_broker=True,
         )
         state = self.order_machine.create(intent)
         state = self.order_machine.transition(state, "validated", note="futu_sim_session")

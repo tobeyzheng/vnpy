@@ -39,6 +39,12 @@
 - **`services/execution_guard/`、`services/risk_engine/`、`services/trading_pipeline/`**：执行保护层。负责 live gate、precheck、reconciliation、risk guard、sim/live task 约束；其中 `services/trading_pipeline/` 当前仅保留 SIM / close 兼容入口，live 顶层入口已转发到 classic mainline。
 - **`services/futu_account/`、`services/futu_opend/`、`services/futu_sim_trade/`**：券商与 OpenD 接入层。
 - **`state/runs/`**：运行时工件目录。健康检查、候选输入、回测报告、workflow artifact、orders、brief 等都落在这里。
+  - classic mainline runner 相关的订单状态与事件日志现在会按执行环境拆分到子目录：
+    - `state/runs/dry_run/orders/*.json`
+    - `state/runs/futu_sim/orders/*.json`
+    - `state/runs/futu_real/orders/*.json`
+    - 对应事件日志分别落到 `state/runs/<execution_env>/events.jsonl`
+  - `scripts/run_us_futu_sim_session.py` 这类 Futu SIM session 入口也会复用 `state/runs/futu_sim/orders/`，避免与 dry-run / real 混放
 
 ### 主要入口脚本
 
@@ -74,6 +80,7 @@
 - **`scripts/classic_multifactor/run_vnpy_cta_backtest.py`**：官方 vn.py CTA 回测入口，输出 `state/runs/classic_multifactor/vnpy_cta_backtest_report.json`。
 - **`scripts/classic_multifactor/run_intraday_loop.py`**：分钟级主线 runner，带执行保护，属于 simulation/live 邻近入口。
   - 共享 `BaseRunner.map_vt_symbol()` 会在会话启动前把 classic config 中的美股 `NVDA.US` 规范化为 `NVDA.SMART`，并把港股 `00700.HK` 规范化为 `00700.SEHK`，避免 vn.py/Futu 会话因交易所后缀不匹配而无法创建策略实例。
+  - classic strategy 的 `on_init() -> load_bar()` warmup 历史 bar 当前只用于指标/模型预热，不再通过 execution hook 写入正式 `OrderStateStore`；初始化阶段出现的历史信号不会污染正式 dry-run / Futu 模拟 / Futu 实盘订单目录。
 - **`scripts/classic_multifactor/run_daily_rebalance.py`**：日频再平衡 runner，带执行保护，属于 simulation/live 邻近入口。
 - **`scripts/run_us_sim_task.py`**：US SIM 任务入口；默认保留 legacy SIM 路径，同时支持显式转发到 `run_intraday_loop.py` 新主线。
 - **`scripts/run_us_futu_sim_session.py`**：US Futu SIM session 入口。
@@ -196,6 +203,7 @@
 - **`quant_workflow` 默认是 evidence-first，不自动跑 SIM/live。**
 - **不会自动提交 Futu/OpenD 订单。**
 - **不会绕过 reconciliation、approval、live switches。**
+- **classic runner 的 warmup 历史 bar 不会写入正式订单状态目录；正式订单状态只记录 live session 阶段的 dry-run / Futu SIM / Futu REAL 决策与券商回报。**
 - **`scripts/run_us_live_task.py` 只是顶层转发包装器；真实 live 行为由 `scripts/classic_multifactor/run_intraday_loop.py` 执行，并继续受 `--live-submit` + `VNPY_LIVE_CONFIG=YES` + `VNPY_LIVE_SUBMIT=YES` + `VNPY_LIVE_APPROVED=YES` 共同约束。**
 - **LLM/Knot/外部选择结果必须先转成结构化字段，再交给本地规则层消费。**
 - **凡是带 `requires_confirmation` 的入口，都应视为人工确认后才能继续。**

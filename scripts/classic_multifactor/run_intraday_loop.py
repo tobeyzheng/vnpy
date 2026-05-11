@@ -14,9 +14,11 @@ Highlights
 * Dry-run by default. Real order submission requires **all** of
   ``--live-submit`` + ``VNPY_LIVE_CONFIG=YES`` + ``VNPY_LIVE_SUBMIT=YES`` +
   ``VNPY_LIVE_APPROVED=YES``.
-* Every gate decision is appended to ``state/runs/events.jsonl``; approved
-  orders also get a persistent ``OrderStateStore`` entry for cross-restart
-  idempotency.
+* Every gate decision is appended to an execution-environment-specific
+  ``state/runs/<execution_env>/events.jsonl``; approved orders are persisted
+  under ``state/runs/<execution_env>/orders/`` for cross-restart idempotency.
+* Warmup bars loaded during ``on_init()`` are used for indicator/model preheat
+  only and do not write formal order-state records.
 * Handles ``SIGINT``/``SIGTERM`` cleanly; also exits automatically at
   ``--session-end`` when ``--exit-after-session`` is set.
 

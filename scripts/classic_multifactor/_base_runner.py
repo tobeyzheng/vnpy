@@ -70,6 +70,15 @@ GATEWAY_NAME = "FUTU"
 STRATEGY_CLASS = "ClassicMultiFactorCtaStrategy"
 
 
+def resolve_execution_env(*, live_submit: bool, futu_env: str) -> str:
+    if live_submit:
+        return "futu_real"
+    env_text = str(futu_env or "").strip().lower()
+    if env_text in {"模拟", "simulate", "simulation", "sim"}:
+        return "futu_sim"
+    return "dry_run"
+
+
 # ---------------------------------------------------------------------------
 # Pure helpers (kept here so both runners share one definition)
 # ---------------------------------------------------------------------------
@@ -182,8 +191,14 @@ class BaseRunner(ABC):
         self.state_root = (self.repo_root / args.state_root).resolve()
         self.state_root.mkdir(parents=True, exist_ok=True)
 
-        self.events_log_path = self.state_root / "events.jsonl"
-        self.orders_root = self.state_root / "orders"
+        self.execution_env = resolve_execution_env(
+            live_submit=self._resolve_live_submit(args.live_submit),
+            futu_env=args.futu_env,
+        )
+        self.execution_state_root = self.state_root / self.execution_env
+        self.execution_state_root.mkdir(parents=True, exist_ok=True)
+        self.events_log_path = self.execution_state_root / "events.jsonl"
+        self.orders_root = self.execution_state_root / "orders"
         self.orders_root.mkdir(parents=True, exist_ok=True)
 
         self.tz = ZoneInfo(args.session_tz)
@@ -209,6 +224,15 @@ class BaseRunner(ABC):
         self.strategy_id = self.strategy_name
 
         self.live_submit = self._resolve_live_submit(args.live_submit)
+        self.execution_env = resolve_execution_env(
+            live_submit=self.live_submit,
+            futu_env=args.futu_env,
+        )
+        self.execution_state_root = self.state_root / self.execution_env
+        self.execution_state_root.mkdir(parents=True, exist_ok=True)
+        self.events_log_path = self.execution_state_root / "events.jsonl"
+        self.orders_root = self.execution_state_root / "orders"
+        self.orders_root.mkdir(parents=True, exist_ok=True)
 
         self._stop_requested = False
         self._main_engine: MainEngine | None = None
@@ -355,6 +379,7 @@ class BaseRunner(ABC):
             market=self.market,
             loop_mode=self.loop_mode,
             live_submit=self.live_submit,
+            execution_env=self.execution_env,
             exchange_tz=self.args.session_tz,
             oms_recorder=self._oms_recorder,
             **extras,

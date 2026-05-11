@@ -134,6 +134,7 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         self.trade_times = []
         self.last_trade_at = None
         self.entry_at = None
+        self._is_warmup = True
         # Daily aggregated OHLC buffer for regime filter.
         # Each entry: {"date": date, "open": float, "high": float,
         #              "low": float, "close": float, "prev_close": float|None}
@@ -146,11 +147,13 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
     def on_init(self) -> None:
         self.model = self._build_model()
         self.minute_guard = self._build_minute_guard()
+        self._is_warmup = True
         self.load_bar(self.model.config.warmup_window)
+        self._is_warmup = False
 
 
     def on_start(self) -> None:
-        pass
+        self._is_warmup = False
 
     def on_stop(self) -> None:
         pass
@@ -164,6 +167,9 @@ class ClassicMultiFactorCtaStrategy(CtaTemplate):
         max_len = self.model.config.warmup_window + 10
         if len(self.bars) > max_len:
             self.bars = self.bars[-max_len:]
+        if self._is_warmup:
+            self.last_signal = "warmup"
+            return
         if self.active_orderids:
             self.last_signal = "waiting_order"
             return
