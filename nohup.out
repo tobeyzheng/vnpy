@@ -3406,3 +3406,151 @@ summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
   8. 02432.HK   越疆                 weight=medium pl=up   score=0.50 action=trim  conf=0.80
       reason: Early-stage robotics name remains highly volatile
       risk_flags: new_listing,high_vol,profitability_risk
+[knot_research_bundle] scheduler started
+[knot_research_bundle] schedule task=hk_picks market=hong_kong run_at=09:00 timezone=Asia/Hong_Kong
+[knot_research_bundle] schedule task=holdings_hk market=hong_kong run_at=09:00 timezone=Asia/Hong_Kong
+[knot_research_bundle] schedule task=holdings_hk_noon market=hong_kong run_at=12:00 timezone=Asia/Hong_Kong
+[knot_research_bundle] schedule task=us_picks market=us run_at=09:00 timezone=America/New_York
+[knot_research_bundle] schedule task=holdings_us market=us run_at=09:00 timezone=America/New_York
+[knot_research_bundle] schedule task=holdings_us_noon market=us run_at=12:00 timezone=America/New_York
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:07:14 HKT us_now=2026-05-12 01:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:12:14 HKT us_now=2026-05-12 01:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:17:14 HKT us_now=2026-05-12 01:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:22:14 HKT us_now=2026-05-12 01:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:27:14 HKT us_now=2026-05-12 01:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:32:14 HKT us_now=2026-05-12 01:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:37:14 HKT us_now=2026-05-12 01:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:42:14 HKT us_now=2026-05-12 01:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:47:14 HKT us_now=2026-05-12 01:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:52:14 HKT us_now=2026-05-12 01:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 13:57:14 HKT us_now=2026-05-12 01:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:02:14 HKT us_now=2026-05-12 02:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:07:14 HKT us_now=2026-05-12 02:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:12:14 HKT us_now=2026-05-12 02:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:17:14 HKT us_now=2026-05-12 02:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:22:14 HKT us_now=2026-05-12 02:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:27:14 HKT us_now=2026-05-12 02:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:32:14 HKT us_now=2026-05-12 02:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:37:14 HKT us_now=2026-05-12 02:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:42:14 HKT us_now=2026-05-12 02:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:47:14 HKT us_now=2026-05-12 02:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:52:14 HKT us_now=2026-05-12 02:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 14:57:14 HKT us_now=2026-05-12 02:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:02:14 HKT us_now=2026-05-12 03:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:07:14 HKT us_now=2026-05-12 03:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:12:14 HKT us_now=2026-05-12 03:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:17:14 HKT us_now=2026-05-12 03:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:22:14 HKT us_now=2026-05-12 03:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:27:14 HKT us_now=2026-05-12 03:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:32:14 HKT us_now=2026-05-12 03:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:37:14 HKT us_now=2026-05-12 03:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:42:14 HKT us_now=2026-05-12 03:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:47:14 HKT us_now=2026-05-12 03:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:52:14 HKT us_now=2026-05-12 03:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 15:57:14 HKT us_now=2026-05-12 03:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:02:14 HKT us_now=2026-05-12 04:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:07:14 HKT us_now=2026-05-12 04:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:12:14 HKT us_now=2026-05-12 04:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:17:14 HKT us_now=2026-05-12 04:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:22:14 HKT us_now=2026-05-12 04:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:27:14 HKT us_now=2026-05-12 04:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:32:14 HKT us_now=2026-05-12 04:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:37:14 HKT us_now=2026-05-12 04:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:42:14 HKT us_now=2026-05-12 04:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:47:14 HKT us_now=2026-05-12 04:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:52:14 HKT us_now=2026-05-12 04:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 16:57:14 HKT us_now=2026-05-12 04:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:02:14 HKT us_now=2026-05-12 05:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:07:14 HKT us_now=2026-05-12 05:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:12:14 HKT us_now=2026-05-12 05:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:17:14 HKT us_now=2026-05-12 05:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:22:14 HKT us_now=2026-05-12 05:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:27:14 HKT us_now=2026-05-12 05:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:32:14 HKT us_now=2026-05-12 05:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:37:14 HKT us_now=2026-05-12 05:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:42:14 HKT us_now=2026-05-12 05:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:47:14 HKT us_now=2026-05-12 05:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:52:14 HKT us_now=2026-05-12 05:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 17:57:14 HKT us_now=2026-05-12 05:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:02:14 HKT us_now=2026-05-12 06:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:07:14 HKT us_now=2026-05-12 06:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:12:14 HKT us_now=2026-05-12 06:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:17:14 HKT us_now=2026-05-12 06:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:22:14 HKT us_now=2026-05-12 06:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:27:14 HKT us_now=2026-05-12 06:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:32:14 HKT us_now=2026-05-12 06:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:37:14 HKT us_now=2026-05-12 06:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:42:14 HKT us_now=2026-05-12 06:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:47:14 HKT us_now=2026-05-12 06:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:52:14 HKT us_now=2026-05-12 06:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 18:57:14 HKT us_now=2026-05-12 06:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:02:14 HKT us_now=2026-05-12 07:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:07:14 HKT us_now=2026-05-12 07:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:12:14 HKT us_now=2026-05-12 07:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:17:14 HKT us_now=2026-05-12 07:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:22:14 HKT us_now=2026-05-12 07:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:27:14 HKT us_now=2026-05-12 07:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:32:14 HKT us_now=2026-05-12 07:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:37:14 HKT us_now=2026-05-12 07:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:42:14 HKT us_now=2026-05-12 07:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:47:14 HKT us_now=2026-05-12 07:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:52:14 HKT us_now=2026-05-12 07:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 19:57:14 HKT us_now=2026-05-12 07:57:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:02:14 HKT us_now=2026-05-12 08:02:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:07:14 HKT us_now=2026-05-12 08:07:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:12:14 HKT us_now=2026-05-12 08:12:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:17:14 HKT us_now=2026-05-12 08:17:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:22:14 HKT us_now=2026-05-12 08:22:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:27:14 HKT us_now=2026-05-12 08:27:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:32:14 HKT us_now=2026-05-12 08:32:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:37:14 HKT us_now=2026-05-12 08:37:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:42:14 HKT us_now=2026-05-12 08:42:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:47:14 HKT us_now=2026-05-12 08:47:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:52:14 HKT us_now=2026-05-12 08:52:14 EDT executed=none
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-12 20:57:14 HKT us_now=2026-05-12 08:57:14 EDT executed=none
+[knot_research_bundle] due task=us_picks local_time=2026-05-12 09:00:14 EDT
+[knot_research_bundle] running US 4-dimension picks (run_knot_4dim_picks_us.py) -> /projects/vnpy/log/2026051221/knot_4dim_us.json
+[US 4-Dim Picks @ 2026-05-12T13:01:14Z]
+-- Technical -------------------------------
+  1. NVDA.US    NVIDIA Corporation score=0.78  trend=0.90 flow=0.56 event=0.90 quality=0.90  risk=low
+      rationale: NVIDIA remains a liquid large-cap momentum leader with persistent AI-driven rela
+      risk:      Crowded positioning and any hawkish rate repricing could trigger a sharp momentu
+      action:    Check whether price is holding above key moving averages and confirm volume on t
+  2. MSFT.US    Microsoft Corporat score=0.72  trend=0.84 flow=0.55 event=0.84 quality=0.84  risk=medium
+      rationale: Microsoft fits a technical follow-up on durable uptrend structure supported by l
+      risk:      Multiple compression is possible if cloud growth or macro risk appetite softens.
+      action:    Monitor trend continuation versus the 20-day and 50-day averages after the next 
+  3. AVGO.US    Broadcom Inc.      score=0.71  trend=0.81 flow=0.55 event=0.81 quality=0.81  risk=low
+      rationale: Broadcom screens well for technical follow-up because AI and networking demand h
+      risk:      Semiconductor beta is high and any digestion after a strong run could become vol
+      action:    Review breakout sustainability and relative strength against the semiconductor p
+-- Fundamental -----------------------------
+  1. GOOGL.US   Alphabet Inc.      score=0.73  trend=0.83 flow=0.55 event=0.83 quality=0.83  risk=low
+      rationale: Alphabet offers strong core cash generation, scale advantages, and balance-sheet
+      risk:      Regulatory pressure and elevated AI capex could weigh on sentiment and margins.
+      action:    Reassess valuation versus earnings revisions and confirm ad, cloud, and margin t
+  2. META.US    Meta Platforms, In score=0.72  trend=0.82 flow=0.55 event=0.82 quality=0.82  risk=low
+      rationale: Meta stands out fundamentally for high-margin advertising cash flow, strong bala
+      risk:      Heavy AI infrastructure spending could pressure free cash flow if revenue growth
+      action:    Follow operating margin durability and whether ad pricing and user engagement st
+  3. LLY.US     Eli Lilly and Comp score=0.70  trend=0.79 flow=0.54 event=0.79 quality=0.79  risk=low
+      rationale: Eli Lilly remains a high-quality fundamental candidate due to strong growth visi
+      risk:      Valuation is demanding and any supply or regulatory setback could hit expectatio
+      action:    Track prescription growth, manufacturing capacity progress, and the next guidanc
+-- Capital Flow ----------------------------
+  1. AMZN.US    Amazon.com, Inc.   score=0.68  trend=0.80 flow=0.55 event=0.80 quality=0.80  risk=medium
+      rationale: Amazon is worth capital-flow follow-up because large-cap liquidity and AI/cloud 
+      risk:      Retail margin variability and macro demand softness could interrupt inflow momen
+      action:    Watch for continued accumulation through volume trends, ETF flows, and post-earn
+  2. JPM.US     JPMorgan Chase & C score=0.68  trend=0.77 flow=0.54 event=0.77 quality=0.77  risk=low
+      rationale: JPMorgan is a liquid financial leader that can benefit from institutional rotati
+      risk:      Yield-curve moves and credit concerns could reverse bank-sector inflows quickly.
+      action:    Track sector fund flows and confirm whether the stock outperforms money-center b
+  3. TSM.US     Taiwan Semiconduct score=0.69  trend=0.78 flow=0.54 event=0.78 quality=0.78  risk=low
+      rationale: TSM merits capital-flow attention because global AI supply-chain positioning oft
+      risk:      Geopolitical headlines and semiconductor cycle swings can create abrupt flow rev
+      action:    Monitor ADR volume, foreign flow proxies, and whether AI-related demand expectat
+-- Event Driven ----------------------------
+  1. AAPL.US    Apple Inc.         score=0.67  trend=0.76 flow=0.54 event=0.76 quality=0.76  risk=low
+      rationale: Apple is an event-driven follow-up candidate because product-cycle, AI feature, 
+      risk:      Weak device demand or underwhelming AI announcements could disappoint the market
