@@ -1,12 +1,12 @@
-"""HK 4-dimension Knot picks entry.
+"""China A-share 4-dimension Knot picks entry.
 
-Asks the remote Knot agent for three Hong Kong candidates per dimension
+Asks the remote Knot agent for three China A-share candidates per dimension
 (technical / fundamental / capital flow / event driven), runs each through
 the local CandidateScoringService and prints a compact text summary.
 
 Side-effects: outbound LLM call only; no OpenD, no orders, no trading
 state files are touched. Structured JSON is mirrored to
-``log/YYYYMMDDHH/knot_4dim_hk.json`` for traceability.
+``log/YYYYMMDDHH/knot_4dim_cn.json`` for traceability.
 """
 from __future__ import annotations
 
@@ -31,11 +31,11 @@ from services.strategy.knot_pick_helpers import (  # noqa: E402
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Knot 4-dim picks for the Hong Kong market.")
+    parser = argparse.ArgumentParser(description="Knot 4-dim picks for the China A-share market.")
     parser.add_argument("--per-dim", type=int, default=DEFAULT_PER_DIM,
                         help="Number of picks per dimension (default 3).")
     parser.add_argument("--output", default=None,
-                        help="Optional output path. Defaults to log/YYYYMMDDHH/knot_4dim_hk.json under the repo root.")
+                        help="Optional output path. Defaults to log/YYYYMMDDHH/knot_4dim_cn.json under the repo root.")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print compact text only; do not write the JSON file.")
     return parser
@@ -44,9 +44,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     try:
-        picks = call_knot_4dim_picks(market="hong_kong", per_dim=int(args.per_dim))
+        picks = call_knot_4dim_picks(market="china", per_dim=int(args.per_dim))
     except KnotPickError as exc:
-        print(f"[knot_4dim_hk] error: {exc}", file=sys.stderr)
+        print(f"[knot_4dim_cn] error: {exc}", file=sys.stderr)
         return 2
 
     enriched: dict[str, list] = {}
@@ -57,10 +57,10 @@ def main() -> int:
     print(text)
 
     if not args.dry_run:
-        out_path = resolve_output_path(args.output, default_filename="knot_4dim_hk.json")
+        out_path = resolve_output_path(args.output, default_filename="knot_4dim_cn.json")
         out_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {
-            "market": "hong_kong",
+            "market": "china",
             "generated_at": picks.generated_at,
             "per_dim": int(args.per_dim),
             "dimensions": enriched,
@@ -68,7 +68,7 @@ def main() -> int:
             "wrote_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
         out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"[knot_4dim_hk] wrote {out_path}")
+        print(f"[knot_4dim_cn] wrote {out_path}")
     return 0
 
 

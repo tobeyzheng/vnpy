@@ -18,6 +18,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 from vnpy_llm.llm_client import LlmClientError, OpenAICompatibleClient
@@ -25,7 +26,9 @@ from vnpy_llm.llm_client import LlmClientError, OpenAICompatibleClient
 from .candidate_scoring import CandidateScoringService
 from .symbols import normalize_symbol
 
-SUPPORTED_MARKETS = ("hong_kong", "us")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+SUPPORTED_MARKETS = ("hong_kong", "us", "china")
 
 # (key, label, signal_category)
 DIMENSIONS: tuple[tuple[str, str, str], ...] = (
@@ -34,6 +37,12 @@ DIMENSIONS: tuple[tuple[str, str, str], ...] = (
     ("capital_flow", "Capital Flow", "flow"),
     ("event_driven", "Event Driven", "event"),
 )
+
+MARKET_DISPLAY: dict[str, tuple[str, str, str]] = {
+    "hong_kong": ("Hong Kong", "hong_kong", "00700.HK"),
+    "us": ("United States", "us", "NVDA.US"),
+    "china": ("China A-share", "china", "600519.SH"),
+}
 
 DEFAULT_PER_DIM = 3
 
@@ -58,6 +67,36 @@ SENSITIVE_NUMERIC_FIELDS = (
 #   5%  <= ratio < 15% -> medium
 #   ratio >= 15%       -> large
 WEIGHT_BUCKETS: tuple[tuple[float, str], ...] = ((0.05, "small"), (0.15, "medium"))
+
+
+def build_log_hour_key(now: datetime | None = None) -> str:
+    return (now or datetime.now()).strftime("%Y%m%d%H")
+
+
+def build_default_output_relpath(
+    filename: str,
+    *,
+    hour_key: str | None = None,
+    now: datetime | None = None,
+) -> Path:
+    key = (hour_key or build_log_hour_key(now=now)).strip()
+    return Path("log") / key / filename
+
+
+def resolve_output_path(
+    output: str | os.PathLike[str] | None,
+    *,
+    default_filename: str,
+    hour_key: str | None = None,
+    now: datetime | None = None,
+) -> Path:
+    raw = str(output or "").strip()
+    chosen = Path(raw) if raw else build_default_output_relpath(
+        default_filename,
+        hour_key=hour_key,
+        now=now,
+    )
+    return chosen if chosen.is_absolute() else REPO_ROOT / chosen
 
 
 class KnotPickError(RuntimeError):
@@ -120,9 +159,10 @@ def _coerce_float(value: Any, *, default: float) -> float:
 # Four-dimension picks
 # ---------------------------------------------------------------------------
 def _build_four_dim_prompt(*, market: str, per_dim: int) -> str:
-    market_label = "Hong Kong" if market == "hong_kong" else "United States"
-    market_value = "hong_kong" if market == "hong_kong" else "us"
-    suffix_hint = "00700.HK" if market == "hong_kong" else "NVDA.US"
+    market_label, market_value, suffix_hint = MARKET_DISPLAY.get(
+        market,
+        ("United States", "us", "NVDA.US"),
+    )
     dims = ", ".join(key for key, _, _ in DIMENSIONS)
     return (
         "You are an institutional research assistant. Propose follow-up "
@@ -176,13 +216,17 @@ def _parse_dimension_rows(
                 continue
             if market == "us" and raw_suffix not in {"", "US"}:
                 continue
+            if market == "china" and raw_suffix not in {"", "SH", "SZ"}:
+                continue
         symbol = normalize_symbol(raw_symbol, market)
         if not symbol or "." not in symbol:
             continue
-        suffix = symbol.rsplit(".", 1)[-1]
+        suffix = symbol.rsplit(".", 1)[-1].upper()
         if market == "hong_kong" and suffix != "HK":
             continue
         if market == "us" and suffix != "US":
+            continue
+        if market == "china" and suffix not in {"SH", "SZ"}:
             continue
         if symbol in seen:
             continue
@@ -299,7 +343,11 @@ def format_four_dim_picks(
     *,
     enriched: Mapping[str, Sequence[Mapping[str, Any]]],
 ) -> str:
-    market_label = "HK" if picks.market == "hong_kong" else "US"
+    market_label = {
+        "hong_kong": "HK",
+        "us": "US",
+        "china": "CN",
+    }.get(picks.market, picks.market.upper())
     lines: list[str] = []
     lines.append(f"[{market_label} 4-Dim Picks @ {picks.generated_at}]")
     total = 0
@@ -368,10 +416,14 @@ def _market_from_code(code: str) -> str:
         return "hong_kong"
     if text.startswith("US"):
         return "us"
+    if text.startswith("SH") or text.startswith("SZ"):
+        return "china"
     if text.endswith(".HK"):
         return "hong_kong"
     if text.endswith(".US"):
         return "us"
+    if text.endswith(".SH") or text.endswith(".SZ"):
+        return "china"
     return ""
 
 
@@ -381,13 +433,15 @@ def _normalize_position_symbol(code: str, market: str) -> str:
         return ""
     if "." in text:
         head, tail = text.split(".", 1)
-        if head in {"HK", "US"} and tail:
+        if head in {"HK", "US", "SH", "SZ"} and tail:
             return f"{tail}.{head}"
         return text
     if market == "hong_kong":
         return f"{text}.HK"
     if market == "us":
         return f"{text}.US"
+    if market == "china":
+        return f"{text}.SH"
     return text
 
 
@@ -624,7 +678,10 @@ __all__ = [
     "SUPPORTED_MARKETS",
     "WEIGHT_BUCKETS",
     "SENSITIVE_NUMERIC_FIELDS",
+    "REPO_ROOT",
+    "build_default_output_relpath",
     "build_holdings_rows",
+    "build_log_hour_key",
     "call_knot_4dim_picks",
     "call_knot_holdings_advice",
     "classify_pl_direction",
@@ -634,5 +691,6 @@ __all__ = [
     "mask_account_summary",
     "mask_position_record",
     "merge_holdings_advice",
+    "resolve_output_path",
     "score_candidate_rows",
 ]

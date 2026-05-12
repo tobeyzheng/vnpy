@@ -118,18 +118,25 @@
 
 下面三个入口共享 `services/strategy/knot_pick_helpers.py` 这一层 helper，单独面向「让 Knot 给出可阅读的研究类输出」，**不连交易、不改交易状态**：
 
-- **`scripts/quant_workflow/run_knot_4dim_picks_hk.py`** / **`run_knot_4dim_picks_us.py`**
+- **`scripts/quant_workflow/run_knot_4dim_picks_hk.py`** / **`run_knot_4dim_picks_cn.py`** / **`run_knot_4dim_picks_us.py`**
   - 让远端 Knot 按 4 个研究维度（`technical / fundamental / capital_flow / event_driven`）各给 3 个目标市场候选，每条候选回到本地 `CandidateScoringService.enrich_row("dynamic")` 走一遍打分。
-  - 默认仅出站调用 Knot LLM，不连 OpenD、不下单、不写 `candidate_inputs*.json`。
-  - 输出为紧凑可读文本到 stdout，并把结构化 JSON 写到 `state/runs/knot_4dim_hk.json` / `state/runs/knot_4dim_us.json`；`--dry-run` 只打印不落盘。
+  - 当前支持 `hong_kong`、`china`（A 股，接受 `*.SH` / `*.SZ`）与 `us` 三个研究市场；默认仅出站调用 Knot LLM，不连 OpenD、不下单、不写 `candidate_inputs*.json`。
+  - 输出为紧凑可读文本到 stdout，并把结构化 JSON 写到 `log/YYYYMMDDHH/knot_4dim_hk.json` / `log/YYYYMMDDHH/knot_4dim_cn.json` / `log/YYYYMMDDHH/knot_4dim_us.json`；`--dry-run` 只打印不落盘，`--output` 可显式覆盖默认路径。
   - 当 `KNOT_AGUI_URL` / `KNOT_API_TOKEN` 缺失或 Knot 返回不可用时，**直接以非零退出码报错**，不做静默降级（让操作者明确知道没拿到 Knot 输出）。
 - **`scripts/quant_workflow/run_holdings_knot_review.py`**
-  - 通过 `FutuAccountProvider().get_summary()` 只读拉取当前持仓，再让 Knot 对每只持仓给出 `hold | add | trim | exit` 四个方向之一（不给具体仓位百分比）。
+  - 通过 `FutuAccountProvider(...).get_summary()` 只读拉取当前持仓，再让 Knot 对每只持仓给出 `hold | add | trim | exit` 四个方向之一（不给具体仓位百分比）。
+  - 默认显式查询 `REAL` 交易环境的账户快照（只读 `position_list_query`，不下单），也可通过 `--trd-env REAL|SIMULATE` 覆盖；`--live-strict` 可要求按 `trd_env` 做严格账户选择。
   - 对外暴露的字段经过 `mask_account_summary` 脱敏：仅保留 `symbol / name / market / weight_bucket / pl_direction`，剔除所有现金、市值、数量、可买力、总资产；`weight_bucket` 按相对总资产档位计算（`<5% small`、`5%~15% medium`、`>15% large`）。
-  - Knot prompt 中明确要求模型不要给出任何具体股数 / 金额 / NAV 占比；本地输出与落盘文件 `state/runs/holdings_knot_review.json` 同样不会包含原始金额或数量。
+  - Knot prompt 中明确要求模型不要给出任何具体股数 / 金额 / NAV 占比；本地输出与落盘文件 `log/YYYYMMDDHH/holdings_knot_review.json` 同样不会包含原始金额或数量；`--output` 可显式覆盖默认路径。
   - `--skip-knot` 可跳过 Knot 调用做离线预览，仅打分不调远端。
+- **`scripts/quant_workflow/run_knot_research_bundle.py`**
+  - 默认顺序执行以上 3 个研究入口：先 HK 四维选股，再 US 四维选股，最后持仓方向审阅。
+  - 默认让三份 JSON 结果共享同一个 `log/YYYYMMDDHH/` 目录，便于按批次归档；`--output-dir` 可统一覆盖输出目录，`--per-dim` 会转发给 HK / US 入口，`--skip-knot` 仅转发给持仓审阅入口。
+  - `--schedule-workdays` 简版调度模式：进程常驻后按市场本地时区与工作日触发，当前固定为 `HK 09:00 Asia/Hong_Kong` 运行 `run_knot_4dim_picks_hk.py` + 1 次持仓 review、`HK 12:00 Asia/Hong_Kong` 再运行 1 次持仓 review、`US 09:00 America/New_York` 运行 `run_knot_4dim_picks_us.py` + 1 次持仓 review、`US 12:00 America/New_York` 再运行 1 次持仓 review；`--poll-seconds`、`--heartbeat-seconds`、`--schedule-window-minutes` 可调轮询、心跳和重启补跑窗口。
+  - bundle 入口会把 `--holdings-trd-env`（默认 `REAL`）和 `--holdings-live-strict`（默认开启）转发给持仓审阅入口，因此调度模式下的 4 次 holdings review 都是对真实账户做只读查询，不提交订单。
+  - 该入口本身不引入新的交易副作用，只是按顺序编排已有的只读研究脚本；任一子任务失败时会立即停止并返回相同退出码。
 
-> 安全边界：以上三个入口归类为 **READ-ONLY 研究类入口**。它们不会启动交易会话、不会改写订单状态、不会触发 `prepare candidates` 流；持仓 review 只调用 OpenD 的 `position_list_query`，不下单、不撤单、不调仓。
+> 安全边界：以上三个研究入口及其 bundle 入口归类为 **READ-ONLY 研究类入口**。它们不会启动交易会话、不会改写订单状态、不会触发 `prepare candidates` 流；持仓 review 只调用 OpenD 的 `position_list_query`，不下单、不撤单、不调仓。
 
 ### 推荐的项目阅读顺序
 

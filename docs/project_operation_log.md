@@ -9,6 +9,26 @@
 
 ### 历史记录
 
+- **2026-05-12**：Knot research bundle 为 HK / US 持仓 review 新增中午 `12:00` 调度
+  - **代码文件**：[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[test_knot_research_bundle.py](/projects/vnpy/tests/test_knot_research_bundle.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：`run_knot_research_bundle.py` 的 `--schedule-workdays` 现在除保留 HK / US 开盘前 `09:00` 的持仓 review 外，还会在各自市场本地时区工作日 `12:00` 再追加 1 次只读持仓审阅；本轮未改动四维选股的触发时间，也未新增任何下单或账户写操作，仅扩展调度时点并补充对应测试与系统集成说明。
+
+- **2026-05-12**：新增 A 股四维选股入口，并接入 Knot research bundle 的盘前工作日调度
+  - **代码文件**：[knot_pick_helpers.py](/projects/vnpy/services/strategy/knot_pick_helpers.py)、[symbols.py](/projects/vnpy/services/strategy/symbols.py)、[run_knot_4dim_picks_cn.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_cn.py)、[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[test_knot_pick_helpers.py](/projects/vnpy/tests/test_knot_pick_helpers.py)、[test_knot_research_bundle.py](/projects/vnpy/tests/test_knot_research_bundle.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：Knot 四维研究入口现在新增 `china`（A 股）市场，支持 `*.SH` / `*.SZ` 代码标准化、跨市场后缀过滤与 `CN` 紧凑文本标签；新增 [run_knot_4dim_picks_cn.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_cn.py) 并默认把结构化输出写到 `log/YYYYMMDDHH/knot_4dim_cn.json`。`run_knot_research_bundle.py` 的立即执行顺序调整为 `HK -> CN -> US -> holdings review`，同时 `--schedule-workdays` 新增 `Asia/Shanghai` 工作日 `09:00` 的 A 股盘前选股触发；本轮未新增 A 股 holdings review，仍保持仅 HK / US 开盘前做只读持仓审阅。
+
+- **2026-05-12**：Knot research bundle 新增按工作日 + 市场时区调度，并将持仓 review 默认锁定到 `REAL` 只读环境
+  - **代码文件**：[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[run_holdings_knot_review.py](/projects/vnpy/scripts/quant_workflow/run_holdings_knot_review.py)、[test_knot_research_bundle.py](/projects/vnpy/tests/test_knot_research_bundle.py)、[test_run_holdings_knot_review.py](/projects/vnpy/tests/test_run_holdings_knot_review.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：`run_knot_research_bundle.py` 在保留原先顺序立即执行模式的同时，新增 `--schedule-workdays` 常驻调度能力，按 `Asia/Hong_Kong` 与 `America/New_York` 的工作日 `09:00` 分别触发 HK / US 四维选股，并各执行 1 次持仓 review；新增轮询、心跳和补跑窗口参数以降低“静默等待像假死”的排障成本。`run_holdings_knot_review.py` 新增 `--trd-env REAL|SIMULATE` 与 `--live-strict` 参数，bundle 默认把持仓审阅锁定到 `REAL` 环境的只读账户查询，但仍不提交任何订单或改写交易状态。
+
+- **2026-05-12**：Knot 研究类入口改为按小时写入 `log/`，并新增顺序批量执行入口
+  - **代码文件**：[knot_pick_helpers.py](/projects/vnpy/services/strategy/knot_pick_helpers.py)、[run_knot_4dim_picks_hk.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_hk.py)、[run_knot_4dim_picks_us.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py)、[run_holdings_knot_review.py](/projects/vnpy/scripts/quant_workflow/run_holdings_knot_review.py)、[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[test_knot_pick_helpers.py](/projects/vnpy/tests/test_knot_pick_helpers.py)
+  - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
+  - **影响摘要**：3 个 Knot 研究入口默认不再把结构化 JSON 写到 `state/runs/`，而是统一写到 `log/YYYYMMDDHH/` 下的同名文件，方便按小时归档研究输出；新增 `run_knot_research_bundle.py` 作为顺序编排入口，按 HK 四维选股 → US 四维选股 → 持仓方向审阅 的顺序执行，并默认让 3 份产物共享同一个小时目录。显式传入 `--output` / `--output-dir` 时仍可覆盖默认路径。
+
 - **2026-05-11**：修复 live intraday 路径下 1m bar 永远收不到 + 心跳字段误报
   - **代码文件**：[strategy.py](/projects/vnpy/scripts/classic_multifactor/strategy.py)、[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)
   - **影响摘要**：`ClassicMultiFactorCtaStrategy` 之前 `on_tick` 为空且无 `BarGenerator`，导致 vnpy CtaEngine 在 live 模式下永远不会触发 `on_bar`（FutuGateway 仅订阅 `QUOTE/ORDER_BOOK`，不订 K_1M，也不下发 1m bar），策略恒卡在 `last_signal=warmup`、`bars_seen=0`。本次按 vnpy 官方示例新增 `self.bg = BarGenerator(self.on_bar)` 并在 `on_tick` 中调 `self.bg.update_tick(tick)`，让 live tick 本地合成 1m bar 推给 `on_bar`；回测路径不经 `on_tick`（vnpy `BacktestingEngine` 直接调 `strategy.on_bar`），行为零变化。同时清理 intraday 心跳里的 `gateway_connected` 字段（`BaseGateway` 无此属性，恒为 False 形成误报），替换为 `quote_ctx_attached`（FutuGateway 是否仍持有 `OpenQuoteContext`）+ `gateway_data_flowing`（本会话是否已收到至少 1 根 bar）两个语义正确的字段，并同步刷新 heartbeat 日志格式。

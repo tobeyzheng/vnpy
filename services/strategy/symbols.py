@@ -13,4 +13,6 @@ def normalize_symbol(symbol: str, market: str | None = None) -> str:
         return f"{code.zfill(5)}.HK"
     if market == 'us' or suffix == 'US':
         return f"{code}.US"
+    if market == 'china' or suffix in {'SH', 'SZ'}:
+        return f"{code.zfill(6)}.{suffix}"
     return s

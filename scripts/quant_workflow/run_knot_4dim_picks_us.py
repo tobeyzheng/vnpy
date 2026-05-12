@@ -6,7 +6,7 @@ the local CandidateScoringService and prints a compact text summary.
 
 Side-effects: outbound LLM call only; no OpenD, no orders, no trading
 state files are touched. Structured JSON is mirrored to
-``state/runs/knot_4dim_us.json`` for traceability.
+``log/YYYYMMDDHH/knot_4dim_us.json`` for traceability.
 """
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ from services.strategy.knot_pick_helpers import (  # noqa: E402
     KnotPickError,
     call_knot_4dim_picks,
     format_four_dim_picks,
+    resolve_output_path,
     score_candidate_rows,
 )
 
@@ -33,8 +34,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Knot 4-dim picks for the United States market.")
     parser.add_argument("--per-dim", type=int, default=DEFAULT_PER_DIM,
                         help="Number of picks per dimension (default 3).")
-    parser.add_argument("--output", default="state/runs/knot_4dim_us.json",
-                        help="Path for the structured JSON output (relative to repo root).")
+    parser.add_argument("--output", default=None,
+                        help="Optional output path. Defaults to log/YYYYMMDDHH/knot_4dim_us.json under the repo root.")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print compact text only; do not write the JSON file.")
     return parser
@@ -56,7 +57,7 @@ def main() -> int:
     print(text)
 
     if not args.dry_run:
-        out_path = REPO_ROOT / args.output
+        out_path = resolve_output_path(args.output, default_filename="knot_4dim_us.json")
         out_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {
             "market": "us",

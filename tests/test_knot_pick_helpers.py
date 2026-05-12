@@ -12,6 +12,7 @@ is contacted, and verify that:
 from __future__ import annotations
 
 import sys
+from datetime import datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -95,6 +96,45 @@ def test_call_knot_4dim_picks_raises_when_client_unconfigured():
         raise AssertionError("Expected KnotPickError when factory returns None")
 
 
+def test_call_knot_4dim_picks_supports_china_market_and_filters_suffixes():
+    payload = {
+        "technical": [
+            {"symbol": "600519.SH", "market": "china", "name": "Kweichow Moutai",
+             "raw_score": 0.76, "rationale": "trend up", "risk": "valuation",
+             "action_hint": "buy dip"},
+            {"symbol": "NVDA.US", "market": "us", "name": "NVIDIA",
+             "raw_score": 0.9, "rationale": "wrong market", "risk": "n/a",
+             "action_hint": "n/a"},
+        ],
+        "fundamental": [
+            {"symbol": "000858.SZ", "market": "china", "name": "Wuliangye",
+             "raw_score": 0.68, "rationale": "earnings resilience", "risk": "macro",
+             "action_hint": "watch"},
+        ],
+        "capital_flow": [
+            {"symbol": "300308.SZ", "market": "china", "name": "Zhongji Innolight",
+             "raw_score": 0.64, "rationale": "northbound inflow", "risk": "crowding",
+             "action_hint": "watch"},
+        ],
+        "event_driven": [
+            {"symbol": "688041.SH", "market": "china", "name": "Hygon",
+             "raw_score": 0.61, "rationale": "policy catalyst", "risk": "volatility",
+             "action_hint": "wait"},
+        ],
+    }
+    result = helpers.call_knot_4dim_picks(
+        market="china",
+        per_dim=3,
+        client_factory=_stub_factory(payload),
+    )
+    assert result.market == "china"
+    assert result.total_picks() == 4
+    technical = result.dimensions["technical"]
+    assert len(technical) == 1
+    assert technical[0]["symbol"] == "600519.SH"
+    assert all(row["symbol"].endswith((".SH", ".SZ")) for rows in result.dimensions.values() for row in rows)
+
+
 def test_format_four_dim_picks_renders_all_four_sections():
     payload = {
         "technical": [
@@ -130,6 +170,27 @@ def test_format_four_dim_picks_renders_all_four_sections():
     assert "NVDA.US" in text and "AAPL.US" in text and "TSLA.US" in text
     # Capital flow has no picks -> placeholder line must appear.
     assert "(no usable picks)" in text
+
+
+def test_format_four_dim_picks_renders_china_label():
+    payload = {
+        "technical": [{"symbol": "600519.SH", "market": "china", "name": "Kweichow Moutai", "raw_score": 0.8, "rationale": "trend", "risk": "valuation", "action_hint": "watch"}],
+        "fundamental": [],
+        "capital_flow": [],
+        "event_driven": [],
+    }
+    picks = helpers.call_knot_4dim_picks(
+        market="china",
+        per_dim=1,
+        client_factory=_stub_factory(payload),
+    )
+    enriched = {
+        dim: helpers.score_candidate_rows(rows, mode="dynamic")
+        for dim, rows in picks.dimensions.items()
+    }
+    text = helpers.format_four_dim_picks(picks, enriched=enriched)
+    assert "[CN 4-Dim Picks @" in text
+    assert "600519.SH" in text
 
 
 # ---------------------------------------------------------------------------
@@ -231,3 +292,36 @@ def test_classify_weight_buckets():
     assert helpers.classify_weight(200_000, 1_000_000) == "large"  # 20%
     assert helpers.classify_weight(0, 1_000_000) == "unknown"
     assert helpers.classify_weight(100, 0) == "unknown"
+
+
+def test_build_default_output_relpath_uses_hour_bucket():
+    relpath = helpers.build_default_output_relpath(
+        "knot_4dim_hk.json",
+        now=datetime(2026, 5, 12, 9, 45, 0),
+    )
+    assert relpath == Path("log") / "2026051209" / "knot_4dim_hk.json"
+
+
+def test_resolve_output_path_defaults_under_repo_log_dir():
+    out_path = helpers.resolve_output_path(
+        None,
+        default_filename="holdings_knot_review.json",
+        now=datetime(2026, 5, 12, 10, 1, 0),
+    )
+    assert out_path == REPO_ROOT / "log" / "2026051210" / "holdings_knot_review.json"
+
+
+def test_resolve_output_path_preserves_explicit_relative_and_absolute_paths(tmp_path):
+    relative = helpers.resolve_output_path(
+        "custom/out.json",
+        default_filename="ignored.json",
+        now=datetime(2026, 5, 12, 10, 1, 0),
+    )
+    absolute_target = tmp_path / "explicit.json"
+    absolute = helpers.resolve_output_path(
+        str(absolute_target),
+        default_filename="ignored.json",
+        now=datetime(2026, 5, 12, 10, 1, 0),
+    )
+    assert relative == REPO_ROOT / "custom" / "out.json"
+    assert absolute == absolute_target
