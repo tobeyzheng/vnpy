@@ -202,11 +202,12 @@ class Strategy(StrategyBase):
 
         def _fetch_bar_series(symbol, kind, n):
             # Pull the most recent ``n`` 1-minute CLOSED bars (oldest -> newest).
-            # `bar_*(select=k)` k accepts 1..500.  We start at k=2 so we
-            # only consume already-closed bars (matches vnpy on_bar semantics).
+            # `bar_*(select=k)` k accepts 1..500.  In Futu backtest mode
+            # `handle_data` fires on bar close, so `select=1` already refers
+            # to the latest CLOSED bar -- no need to skip it like vnpy on_bar.
             out = []
-            k = n + 1
-            while k >= 2:
+            k = n
+            while k >= 1:
                 v = 0.0
                 if kind == "open":
                     v = bar_open(symbol=symbol,  bar_type=BarType.K_1M,
@@ -240,7 +241,7 @@ class Strategy(StrategyBase):
             warmup = max(warmup, mom_w)
             warmup = max(warmup, atr_w)
             warmup = max(warmup, 20)
-            warmup = warmup + 2
+            warmup = warmup + 1
 
             closes = self._fetch_bar_series(symbol, "close",  warmup + shift)
             highs  = self._fetch_bar_series(symbol, "high",   warmup + shift)
@@ -582,7 +583,9 @@ class Strategy(StrategyBase):
         self.cutoff_minute          = show_variable(0,  GlobalType.INT)
 
         # ---- safety toggle: when False only `alert(...)` is sent ----
-        self.LIVE_SUBMIT            = show_variable(False, GlobalType.BOOL)
+        # Default True so backtest / SIM actually submit orders; flip to
+        # False on the platform UI for REAL dry-run protection.
+        self.LIVE_SUBMIT            = show_variable(True, GlobalType.BOOL)
 
     def handle_data(self):
         symbol = self.target
