@@ -1,0 +1,22 @@
+{
+  "strategy": "/projects/vnpy/tmp/strategy/strategy_simple_multifactor.py",
+  "vt_symbol": "NVDA.SMART",
+  "intervals": [
+    "10m",
+    "30m",
+    "1h",
+    "4h",
+    "1d"
+  ],
+  "is_window": [
+    "2024-01-01",
+    "2025-11-12"
+  ],
+  "oos_window": [
+    "2025-11-13",
+    "2026-05-13"
+  ],
+  "capital": 10000.0,
+  "min_trades": 5,
+  "started_at": "20260513_211905"
+}

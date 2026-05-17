@@ -28,7 +28,7 @@ class Strategy(StrategyBase):
 
         # RSI参数 - 保持经典14天，微调阈值减少假信号
         self.rsi_window = show_variable(14, GlobalType.INT)
-        self.rsi_oversold = show_variable(35, GlobalType.FLOAT)  # 超卖阈值（从30调至35）
+        self.rsi_oversold = show_variable(20, GlobalType.FLOAT)  # 超卖阈值（从30调至35）
         self.rsi_overbought = show_variable(65, GlobalType.FLOAT)  # 超买阈值（从70调至65）
 
         # 成交量确认 - 降低要求，1.2倍即可确认
@@ -42,7 +42,7 @@ class Strategy(StrategyBase):
         self.position_pct = show_variable(0.2, GlobalType.FLOAT)  # 单次投入资金比例
 
         # 实盘开关 - 默认关闭，避免误操作
-        self.LIVE_SUBMIT = show_variable(False, GlobalType.BOOL)
+        self.LIVE_SUBMIT = show_variable(True, GlobalType.BOOL)
 
     # 辅助函数 - 计算简单移动平均
     def _sma(self, values, window):
@@ -69,7 +69,7 @@ class Strategy(StrategyBase):
             else:
                 losses.append(-change)
 
-        if len(gains) < window or len(losses) < window:
+        if len(gains) + len(losses) < window:
             return 50.0
 
         # 计算平均增益和平均损失
@@ -103,21 +103,28 @@ class Strategy(StrategyBase):
 
         closes = []
         volumes = []
-        for i in range(warmup):
+        # for i in range(warmup):
+        k = int(warmup)
+        while k > 0:
             close_val = bar_close(symbol=symbol, bar_type=BarType.K_1M,
-                                 select=i+1, session_type=THType.ALL)
+                                 select=k, session_type=THType.ALL)
             volume_val = bar_volume(symbol=symbol, bar_type=BarType.K_1M,
-                                   select=i+1, session_type=THType.ALL)
+                                   select=k, session_type=THType.ALL)
             closes.append(float(close_val) if close_val else 0.0)
             volumes.append(float(volume_val) if volume_val else 0.0)
+            k = k - 1
+            # print(f"{k} val:{close_val} ")
 
         if len(closes) < warmup or len(volumes) < warmup:
             self.last_signal = "数据不足"
+            # alert(title="数据不足", content="")
             return
 
         current_price_val = closes[-1]
+        # print(f"current_price_val:{current_price_val} ")
         if current_price_val <= 0:
             self.last_signal = "无效价格"
+            # alert(title="无效价格", content="")
             return
 
         # 计算技术指标
@@ -128,6 +135,7 @@ class Strategy(StrategyBase):
 
         # 获取当前持仓
         held_qty = int(position_holding_qty(symbol=symbol) or 0)
+        print(f"current_price_val:{current_price_val} {fast_ma} {slow_ma} {rsi_value} {vol_ratio}")
 
         # 持仓状态处理
         if held_qty > 0:
@@ -167,7 +175,7 @@ class Strategy(StrategyBase):
 
         # 调试输出当前指标状态
         debug_info = f"MA5:{fast_ma:.2f} MA20:{slow_ma:.2f} RSI:{rsi_value:.1f} 量比:{vol_ratio:.1f} 条件数:{len(entry_conditions)}"
-
+        print(debug_info)
         # 满足至少两个条件才入场
         if len(entry_conditions) >= 2:
             self._enter_position(symbol, current_price_val, entry_conditions)
@@ -176,9 +184,11 @@ class Strategy(StrategyBase):
 
     def _enter_position(self, symbol, price, reasons):
         # 计算买入数量
-        cash_avail = float(cash() or 0)
+        cash_real = cash(currency=Currency.USD)
+        cash_avail = float(cash_real or 0)
         order_value = cash_avail * self.position_pct
         qty = int(order_value // price)
+        # print(f"{cash_avail} {order_value} {qty}")
 
         if qty <= 0:
             self.last_signal = "资金不足"

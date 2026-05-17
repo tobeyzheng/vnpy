@@ -1,0 +1,68 @@
+{
+  "entries": {
+    "HK.00700|K_5M|qfq": {
+      "autype": "qfq",
+      "end": "2024-12-31",
+      "futu_code": "HK.00700",
+      "kl_type": "K_5M",
+      "last_updated_at": "2026-05-13T12:42:22",
+      "source": "futu_opend",
+      "start": "2024-12-30"
+    },
+    "HK.00700|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2025-01-31",
+      "futu_code": "HK.00700",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-13T12:41:54",
+      "source": "futu_opend",
+      "start": "2024-11-01"
+    },
+    "SH.600519|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2024-12-31",
+      "futu_code": "SH.600519",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-13T12:42:08",
+      "source": "futu_opend",
+      "start": "2024-12-01"
+    },
+    "US.AAPL|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2024-12-31",
+      "futu_code": "US.AAPL",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-13T12:42:07",
+      "source": "futu_opend",
+      "start": "2024-12-01"
+    },
+    "US.NVDA|K_5M|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-13",
+      "futu_code": "US.NVDA",
+      "kl_type": "K_5M",
+      "last_updated_at": "2026-05-13T19:02:45",
+      "source": "futu_opend",
+      "start": "2024-01-01"
+    },
+    "US.NVDA|K_60M|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-13",
+      "futu_code": "US.NVDA",
+      "kl_type": "K_60M",
+      "last_updated_at": "2026-05-13T15:17:43",
+      "source": "futu_opend",
+      "start": "2024-01-01"
+    },
+    "US.NVDA|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-17",
+      "futu_code": "US.NVDA",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-17T09:17:17",
+      "source": "futu_opend",
+      "start": "2022-01-01"
+    }
+  },
+  "version": 1
+}

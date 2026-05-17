@@ -1,0 +1,2169 @@
+{
+  "market": "hong_kong",
+  "generated_at": "2026-05-14T01:01:19Z",
+  "per_dim": 3,
+  "dimensions": {
+    "technical": [
+      {
+        "symbol": "00941.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "China Mobile",
+        "raw_score": 0.7286,
+        "rationale": "Strong relative strength and persistent southbound accumulation suggest a stable uptrend setup in a defensive large-cap.",
+        "risk": "Yield-driven defensives could lag if market leadership rotates sharply back to high-beta growth.",
+        "action_hint": "Check whether price continues to hold above short-term moving averages with expanding turnover.",
+        "dimension": "technical",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "00941.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "technical",
+            "score": 0.83,
+            "summary": "Strong relative strength and persistent southbound accumulation suggest a stable uptrend setup in a defensive large-cap."
+          },
+          {
+            "symbol": "00941.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7286,
+            "summary": "Strong relative strength and persistent southbound accumulation suggest a stable uptrend setup in a defensive large-cap."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.83,
+        "trend_score": 0.83,
+        "relative_strength_score": 0.83,
+        "flow_score": 0.5495,
+        "event_score": 0.83,
+        "quality_score": 0.83,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.83,
+        "knot_overlay_score": 0.83,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "general",
+        "risk_level": "low",
+        "consensus_score": 0.7283,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7365,
+          "event_driven": 0.7365,
+          "quality_growth": 0.72,
+          "knot_overlay": 0.8367
+        },
+        "source_breakdown": {
+          "classic": 0.2268,
+          "knot_agent": 0.7732
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Strong relative strength and persistent southbound accumulation suggest a stable uptrend setup in a defensive large-cap.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: classic, knot_agent; consensus 0.73.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7286,
+          "input_scores": {
+            "trend_score": 0.83,
+            "relative_strength_score": 0.83,
+            "flow_score": 0.5495,
+            "event_score": 0.83,
+            "quality_score": 0.83,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.83,
+            "knot_overlay_score": 0.83,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.83,
+              "weight": 0.22,
+              "weighted_contribution": 0.1826,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.83,
+              "weight": 0.16,
+              "weighted_contribution": 0.1328,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5495,
+              "weight": 0.14,
+              "weighted_contribution": 0.0769,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.83,
+              "weight": 0.14,
+              "weighted_contribution": 0.1162,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.83,
+              "weight": 0.1,
+              "weighted_contribution": 0.083,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.83,
+              "weight": 0.06,
+              "weighted_contribution": 0.0498,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.83,
+              "weight": 0.1,
+              "weighted_contribution": 0.083,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7365,
+            "event_driven": 0.7365,
+            "quality_growth": 0.72,
+            "knot_overlay": 0.8367
+          },
+          "source_breakdown": {
+            "classic": 0.2268,
+            "knot_agent": 0.7732
+          },
+          "consensus_score": 0.7283,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "01024.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "Kuaishou-W",
+        "raw_score": 0.6966,
+        "rationale": "Recent AI product momentum and heavy active trading make it a high-liquidity name with improving trend-following appeal.",
+        "risk": "The stock remains vulnerable to sentiment reversals in internet and AI-related growth names.",
+        "action_hint": "Monitor follow-through after recent strength and confirm momentum with volume and northbound/southbound participation.",
+        "dimension": "technical",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "01024.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "technical",
+            "score": 0.79,
+            "summary": "Recent AI product momentum and heavy active trading make it a high-liquidity name with improving trend-following appeal."
+          },
+          {
+            "symbol": "01024.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6966,
+            "summary": "Recent AI product momentum and heavy active trading make it a high-liquidity name with improving trend-following appeal."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.79,
+        "trend_score": 0.79,
+        "relative_strength_score": 0.79,
+        "flow_score": 0.5435,
+        "event_score": 0.79,
+        "quality_score": 0.79,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.79,
+        "knot_overlay_score": 0.79,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.7006,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7078,
+          "event_driven": 0.7078,
+          "quality_growth": 0.6933,
+          "knot_overlay": 0.81
+        },
+        "source_breakdown": {
+          "classic": 0.2207,
+          "knot_agent": 0.7793
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Recent AI product momentum and heavy active trading make it a high-liquidity name with improving trend-following appeal.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: classic, knot_agent; consensus 0.70.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6966,
+          "input_scores": {
+            "trend_score": 0.79,
+            "relative_strength_score": 0.79,
+            "flow_score": 0.5435,
+            "event_score": 0.79,
+            "quality_score": 0.79,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.79,
+            "knot_overlay_score": 0.79,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.79,
+              "weight": 0.22,
+              "weighted_contribution": 0.1738,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.79,
+              "weight": 0.16,
+              "weighted_contribution": 0.1264,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5435,
+              "weight": 0.14,
+              "weighted_contribution": 0.0761,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.79,
+              "weight": 0.14,
+              "weighted_contribution": 0.1106,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.79,
+              "weight": 0.1,
+              "weighted_contribution": 0.079,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.79,
+              "weight": 0.06,
+              "weighted_contribution": 0.0474,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.79,
+              "weight": 0.1,
+              "weighted_contribution": 0.079,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7078,
+            "event_driven": 0.7078,
+            "quality_growth": 0.6933,
+            "knot_overlay": 0.81
+          },
+          "source_breakdown": {
+            "classic": 0.2207,
+            "knot_agent": 0.7793
+          },
+          "consensus_score": 0.7006,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "00981.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "SMIC",
+        "raw_score": 0.7126,
+        "rationale": "Semiconductor names have shown relative outperformance, and SMIC stands out as a liquid leader tied to a strong sector tape.",
+        "risk": "Crowded positioning and policy-sensitive chip sentiment can trigger sharp short-term pullbacks.",
+        "action_hint": "Track whether sector leadership persists and whether SMIC keeps outperforming the Hang Seng Tech benchmark.",
+        "dimension": "technical",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "00981.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "technical",
+            "score": 0.81,
+            "summary": "Semiconductor names have shown relative outperformance, and SMIC stands out as a liquid leader tied to a strong sector tape."
+          },
+          {
+            "symbol": "00981.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7126,
+            "summary": "Semiconductor names have shown relative outperformance, and SMIC stands out as a liquid leader tied to a strong sector tape."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.81,
+        "trend_score": 0.81,
+        "relative_strength_score": 0.81,
+        "flow_score": 0.5465,
+        "event_score": 0.81,
+        "quality_score": 0.81,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.81,
+        "knot_overlay_score": 0.81,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.7145,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7222,
+          "event_driven": 0.7222,
+          "quality_growth": 0.7067,
+          "knot_overlay": 0.8233
+        },
+        "source_breakdown": {
+          "classic": 0.2238,
+          "knot_agent": 0.7762
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Semiconductor names have shown relative outperformance, and SMIC stands out as a liquid leader tied to a strong sector tape.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: classic, knot_agent; consensus 0.71.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7126,
+          "input_scores": {
+            "trend_score": 0.81,
+            "relative_strength_score": 0.81,
+            "flow_score": 0.5465,
+            "event_score": 0.81,
+            "quality_score": 0.81,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.81,
+            "knot_overlay_score": 0.81,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.81,
+              "weight": 0.22,
+              "weighted_contribution": 0.1782,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.81,
+              "weight": 0.16,
+              "weighted_contribution": 0.1296,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5465,
+              "weight": 0.14,
+              "weighted_contribution": 0.0765,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.81,
+              "weight": 0.14,
+              "weighted_contribution": 0.1134,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.81,
+              "weight": 0.1,
+              "weighted_contribution": 0.081,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.81,
+              "weight": 0.06,
+              "weighted_contribution": 0.0486,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.81,
+              "weight": 0.1,
+              "weighted_contribution": 0.081,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7222,
+            "event_driven": 0.7222,
+            "quality_growth": 0.7067,
+            "knot_overlay": 0.8233
+          },
+          "source_breakdown": {
+            "classic": 0.2238,
+            "knot_agent": 0.7762
+          },
+          "consensus_score": 0.7145,
+          "risk_flags": []
+        }
+      }
+    ],
+    "fundamental": [
+      {
+        "symbol": "00883.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "CNOOC",
+        "raw_score": 0.7044,
+        "rationale": "Large-scale cash generation, sector leadership and dividend support make it one of the clearest fundamental follow-up candidates in Hong Kong.",
+        "risk": "Oil price volatility and any easing in geopolitical risk could compress earnings expectations.",
+        "action_hint": "Reassess earnings sensitivity to crude prices and compare dividend support versus peers.",
+        "dimension": "fundamental",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "00883.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "fundamental",
+            "score": 0.85,
+            "summary": "Large-scale cash generation, sector leadership and dividend support make it one of the clearest fundamental follow-up candidates in Hong Kong."
+          },
+          {
+            "symbol": "00883.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7044,
+            "summary": "Large-scale cash generation, sector leadership and dividend support make it one of the clearest fundamental follow-up candidates in Hong Kong."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.85,
+        "trend_score": 0.85,
+        "relative_strength_score": 0.85,
+        "flow_score": 0.5525,
+        "event_score": 0.85,
+        "quality_score": 0.85,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.8,
+        "regime_fit_score": 0.85,
+        "knot_overlay_score": 0.85,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.76,
+        "theme_bucket": "financial_defensive",
+        "risk_level": "high",
+        "consensus_score": 0.742,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7508,
+          "event_driven": 0.7508,
+          "quality_growth": 0.7333,
+          "knot_overlay": 0.85
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [
+          "high_risk_penalty",
+          "high_volatility"
+        ],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Large-scale cash generation, sector leadership and dividend support make it one of the clearest fundamental follow-up candidates in Hong Kong.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.74.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7044,
+          "input_scores": {
+            "trend_score": 0.85,
+            "relative_strength_score": 0.85,
+            "flow_score": 0.5525,
+            "event_score": 0.85,
+            "quality_score": 0.85,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.8,
+            "regime_fit_score": 0.85,
+            "knot_overlay_score": 0.85,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.76
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.85,
+              "weight": 0.22,
+              "weighted_contribution": 0.187,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.85,
+              "weight": 0.16,
+              "weighted_contribution": 0.136,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5525,
+              "weight": 0.14,
+              "weighted_contribution": 0.0774,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.85,
+              "weight": 0.14,
+              "weighted_contribution": 0.119,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.85,
+              "weight": 0.1,
+              "weighted_contribution": 0.085,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.85,
+              "weight": 0.06,
+              "weighted_contribution": 0.051,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.85,
+              "weight": 0.1,
+              "weighted_contribution": 0.085,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": -0.076,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7508,
+            "event_driven": 0.7508,
+            "quality_growth": 0.7333,
+            "knot_overlay": 0.85
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.742,
+          "risk_flags": [
+            "high_risk_penalty",
+            "high_volatility"
+          ]
+        }
+      },
+      {
+        "symbol": "00005.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "HSBC Holdings",
+        "raw_score": 0.7046,
+        "rationale": "It offers scale, strong capital position and resilient earnings quality among Hong Kong-listed financial heavyweights.",
+        "risk": "A faster decline in global rates could pressure net interest income expectations.",
+        "action_hint": "Review margin outlook, capital return guidance and any changes in Asia revenue momentum.",
+        "dimension": "fundamental",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "00005.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "fundamental",
+            "score": 0.8,
+            "summary": "It offers scale, strong capital position and resilient earnings quality among Hong Kong-listed financial heavyweights."
+          },
+          {
+            "symbol": "00005.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7046,
+            "summary": "It offers scale, strong capital position and resilient earnings quality among Hong Kong-listed financial heavyweights."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.8,
+        "trend_score": 0.8,
+        "relative_strength_score": 0.8,
+        "flow_score": 0.545,
+        "event_score": 0.8,
+        "quality_score": 0.8,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.8,
+        "knot_overlay_score": 0.8,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "general",
+        "risk_level": "low",
+        "consensus_score": 0.7075,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.715,
+          "event_driven": 0.715,
+          "quality_growth": 0.7,
+          "knot_overlay": 0.8167
+        },
+        "source_breakdown": {
+          "classic": 0.1818,
+          "event": 0.1818,
+          "knot_agent": 0.6364
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "It offers scale, strong capital position and resilient earnings quality among Hong Kong-listed financial heavyweights.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.71.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7046,
+          "input_scores": {
+            "trend_score": 0.8,
+            "relative_strength_score": 0.8,
+            "flow_score": 0.545,
+            "event_score": 0.8,
+            "quality_score": 0.8,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.8,
+            "knot_overlay_score": 0.8,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.8,
+              "weight": 0.22,
+              "weighted_contribution": 0.176,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.8,
+              "weight": 0.16,
+              "weighted_contribution": 0.128,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.545,
+              "weight": 0.14,
+              "weighted_contribution": 0.0763,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.8,
+              "weight": 0.14,
+              "weighted_contribution": 0.112,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.8,
+              "weight": 0.1,
+              "weighted_contribution": 0.08,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.8,
+              "weight": 0.06,
+              "weighted_contribution": 0.048,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.8,
+              "weight": 0.1,
+              "weighted_contribution": 0.08,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.715,
+            "event_driven": 0.715,
+            "quality_growth": 0.7,
+            "knot_overlay": 0.8167
+          },
+          "source_breakdown": {
+            "classic": 0.1818,
+            "event": 0.1818,
+            "knot_agent": 0.6364
+          },
+          "consensus_score": 0.7075,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "00002.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "CLP Holdings",
+        "raw_score": 0.6565,
+        "rationale": "Stable cash flows, defensive utility characteristics and income visibility support a solid fundamental screening profile.",
+        "risk": "Bond-y equities may de-rate if real yields rise or if tariff and regulatory assumptions shift.",
+        "action_hint": "Validate dividend sustainability and look for updates on regulated return and capex discipline.",
+        "dimension": "fundamental",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "00002.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "fundamental",
+            "score": 0.74,
+            "summary": "Stable cash flows, defensive utility characteristics and income visibility support a solid fundamental screening profile."
+          },
+          {
+            "symbol": "00002.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6565,
+            "summary": "Stable cash flows, defensive utility characteristics and income visibility support a solid fundamental screening profile."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.74,
+        "trend_score": 0.74,
+        "relative_strength_score": 0.74,
+        "flow_score": 0.536,
+        "event_score": 0.74,
+        "quality_score": 0.74,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.74,
+        "knot_overlay_score": 0.74,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.666,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.672,
+          "event_driven": 0.672,
+          "quality_growth": 0.66,
+          "knot_overlay": 0.7767
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Stable cash flows, defensive utility characteristics and income visibility support a solid fundamental screening profile.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.67.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6565,
+          "input_scores": {
+            "trend_score": 0.74,
+            "relative_strength_score": 0.74,
+            "flow_score": 0.536,
+            "event_score": 0.74,
+            "quality_score": 0.74,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.74,
+            "knot_overlay_score": 0.74,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.74,
+              "weight": 0.22,
+              "weighted_contribution": 0.1628,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.74,
+              "weight": 0.16,
+              "weighted_contribution": 0.1184,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.536,
+              "weight": 0.14,
+              "weighted_contribution": 0.075,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.74,
+              "weight": 0.14,
+              "weighted_contribution": 0.1036,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.74,
+              "weight": 0.1,
+              "weighted_contribution": 0.074,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.74,
+              "weight": 0.06,
+              "weighted_contribution": 0.0444,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.74,
+              "weight": 0.1,
+              "weighted_contribution": 0.074,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.672,
+            "event_driven": 0.672,
+            "quality_growth": 0.66,
+            "knot_overlay": 0.7767
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.666,
+          "risk_flags": []
+        }
+      }
+    ],
+    "capital_flow": [
+      {
+        "symbol": "00700.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "Tencent Holdings",
+        "raw_score": 0.7366,
+        "rationale": "Tencent remains one of the most important southbound accumulation anchors, backed by deep liquidity and persistent institutional attention.",
+        "risk": "Any broad tech de-risking or profit-taking by large holders could weaken flow momentum.",
+        "action_hint": "Watch daily southbound flow, buyback pace and whether the stock reclaims leadership versus peers.",
+        "dimension": "capital_flow",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "00700.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "flow",
+            "score": 0.84,
+            "summary": "Tencent remains one of the most important southbound accumulation anchors, backed by deep liquidity and persistent institutional attention."
+          },
+          {
+            "symbol": "00700.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7366,
+            "summary": "Tencent remains one of the most important southbound accumulation anchors, backed by deep liquidity and persistent institutional attention."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.84,
+        "trend_score": 0.84,
+        "relative_strength_score": 0.84,
+        "flow_score": 0.551,
+        "event_score": 0.84,
+        "quality_score": 0.84,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.84,
+        "knot_overlay_score": 0.84,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.7352,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7437,
+          "event_driven": 0.7437,
+          "quality_growth": 0.7267,
+          "knot_overlay": 0.8433
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Tencent remains one of the most important southbound accumulation anchors, backed by deep liquidity and persistent institutional attention.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.74.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7366,
+          "input_scores": {
+            "trend_score": 0.84,
+            "relative_strength_score": 0.84,
+            "flow_score": 0.551,
+            "event_score": 0.84,
+            "quality_score": 0.84,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.84,
+            "knot_overlay_score": 0.84,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.84,
+              "weight": 0.22,
+              "weighted_contribution": 0.1848,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.84,
+              "weight": 0.16,
+              "weighted_contribution": 0.1344,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.551,
+              "weight": 0.14,
+              "weighted_contribution": 0.0771,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.84,
+              "weight": 0.14,
+              "weighted_contribution": 0.1176,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.84,
+              "weight": 0.1,
+              "weighted_contribution": 0.084,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.84,
+              "weight": 0.06,
+              "weighted_contribution": 0.0504,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.84,
+              "weight": 0.1,
+              "weighted_contribution": 0.084,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7437,
+            "event_driven": 0.7437,
+            "quality_growth": 0.7267,
+            "knot_overlay": 0.8433
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.7352,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "01398.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "ICBC",
+        "raw_score": 0.6726,
+        "rationale": "Banking has been a key recipient of southbound allocation, and ICBC combines strong liquidity with a clear high-dividend flow profile.",
+        "risk": "If the market abandons value and income trades, bank flows may cool quickly.",
+        "action_hint": "Track continued southbound net buying and compare performance versus other state-owned banks.",
+        "dimension": "capital_flow",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "01398.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "flow",
+            "score": 0.76,
+            "summary": "Banking has been a key recipient of southbound allocation, and ICBC combines strong liquidity with a clear high-dividend flow profile."
+          },
+          {
+            "symbol": "01398.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6726,
+            "summary": "Banking has been a key recipient of southbound allocation, and ICBC combines strong liquidity with a clear high-dividend flow profile."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.76,
+        "trend_score": 0.76,
+        "relative_strength_score": 0.76,
+        "flow_score": 0.539,
+        "event_score": 0.76,
+        "quality_score": 0.76,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.76,
+        "knot_overlay_score": 0.76,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "financial_defensive",
+        "risk_level": "low",
+        "consensus_score": 0.6798,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6863,
+          "event_driven": 0.6863,
+          "quality_growth": 0.6733,
+          "knot_overlay": 0.79
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Banking has been a key recipient of southbound allocation, and ICBC combines strong liquidity with a clear high-dividend flow profile.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.68.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6726,
+          "input_scores": {
+            "trend_score": 0.76,
+            "relative_strength_score": 0.76,
+            "flow_score": 0.539,
+            "event_score": 0.76,
+            "quality_score": 0.76,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.76,
+            "knot_overlay_score": 0.76,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.76,
+              "weight": 0.22,
+              "weighted_contribution": 0.1672,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.76,
+              "weight": 0.16,
+              "weighted_contribution": 0.1216,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.539,
+              "weight": 0.14,
+              "weighted_contribution": 0.0755,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.76,
+              "weight": 0.14,
+              "weighted_contribution": 0.1064,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": 0.076,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.76,
+              "weight": 0.06,
+              "weighted_contribution": 0.0456,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": 0.076,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6863,
+            "event_driven": 0.6863,
+            "quality_growth": 0.6733,
+            "knot_overlay": 0.79
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.6798,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "09988.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "Alibaba-W",
+        "raw_score": 0.6682,
+        "rationale": "Despite intermittent swings, Alibaba remains a major liquidity hub and is repeatedly cited in active southbound trading and allocation discussions.",
+        "risk": "Flow quality can be unstable because internet names are highly sensitive to macro and sentiment shifts.",
+        "action_hint": "Verify whether recent inflows are sustained and whether earnings revisions stabilize around AI-cloud expectations.",
+        "dimension": "capital_flow",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "09988.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "flow",
+            "score": 0.78,
+            "summary": "Despite intermittent swings, Alibaba remains a major liquidity hub and is repeatedly cited in active southbound trading and allocation discussions."
+          },
+          {
+            "symbol": "09988.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6682,
+            "summary": "Despite intermittent swings, Alibaba remains a major liquidity hub and is repeatedly cited in active southbound trading and allocation discussions."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.78,
+        "trend_score": 0.78,
+        "relative_strength_score": 0.78,
+        "flow_score": 0.542,
+        "event_score": 0.78,
+        "quality_score": 0.78,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.58,
+        "regime_fit_score": 0.78,
+        "knot_overlay_score": 0.78,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.561,
+        "theme_bucket": "ai_compute",
+        "risk_level": "medium",
+        "consensus_score": 0.6937,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7007,
+          "event_driven": 0.7007,
+          "quality_growth": 0.6867,
+          "knot_overlay": 0.8033
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Despite intermittent swings, Alibaba remains a major liquidity hub and is repeatedly cited in active southbound trading and allocation discussions.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.69.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6682,
+          "input_scores": {
+            "trend_score": 0.78,
+            "relative_strength_score": 0.78,
+            "flow_score": 0.542,
+            "event_score": 0.78,
+            "quality_score": 0.78,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.58,
+            "regime_fit_score": 0.78,
+            "knot_overlay_score": 0.78,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.561
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.78,
+              "weight": 0.22,
+              "weighted_contribution": 0.1716,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.78,
+              "weight": 0.16,
+              "weighted_contribution": 0.1248,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.542,
+              "weight": 0.14,
+              "weighted_contribution": 0.0759,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.78,
+              "weight": 0.14,
+              "weighted_contribution": 0.1092,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.78,
+              "weight": 0.1,
+              "weighted_contribution": 0.078,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.78,
+              "weight": 0.06,
+              "weighted_contribution": 0.0468,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.78,
+              "weight": 0.1,
+              "weighted_contribution": 0.078,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.561,
+              "weight": 0.1,
+              "weighted_contribution": -0.0561,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7007,
+            "event_driven": 0.7007,
+            "quality_growth": 0.6867,
+            "knot_overlay": 0.8033
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.6937,
+          "risk_flags": []
+        }
+      }
+    ],
+    "event_driven": [
+      {
+        "symbol": "01810.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "Xiaomi Group-W",
+        "raw_score": 0.7002,
+        "rationale": "AI ecosystem developments and ongoing product-cycle catalysts make Xiaomi a strong event-driven follow-up candidate.",
+        "risk": "Execution misses or weaker monetization from new AI features could deflate enthusiasm.",
+        "action_hint": "Follow product announcements, sell-side revisions and any evidence of stronger user or device monetization.",
+        "dimension": "event_driven",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "01810.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "event",
+            "score": 0.82,
+            "summary": "AI ecosystem developments and ongoing product-cycle catalysts make Xiaomi a strong event-driven follow-up candidate."
+          },
+          {
+            "symbol": "01810.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7002,
+            "summary": "AI ecosystem developments and ongoing product-cycle catalysts make Xiaomi a strong event-driven follow-up candidate."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.82,
+        "trend_score": 0.82,
+        "relative_strength_score": 0.82,
+        "flow_score": 0.548,
+        "event_score": 0.82,
+        "quality_score": 0.82,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.58,
+        "regime_fit_score": 0.82,
+        "knot_overlay_score": 0.82,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.561,
+        "theme_bucket": "ai_compute",
+        "risk_level": "medium",
+        "consensus_score": 0.7213,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7293,
+          "event_driven": 0.7293,
+          "quality_growth": 0.7133,
+          "knot_overlay": 0.83
+        },
+        "source_breakdown": {
+          "event": 0.2253,
+          "knot_agent": 0.7747
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "AI ecosystem developments and ongoing product-cycle catalysts make Xiaomi a strong event-driven follow-up candidate.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.72.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7002,
+          "input_scores": {
+            "trend_score": 0.82,
+            "relative_strength_score": 0.82,
+            "flow_score": 0.548,
+            "event_score": 0.82,
+            "quality_score": 0.82,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.58,
+            "regime_fit_score": 0.82,
+            "knot_overlay_score": 0.82,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.561
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.82,
+              "weight": 0.22,
+              "weighted_contribution": 0.1804,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.82,
+              "weight": 0.16,
+              "weighted_contribution": 0.1312,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.548,
+              "weight": 0.14,
+              "weighted_contribution": 0.0767,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.82,
+              "weight": 0.14,
+              "weighted_contribution": 0.1148,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.82,
+              "weight": 0.1,
+              "weighted_contribution": 0.082,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.82,
+              "weight": 0.06,
+              "weighted_contribution": 0.0492,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.82,
+              "weight": 0.1,
+              "weighted_contribution": 0.082,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.561,
+              "weight": 0.1,
+              "weighted_contribution": -0.0561,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7293,
+            "event_driven": 0.7293,
+            "quality_growth": 0.7133,
+            "knot_overlay": 0.83
+          },
+          "source_breakdown": {
+            "event": 0.2253,
+            "knot_agent": 0.7747
+          },
+          "consensus_score": 0.7213,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "09992.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "Pop Mart",
+        "raw_score": 0.6806,
+        "rationale": "It has shown repeated news-driven attention and active trading, making it attractive for event-led follow-up despite its higher beta.",
+        "risk": "Consumer sentiment swings and valuation pressure can quickly overpower positive company-specific news.",
+        "action_hint": "Monitor new IP launches, sales updates and whether capital inflow remains supportive after event spikes.",
+        "dimension": "event_driven",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "09992.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "event",
+            "score": 0.77,
+            "summary": "It has shown repeated news-driven attention and active trading, making it attractive for event-led follow-up despite its higher beta."
+          },
+          {
+            "symbol": "09992.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6806,
+            "summary": "It has shown repeated news-driven attention and active trading, making it attractive for event-led follow-up despite its higher beta."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.77,
+        "trend_score": 0.77,
+        "relative_strength_score": 0.77,
+        "flow_score": 0.5405,
+        "event_score": 0.77,
+        "quality_score": 0.77,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.77,
+        "knot_overlay_score": 0.77,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.6868,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6935,
+          "event_driven": 0.6935,
+          "quality_growth": 0.68,
+          "knot_overlay": 0.7967
+        },
+        "source_breakdown": {
+          "event": 0.2175,
+          "knot_agent": 0.7825
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "It has shown repeated news-driven attention and active trading, making it attractive for event-led follow-up despite its higher beta.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.69.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6806,
+          "input_scores": {
+            "trend_score": 0.77,
+            "relative_strength_score": 0.77,
+            "flow_score": 0.5405,
+            "event_score": 0.77,
+            "quality_score": 0.77,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.77,
+            "knot_overlay_score": 0.77,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.77,
+              "weight": 0.22,
+              "weighted_contribution": 0.1694,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.77,
+              "weight": 0.16,
+              "weighted_contribution": 0.1232,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5405,
+              "weight": 0.14,
+              "weighted_contribution": 0.0757,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.77,
+              "weight": 0.14,
+              "weighted_contribution": 0.1078,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.77,
+              "weight": 0.1,
+              "weighted_contribution": 0.077,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.77,
+              "weight": 0.06,
+              "weighted_contribution": 0.0462,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.77,
+              "weight": 0.1,
+              "weighted_contribution": 0.077,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6935,
+            "event_driven": 0.6935,
+            "quality_growth": 0.68,
+            "knot_overlay": 0.7967
+          },
+          "source_breakdown": {
+            "event": 0.2175,
+            "knot_agent": 0.7825
+          },
+          "consensus_score": 0.6868,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "01299.HK",
+        "market": "hong_kong",
+        "candidate_type": "dynamic",
+        "name": "AIA Group",
+        "raw_score": 0.6242,
+        "rationale": "Share buybacks and capital management actions provide a concrete corporate event angle in a highly liquid Hong Kong blue chip.",
+        "risk": "Insurance valuation remains sensitive to rates, market volatility and slower new business momentum.",
+        "action_hint": "Track buyback execution, value of new business trends and any changes in management guidance.",
+        "dimension": "event_driven",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "01299.HK",
+            "market": "hong_kong",
+            "source": "knot_4dim_pick",
+            "category": "event",
+            "score": 0.75,
+            "summary": "Share buybacks and capital management actions provide a concrete corporate event angle in a highly liquid Hong Kong blue chip."
+          },
+          {
+            "symbol": "01299.HK",
+            "market": "hong_kong",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6242,
+            "summary": "Share buybacks and capital management actions provide a concrete corporate event angle in a highly liquid Hong Kong blue chip."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.75,
+        "trend_score": 0.75,
+        "relative_strength_score": 0.75,
+        "flow_score": 0.5375,
+        "event_score": 0.75,
+        "quality_score": 0.75,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.8,
+        "regime_fit_score": 0.75,
+        "knot_overlay_score": 0.75,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.76,
+        "theme_bucket": "ai_compute",
+        "risk_level": "high",
+        "consensus_score": 0.673,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6792,
+          "event_driven": 0.6792,
+          "quality_growth": 0.6667,
+          "knot_overlay": 0.7833
+        },
+        "source_breakdown": {
+          "event": 0.2143,
+          "knot_agent": 0.7857
+        },
+        "risk_flags": [
+          "high_risk_penalty",
+          "high_volatility"
+        ],
+        "generated_at": "2026-05-14T01:01:19Z",
+        "as_of_date": "",
+        "explanation_summary": "Share buybacks and capital management actions provide a concrete corporate event angle in a highly liquid Hong Kong blue chip.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.67.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6242,
+          "input_scores": {
+            "trend_score": 0.75,
+            "relative_strength_score": 0.75,
+            "flow_score": 0.5375,
+            "event_score": 0.75,
+            "quality_score": 0.75,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.8,
+            "regime_fit_score": 0.75,
+            "knot_overlay_score": 0.75,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.76
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.75,
+              "weight": 0.22,
+              "weighted_contribution": 0.165,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.75,
+              "weight": 0.16,
+              "weighted_contribution": 0.12,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5375,
+              "weight": 0.14,
+              "weighted_contribution": 0.0752,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.75,
+              "weight": 0.14,
+              "weighted_contribution": 0.105,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.75,
+              "weight": 0.1,
+              "weighted_contribution": 0.075,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.75,
+              "weight": 0.06,
+              "weighted_contribution": 0.045,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.75,
+              "weight": 0.1,
+              "weighted_contribution": 0.075,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": -0.076,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6792,
+            "event_driven": 0.6792,
+            "quality_growth": 0.6667,
+            "knot_overlay": 0.7833
+          },
+          "source_breakdown": {
+            "event": 0.2143,
+            "knot_agent": 0.7857
+          },
+          "consensus_score": 0.673,
+          "risk_flags": [
+            "high_risk_penalty",
+            "high_volatility"
+          ]
+        }
+      }
+    ]
+  },
+  "knot_raw_response": "{\"technical\": [{\"symbol\": \"00941.HK\", \"market\": \"hong_kong\", \"name\": \"China Mobile\", \"raw_score\": 0.83, \"rationale\": \"Strong relative strength and persistent southbound accumulation suggest a stable uptrend setup in a defensive large-cap.\", \"risk\": \"Yield-driven defensives could lag if market leadership rotates sharply back to high-beta growth.\", \"action_hint\": \"Check whether price continues to hold above short-term moving averages with expanding turnover.\"}, {\"symbol\": \"01024.HK\", \"market\": \"hong_kong\", \"name\": \"Kuaishou-W\", \"raw_score\": 0.79, \"rationale\": \"Recent AI product momentum and heavy active trading make it a high-liquidity name with improving trend-following appeal.\", \"risk\": \"The stock remains vulnerable to sentiment reversals in internet and AI-related growth names.\", \"action_hint\": \"Monitor follow-through after recent strength and confirm momentum with volume and northbound/southbound participation.\"}, {\"symbol\": \"00981.HK\", \"market\": \"hong_kong\", \"name\": \"SMIC\", \"raw_score\": 0.81, \"rationale\": \"Semiconductor names have shown relative outperformance, and SMIC stands out as a liquid leader tied to a strong sector tape.\", \"risk\": \"Crowded positioning and policy-sensitive chip sentiment can trigger sharp short-term pullbacks.\", \"action_hint\": \"Track whether sector leadership persists and whether SMIC keeps outperforming the Hang Seng Tech benchmark.\"}], \"fundamental\": [{\"symbol\": \"00883.HK\", \"market\": \"hong_kong\", \"name\": \"CNOOC\", \"raw_score\": 0.85, \"rationale\": \"Large-scale cash generation, sector leadership and dividend support make it one of the clearest fundamental follow-up candidates in Hong Kong.\", \"risk\": \"Oil price volatility and any easing in geopolitical risk could compress earnings expectations.\", \"action_hint\": \"Reassess earnings sensitivity to crude prices and compare dividend support versus peers.\"}, {\"symbol\": \"00005.HK\", \"market\": \"hong_kong\", \"name\": \"HSBC Holdings\", \"raw_score\": 0.8, \"rationale\": \"It offers scale, strong capital position and resilient earnings quality among Hong Kong-listed financial heavyweights.\", \"risk\": \"A faster decline in global rates could pressure net interest income expectations.\", \"action_hint\": \"Review margin outlook, capital return guidance and any changes in Asia revenue momentum.\"}, {\"symbol\": \"00002.HK\", \"market\": \"hong_kong\", \"name\": \"CLP Holdings\", \"raw_score\": 0.74, \"rationale\": \"Stable cash flows, defensive utility characteristics and income visibility support a solid fundamental screening profile.\", \"risk\": \"Bond-y equities may de-rate if real yields rise or if tariff and regulatory assumptions shift.\", \"action_hint\": \"Validate dividend sustainability and look for updates on regulated return and capex discipline.\"}], \"capital_flow\": [{\"symbol\": \"00700.HK\", \"market\": \"hong_kong\", \"name\": \"Tencent Holdings\", \"raw_score\": 0.84, \"rationale\": \"Tencent remains one of the most important southbound accumulation anchors, backed by deep liquidity and persistent institutional attention.\", \"risk\": \"Any broad tech de-risking or profit-taking by large holders could weaken flow momentum.\", \"action_hint\": \"Watch daily southbound flow, buyback pace and whether the stock reclaims leadership versus peers.\"}, {\"symbol\": \"01398.HK\", \"market\": \"hong_kong\", \"name\": \"ICBC\", \"raw_score\": 0.76, \"rationale\": \"Banking has been a key recipient of southbound allocation, and ICBC combines strong liquidity with a clear high-dividend flow profile.\", \"risk\": \"If the market abandons value and income trades, bank flows may cool quickly.\", \"action_hint\": \"Track continued southbound net buying and compare performance versus other state-owned banks.\"}, {\"symbol\": \"09988.HK\", \"market\": \"hong_kong\", \"name\": \"Alibaba-W\", \"raw_score\": 0.78, \"rationale\": \"Despite intermittent swings, Alibaba remains a major liquidity hub and is repeatedly cited in active southbound trading and allocation discussions.\", \"risk\": \"Flow quality can be unstable because internet names are highly sensitive to macro and sentiment shifts.\", \"action_hint\": \"Verify whether recent inflows are sustained and whether earnings revisions stabilize around AI-cloud expectations.\"}], \"event_driven\": [{\"symbol\": \"01810.HK\", \"market\": \"hong_kong\", \"name\": \"Xiaomi Group-W\", \"raw_score\": 0.82, \"rationale\": \"AI ecosystem developments and ongoing product-cycle catalysts make Xiaomi a strong event-driven follow-up candidate.\", \"risk\": \"Execution misses or weaker monetization from new AI features could deflate enthusiasm.\", \"action_hint\": \"Follow product announcements, sell-side revisions and any evidence of stronger user or device monetization.\"}, {\"symbol\": \"09992.HK\", \"market\": \"hong_kong\", \"name\": \"Pop Mart\", \"raw_score\": 0.77, \"rationale\": \"It has shown repeated news-driven attention and active trading, making it attractive for event-led follow-up despite its higher beta.\", \"risk\": \"Consumer sentiment swings and valuation pressure can quickly overpower positive company-specific news.\", \"action_hint\": \"Monitor new IP launches, sales updates and whether capital inflow remains supportive after event spikes.\"}, {\"symbol\": \"01299.HK\", \"market\": \"hong_kong\", \"name\": \"AIA Group\", \"raw_score\": 0.75, \"rationale\": \"Share buybacks and capital management actions provide a concrete corporate event angle in a highly liquid Hong Kong blue chip.\", \"risk\": \"Insurance valuation remains sensitive to rates, market volatility and slower new business momentum.\", \"action_hint\": \"Track buyback execution, value of new business trends and any changes in management guidance.\"}]}",
+  "wrote_at": "2026-05-14T01:01:19Z"
+}

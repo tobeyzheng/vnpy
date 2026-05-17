@@ -60,7 +60,9 @@ IMMEDIATE_TASKS: tuple[BundleTask, ...] = (
 SCHEDULED_TASKS: tuple[BundleTask, ...] = (
     BundleTask("hk_picks", "HK 4-dimension picks", "run_knot_4dim_picks_hk.py", "knot_4dim_hk.json", market="hong_kong", run_at="09:00"),
     BundleTask("holdings_hk", "Holdings review before HK open", "run_holdings_knot_review.py", "holdings_knot_review.json", market="hong_kong", run_at="09:00"),
+    BundleTask("holdings_hk", "Holdings review before HK open", "run_holdings_knot_review.py", "holdings_knot_review.json", market="hong_kong", run_at="10:40"),
     BundleTask("holdings_hk_noon", "Holdings review at HK midday", "run_holdings_knot_review.py", "holdings_knot_review.json", market="hong_kong", run_at="12:00"),
+    BundleTask("holdings_hk_noon", "Holdings review at HK midday", "run_holdings_knot_review.py", "holdings_knot_review.json", market="hong_kong", run_at="13:40"),
     BundleTask("us_picks", "US 4-dimension picks", "run_knot_4dim_picks_us.py", "knot_4dim_us.json", market="us", run_at="09:00"),
     BundleTask("holdings_us", "Holdings review before US open", "run_holdings_knot_review.py", "holdings_knot_review.json", market="us", run_at="09:00"),
     BundleTask("holdings_us_noon", "Holdings review at US midday", "run_holdings_knot_review.py", "holdings_knot_review.json", market="us", run_at="12:00"),

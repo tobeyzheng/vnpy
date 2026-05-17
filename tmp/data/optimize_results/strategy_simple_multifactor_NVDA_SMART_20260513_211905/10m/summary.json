@@ -1,0 +1,49 @@
+{
+  "label": "10m",
+  "vt_symbol": "NVDA.SMART",
+  "base_interval": "1m",
+  "resample_window": 2,
+  "is_window": [
+    "2024-01-01T00:00:00",
+    "2025-11-12T23:59:59"
+  ],
+  "oos_window": [
+    "2025-11-13T00:00:00",
+    "2026-05-13T23:59:59"
+  ],
+  "grid_size": 5832,
+  "evaluated": 5832,
+  "eligible_count": 5832,
+  "min_trades_filter": 5,
+  "best_is": {
+    "params": {
+      "fast_window": 3,
+      "slow_window": 13,
+      "rsi_window": 9,
+      "rsi_oversold": 25.0,
+      "rsi_overbought": 65.0,
+      "volume_ratio_threshold": 1.5,
+      "stop_loss_pct": 0.05,
+      "take_profit_pct": 0.05,
+      "position_pct": 0.3,
+      "LIVE_SUBMIT": true
+    },
+    "trade_count": 375,
+    "sharpe": 2.3572905044207895,
+    "total_return": 315.64765512671,
+    "annual_return": 161.52545251686652,
+    "max_drawdown_pct": -20.063542098808604,
+    "win_rate": 0.0,
+    "_bars": 18219
+  },
+  "oos": {
+    "trade_count": 67,
+    "sharpe": 2.2484278526597445,
+    "total_return": 32.02255821270998,
+    "annual_return": 62.483040415043874,
+    "max_drawdown_pct": -7.4366193014194755,
+    "win_rate": 0.0,
+    "_bars": 4761
+  },
+  "elapsed_sec": 3750.0
+}

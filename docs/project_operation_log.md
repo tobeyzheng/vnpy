@@ -182,3 +182,33 @@
   - **代码文件**：[knot_pick_helpers.py](/projects/vnpy/services/strategy/knot_pick_helpers.py)、[run_knot_4dim_picks_hk.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_hk.py)、[run_knot_4dim_picks_us.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py)、[run_holdings_knot_review.py](/projects/vnpy/scripts/quant_workflow/run_holdings_knot_review.py)、[test_knot_pick_helpers.py](/projects/vnpy/tests/test_knot_pick_helpers.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
   - **影响摘要**：新增 4 维（technical / fundamental / capital_flow / event_driven）Knot 选股入口，HK 与 US 各一个，每维默认 3 个候选并复用本地 `CandidateScoringService.enrich_row("dynamic")` 打分；新增持仓 Review 入口：只读 `FutuAccountProvider.get_summary()` 后，对每只持仓走本地打分 + Knot 给出 `hold|add|trim|exit` 四方向之一；金额、数量、可买力、总资产等敏感字段在 `mask_account_summary` 阶段统一脱敏，落盘 JSON 与 stdout 都不暴露原始数值；持仓占比仅以相对档位 `small (<5%)` / `medium (5~15%)` / `large (>15%)` 表达。Knot 不可用时直接非零退出，不做静默降级。新增的 7 个单测全部通过，并和 `test_candidate_seed_service.py`、`test_candidate_scoring.py` 一同回归（28 个全部通过）。
+
+- **2026-05-13**：tmp 下新增基于 Futu OpenD 的本地行情数据管理（替代 efinance/tushare 数据通路用于 tmp 策略回测）
+  - **代码文件**：[__init__.py](/projects/vnpy/tmp/vnpy_futu_data/__init__.py)、[symbol_mapping.py](/projects/vnpy/tmp/vnpy_futu_data/symbol_mapping.py)、[futu_data_manager.py](/projects/vnpy/tmp/vnpy_futu_data/futu_data_manager.py)、[run_futu_data_pull.py](/projects/vnpy/tmp/run_futu_data_pull.py)
+  - **数据/文档文件**：[cache_index.json](/projects/vnpy/tmp/data/cache_index.json)（缓存元信息，纳入 git）、[README.md](/projects/vnpy/tmp/vnpy_futu_data/README.md)
+  - **影响摘要**：`FutuDataManager` 通过本地 OpenD（默认 127.0.0.1:11111，可经 `FUTU_OPEND_HOST/PORT/PASSWORD` 覆盖）拉取历史 K 线，落入 vnpy 原生 SQLite `~/.vntrader/database.db`；以 `tmp/data/cache_index.json` 维护 `(futu_code, kl_type, autype)` 已覆盖区间，请求时仅拉缺口段，重复请求 0 次 OpenD 调用；DB 唯一索引兜底防重；分页 1000 根 + 间隔 0.5s + 失败指数退避 3 次。支持 HK/US/SH/SZ 现货标的与 1d/1m/5m/15m/30m/60m 周期；5/15/30 分钟级在 vnpy 数据库中折叠到 MINUTE 桶（vnpy 原生 Interval 限制）。仅写本地 SQLite 与本地 JSON，不涉及任何下单链路。已通过实测验证：HK.00700 2024-12 拉取 20 根日线、扩展到 2024-11-01~2025-01-31 仅补 11 月（21 根）+25 年 1 月（19 根）两个缺口、US.AAPL/SH.600519 各市场入库正常、5min 级 96 根入库、再次请求同区间为完全 cache hit（0 次 OpenD 调用）。
+
+## 2026-05-16
+- **变更范围**: 策略逻辑调整
+- **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
+- **影响摘要**: 调整了精简多因子策略的开仓条件为 '(RSI超卖 + 放量) OR (金叉 + 放量)'，并引入了 `used_slices` 全局变量以支持分5份建仓的资金管理逻辑，同时修复了加权平均成本价的计算问题。
+
+## 2026-05-16
+- **变更范围**: 策略指标计算修复
+- **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
+- **影响摘要**: 修复了 `_rsi` 函数，将其改为标准的 Wilder 平滑算法以对齐标准行情软件；修复了 `_volume_ratio` 函数，在计算平均量时排除了当前 K 线，以提高对突发放量的敏感度。
+
+## 2026-05-16
+- **变更范围**: 策略补仓逻辑调整
+- **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
+- **影响摘要**: 增加了补仓策略的限制条件，引入了最小加仓间隔参数（`min_add_interval`，默认10根K线）和最小加仓亏损比例参数（`min_add_loss_pct`，默认2%）。在已有持仓的情况下，只有满足这两个条件才会触发加仓，避免了频繁加仓和在未达到足够跌幅时加仓。
+
+## 2026-05-16
+- **变更范围**: 策略卖出逻辑调整
+- **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
+- **影响摘要**: 修改了卖出策略，引入了移动止盈机制。增加了 `take_profit_pct`（移动止盈激活阈值，默认10%）和 `trailing_drawdown_pct`（移动止盈回撤比例，默认5%）参数，并记录持仓期间的最高价 `highest_price`。当收益率大于激活阈值，且当前价格从最高价回撤超过设定比例时，触发卖出平仓。
+
+## 2026-05-16
+- **变更范围**: 策略移动止盈逻辑修正
+- **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
+- **影响摘要**: 修正了移动止盈的计算逻辑。1. 激活条件由“当前收益率”改为“最高收益率”，防止价格回落导致止盈条件失效；2. 回撤比例的计算基准由“最高价格”改为“最高收益率”，即 `(最高收益率 - 当前收益率) / 最高收益率`。
