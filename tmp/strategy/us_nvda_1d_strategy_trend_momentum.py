@@ -5,9 +5,10 @@
 #   2. 入场逻辑改为 OR 组合（趋势跟随 OR 超卖反弹，二选一即可）
 #   3. 启用止损保护（原策略 if False 硬禁用）
 #   4. RSI 阈值调整（超卖 35 / 超买 75）
-#   5. 盈利加仓替代越跌越买（趋势确认后追加）
-#   6. 单标的上限 60%（3×20%），原策略满仓风险
-#   7. 移动止盈更合理（激活 15%，回撤 8%）
+#   5. 盈利加仓 + 超卖加仓双路径（超卖加仓限 1 次，避免接飞刀）
+#   6. position_pct × net_asset / max_slices 分仓（默认 60% × 1/3 = 每仓 20%）
+#   7. 移动止盈用 N 日最高价（默认 10 天），避免历史尖刺干扰
+#   8. 加仓后重置 highest_price，防止回撤误触发
 
 class Strategy(StrategyBase):
 
@@ -24,6 +25,7 @@ class Strategy(StrategyBase):
         self.bars_since_last_entry = 0
         self.last_entry_price = 0.0
         self.highest_price = 0.0
+        self.oversold_addon_used = 0  # count of oversold add-ons
 
     def trigger_symbols(self):
         self.target = declare_trig_symbol()
@@ -49,13 +51,19 @@ class Strategy(StrategyBase):
         self.take_profit_pct = show_variable(0.15, GlobalType.FLOAT)     # trailing TP activation 15%
         self.trailing_drawdown_pct = show_variable(0.08, GlobalType.FLOAT) # trailing TP drawdown 8%
 
-        # Position sizing - max 3 slices × 20% = 60% of capital
-        self.position_pct = show_variable(0.2, GlobalType.FLOAT)
+        # Trailing TP: use N-day high instead of all-time high
+        self.trailing_lookback = show_variable(10, GlobalType.INT)  # days for highest_price
+
+        # Position sizing - max 3 slices × (position_pct / max_slices) of net_asset
+        self.position_pct = show_variable(0.6, GlobalType.FLOAT)   # max total position as % of capital
         self.max_slices = show_variable(3, GlobalType.INT)
 
-        # Add-on (pyramid) parameters - add only on profit
+        # Add-on (pyramid) parameters
         self.min_add_interval = show_variable(10, GlobalType.INT)   # min bars between add-ons
-        self.min_add_profit_pct = show_variable(0.03, GlobalType.FLOAT)  # add only when profit >= 3%
+        self.min_add_profit_pct = show_variable(0.03, GlobalType.FLOAT)  # add on profit >= 3%
+
+        # Oversold add-on: allow limited adds when price drops + RSI oversold
+        self.oversold_addon_max = show_variable(1, GlobalType.INT)  # max oversold add-on count
 
         # Live switch
         self.LIVE_SUBMIT = show_variable(True, GlobalType.BOOL)
@@ -143,9 +151,13 @@ class Strategy(StrategyBase):
 
         # ---- Holding position: exit logic ----
         if held_qty > 0:
-            # Update highest price (use self.highest_price for global tracking)
-            if self.highest_price == 0.0 or current_price > self.highest_price:
-                self.highest_price = current_price
+            # Update highest price using N-day lookback (not all-time high)
+            # This avoids stale spikes from months ago triggering premature exits
+            lookback = self.trailing_lookback
+            recent_closes = closes[-lookback:] if len(closes) >= lookback else closes
+            n_day_high = max(recent_closes)
+            if n_day_high > self.highest_price:
+                self.highest_price = n_day_high
 
             pnl_pct = (current_price / self.entry_price - 1.0) * 100
 
@@ -194,30 +206,46 @@ class Strategy(StrategyBase):
         print(debug_info)
 
         if len(entry_conditions) > 0:
-            self._enter_position(symbol, current_price, entry_conditions)
+            # Determine if this is an oversold add-on
+            is_oversold_addon = (
+                held_qty > 0
+                and is_reversal_entry
+                and not is_trend_entry
+            )
+            self._enter_position(symbol, current_price, entry_conditions,
+                                 is_oversold_addon=is_oversold_addon)
         elif held_qty == 0:
             self.last_signal = f"Waiting {debug_info}"
 
-    def _enter_position(self, symbol, price, reasons):
+    def _enter_position(self, symbol, price, reasons, is_oversold_addon=False):
         held_qty = int(position_holding_qty(symbol=symbol) or 0)
 
-        # Add-on check: only add on profit (trend confirmation)
+        # Add-on checks when already holding
         if held_qty > 0:
             if self.bars_since_last_entry < self.min_add_interval:
                 self.last_signal = (f"Add-on interval too short "
                                     f"({self.bars_since_last_entry}/{self.min_add_interval})")
                 return
 
-            profit_pct = (price - self.last_entry_price) / self.last_entry_price \
-                if self.last_entry_price > 0 else 0
-            if profit_pct < self.min_add_profit_pct:
-                self.last_signal = (f"Add-on profit insufficient "
-                                    f"({profit_pct * 100:.1f}%/{self.min_add_profit_pct * 100:.1f}%)")
-                return
+            if is_oversold_addon:
+                # Oversold add-on path: limited by oversold_addon_max
+                if self.oversold_addon_used >= self.oversold_addon_max:
+                    self.last_signal = (f"Oversold add-on limit reached "
+                                        f"({self.oversold_addon_used}/{self.oversold_addon_max})")
+                    return
+            else:
+                # Profit add-on path: only add when in profit
+                profit_pct = (price - self.last_entry_price) / self.last_entry_price \
+                    if self.last_entry_price > 0 else 0
+                if profit_pct < self.min_add_profit_pct:
+                    self.last_signal = (f"Add-on profit insufficient "
+                                        f"({profit_pct * 100:.1f}%/{self.min_add_profit_pct * 100:.1f}%)")
+                    return
 
-        # Position sizing: max_slices × (total_assets / 5)
+        # Position sizing: position_pct of net_asset, divided into max_slices
+        # Each slice = (position_pct × total_assets) / max_slices
         total_assets = float(net_asset(currency=Currency.USD) or 0)
-        slice_value = total_assets / 5.0
+        slice_value = (self.position_pct * total_assets) / self.max_slices
 
         if self.used_slices >= self.max_slices:
             self.last_signal = f"Max position reached ({self.used_slices}/{self.max_slices})"
@@ -245,11 +273,15 @@ class Strategy(StrategyBase):
             if held_qty > 0 and self.entry_price > 0:
                 total_cost = self.entry_price * held_qty + price * qty
                 self.entry_price = total_cost / (held_qty + qty)
+                # Reset highest_price on add-on to avoid stale peak
+                self.highest_price = price
             else:
                 self.entry_price = price
                 self.highest_price = price
 
             self.used_slices += 1
+            if is_oversold_addon:
+                self.oversold_addon_used += 1
             self.bars_since_last_entry = 0
             self.last_entry_price = price
             alert(title="Live buy", content=msg)
@@ -257,15 +289,19 @@ class Strategy(StrategyBase):
             if held_qty > 0 and self.entry_price > 0:
                 total_cost = self.entry_price * held_qty + price * qty
                 self.entry_price = total_cost / (held_qty + qty)
+                self.highest_price = price
             else:
                 self.entry_price = price
                 self.highest_price = price
             self.used_slices += 1
+            if is_oversold_addon:
+                self.oversold_addon_used += 1
             self.bars_since_last_entry = 0
             self.last_entry_price = price
             alert(title="Sim buy", content=msg)
 
-        self.last_signal = f"Buy slice {self.used_slices}/{self.max_slices} {reason_str}"
+        addon_tag = " [oversold]" if is_oversold_addon else ""
+        self.last_signal = f"Buy slice {self.used_slices}/{self.max_slices}{addon_tag} {reason_str}"
 
     def _exit_position(self, symbol, price, reason):
         held_qty = int(position_holding_qty(symbol=symbol) or 0)
@@ -290,4 +326,5 @@ class Strategy(StrategyBase):
         self.bars_since_last_entry = 0
         self.last_entry_price = 0.0
         self.highest_price = 0.0
+        self.oversold_addon_used = 0
         self.last_signal = f"Sell {reason} PnL:{pnl_pct:.1f}%"

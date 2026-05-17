@@ -7,9 +7,10 @@
 # python3 run_futu_data_pull.py --status
 
 # 2. 运行回测
+    # --strategy tmp/strategy/us_strategy_simple_multifactor2.py \
 
 python3 run_local_backtest.py \
-    --strategy tmp/strategy/us_strategy_simple_multifactor2.py \
+    --strategy tmp/strategy/us_nvda_1d_strategy_trend_momentum.py \
     --symbol NVDA.SMART \
     --interval 1d \
     --start 2022-01-01 \
