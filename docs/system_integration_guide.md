@@ -374,3 +374,45 @@ python3 phase2/runners/run_phase2_reconcile.py \
 - 详细 runbook：[06_real_backtest_runbook.md](/projects/vnpy/docs/research/us_multi_symbol_quant/06_real_backtest_runbook.md)
 
 阶段② v2 当前自动化测试 50/50 通过（39 老 + 11 新）。
+
+## 阶段② 多标本地回测入口（plan `phase2_multi_backtest`）
+
+为支撑 futumd 兼容多标策略 [`phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py) 在迁移到 Futu 平台前的本地真实回测，新增独立子包 `phase2/backtest/`：
+
+- 适配器：[`phase2/backtest/futumd_strategy_adapter.py`](/projects/vnpy/phase2/backtest/futumd_strategy_adapter.py)
+  - `PortfolioRuntime` 按 symbol 分桶维护 OHLCV / positions / entry_costs；`cash_value` 是组合层单变量。
+  - `build_futumd_namespace(runtime)` 把 futumd 平台符号（`bar_close` / `bar_high` / `bar_low` / `bar_volume` / `bar_open` / `cash` / `net_asset` / `position_holding_qty` / `place_limit` / `close_positions` / `alert` / 各 enum / `StrategyBase` / `declare_*` / `show_variable`）作为闭包注入到模块命名空间，全部按 `symbol` 参数路由。
+  - `load_futumd_strategy(strategy_path, runtime)` 用 `importlib.util` 先注入命名空间再 exec 策略文件，因此策略文件顶部 `try: bar_close ... except NameError` 会跳过 stub 区，DSL 全部命中真实分桶。**futumd 策略源码零改动**。
+  - `settle_pending(...)` 按"下一根 K 线"的参考价撮合 BUY / SELL_CLOSE，处理现金不足回扣、卖单 qty clamp、滑点、手续费。
+- 引擎：[`phase2/backtest/portfolio_backtest_engine.py`](/projects/vnpy/phase2/backtest/portfolio_backtest_engine.py)
+  - 通过 `vnpy.trader.database.get_database()` 拉本地多标日线，按交易日 union 排序驱动；每日：写入桶 → `strategy.handle_data()` → 用 `all_dates[i+1]` 开盘价撮合 → mark-to-close 写入 equity 曲线。
+  - 输出 4 份产物到 `state/runs/phase2_multi_backtest/<run_id>/`：`equity_curve.csv` / `positions_daily.csv` / `trade_ledger.csv` / `summary.json`。
+  - **不连 OpenD / Futu / 任何远端服务**；不开 `LIVE_SUBMIT`。
+- CLI 入口：[`phase2/runners/run_phase2_multi_backtest.py`](/projects/vnpy/phase2/runners/run_phase2_multi_backtest.py)
+
+```bash
+# 12 标 1 年 smoke 回测（最近一年覆盖 11/12 标，NVDA 4 年、AAPL 1.5 年）
+python3 phase2/runners/run_phase2_multi_backtest.py \
+    --start 2025-05-21 --end 2026-05-20 \
+    --init-cash 1000000 \
+    --rate 0.0003 --slippage 0.0 \
+    --run-id smoke_2025_2026
+
+# 自定义池 / 自定义策略路径 / 自定义产物根
+python3 phase2/runners/run_phase2_multi_backtest.py \
+    --pool-config phase2/strategy/config/pool_config.yaml \
+    --strategy-path phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py \
+    --start 2024-01-01 --end 2024-12-31 --init-cash 500000
+```
+
+测试覆盖：
+
+- [`phase2/strategy/tests/test_futumd_strategy_adapter.py`](/projects/vnpy/phase2/strategy/tests/test_futumd_strategy_adapter.py) 17 项：分桶取数、cash 不串户、`place_limit` 路由、`settle_pending` 撮合规则、`load_futumd_strategy` 启动真实策略。
+- [`phase2/strategy/tests/test_portfolio_backtest_engine.py`](/projects/vnpy/phase2/strategy/tests/test_portfolio_backtest_engine.py) 6 项：mock 数据库 + 微型 2 标策略，端到端验证次日开盘成交、trade ledger 含两 symbol、4 份报告字段齐备。
+- 全套 phase2 回归 73/73 通过。
+
+边界与限制：
+
+- 与 `tmp/` 完全解耦——本子包不 import `tmp/*` 任何模块，便于将来跟 futumd 策略整体搬走。
+- 与 `phase2/runners/run_phase2_backtest.py`（合成 dry-run smoke）互补：本 runner 跑真实历史 K 线、生成真实组合权益曲线；前者只校验 allocator 与池配置加载。
+- 当前实现仅支持日线（`Interval.DAILY`）；分钟级支持需要新开 plan 适配 `BarType.K_1M / K_5M / K_15M` 与会话内多 bar/天 的撮合规则。

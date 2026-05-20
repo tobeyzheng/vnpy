@@ -9,6 +9,13 @@
 
 ### 历史记录
 
+- **2026-05-20**：阶段② 多标本地回测落地（plan `phase2_multi_backtest`）
+  - **代码文件**：[phase2/backtest/__init__.py](/projects/vnpy/phase2/backtest/__init__.py)、[phase2/backtest/futumd_strategy_adapter.py](/projects/vnpy/phase2/backtest/futumd_strategy_adapter.py)、[phase2/backtest/portfolio_backtest_engine.py](/projects/vnpy/phase2/backtest/portfolio_backtest_engine.py)、[phase2/runners/run_phase2_multi_backtest.py](/projects/vnpy/phase2/runners/run_phase2_multi_backtest.py)
+  - **测试文件**：[phase2/strategy/tests/test_futumd_strategy_adapter.py](/projects/vnpy/phase2/strategy/tests/test_futumd_strategy_adapter.py)（17 项）、[phase2/strategy/tests/test_portfolio_backtest_engine.py](/projects/vnpy/phase2/strategy/tests/test_portfolio_backtest_engine.py)（6 项）
+  - **流程文件**：[.codebuddy/plan/phase2_multi_backtest/README.md](/projects/vnpy/.codebuddy/plan/phase2_multi_backtest/README.md)、[.codebuddy/task_list/phase2_multi_backtest.md](/projects/vnpy/.codebuddy/task_list/phase2_multi_backtest.md)
+  - **文档文件**：[docs/system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md) 新增"阶段② 多标本地回测入口"小节
+  - **影响摘要**：新增独立子包 `phase2/backtest/` 提供按 symbol 分桶的运行时（`PortfolioRuntime`）+ futumd DSL 注入层（`build_futumd_namespace`）+ 多标日期 union 驱动引擎（`PortfolioBacktestEngine`，次日开盘撮合避免未来函数）；新增 CLI `phase2/runners/run_phase2_multi_backtest.py`，产物落到 `state/runs/phase2_multi_backtest/<run_id>/`（`equity_curve.csv` / `positions_daily.csv` / `trade_ledger.csv` / `summary.json`）。**futumd 策略源码 `phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py` 零改动**；与 `tmp/` 完全解耦不 import 任何 `tmp/*` 模块；不连 OpenD / 不下任何 SIM/REAL 单 / `LIVE_SUBMIT` 保持 False。phase2 自动化测试 50 → 73 全过（17 adapter + 6 engine 新增）。12 标 1 年真回测 smoke 留待用户单独"确认执行"再触发，未在本轮产生 `state/runs/` 写入。
+
 - **2026-05-20**：新增"美股多标的量化策略"研究目录（仅产研究/设计文档，不含可执行代码）
   - **文档文件**：[docs/research/us_multi_symbol_quant/00_index.md](/projects/vnpy/docs/research/us_multi_symbol_quant/00_index.md)、[01_indicator_research.md](/projects/vnpy/docs/research/us_multi_symbol_quant/01_indicator_research.md)、[02_futu_multi_symbol_capability.md](/projects/vnpy/docs/research/us_multi_symbol_quant/02_futu_multi_symbol_capability.md)、[03_strategy_design.md](/projects/vnpy/docs/research/us_multi_symbol_quant/03_strategy_design.md)
   - **流程文件**：[.codebuddy/plan/us_multi_symbol_quant/](/projects/vnpy/.codebuddy/plan/us_multi_symbol_quant/)（requirements / design / tasks）、[.codebuddy/task_list/us_multi_symbol_quant.md](/projects/vnpy/.codebuddy/task_list/us_multi_symbol_quant.md)
