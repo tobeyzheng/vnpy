@@ -342,4 +342,35 @@ python3 phase2/runners/run_phase2_reconcile.py \
 ### 研究文档
 
 - 入口：[`docs/research/us_multi_symbol_quant/00_index.md`](/projects/vnpy/docs/research/us_multi_symbol_quant/00_index.md)
-- 01 指标调研 / 02 Futu 多标能力 / 03 策略方案 / 04 平台性能基线 / 05 SIM 准入清单
+- 01 指标调研 / 02 Futu 多标能力 / 03 策略方案 / 04 平台性能基线 / 05 SIM 准入清单 / 06 真实回测 runbook
+
+## 阶段② v2 — futumd 投放路径 + 池周更 + 真实回测通道
+
+阶段② v2 计划名 `us_multi_symbol_quant_phase2_v2`，在阶段② dry-run 骨架之上新增 3 条落地通道，仍然严格保留 dry-run 红线：
+
+### futumd 兼容单文件策略（迁移投放专用）
+
+- 入口：[`phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py)
+- 硬约束：零本地 import（`from phase2.* / from services.*` 一个都没有，AST 测试强制）；所有指标 / 风控 / 预算逻辑收为 `Strategy._xxx` 私有方法；池规模 ≤ 20；`LIVE_SUBMIT` 默认 `False`。
+- 与现有 `us_multi_symbol_phase2_strategy.py` 关系：互不替换；前者用于 Futu 平台手工上传，后者用于本仓库 dry-run / 单元测试。
+- 自检命令：
+  ```bash
+  python3 -m py_compile phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py
+  python3 phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py --check
+  ```
+
+### 池周更流水线
+
+- Runner：[`phase2/runners/run_pool_update.py`](/projects/vnpy/phase2/runners/run_pool_update.py)
+- 候选池：[`phase2/strategy/config/pool_universe.yaml`](/projects/vnpy/phase2/strategy/config/pool_universe.yaml)
+- 默认 `--dry-run`，`--apply` 必须配 `--confirm`；3 道安全闸（变更 > 30% / sector > 40% / 池规模超限）触发非零退出。
+- 行情数据来源仅本地 `phase2/strategy/config/pool_metrics_snapshot.json`，**不联网**。
+
+### 真实回测命令（双轨）
+
+- 本地影子轨：`python3 -m services.backtest.cli --symbols ... --output state/runs/us_multi_symbol_quant_phase2_v2/<run>/local_expected.json`
+- Futu 主轨：手工在 Futu 客户端上传 futumd 文件 + 设置参数 + 导出 `futu_actual.json`
+- 对账：复用 `python3 phase2/runners/run_phase2_reconcile.py`（5 项指标 / >20% 失败退出）
+- 详细 runbook：[06_real_backtest_runbook.md](/projects/vnpy/docs/research/us_multi_symbol_quant/06_real_backtest_runbook.md)
+
+阶段② v2 当前自动化测试 50/50 通过（39 老 + 11 新）。

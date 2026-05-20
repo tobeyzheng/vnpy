@@ -1,0 +1,69 @@
+# 美股多标的量化策略 阶段 ② v2 — 候选大池（universe）
+# ---------------------------------------------------------------------------
+# 维护说明：
+# 1) 本文件是"候选池"，规模可大于 max_pool_size；周度 run_pool_update.py 会从
+#    本池中按 4 项过滤 + 行业上限 + 评分排序，挑出 ≤ max_pool_size 只写到
+#    pool_config.yaml。
+# 2) 增删 symbol 可以频繁；只要本文件改动且 run_pool_update.py 跑过，下一周
+#    pool_config.yaml 才会真正变化。
+# 3) currency 必须 USD；OTC、IPO < 1 年禁止入选（pool_loader 会兜底校验）。
+# ---------------------------------------------------------------------------
+
+version: 1
+currency: USD
+max_pool_size: 20
+
+defaults:
+  market: US
+  liquidity_min_adv60_usd: 50000000
+  price_min: 5.0
+  price_max: 800.0
+  atr_pct_max: 0.08
+  earnings_freeze_days: 2
+
+# 行业级上限 — 用于 sector_cap 闸（默认 0.40）
+sector_caps:
+  Technology: 6
+  Communication: 3
+  ConsumerDiscretionary: 3
+  Financials: 3
+  Healthcare: 3
+  Energy: 2
+  Industrials: 2
+  Staples: 2
+  Materials: 2
+  Utilities: 2
+  RealEstate: 2
+
+# 候选大池（≤ 30 只示例；周度脚本可在此基础上裁剪）
+symbols:
+  - {symbol: AAPL,  market: US, market_cap_bucket: mega,  sector: Technology}
+  - {symbol: MSFT,  market: US, market_cap_bucket: mega,  sector: Technology}
+  - {symbol: NVDA,  market: US, market_cap_bucket: mega,  sector: Technology}
+  - {symbol: GOOGL, market: US, market_cap_bucket: mega,  sector: Communication}
+  - {symbol: META,  market: US, market_cap_bucket: mega,  sector: Communication}
+  - {symbol: AMZN,  market: US, market_cap_bucket: mega,  sector: ConsumerDiscretionary}
+  - {symbol: TSLA,  market: US, market_cap_bucket: large, sector: ConsumerDiscretionary}
+  - {symbol: AVGO,  market: US, market_cap_bucket: large, sector: Technology}
+  - {symbol: AMD,   market: US, market_cap_bucket: large, sector: Technology}
+  - {symbol: JPM,   market: US, market_cap_bucket: large, sector: Financials}
+  - {symbol: XOM,   market: US, market_cap_bucket: large, sector: Energy}
+  - {symbol: UNH,   market: US, market_cap_bucket: large, sector: Healthcare}
+  - {symbol: V,     market: US, market_cap_bucket: large, sector: Financials}
+  - {symbol: MA,    market: US, market_cap_bucket: large, sector: Financials}
+  - {symbol: COST,  market: US, market_cap_bucket: large, sector: Staples}
+  - {symbol: PEP,   market: US, market_cap_bucket: large, sector: Staples}
+  - {symbol: KO,    market: US, market_cap_bucket: large, sector: Staples}
+  - {symbol: LLY,   market: US, market_cap_bucket: large, sector: Healthcare}
+  - {symbol: ABBV,  market: US, market_cap_bucket: large, sector: Healthcare}
+  - {symbol: CVX,   market: US, market_cap_bucket: large, sector: Energy}
+  - {symbol: ORCL,  market: US, market_cap_bucket: large, sector: Technology}
+  - {symbol: NFLX,  market: US, market_cap_bucket: large, sector: Communication}
+  - {symbol: CRM,   market: US, market_cap_bucket: large, sector: Technology}
+  - {symbol: ADBE,  market: US, market_cap_bucket: large, sector: Technology}
+  - {symbol: WMT,   market: US, market_cap_bucket: large, sector: Staples}
+  - {symbol: HD,    market: US, market_cap_bucket: large, sector: ConsumerDiscretionary}
+  - {symbol: BAC,   market: US, market_cap_bucket: large, sector: Financials}
+  - {symbol: NKE,   market: US, market_cap_bucket: mid,   sector: ConsumerDiscretionary}
+  - {symbol: DIS,   market: US, market_cap_bucket: large, sector: Communication}
+  - {symbol: CAT,   market: US, market_cap_bucket: large, sector: Industrials}

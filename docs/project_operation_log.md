@@ -229,3 +229,14 @@
   - `docs/research/us_multi_symbol_quant/04_platform_performance_baseline.md` / `05_sim_gate_checklist.md`
   - `docs/system_integration_guide.md` 阶段② 入口章节
 - **影响摘要**: 新增阶段② 多标的量化骨架与配套 dry-run / 对账 / 性能基线 runner；不连接 OpenD、不下任何 SIM/REAL 单。从 dry-run 升级到 SIM 必须新开独立 plan 并按 `05_sim_gate_checklist.md` 5 项打勾。
+
+## 2026-05-20 — 阶段② v2：futumd 单文件迁移版策略 + 池周更流水线 + 真实回测 runbook
+
+- **变更范围**: 阶段② v2（plan `us_multi_symbol_quant_phase2_v2`）落地 3 条通道，仍严格 dry-run 不连 OpenD：
+  - 新增 futumd 兼容**单文件零依赖**多标策略 `phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py`（严格对齐 NVDA 接口；AST 测试强制无 `from phase2.* / from services.*` import）。
+  - 新增池周更 runner `phase2/runners/run_pool_update.py`（默认 `--dry-run`；`--apply` 必须配 `--confirm`；3 道安全闸：变更 > 30% / sector > 40% / 池超限）。
+  - 新增候选大池 `phase2/strategy/config/pool_universe.yaml` + 离线行情快照 `pool_metrics_snapshot.json`。
+  - 新增双轨真实回测 runbook `docs/research/us_multi_symbol_quant/06_real_backtest_runbook.md`。
+  - 新增 11 个单元测试（接口契约 6 + 池更新 5），phase2 测试集 39 → 50 全过。
+  - 同步：`docs/system_integration_guide.md` 新增"阶段② v2"章节；`.codebuddy/plan/us_multi_symbol_quant_phase2_v2/`；`.codebuddy/task_list/us_multi_symbol_quant_phase2_v2.md`。
+- **影响摘要**: 新增 futumd 平台投放路径、池周度更新通道与真实回测双轨流程；不动现有 `us_multi_symbol_phase2_strategy.py` 与 39 个旧测试。仍然不允许翻 `LIVE_SUBMIT=True`；SIM 升级需要新开 phase3 plan。
