@@ -21,12 +21,12 @@ focus: 阶段② dry-run 全部完成；等待用户确认后做收口提交推�
 | 7 | 回测 runner + 对账 runner（5 项指标 / >20% 失败退出 / 稳健性占位图）默认 `--dry-run` | ✅ done | `phase2/runners/run_phase2_backtest.py`、`phase2/runners/run_phase2_reconcile.py` |
 | 8 | SIM 准入清单（5 项打勾）+ 在策略与清单中标注 SIM 启动需独立 plan | ✅ done | `docs/research/us_multi_symbol_quant/05_sim_gate_checklist.md`、策略首注释 HARD GATE 段、`00_index.md` 阅读路径 |
 | 9 | 同步 system_integration_guide / project_operation_log / 本 task_list；敏感词扫描 = 0 | ✅ done | `docs/system_integration_guide.md` 阶段② 章节、`docs/project_operation_log.md` 2026-05-20 条目、本文件 |
-| 10 | 阶段② 收口：先发 push 影响范围预告等用户确认，再 `git add -A` + 中文 commit + `git push` | ⏳ pending | 等用户确认后执行 |
+| 10 | 阶段② 收口：先发 push 影响范围预告等用户确认，再 `git add -A` + 中文 commit + `git push` | ✅ done | commit `19a9302e`、push `41423269..19a9302e classic-vnpy-native-rewrite` |
 
 ## 当前执行焦点
 
-- 任务 1–9 已完成，自动化测试 39/39 通过；3 条 dry-run smoke（回测 / 对账 PASS / 对账 FAIL）退出码符合预期。
-- 任务 10 等待用户在影响范围预告后明确回复 `确认提交推送` 才能 `git add -A` + commit + push。
+- 全部 10 项已完成；阶段② dry-run 骨架与文档同步已推送至远端 `classic-vnpy-native-rewrite`。
+- 后续如需升级到 Futu SIM，必须新开独立 plan（建议 `us_multi_symbol_quant_phase3_sim`），按 `docs/research/us_multi_symbol_quant/05_sim_gate_checklist.md` 5 项打勾。
 
 ## 边界与红线
 
