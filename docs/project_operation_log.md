@@ -9,6 +9,11 @@
 
 ### 历史记录
 
+- **2026-05-20**：新增"美股多标的量化策略"研究目录（仅产研究/设计文档，不含可执行代码）
+  - **文档文件**：[docs/research/us_multi_symbol_quant/00_index.md](/projects/vnpy/docs/research/us_multi_symbol_quant/00_index.md)、[01_indicator_research.md](/projects/vnpy/docs/research/us_multi_symbol_quant/01_indicator_research.md)、[02_futu_multi_symbol_capability.md](/projects/vnpy/docs/research/us_multi_symbol_quant/02_futu_multi_symbol_capability.md)、[03_strategy_design.md](/projects/vnpy/docs/research/us_multi_symbol_quant/03_strategy_design.md)
+  - **流程文件**：[.codebuddy/plan/us_multi_symbol_quant/](/projects/vnpy/.codebuddy/plan/us_multi_symbol_quant/)（requirements / design / tasks）、[.codebuddy/task_list/us_multi_symbol_quant.md](/projects/vnpy/.codebuddy/task_list/us_multi_symbol_quant.md)
+  - **影响摘要**：新增产物结构 `docs/research/us_multi_symbol_quant/`，含 4 份研究/设计文档（汇总入口 + 指标调研 + Futu 多标的能力评估 + 多标的策略方案），全部为研究文档**不含可执行代码**；所有 Futu API 名与行号经 `grep_search` 二次校验，全文使用脱敏占位符（NAV/pool_budget_pct）不含真实金额；本轮**未修改任何现有策略源码**（`us_nvda_1d_strategy_multifactor.py` / `strategy_classic_multifactor.py` / `run_local_backtest.py` 等保持不变），未运行回测、未连 OpenD、未下单、未改写 `state/runs/`；落地（阶段 ② 固定股票池 / 阶段 ③ 横截面排序）需走独立 `.codebuddy/plan/` 流程，并在落地阶段补全 [system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md) 顶层反向引用。
+
 - **2026-05-12**：Knot research bundle 为 HK / US 持仓 review 新增中午 `12:00` 调度
   - **代码文件**：[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[test_knot_research_bundle.py](/projects/vnpy/tests/test_knot_research_bundle.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)

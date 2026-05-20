@@ -1,0 +1,42 @@
+[
+  {
+    "tradeid": "BACKTESTING.1",
+    "symbol": "NVDA.SMART",
+    "direction": "多",
+    "offset": "开",
+    "price": 12.35,
+    "volume": 162.0,
+    "datetime": "2021-03-05T00:00:00+08:00",
+    "gateway_name": "BACKTESTING"
+  },
+  {
+    "tradeid": "BACKTESTING.2",
+    "symbol": "NVDA.SMART",
+    "direction": "空",
+    "offset": "平",
+    "price": 15.1932,
+    "volume": 162.0,
+    "datetime": "2021-04-13T00:00:00+08:00",
+    "gateway_name": "BACKTESTING"
+  },
+  {
+    "tradeid": "BACKTESTING.3",
+    "symbol": "NVDA.SMART",
+    "direction": "多",
+    "offset": "开",
+    "price": 129.0,
+    "volume": 15.0,
+    "datetime": "2024-12-20T00:00:00+08:00",
+    "gateway_name": "BACKTESTING"
+  },
+  {
+    "tradeid": "BACKTESTING.4",
+    "symbol": "NVDA.SMART",
+    "direction": "空",
+    "offset": "平",
+    "price": 182.08,
+    "volume": 15.0,
+    "datetime": "2026-04-09T00:00:00+08:00",
+    "gateway_name": "BACKTESTING"
+  }
+]

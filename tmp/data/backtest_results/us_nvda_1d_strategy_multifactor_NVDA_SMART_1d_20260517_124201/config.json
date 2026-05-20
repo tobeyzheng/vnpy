@@ -1,0 +1,29 @@
+{
+  "strategy": "tmp/strategy/us_nvda_1d_strategy_multifactor.py",
+  "symbol": "NVDA.SMART",
+  "interval": "1d",
+  "start": "2022-01-01",
+  "end": "2025-12-31",
+  "capital": 10000.0,
+  "rate": 0.0003,
+  "slippage": 0.0,
+  "size": 1.0,
+  "pricetick": 0.01,
+  "setting": {
+    "fast_window": 5,
+    "slow_window": 20,
+    "rsi_window": 9,
+    "rsi_oversold": 30.0,
+    "rsi_overbought": 85.0,
+    "volume_ratio_threshold": 1.2,
+    "stop_loss_pct": 0.05,
+    "take_profit_pct": 0.15,
+    "position_pct": 0.6,
+    "LIVE_SUBMIT": true
+  },
+  "interval_config": {
+    "base_interval": "Interval.DAILY",
+    "window": 1,
+    "annual_days": 240
+  }
+}

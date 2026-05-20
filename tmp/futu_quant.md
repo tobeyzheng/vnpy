@@ -2855,7 +2855,7 @@ get_MyLang_indicator(indicator_name='OSC', variable_name='OSC', symbol=Contract(
 ### 接口说明
 
 判断指定标的的 RSI 形态是否低位金叉。
- 
+
 ```
 is_rsi_golden_cross(symbol, fast_period=6, slow_period=12, bar_type=BarType.K_60M, session_type = THType.ALL, select = 2)
 ```
@@ -5989,7 +5989,7 @@ get_MyLang_indicator(indicator_name='SVSI', variable_name='VSI', symbol=Contract
 ```
 place_limit(symbol, price, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DAY, order_trade_session_type=TSType.ALL)
 ```
-> 每 30 秒最多下 15 笔订单。  
+> 每 30 秒最多下 15 笔订单。
 > 美股市场全时段交易仅支持限价单。
 ### 参数
 
@@ -6001,15 +6001,15 @@ place_limit(symbol, price, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DA
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
 | order_trade_session_type | [TSType](TSType "TSType") | 交易时段（仅对美股市场生效）  | TSType.ALL | -- |
-> 数量自动向下调整到可交易数量。  
+> 数量自动向下调整到可交易数量。
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | * A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> * 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> * 香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | 美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | 美股：无限制 |  
+    >| moomoo AU | 美股：无限制 |
 
 
 
@@ -6045,7 +6045,7 @@ place_limit(symbol=Contract("US.AAPL"), price=mid_price(symbol=Contract("US.AAPL
 ```
 place_market(symbol, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DAY)
 ```
-> 每 30 秒最多下 15 笔订单。  
+> 每 30 秒最多下 15 笔订单。
 > 美股市场市价单交易仅支持盘中时段。
 
 
@@ -6057,15 +6057,15 @@ place_market(symbol, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DAY)
 | qty | float | 数量 | -- | -- |
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
-> 数量自动向下调整到可交易数量。  
+> 数量自动向下调整到可交易数量。
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | * A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> * 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> * 香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | 美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | 美股：无限制 |  
+    >| moomoo AU | 美股：无限制 |
 
 
 
@@ -6114,15 +6114,15 @@ place_stop_limit(symbol, aux_price, price, qty, side=OrderSide.BUY, time_in_forc
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
 | order_trade_session_type | [TSType](TSType "TSType") | 交易时段 | TSType.AUTO | -- |
-> 数量自动向下调整到可交易数量。  
+> 数量自动向下调整到可交易数量。
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | * A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> * 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> * 香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | 美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | 美股：无限制 |  
+    >| moomoo AU | 美股：无限制 |
 
 
 
@@ -6159,8 +6159,8 @@ place_stop_limit(symbol=Contract("US.AAPL"), aux_price=140, price=150, qty=100, 
 ```
 place_stop(symbol, aux_price, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DAY)
 ```
-> 每 30 秒最多下 15 笔订单。  
-> 美股市场止损市价单交易仅支持盘中时段。 
+> 每 30 秒最多下 15 笔订单。
+> 美股市场止损市价单交易仅支持盘中时段。
 
 ### 参数
 
@@ -6171,15 +6171,15 @@ place_stop(symbol, aux_price, qty, side=OrderSide.BUY, time_in_force=TimeInForce
 | qty | float | 数量 | -- | -- |
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
-> 数量自动向下调整到可交易数量。  
+> 数量自动向下调整到可交易数量。
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | * A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> * 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> * 香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | 美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | 美股：无限制 |  
+    >| moomoo AU | 美股：无限制 |
 
 
 ### 返回
@@ -6228,15 +6228,15 @@ place_limit_if_touched(symbol, aux_price, price, qty, side=OrderSide.BUY, time_i
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
 | order_trade_session_type | [TSType](TSType "TSType") | 交易时段 | TSType.AUTO | -- |
-> 数量自动向下调整到可交易数量。  
+> 数量自动向下调整到可交易数量。
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | * A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> * 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> * 香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | 美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | 美股：无限制 |  
+    >| moomoo AU | 美股：无限制 |
 
 
 
@@ -6274,7 +6274,7 @@ place_limit_if_touched(symbol=Contract("US.AAPL"), aux_price=140, price=150, qty
 ```
 place_market_if_touched(symbol, aux_price, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DAY)
 ```
-> 每 30 秒最多下 15 笔订单。  
+> 每 30 秒最多下 15 笔订单。
 > 美股市场触及市价单（止盈）交易仅支持盘中时段。
 
 ### 参数
@@ -6286,15 +6286,15 @@ place_market_if_touched(symbol, aux_price, qty, side=OrderSide.BUY, time_in_forc
 | qty | float | 数量 | -- | -- |
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
-> 数量自动向下调整到可交易数量  
+> 数量自动向下调整到可交易数量
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | * A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> * 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> * 香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | 美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | 美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | 美股：无限制 |  
+    >| moomoo AU | 美股：无限制 |
 
 
 ### 返回
@@ -6346,17 +6346,17 @@ place_trailing_stop_limit(symbol, trail_type, trail_value, trail_spread, qty, si
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
 | order_trade_session_type | [TSType](TSType "TSType") | 交易时段 | TSType.AUTO | -- |
-> 数量自动向下调整到可交易数量  
+> 数量自动向下调整到可交易数量
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | &emsp;A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> &emsp;美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> &emsp;香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | &emsp;美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | &emsp;美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | &emsp;美股：无限制 | 
+    >| moomoo AU | &emsp;美股：无限制 |
 
-> 跟踪止损限价单的跟踪金额/比例需要符合一定的精度规范，详见下表：   
+> 跟踪止损限价单的跟踪金额/比例需要符合一定的精度规范，详见下表：
     >| 参数 | 整数位数 | 小数位数 |
     >|-----|-----|-----|
     >| 跟踪金额 | &emsp;期货：8位 <br> &emsp;其他：6位 | &emsp;美股：4位，美股期权：2位 <br> &emsp;期货：9位 <br> &emsp;其他：3位 |
@@ -6399,7 +6399,7 @@ place_trailing_stop_limit(symbol=Contract("US.AAPL"), trail_type=TrailType.RATIO
 ```
 place_trailing_stop(symbol, trail_type, trail_value, qty, side=OrderSide.BUY, time_in_force=TimeInForce.DAY)
 ```
-> 每 30 秒最多下 15 笔订单。  
+> 每 30 秒最多下 15 笔订单。
 > 美股市场跟踪止损市价单交易仅支持盘中时段。
 ### 参数
 
@@ -6411,17 +6411,17 @@ place_trailing_stop(symbol, trail_type, trail_value, qty, side=OrderSide.BUY, ti
 | qty | float | 数量 | -- | -- |
 | side | [OrderSide](OrderSide "OrderSide") | 交易方向 | OrderSide.BUY | -- |
 | time_in_force | [TimeInForce](TimeInForce "TimeInForce") | 订单期限 | TimeInForce.DAY | -- |
-> 数量自动向下调整到可交易数量  
+> 数量自动向下调整到可交易数量
 
-> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：   
+> 各券商针对不同交易品种，对单笔订单股数有所限制，超出限制会导致下单失败。详见下表：
     >| 券商 | 单笔订单的股数上限 |
     >|-----|-----|
     >| FUTU HK | &emsp;A股通：单笔订单数量不超过100万股，单笔订单金额不超过500万人民币 <br> &emsp;美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 <br> &emsp;香港股票期货/期权：单笔订单数量不超过3,000手 |
     >| moomoo US | &emsp;美股：单笔订单数量不超过50万股，单笔订单金额不超过1,000万美元 |
     >| moomoo SG | &emsp;美股：单笔订单数量不超过50万股，单笔订单金额不超过500万美元 |
-    >| moomoo AU | &emsp;美股：无限制 | 
+    >| moomoo AU | &emsp;美股：无限制 |
 
-> 跟踪止损市价单的跟踪金额/比例需要符合一定的精度规范，详见下表：   
+> 跟踪止损市价单的跟踪金额/比例需要符合一定的精度规范，详见下表：
     >| 参数 | 整数位数 | 小数位数 |
     >|-----|-----|-----|
     >| 跟踪金额 | &emsp;期货：8位 <br> &emsp;其他：6位 | &emsp;美股：4位，美股期权：2位 <br> &emsp;期货：9位 <br> &emsp;其他：3位 |
@@ -6461,8 +6461,8 @@ place_trailing_stop(symbol=Contract("US.AAPL"), trail_type=TrailType.AMOUNT, tra
 ```
 modify_order(orderid, qty, price=None, aux_price=None, trail_type=None, trail_value=None, trail_spread=None)
 ```
-> 每 30 秒最多提交 40 笔改单。  
-> 改单接口调用结果，仅表示改单请求是否成功，不表示改单结果是否成功。  
+> 每 30 秒最多提交 40 笔改单。
+> 改单接口调用结果，仅表示改单请求是否成功，不表示改单结果是否成功。
 > 对于港交所的品种，如果因价格偏离导致改单失败，原订单会被撤单。对于其他交易所的品种，如果改单失败，原订单维持改单前的状态不变。
 ### 参数
 
@@ -6754,7 +6754,7 @@ reverse_positions(symbol=Contract("HK.HSI2401"))
 
 ### 接口说明
 
-移仓，是指将期货合约持仓，转移到另一个较远期限的合约。在策略运行时，如果持有的期货合约即将到期，但想继续持有该方向的头寸更长的时间，可以使用“期货移仓”函数。  
+移仓，是指将期货合约持仓，转移到另一个较远期限的合约。在策略运行时，如果持有的期货合约即将到期，但想继续持有该方向的头寸更长的时间，可以使用“期货移仓”函数。
 
 ```mermaid
 graph LR
@@ -6781,8 +6781,8 @@ graph LR
   G -->|完全成交| H[市价单卖空<br>2张目标合约]
   H -->|完全成交| I((持有2张<br>目标合约的<br>空头持仓))
 ```
-> 移仓时，允许持有 与移仓合约方向相反的 目标合约头寸，但持有数量不能少于移仓合约的持有数量。  
-> 例1：账户持有 1 张 US.CL2408 的多头合约和 1 张 US.CL2409 的空头合约。使用期货移仓功能，会卖出平仓 1 张 US.CL2408 合约，然后买入平仓 1 张 US.CL2409 合约。  
+> 移仓时，允许持有 与移仓合约方向相反的 目标合约头寸，但持有数量不能少于移仓合约的持有数量。
+> 例1：账户持有 1 张 US.CL2408 的多头合约和 1 张 US.CL2409 的空头合约。使用期货移仓功能，会卖出平仓 1 张 US.CL2408 合约，然后买入平仓 1 张 US.CL2409 合约。
 > 例2：账户持有 2 张 US.CL2408 的多头合约和 1 张 US.CL2409 的空头合约。使用期货移仓功能，会卖出平仓 2 张 US.CL2408 合约，然后在提交买入 2 张 US.CL2409 合约买单时失败。
 
 ```
@@ -6839,7 +6839,7 @@ close_positions(symbol, qty=abs(1.00*position_holding_qty(symbol)))
 |-----|-----|-----|-----|-----|
 | symbol | [Contract](Contract "Contract") | 标的 | -- | -- |
 | qty | float | 数量（自动向下调整至可交易数量） | abs(1.00*position_holding_qty(symbol)) | -- |
-> 数量为可选参数，默认平仓数量为持有数量的100%。  
+> 数量为可选参数，默认平仓数量为持有数量的100%。
 
 ### 返回
 
@@ -7458,9 +7458,9 @@ bar_custom(symbol=Contract("US.AAPL"), data_type=BarDataType.LOW, custom_num=8, 
 
 ### 接口说明
 
-获取指定标的的振幅。  
-公式：振幅=（当日最高点的价格－当日最低点的价格）/昨天收盘价×100%   
-含义：指股票开盘后的当日最高价和最低价之间的差的绝对值与前一日收盘价的百分比，它在一定程度上表现股票的活跃程度。  
+获取指定标的的振幅。
+公式：振幅=（当日最高点的价格－当日最低点的价格）/昨天收盘价×100%
+含义：指股票开盘后的当日最高价和最低价之间的差的绝对值与前一日收盘价的百分比，它在一定程度上表现股票的活跃程度。
 
 ```
 amplitude(symbol, session_type = THType.ALL)
@@ -7660,7 +7660,7 @@ bar_custom(symbol=Contract("US.AAPL"), data_type=BarDataType.CHG_RATE, custom_nu
 
 ### 接口说明
 
-隐含波动率（IV）既支持期权，也支持股票：  
+隐含波动率（IV）既支持期权，也支持股票：
 - 期权的IV：由期权定价模型计算得出。欧式期权使用BSM模型，美式期权使用BAW模型。
 - 股票的IV：用于衡量当前股票未来 30 天预期波动率。该指标参照 VIX 指数的计算框架，使用未来 30 天附近的 2 条期权链所隐含的 IV 计算得出。因此，无期权链的股票无法获取 IV。
 
@@ -7677,11 +7677,11 @@ implied_volatility(symbol)
 
 ### 返回
 
-返回类型：float  
+返回类型：float
 
 ### 示例说明
 
-获取苹果的前一个交易日的隐含波动率。  
+获取苹果的前一个交易日的隐含波动率。
 
 ```
 implied_volatility(symbol=Contract("US.AAPL"),select=2)
@@ -7701,7 +7701,7 @@ implied_volatility(symbol=Contract("US.AAPL"),select=2)
 
 ### 接口说明
 
-获取标的30日的历史波动率。  
+获取标的30日的历史波动率。
 
 ```
 historical_volatility_30d(symbol,select)
@@ -7716,11 +7716,11 @@ historical_volatility_30d(symbol,select)
 
 ### 返回
 
-返回类型：float  
+返回类型：float
 
 ### 示例说明
 
-获取苹果的前一个交易日的历史波动率。  
+获取苹果的前一个交易日的历史波动率。
 
 ```
 historical_volatility_30d(symbol=Contract("US.AAPL"),select=2)
@@ -7842,7 +7842,7 @@ bar_turnover(symbol, bar_type=BarType.K_60M, select=2, session_type = THType.ALL
 返回类型： float
 
 ### 示例说明
- 
+
 获取苹果的倒数第 2 根 1 小时 K 线的成交额。
 
 ```
@@ -7902,10 +7902,10 @@ bar_custom(symbol=Contract("US.AAPL"), data_type=BarDataType.TURNOVER, custom_nu
 
 ### 接口说明
 
-获取指定标的指定周期的前复权 K 线的换手率。    
- 公式：换手率=(K线成交股数/当时的流通股股数)×100%   
- 含义：指在一定时间内市场中股票转手买卖的频率，是反映股票流通性强弱的指标之一。   
- 
+获取指定标的指定周期的前复权 K 线的换手率。
+ 公式：换手率=(K线成交股数/当时的流通股股数)×100%
+ 含义：指在一定时间内市场中股票转手买卖的频率，是反映股票流通性强弱的指标之一。
+
 > 仅提供了日 K 及以上级别的K 线换手率，暂未提供小时 K 和分 K 的换手率。
 
 ```
@@ -7988,8 +7988,8 @@ bar_custom(symbol=Contract("US.AAPL"), data_type=BarDataType.TURNOVER_RATE, cust
 
 ### 接口说明
 
-获取量比。  
-公式：量比=（现成交总手数 / 现累计开市时间(分) ）/ 过去5日平均每分钟成交量  
+获取量比。
+公式：量比=（现成交总手数 / 现累计开市时间(分) ）/ 过去5日平均每分钟成交量
 含义：指股市开市后平均每分钟的成交量与过去5个交易日平均每分钟成交量之比。量比是衡量相对成交量的指标。
 
 ```
@@ -8107,7 +8107,7 @@ USMktStatus.OVERNIGHT
 
 ### 接口说明
 
-获取当前时间。  
+获取当前时间。
 在历史回测中，返回历史上的当前时间。在实盘运行中，返回当前设备的时间。
 
 ```
@@ -8147,10 +8147,10 @@ print(devicetime.second)  # 打印秒
 30
 0
 ```
->使用 device_time() 与 datetime.datetime.now()，2种方法获取时间有什么区别？   
-前者是量化提供的函数，后者是python标准库中的函数。  
-在实盘运行中，2种方法没有差别，都是获取当前设备的时间。   
-在历史回测中，device_time() 返回历史上的当前时间，而datetime.datetime.now()仍返回当前设备的时间。  
+>使用 device_time() 与 datetime.datetime.now()，2种方法获取时间有什么区别？
+前者是量化提供的函数，后者是python标准库中的函数。
+在实盘运行中，2种方法没有差别，都是获取当前设备的时间。
+在历史回测中，device_time() 返回历史上的当前时间，而datetime.datetime.now()仍返回当前设备的时间。
 我们推荐使用device_time()。
 
 
@@ -8384,8 +8384,8 @@ lot_size(symbol=Contract("US.AAPL"))
 
 ### 接口说明
 
-获取指定标的的合约乘数。  
-期货：合约乘数指每一个价格点所对应的金额。比如：HSImain上涨10个点位，HSI的合约乘数为50，持有1张多头合约将带来10*50=500港元的收益。  
+获取指定标的的合约乘数。
+期货：合约乘数指每一个价格点所对应的金额。比如：HSImain上涨10个点位，HSI的合约乘数为50，持有1张多头合约将带来10*50=500港元的收益。
 期权：合约乘数指下单交易时候需要乘以的倍数。比如：期权现价是0.05元，合约乘数是100，买2张合约需要0.05×100×2=10元。
 
 ```
@@ -8424,7 +8424,7 @@ contract_multiplier(symbol="HK.HSImain")
 
 ### 接口说明
 
-获取是否停牌。  
+获取是否停牌。
 股票由于某种消息或进行某种活动引起股价的连续上涨或下跌，由证券交易所暂停其在股票市场上进行交易。待情况澄清或企业恢复正常后，再复牌在交易所挂牌交易。
 
 ```
@@ -8463,8 +8463,8 @@ False
 
 ### 接口说明
 
-获取指定标的的最小变动价格。  
-不同品类的标的，其最小变动价格规则都不同。这个接口可以用于获取指定标的的最小变动价格。  
+获取指定标的的最小变动价格。
+不同品类的标的，其最小变动价格规则都不同。这个接口可以用于获取指定标的的最小变动价格。
 例如：美股 1 美元以上的股票的最小变动价格是 0.01， 1 美元以下的股票的最小变动价格是 0.0001。[点击](urlid://202011241)可以查看港股的最小变动价格。
 
 ```
@@ -10172,7 +10172,7 @@ ask_qty(symbol=Contract("US.AAPL"), level=1)
 
 ### 接口说明
 
-获取指定标的第 n 档的买盘委托订单数量。  
+获取指定标的第 n 档的买盘委托订单数量。
 摆盘委托订单数量仅支持香港市场股票、期货、期权，获取摆盘委托订单数量需要香港LV2及以上权限。
 
 ```
@@ -10208,7 +10208,7 @@ bid_order_qty(symbol=Contract("US.AAPL"), level=1)
 
 ### 接口说明
 
-获取指定标的第 n 档的卖盘委托订单数量。  
+获取指定标的第 n 档的卖盘委托订单数量。
 摆盘委托订单数量仅支持香港市场股票、期货、期权，获取摆盘委托订单数量需要香港LV2及以上权限。
 
 ```
@@ -10248,8 +10248,8 @@ ask_order_qty(symbol=Contract("US.AAPL"), level=1)
 
 ### 接口说明
 
-获取委比。  
-公式：委比=(委买手数－委卖手数)/(委买手数+委卖手数)×100%  
+获取委比。
+公式：委比=(委买手数－委卖手数)/(委买手数+委卖手数)×100%
 含义：指在报价系统之上的所有买卖单之比，用以衡量一段时间内买卖盘相对力量的强弱。
 
 ```
@@ -10369,7 +10369,7 @@ net_asset(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户的证券市值。  
+获取当前账户的证券市值。
 证券市值：账户持仓中股票与证券衍生品的市值总和。
 ```
 market_value_security(currency=Currency.HKD)
@@ -10409,7 +10409,7 @@ market_value_security(currency=Currency.HKD)
 
 ### 接口说明
 
-当前账户中，证券的多头持仓市值。  
+当前账户中，证券的多头持仓市值。
 多头市值：账户持仓的多头股票与证券衍生品的市值总和。
 
 ```
@@ -10450,7 +10450,7 @@ market_value_long(currency=Currency.HKD)
 
 ### 接口说明
 
-当前账户中，证券的空头持仓市值.  
+当前账户中，证券的空头持仓市值.
 空头市值: 账户持仓的空头股票与证券衍生品的市值总和，为负值。
 ```
 market_value_short(currency=Currency.HKD)
@@ -10570,7 +10570,7 @@ cash(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的[未实现盈亏](urlid://202011002)。  
+获取当前账户（以某个币种计价）的[未实现盈亏](urlid://202011002)。
 
 
 ```
@@ -10611,7 +10611,7 @@ asset_unrealized_pl(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的总现金可提金额。  
+获取当前账户（以某个币种计价）的总现金可提金额。
 综合账户的“总现金可提”，支持任意计价币种。单一市场证券账户的“总现金可提”，实盘仅支持对应币种。例如：使用港股融资融券账户，仅支持选择“以港元计价”。
 
 ```
@@ -10693,7 +10693,7 @@ cash_withdrawable(currency=Currency.HKD)
 
 ### 接口说明
 
-当前账户（以某个币种计价）的[在途资产](urlid://202011257)。  
+当前账户（以某个币种计价）的[在途资产](urlid://202011257)。
 在途资产是您实际持有但尚未入账的资产部分。当业务发生资产变更不同步，比如先扣了钱，但是股票过几天才到账，或者先扣了股票，但是钱过几天才到账，就会产生在途资产。
 
 ```
@@ -10734,7 +10734,7 @@ asset_in_transit(currency=Currency.HKD)
 
 ### 接口说明
 
-当前账户（以某个币种计价）的计息金额。  
+当前账户（以某个币种计价）的计息金额。
 计息金额为您账户每日交收后的欠款，您出入金、股票持仓调整等造成的欠款变化将在结算后更新。
 
 ```
@@ -10775,7 +10775,7 @@ interest_incurring_amount(currency=Currency.HKD)
 
 ### 接口说明
 
-当前账户（以某个币种计价）的冻结资金。  
+当前账户（以某个币种计价）的冻结资金。
 冻结资金：账户冻结资金包含挂单冻结，交易费用预扣，新股认购冻结等。
 
 ```
@@ -10816,7 +10816,7 @@ frozen_fund(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的可用资金。  
+获取当前账户（以某个币种计价）的可用资金。
 可用资金 = 现金 + 未实现盈亏 - 持仓占用的初始保证金 - 冻结资金。
 
 ```
@@ -10857,7 +10857,7 @@ available_fund(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的[已实现盈亏](urlid://202011002)。  
+获取当前账户（以某个币种计价）的[已实现盈亏](urlid://202011002)。
 
 
 ```
@@ -10899,10 +10899,10 @@ asset_realized_pl(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的最大购买力。  
-最大购买力：代表账户最高的购买力水平，即：买入杠杆比率最大的股票的可用金额，买入不同股票的实际购买力可能会小于最大购买力。  
-是按照 50% 的融资初始保证金率计算得到的近似值。但事实上，每个标的的融资保证金率并不相同，买入不同股票所需实际购买力可能会大于最大购买力。  
-建议使用“最大可买”卡片，获取指定标的最多可买入多少股。  
+获取当前账户（以某个币种计价）的最大购买力。
+最大购买力：代表账户最高的购买力水平，即：买入杠杆比率最大的股票的可用金额，买入不同股票的实际购买力可能会小于最大购买力。
+是按照 50% 的融资初始保证金率计算得到的近似值。但事实上，每个标的的融资保证金率并不相同，买入不同股票所需实际购买力可能会大于最大购买力。
+建议使用“最大可买”卡片，获取指定标的最多可买入多少股。
 
 ```
 max_buying_power(currency=Currency.HKD)
@@ -10943,8 +10943,8 @@ max_buying_power(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户的卖空购买力。  
-是按照 60% 的融券保证金率计算得到的近似值。但事实上，每个标的的融券保证金率并不相同，卖空不同股票所需实际购买力可能会大于卖空购买力。  
+获取当前账户的卖空购买力。
+是按照 60% 的融券保证金率计算得到的近似值。但事实上，每个标的的融券保证金率并不相同，卖空不同股票所需实际购买力可能会大于卖空购买力。
 建议使用“可卖空”卡片，获取指定标的最多可卖空多少股。
 
 ```
@@ -10986,8 +10986,8 @@ short_buying_power(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户指定币种的现金购买力。  
-现金购买力，是指在不使用融资情况下，当前账户最多可买入的资产的价值。  
+获取当前账户指定币种的现金购买力。
+现金购买力，是指在不使用融资情况下，当前账户最多可买入的资产的价值。
 举例：假设当前账户有 100 USD 和 500 HKD 的现金，此时美元现金购买力为 100。当提交价值 40 USD 限价买单后，由于部分美元现金购买力被占用，此时的美元现金购买力下降为 60，港元现金购买力始终保持 500 不变。
 
 
@@ -11235,7 +11235,7 @@ DTStatus.DT-CALL
 
 ### 接口说明
 
-使用融资买入指定标的的最大可买数量。  
+使用融资买入指定标的的最大可买数量。
 注意：不同订单类型、不同的价格，对应的最大可买数量可能会不同。
 
 ```
@@ -11276,7 +11276,7 @@ max_qty_to_buy_on_margin(symbol=Contract("US.AAPL"), order_type=OrdType.MKT, ord
 ## max_qty_to_buy_on_cash
 
 ### 接口说明
-使用现金买入指定标的的可买数量（不使用融资）。  
+使用现金买入指定标的的可买数量（不使用融资）。
 注意：不同订单类型、不同的价格，对应的现金可买数量可能会不同。
 
 ```
@@ -11319,7 +11319,7 @@ max_qty_to_buy_on_cash(symbol=Contract("US.AAPL"), order_type=OrdType.MKT, order
 
 ### 接口说明
 
-指定标的的多头持仓中，可卖出的数量。  
+指定标的的多头持仓中，可卖出的数量。
 注意：持有净多仓时，未成交的限价卖单，会冻结持仓，导致持仓可卖数量少于持有数量。
 
 ```
@@ -11358,8 +11358,8 @@ max_qty_to_sell(symbol=Contract("US.AAPL"))
 
 ### 接口说明
 
-指定标的的空头持仓中，可以平仓买回的数量。  
-注意：  
+指定标的的空头持仓中，可以平仓买回的数量。
+注意：
 1. 持有净空仓时，未成交的限价买单，会冻结持仓，导致平仓需买回数量少于持有数量。
 2. 平仓需买回 >= 0。
 ```
@@ -11398,13 +11398,13 @@ max_qty_to_buyback(symbol=Contract("US.AAPL"))
 
 ### 接口说明
 
-卖空指定标的的最大可卖空数量。  
+卖空指定标的的最大可卖空数量。
 注意：不同订单类型、不同的价格，对应的可卖空数量可能会不同。
 
 ```
 max_qty_to_sell_short(symbol, order_type=OrdType.LMT, price=0, order_trade_session_type=TSType.ETH)
 ```
-> 每 30 秒最多请求 40 次可卖空。  
+> 每 30 秒最多请求 40 次可卖空。
 > 美股夜盘暂不支持卖空。
 ### 参数
 
@@ -11442,9 +11442,9 @@ max_qty_to_sell_short(symbol=Contract("US.AAPL"), order_type=OrdType.MKT, order_
 ### 接口说明
 
 获取买或卖指定标的 1 张合约所带来的初始保证金变动。
-  
-无持仓时，返回 **买入** 或 **卖空** 1 张的初始保证金占用（正数）。  
-有多仓时，返回 **买入** 1 张的初始保证金占用（正数），或 **卖出** 1 张的初始保证金释放（负数）。  
+
+无持仓时，返回 **买入** 或 **卖空** 1 张的初始保证金占用（正数）。
+有多仓时，返回 **买入** 1 张的初始保证金占用（正数），或 **卖出** 1 张的初始保证金释放（负数）。
 有空仓时，返回 **买回** 1 张的初始保证金释放（负数），或 **卖空** 1 张的初始保证金占用（正数）。
 
 注意：
@@ -11604,7 +11604,7 @@ position_holding_qty(symbol=Contract("US.AAPL"))
 
 ### 接口说明
 
-获取指定标的的平均成本价/摊薄成本价计算的持仓盈亏比例。  
+获取指定标的的平均成本价/摊薄成本价计算的持仓盈亏比例。
 期货不支持摊薄成本价计算的持仓盈亏比例。
 
 ```
@@ -11656,8 +11656,8 @@ position_pl_ratio(symbol=Contract("US.AAPL"),cost_price_model=CostPriceModel.DIL
 
 ### 接口说明
 
-获取指定标的的平均成本价/摊薄成本价计算的持仓盈亏金额，正数表示盈利金额，负数表示亏损金额。  
-期货不支持摊薄成本价计算的持仓盈亏金额。  
+获取指定标的的平均成本价/摊薄成本价计算的持仓盈亏金额，正数表示盈利金额，负数表示亏损金额。
+期货不支持摊薄成本价计算的持仓盈亏金额。
 
 ```
 position_pl_amount(symbol,cost_price_model=CostPriceModel.AVG)
@@ -11734,15 +11734,15 @@ position_today_pl(symbol=Contract("US.AAPL"))
 
 ### 接口说明
 
-获取指定标的持仓的摊薄成本价/平均成本价： 
+获取指定标的持仓的摊薄成本价/平均成本价：
 
-1. 摊薄成本价：不支持期货。  
-摊薄成本价 = (持有期内买入总金额-持有期内卖出总金额) ÷ 持有数量   
+1. 摊薄成本价：不支持期货。
+摊薄成本价 = (持有期内买入总金额-持有期内卖出总金额) ÷ 持有数量
 摊薄成本价考虑了持有期内每次交易的盈亏（暂不包含现金派息、供股等情况）。既考虑买入，也考虑卖出的变化。卖出股票所对应的盈亏会摊高或摊低成本价，甚至会出现成本价为负数的情况。
 
-2. 平均成本价：支持股票、期货。  
-平均成本价是指当前持仓的平均成本（不包含佣金及费用）。首次买入时的开仓价即此时的平均成本价。  
-加仓会影响平均成本价，加仓后的平均成本价 = （加仓前的平均成本价×数量 + 此次加仓的价格×数量）÷ 加仓后持有数量。  
+2. 平均成本价：支持股票、期货。
+平均成本价是指当前持仓的平均成本（不包含佣金及费用）。首次买入时的开仓价即此时的平均成本价。
+加仓会影响平均成本价，加仓后的平均成本价 = （加仓前的平均成本价×数量 + 此次加仓的价格×数量）÷ 加仓后持有数量。
 减仓不会影响平均成本价，减仓部分所对应的盈亏转为已实现盈亏。
 
 ```
@@ -11872,10 +11872,10 @@ position_today_volume(symbol=Contract("US.AAPL"), side=TradeSide.BUY)
 
 ### 接口说明
 
-持有的可平仓的数量。  
-可用数量 = 持有数量 - 冻结数量。  
+持有的可平仓的数量。
+可用数量 = 持有数量 - 冻结数量。
 注意：
-1. 持有多头持仓时，可用数量 >= 0。   
+1. 持有多头持仓时，可用数量 >= 0。
 2. 持有空头持仓时，可用数量 <= 0。
 3. 无持仓时，可用数量 = 0。
 
@@ -12045,13 +12045,13 @@ request_orderid(symbol=Contract(""), status=[], start="", end="",time_zone=TimeZ
 | end | string | 按时间过滤（结束时间）<br>YYYY-MM-DD HH:MM:SS<br>或者<br>YYYY-MM-DD | '' | -- |
 | time_zone | [TimeZone](TimeZone "TimeZone")  | 时区 | TimeZone.MARKET_TIME_ZONE | -- |
 
-> 若 start 和 end 不填，默认查询最近 31 天的数据。  
-> 若 start 填了，end 不填，默认查询 start 之后 31 天内的数据。  
+> 若 start 和 end 不填，默认查询最近 31 天的数据。
+> 若 start 填了，end 不填，默认查询 start 之后 31 天内的数据。
 > 若 start 不填，end 填了，默认查询 end 之前 31 天内的数据。
 
 ### 返回
 
-返回类型： list   
+返回类型： list
 返回的订单ID 为字符串，默认按照时间的“倒序”进行排列，即：最近提交的订单在前，先提交的订单在后。
 
 ### 示例说明
@@ -12082,8 +12082,8 @@ request_orderid(symbol=Contract("US.AAPL"), status=["FILLED_ALL"], start="2023-0
 通过订单ID 查询订单状态。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_status(orderid)
@@ -12124,11 +12124,11 @@ OrderStatus.FILLED_ALL
 
 ### 接口说明
 
-通过订单ID 查询订单标的。  
+通过订单ID 查询订单标的。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_symbol(orderid)
@@ -12172,8 +12172,8 @@ order_symbol(orderid="FH123456789")
 通过订单ID 查询订单价格。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_price(orderid)
@@ -12217,8 +12217,8 @@ order_price(orderid="FH123456789")
 通过订单ID 查询指定订单的成交均价。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_filled_avg_price(orderid)
@@ -12262,8 +12262,8 @@ order_filled_avg_price(orderid="FH123456789")
 通过订单ID 查询订单数量。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_qty(orderid)
@@ -12307,8 +12307,8 @@ order_qty(orderid="FH123456789")
 通过订单ID 查询指定订单的成交数量。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_filled_qty(orderid)
@@ -12352,8 +12352,8 @@ order_filled_qty(orderid="FH123456789")
 通过订单ID 查询指定订单的成交 ID。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_executionid(orderid)
@@ -12367,7 +12367,7 @@ order_executionid(orderid)
 
 ### 返回
 
-返回类型： list  
+返回类型： list
 
 
 ### 示例说明
@@ -12398,8 +12398,8 @@ order_executionid(orderid="FH123456789")
 查询订单交易方向。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_side(orderid)
@@ -12442,8 +12442,8 @@ OrderSide.BUY
 通过订单ID 查询指定订单的触发价。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_aux_price(orderid)
@@ -12486,8 +12486,8 @@ order_aux_price(orderid="FH123456789")
 通过订单ID 查询订单类型。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_types(orderid)
@@ -12530,8 +12530,8 @@ OrdType.NORMAL
 通过订单ID 查询指定订单的跟踪类型。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_trail_type(orderid)
@@ -12574,8 +12574,8 @@ TrailType.RATIO
 通过订单ID 查询指定订单跟踪金额/百分比。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_trail_value(orderid)
@@ -12618,8 +12618,8 @@ order_trail_value(orderid="FH123456789")
 通过订单ID 查询指定订单的指定价差。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_trail_spread(orderid)
@@ -12659,13 +12659,13 @@ order_trail_spread(orderid="FH123456789")
 
 ### 接口说明
 
-通过订单ID 查询订单的适用交易时段（用于港股盘前竞价与美股盘前盘后）。  
-* 港股：True：盘前竞价时段；False：仅持续交易时段。  
+通过订单ID 查询订单的适用交易时段（用于港股盘前竞价与美股盘前盘后）。
+* 港股：True：盘前竞价时段；False：仅持续交易时段。
 * 美股：True：盘前盘后、夜盘时段；False：仅盘中时段。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_filled_outside_rth(orderid)
@@ -12708,8 +12708,8 @@ True
 通过订单ID 查询指定订单的期限。
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_time_in_force(orderid)
@@ -12750,8 +12750,8 @@ TimeInForce.DAY
 通过订单ID 查询订单创建时间
 
 你可以通过以下 2 个函数获得订单ID ：
-1. [下单](225455224642) 
-2. [查询订单ID](232512224358) 
+1. [下单](225455224642)
+2. [查询订单ID](232512224358)
 
 ```
 order_create_time(orderid,time_zone=TimeZone.MARKET_TIME_ZONE)
@@ -12815,7 +12815,7 @@ get_orderid_by_groupid(groupid)
 
 ### 返回
 
-返回类型： dict   
+返回类型： dict
 | key | value 类型 | 说明 |
 |-----|-----|-----|
 | 'closing_orderid' | string | 平仓订单ID |
@@ -12858,13 +12858,13 @@ request_executionid(symbol=Contract(""), start="", end="",time_zone=TimeZone.MAR
 | end | string | 按时间过滤（结束时间）<br>YYYY-MM-DD HH:MM:SS<br>或者<br>YYYY-MM-DD | '' | -- |
 | time_zone | [TimeZone](TimeZone "TimeZone")  | 时区 | TimeZone.MARKET_TIME_ZONE | -- |
 
-> 若 start 和 end 不填，默认查询最近 31 天的数据。  
-> 若 start 填了，end 不填，默认查询 start 之后 31 天内的数据。  
+> 若 start 和 end 不填，默认查询最近 31 天的数据。
+> 若 start 填了，end 不填，默认查询 start 之后 31 天内的数据。
 > 若 start 不填，end 填了，默认查询 end 之前 31 天内的数据。
 
 ### 返回
 
-返回类型： list  
+返回类型： list
 返回的成交ID 为字符串，默认按照时间的“倒序”进行排列，即：最近成交的记录在前，先成交的记录在后。
 
 ### 示例说明
@@ -13145,7 +13145,7 @@ execution_orderid(executionid="4665291631090960915")
 
 你可以通过以下 2 个函数获得成交 ID ：
 1. [查询成交 ID](237141232513)
-2. [订单的成交 ID](232512237130) 
+2. [订单的成交 ID](232512237130)
 
 ```
 execution_time(excecutionid,time_zone=TimeZone.MARKET_TIME_ZONE)
@@ -13237,7 +13237,7 @@ CltRiskStatus.LEVEL1
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的初始保证金。  
+获取当前账户（以某个币种计价）的初始保证金。
 初始保证金：融资融券交易时要求的保证金。当初始保证金要求大于综合净资产时，则购买力用尽，不可新开仓。
 
 ```
@@ -13278,8 +13278,8 @@ initial_margin(currency=Currency.HKD)
 ## margin_call_margin
 
 ### 接口说明
- 
-获取当前账户（以某个币种计价）的 Margin Call 保证金。  
+
+获取当前账户（以某个币种计价）的 Margin Call 保证金。
 MarginCall保证金是指当客户的资产净值，因市场波动而下跌至Margin Call保证金以下时，会向客户发Margin Call通知，客户必须尽快入金或平仓至资产净值回到初始保证金要求或以上，否则有权随时按市场状况替客户进行平仓，而无须事先通知。
 
 ```
@@ -13321,7 +13321,7 @@ margin_call_margin(currency=Currency.HKD)
 
 ### 接口说明
 
-获取当前账户（以某个币种计价）的维持保证金。  
+获取当前账户（以某个币种计价）的维持保证金。
 维持保证金：避免被立即执行强平所要求的最低保证金。当维持保证金要求大于综合净资产时，您的账户会被立即执行强平。
 
 ```
@@ -13664,7 +13664,7 @@ maint_marginratio_short("US.AAPL")
 
 ### 接口说明
 
-获取指定标的的融资 margin call 保证金率。  
+获取指定标的的融资 margin call 保证金率。
 MarginCall保证金是指当客户的资产净值，因市场波动而下跌至Margin Call保证金以下时，会向客户发Margin Call通知，客户必须尽快入金或平仓至资产净值回到初始保证金要求或以上，否则有权随时按市场状况替客户进行平仓，而无须事先通知。
 
 ```
@@ -13703,7 +13703,7 @@ mc_marginratio_long("US.AAPL")
 
 ### 接口说明
 
-获取指定标的的融券 margin call 保证金率。  
+获取指定标的的融券 margin call 保证金率。
 MarginCall保证金是指当客户的资产净值，因市场波动而下跌至Margin Call保证金以下时，会向客户发Margin Call通知，客户必须尽快入金或平仓至资产净值回到初始保证金要求或以上，否则有权随时按市场状况替客户进行平仓，而无须事先通知。
 
 ```
@@ -14282,9 +14282,9 @@ math_log(arg=100,base=10)
 # 标的定义方法
 > 本节内容仅用于代码策略，可视化策略不涉及以下内容。
 
-很多接口中，都需要指定一个标的（ticker symbol）作为参数。在量化功能中，标的有专门的变量类型。  
-如果您需要定义一个标的，[Contract](Contract "Contract") 函数可以将字符串型转换成系统可识别的标的型变量。  
-参数为约定的字符串格式：市场代码.证券代码。例如：苹果是 'US.AAPL'。  
+很多接口中，都需要指定一个标的（ticker symbol）作为参数。在量化功能中，标的有专门的变量类型。
+如果您需要定义一个标的，[Contract](Contract "Contract") 函数可以将字符串型转换成系统可识别的标的型变量。
+参数为约定的字符串格式：市场代码.证券代码。例如：苹果是 'US.AAPL'。
 
 ```
 aapl_symbol = Contract('US.AAPL')  # 定义苹果股票作为一个标的
@@ -14414,17 +14414,17 @@ def custom_indicator(self):
 
 1、如下图所示在指标管理中找到对应指标的麦语言脚本
 
-> 1 处的指标名称填写为 indicator_name 参数  
-2 处的指标脚本作为 script 参数，指标脚本通常会有很多行代码，建议使用3个单引号将它括起来  
-3 处的参数列表，需要逐个以字符串类型放入列表中，作为 param_list 参数  
+> 1 处的指标名称填写为 indicator_name 参数
+2 处的指标脚本作为 script 参数，指标脚本通常会有很多行代码，建议使用3个单引号将它括起来
+3 处的参数列表，需要逐个以字符串类型放入列表中，作为 param_list 参数
 
 ![指标管理](5.png "指标管理")
 
 2、将以上参数分别记录在 register_indicator 接口的 indicator_name, script, param_list 中
 ```
-self.register_indicator(indicator_name='OSC', 
+self.register_indicator(indicator_name='OSC',
         script='''osc:100*(close-ma(close,n)),linethick1,color0caee6;
-        oscema:expmema(osc,m),linethick1,colorff8d1e;''', 
+        oscema:expmema(osc,m),linethick1,colorff8d1e;''',
         param_list=['N', 'M'])
 ```
 
@@ -14446,9 +14446,9 @@ class Strategy(StrategyBase):
         self.v1 = show_variable(1, GlobalType.INT)
 
     def custom_indicator(self):  # 定义自编指标
-        self.register_indicator(indicator_name='OSC', 
+        self.register_indicator(indicator_name='OSC',
         script='''osc:100*(close-ma(close,n)),linethick1,color0caee6;
-        oscema:expmema(osc,m),linethick1,colorff8d1e;''', 
+        oscema:expmema(osc,m),linethick1,colorff8d1e;''',
         param_list=['N', 'M'])
 
     def handle_data(self):  # 策略的主函数。驱动标的的行情更新，或者到达指定时间，会触发handle_data()函数
@@ -14488,7 +14488,7 @@ register_indicator_Python(indicator_name, script)
 ```
 def custom_indicator(self):
     script='''
-    
+
     indicator('MA5', '移动平均线')
 
     def ma(n=5):
@@ -14558,15 +14558,15 @@ get_Python_indicator(indicator_name='MA5', variable_name='MA5', symbol=Contract(
 
 1、如下图所示在指标管理中找到对应指标的Python脚本（需要切换至 Python 编辑模式）
 
-> 1 处的指标名称填写为 indicator_name 参数  
-2 处的指标脚本作为 script 参数，指标脚本通常会有很多行代码，建议使用3个单引号将它括起来   
+> 1 处的指标名称填写为 indicator_name 参数
+2 处的指标脚本作为 script 参数，指标脚本通常会有很多行代码，建议使用3个单引号将它括起来
 
 ![py指标管理](6.png "py指标管理")
 
 2、将以上内容分别记录在 register_indicator_Python 接口的 indicator_name, script 中，script可以单独记录出来
 ```
 script='''
-    
+
     indicator('MA5', '移动平均线')
 
     def ma(n=5):
@@ -14600,7 +14600,7 @@ class Strategy(StrategyBase):
 
     def custom_indicator(self):  # 定义Python自编指标
         script='''
-    
+
     indicator('MA5', '移动平均线')
 
     def ma(n=5):
@@ -14652,7 +14652,7 @@ declare_strategy_type(strategy_type=AlgoStrategyType.SECURITY)
 ```
  def initialize(self):
         declare_strategy_type(AlgoStrategyType.SECURITY)
-    
+
 ```
 
 示例返回值
@@ -14703,7 +14703,7 @@ def custom_indicator(self):
 ```
 def custom_indicator(self):
         script='''
-    
+
         indicator('MA5', '移動平均線')
 
         def ma(n=5):
@@ -14738,9 +14738,9 @@ def custom_indicator(self):
 当使用该函数时，会在运行设置上显示出该全局变量。
 
 > show_variable() 仅适用于在 def global_variale() 约定函数下方使用。 (在可视化策略下，def global_variable() 约定函数会在开始卡片下方展示)
-> 
+>
 > 当全局变量使用该函数时，不允许使用其他赋值方式对该变量进行赋值。
-> 
+>
 > 多变量赋值时，不支持使用此函数。
 
 ![步骤图](3.png "步骤图")
@@ -14767,7 +14767,7 @@ def global_variale(self):
 ```
 
 ### 示例表现
-运行设置中出现全局变量 A，默认值为 1.0，类型为 Float，全局变量 B 不显示。 
+运行设置中出现全局变量 A，默认值为 1.0，类型为 Float，全局变量 B 不显示。
 
 ![运行设置图](4.png "运行设置图")
 
@@ -14791,11 +14791,11 @@ def global_variale(self):
 | Unknow           | 未知错误                   |
 
 ## 示例
-量化功能已经为各种错误情况定义了一组错误码，在您使用时，可以针对返回的不同错误码执行相应的处理逻辑。  
+量化功能已经为各种错误情况定义了一组错误码，在您使用时，可以针对返回的不同错误码执行相应的处理逻辑。
 以下是一个示例说明如何使用错误码对异常错误的处理：
 ```
 try:
-    a = current_price(code=Con"US.AAPL")  
+    a = current_price(code=Con"US.AAPL")
     # 标的的写法有误（正确写法为 Contract("US.AAPL")），触发无效参数的报错
 except APIException as ex:
     if ex.err_code == ErrCode.ExceedReqLimit:
@@ -14854,18 +14854,18 @@ class Strategy(StrategyBase):
         self.trigger_symbols()  # 定义运行标的
         self.custom_indicator()  # 注册指标
         self.global_variables()  # 定义全局变量
-    
+
     def trigger_symbols(self):    # 定义运行标的
         self.运行标的1 = declare_trig_symbol()
         self.运行标的2 = declare_trig_symbol()
-    
+
     def global_variables(self):   # 定义全局变量
         self.a = 10  # 定义浮点（数值）型全局变量
         self.b = Contract('US.AAPL')  # 定义标的型全局变量
-        
+
     def custom_indicator(self): # 定义自定义指标
         self.register_indicator(indicator_name='MA', script='''MA1:MA(CLOSE,P1),COLORFF8D1E;''', param_list=['P1']) # 注册一个用麦语言写的自定义指标
-            
+
     def handle_data(self):  # 约定函数2，每次收到触发信号，会运行一次。响应：每 K线运行一次，每tick运行一次、每N秒运行一次、定时运行
         ## 策略的执行逻辑，写在这里
         pass
@@ -14873,10 +14873,10 @@ class Strategy(StrategyBase):
 约定函数详述：
 ### 2.1 initialize() 初始化
 initialize() 初始化函数，仅会在策略启动时运行一次。后续在接收信号循环运行时，不会反复初始化。
-initialize() 函数中，默认有 3 个约定函数：  
+initialize() 函数中，默认有 3 个约定函数：
 - trigger_symbols()
 - custom_indicator()
-- global_variables() 
+- global_variables()
 
 注意：您可以在 initialize() 内，增加其他自定义函数。但是我们不建议在 initialize() 内增加过多的逻辑，因为这可能会导致策略启动缓慢。
 
@@ -14887,15 +14887,15 @@ def trigger_symbols(self):    # 定义运行标的
     self.运行标的1 = declare_trig_symbol()
     self.运行标的2 = declare_trig_symbol()
 ```
-- 每个策略中最多可创建 50 个运行标的。实盘运行和历史回测中，可指定具体标的为运行标的。 例如：将运行标的指定为 苹果（AAPL）。 
+- 每个策略中最多可创建 50 个运行标的。实盘运行和历史回测中，可指定具体标的为运行标的。 例如：将运行标的指定为 苹果（AAPL）。
 - 可以在接口中，使用运行标的进行代指。 例如：将下单控件指定为"买入 10 股运行标的"。
 - 运行标的的行情推送，可以驱动策略循环运行。 例如：将策略的运行条件设为"苹果（AAPL）每个 tick 运行一次"。
 
 ![参数样例图](2.png "参数样例图")
 ### 2.3 custom_indicator() 注册指标
-不同于可视化策略，代码策略无法直接调用 "自选" tab 下 K 线图表下方的 "指标管理" 中的已有自定义指标，需要重新编写。  
-使用代码策略调用自定义技术指标前，需要在 custom_indicator() 函数中，先使用麦语言编写和注册该指标。请参考以下步骤：  
-步骤 1：在 custom_indicator()  函数中，使用 register_indicator() 接口编写并注册该指标： 
+不同于可视化策略，代码策略无法直接调用 "自选" tab 下 K 线图表下方的 "指标管理" 中的已有自定义指标，需要重新编写。
+使用代码策略调用自定义技术指标前，需要在 custom_indicator() 函数中，先使用麦语言编写和注册该指标。请参考以下步骤：
+步骤 1：在 custom_indicator()  函数中，使用 register_indicator() 接口编写并注册该指标：
 ```
 def custom_indicator(self):
     self.register_indicator(indicator_name='MA', script='''MA1:MA(CLOSE,P1),COLORFF8D1E;''', param_list=['P1'])
@@ -14908,8 +14908,8 @@ def global_variables(self):   # 定义全局变量
     self.a = 10  # 定义浮点（数值）型全局变量
     self.b = Contract('US.AAPL')  # 定义标的型全局变量
 ```
-Python 中常见的变量类型都支持定义，例如：字符串（str）、浮点数（float）、整数（int）、列表（list）、元组（tuple）、字典（dict）等。 
-如果需要定义标的型全局变量，则需要使用 Contract() 函数。参数为指定的字符串格式：市场代码.证券代码。例如：苹果的格式为'US.AAPL'。  
+Python 中常见的变量类型都支持定义，例如：字符串（str）、浮点数（float）、整数（int）、列表（list）、元组（tuple）、字典（dict）等。
+如果需要定义标的型全局变量，则需要使用 Contract() 函数。参数为指定的字符串格式：市场代码.证券代码。例如：苹果的格式为'US.AAPL'。
 
 ### 2.5 handle_data() 主函数
 每次收到触发信号，会运行一次 handle_data() 函数。建议将策略的主要逻辑，写在 handle_data() 函数中。

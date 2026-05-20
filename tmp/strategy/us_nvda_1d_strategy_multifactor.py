@@ -17,6 +17,14 @@ class Strategy(StrategyBase):
         self.bars_since_last_entry = 0  # 距离上次加仓的K线数
         self.last_entry_price = 0.0     # 上次加仓的价格
         self.highest_price = 0.0        # 持仓期间最高价
+        self.base_capital = 0.0         # 首次建仓时锁定的本金基数（用于计算 slice_value，避免随浮盈漂移）
+
+        self.last_fast_ma = 0
+        self.last_slow_ma = 0
+        self.rsis = []
+
+        self.step = 0
+        self.last_entry_step = 0
 
     def trigger_symbols(self):
         self.target = declare_trig_symbol()
@@ -32,8 +40,8 @@ class Strategy(StrategyBase):
 
         # RSI参数 - 保持经典14天，微调阈值减少假信号
         self.rsi_window = show_variable(14, GlobalType.INT)
-        self.rsi_oversold = show_variable(30, GlobalType.FLOAT)  # 超卖阈值（从30调至35）
-        self.rsi_overbought = show_variable(85, GlobalType.FLOAT)  # 超买阈值（从70调至65）
+        self.rsi_oversold = show_variable(20, GlobalType.FLOAT)  # 超卖阈值（从30调至35）
+        self.rsi_overbought = show_variable(65, GlobalType.FLOAT)  # 超买阈值（从70调至65）
 
         # 成交量确认 - 降低要求，1.2倍即可确认
         self.volume_ratio_threshold = show_variable(1.2, GlobalType.FLOAT)  # 成交量倍数
@@ -44,7 +52,8 @@ class Strategy(StrategyBase):
         self.trailing_drawdown_pct = show_variable(0.05, GlobalType.FLOAT)  # 移动止盈回撤比例（5%）
 
         # 仓位管理 - 调整为更保守的20%单次投入
-        self.position_pct = show_variable(0.2, GlobalType.FLOAT)  # 单次投入资金比例
+        self.position_pct = show_variable(0.2, GlobalType.FLOAT)  # 单次投入资金比例（占首次本金基数的比例）
+        self.max_slices = show_variable(5, GlobalType.INT)        # 最大可用份数（满仓上限）
 
         # 补仓策略参数
         self.min_add_interval = show_variable(10, GlobalType.INT)  # 最小加仓间隔（K线数）
@@ -118,9 +127,9 @@ class Strategy(StrategyBase):
         k = int(warmup)
         while k > 0:
             close_val = bar_close(symbol=symbol, bar_type=BarType.K_DAY,
-                                 select=k, session_type=THType.ALL)
+                                 select=k, session_type=THType.RTH)
             volume_val = bar_volume(symbol=symbol, bar_type=BarType.K_DAY,
-                                   select=k, session_type=THType.ALL)
+                                   select=k, session_type=THType.RTH)
             closes.append(float(close_val) if close_val else 0.0)
             volumes.append(float(volume_val) if volume_val else 0.0)
             k = k - 1
@@ -143,6 +152,9 @@ class Strategy(StrategyBase):
         slow_ma = self._sma(closes, self.slow_window)
         rsi_value = self._rsi(closes, self.rsi_window)
         vol_ratio = self._volume_ratio(volumes, 20)
+        self.rsis.append(rsi_value)
+        if len(self.rsis) > 10:
+            self.rsis = self.rsis[-10:]
 
         # 获取当前持仓
         held_qty = int(position_holding_qty(symbol=symbol) or 0)
@@ -152,12 +164,12 @@ class Strategy(StrategyBase):
         if held_qty > 0:
             # 更新最高价
             highest_price = 0
-            for v in closes[-10:-1]:
+            for v in closes[max(-15,-self.bars_since_last_entry):-1]:
                 if v > highest_price:
                     highest_price = v
 
-            # if self.highest_price == 0.0 or current_price_val > self.highest_price:
-            #     self.highest_price = current_price_val
+            if self.highest_price == 0.0 or current_price_val > self.highest_price:
+                self.highest_price = current_price_val
 
             # 计算盈亏百分比
             pnl_pct = (current_price_val / self.entry_price - 1.0) * 100
@@ -167,9 +179,9 @@ class Strategy(StrategyBase):
                 self._exit_position(symbol, current_price_val, "止损")
                 return
 
+            drawdown_pct = (highest_price - current_price_val) / highest_price
             # 移动止盈：收益率大于阈值且发生大于回撤比例的回撤
-            if pnl_pct >= self.take_profit_pct * 100:
-                drawdown_pct = (highest_price - current_price_val) / highest_price
+            if pnl_pct >= self.take_profit_pct * 100 and rsi_value > self.rsi_oversold:
                 # drawdown_pct = (fast_ma - current_price_val) / fast_ma
                 # drawdown_pct = (self.highest_price - current_price_val) / self.highest_price
                 if drawdown_pct >= self.trailing_drawdown_pct:
@@ -177,7 +189,8 @@ class Strategy(StrategyBase):
                     return
 
             # RSI超买平仓
-            if rsi_value > self.rsi_overbought :
+            if sum(self.rsis)/len(self.rsis) > 60 and drawdown_pct >= self.trailing_drawdown_pct:
+            # if rsi_value > self.rsi_overbought:
                 self._exit_position(symbol, current_price_val, "RSI超买")
                 return
 
@@ -200,7 +213,17 @@ class Strategy(StrategyBase):
         if is_golden_cross and is_rsi_oversold and is_volume_up:
             entry_conditions.append("RSI超卖+放量")
 
+        if slow_ma >= fast_ma and (slow_ma - fast_ma)/slow_ma <= 0.01:
+            if self.last_slow_ma-self.last_fast_ma > (slow_ma - fast_ma):
+                if rsi_value < self.rsi_oversold+5 and is_volume_up:
+                    entry_conditions.append("MA+放量")
+
+        # # 获取当前回测K线时间
+        # bar_time = device_time(TimeZone.DEVICE_TIME_CCT)
+        # bar_time_str = bar_time.strftime("%Y-%m-%d") if bar_time else ""
+
         # 调试输出当前指标状态
+        # debug_info = f"[{bar_time_str}] cur:{current_price_val:.2f} MA5:{fast_ma:.2f} MA20:{slow_ma:.2f} RSI:{rsi_value:.1f} 量比:{vol_ratio:.1f}"
         debug_info = f"cur:{current_price_val:.2f} MA5:{fast_ma:.2f} MA20:{slow_ma:.2f} RSI:{rsi_value:.1f} 量比:{vol_ratio:.1f}"
         print(debug_info)
 
@@ -209,6 +232,9 @@ class Strategy(StrategyBase):
             self._enter_position(symbol, current_price_val, entry_conditions)
         elif held_qty == 0:
             self.last_signal = f"等待信号 {debug_info}"
+
+        self.last_fast_ma = fast_ma
+        self.last_slow_ma = slow_ma
 
     def _enter_position(self, symbol, price, reasons):
         # 获取当前持仓，用于判断是否为加仓
@@ -225,18 +251,29 @@ class Strategy(StrategyBase):
                 self.last_signal = f"加仓跌幅不足({loss_pct*100:.1f}%/{self.min_add_loss_pct*100:.1f}%)"
                 return
 
-        # 计算买入数量：总资产分为5份，每次最多买入1份
-        total_assets = float(net_asset(currency=Currency.USD) or 0)
-        slice_value = total_assets / 5.0  # 每份资金
+        # === 计算买入金额：以首次建仓时锁定的本金为基数，按 position_pct 切份 ===
+        max_slices = int(self.max_slices) if self.max_slices and self.max_slices > 0 else 5
 
-        if self.used_slices >= 5:
-            self.last_signal = "已满仓（5份已用完）"
+        if self.used_slices >= max_slices:
+            self.last_signal = f"已满仓（{max_slices}份已用完）"
             return
 
-        # 本次买入1份
-        order_value = slice_value
+        # 首次建仓时锁定本金基数，避免后续随浮盈/浮亏漂移
+        if held_qty == 0 or self.base_capital <= 0:
+            self.base_capital = float(net_asset(currency=Currency.USD) or 0)
+
+        # 单份资金：优先使用 position_pct，否则退化为 1/max_slices
+        pct = float(self.position_pct) if self.position_pct and self.position_pct > 0 else (1.0 / max_slices)
+        slice_value = self.base_capital * pct
+
         cash_avail = float(cash(currency=Currency.USD) or 0)
-        order_value = min(order_value, cash_avail)  # 不超过可用现金
+
+        # 现金不足以买下一个完整份的 50%，则放弃本次买入（不静默截断份数计数）
+        if cash_avail < slice_value * 0.5:
+            self.last_signal = f"资金不足(可用:{cash_avail:.0f} 单份:{slice_value:.0f})"
+            return
+
+        order_value = min(slice_value, cash_avail)
         qty = int(order_value // price)
 
         if qty <= 0:
@@ -246,7 +283,7 @@ class Strategy(StrategyBase):
         buy_price = price * 1.001  # 加一点点确保成交
         reason_str = ",".join(reasons)
 
-        msg = f"BUY {symbol} qty={qty} price={buy_price:.2f} 第{self.used_slices+1}/5份 原因:{reason_str}"
+        msg = f"BUY {symbol} qty={qty} price={buy_price:.2f} 第{self.used_slices+1}/{max_slices}份 原因:{reason_str}"
 
         if self.LIVE_SUBMIT:
             place_limit(symbol=symbol, price=buy_price, qty=qty,
@@ -277,7 +314,7 @@ class Strategy(StrategyBase):
             self.last_entry_price = price
             alert(title="模拟买入", content=msg)
 
-        self.last_signal = f"买入第{self.used_slices}/5份 {reason_str}"
+        self.last_signal = f"买入第{self.used_slices}/{max_slices}份 {reason_str}"
 
     def _exit_position(self, symbol, price, reason):
         held_qty = int(position_holding_qty(symbol=symbol) or 0)
@@ -301,4 +338,5 @@ class Strategy(StrategyBase):
         self.bars_since_last_entry = 0
         self.last_entry_price = 0.0
         self.highest_price = 0.0  # 平仓后重置最高价
+        self.base_capital = 0.0   # 平仓后重置本金基数，下一轮重新锁定
         self.last_signal = f"卖出 {reason} 盈亏:{pnl_pct:.1f}%"

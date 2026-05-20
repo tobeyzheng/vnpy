@@ -91,7 +91,19 @@ BAR_TYPE = _NS(
 
 ORDER_SIDE = _NS(BUY="BUY", SELL="SELL")
 TIME_IN_FORCE = _NS(DAY="DAY", GTC="GTC", IOC="IOC", FOK="FOK")
-TH_TYPE = _NS(ALL="ALL", REGULAR="REGULAR", AFTER_HOURS="AFTER_HOURS")
+# Futu THType: trading session filter for bar queries.
+#   RTH  = Regular Trading Hours
+#   ETH  = Extended Trading Hours (pre + after)
+#   ALL  = Both
+TH_TYPE = _NS(
+    ALL="ALL",
+    RTH="RTH",
+    ETH="ETH",
+    REGULAR="REGULAR",
+    AFTER_HOURS="AFTER_HOURS",
+    PRE_MARKET="PRE_MARKET",
+    POST_MARKET="POST_MARKET",
+)
 GLOBAL_TYPE = _NS(INT="INT", FLOAT="FLOAT", BOOL="BOOL", STRING="STRING")
 ALGO_STRATEGY_TYPE = _NS(SECURITY="SECURITY", FUTURES="FUTURES", OPTION="OPTION")
 
@@ -254,8 +266,27 @@ def _build_dsl_namespace(rt: _Runtime) -> Dict[str, Any]:
         pos_value = rt.pos * rt.last_close
         return float(rt.cash_value + pos_value)
 
+    def device_time(time_zone: Any = None, **kwargs: Any) -> Any:
+        """Return the datetime of the current bar (mimics futu device_time).
+
+        In backtest mode, returns the bar's timestamp; in live mode, returns
+        the current device time (but we only do backtest here).
+        """
+        from datetime import datetime as _dt
+        if rt.times:
+            return rt.times[-1]
+        return _dt.now()
+
     def alert(title: str = "", content: str = "", **kwargs: Any) -> None:
         logger.debug("[strategy alert] %s | %s", title, content)
+
+    # TimeZone enum for device_time()
+    TIME_ZONE = _NS(
+        DEVICE_TIME_ZONE="DEVICE_TIME_ZONE",
+        DEVICE_TIME_CCT="DEVICE_TIME_CCT",
+        UTC_PLUS_8="UTC_PLUS_8",
+        UTC="UTC",
+    )
 
     ns: Dict[str, Any] = {
         # --- base / decorators ---
@@ -283,6 +314,8 @@ def _build_dsl_namespace(rt: _Runtime) -> Dict[str, Any]:
         "place_limit": place_limit,
         "close_positions": close_positions,
         "alert": alert,
+        "device_time": device_time,
+        "TimeZone": TIME_ZONE,
         # Some Futu DSL strategies use these too; provide harmless stubs.
         "trigger_symbols": lambda *a, **kw: None,
         "custom_indicator": lambda *a, **kw: None,
@@ -497,7 +530,8 @@ def make_cta_class(
             try:
                 self._inner.handle_data()
             except Exception as exc:  # noqa: BLE001
-                self.write_log(f"handle_data error: {exc}")
+                import traceback
+                self.write_log(f"handle_data error: {exc}\n{traceback.format_exc()}")
                 return
 
             # Mirror inner state for vnpy variables tab.

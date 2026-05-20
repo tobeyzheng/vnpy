@@ -1,0 +1,20 @@
+{
+  "strategy": "tmp/strategy/us_nvda_1d_strategy_trend_momentum.py",
+  "symbol": "NVDA.SMART",
+  "interval": "1d",
+  "start": "2022-01-01",
+  "end": "2024-12-31",
+  "capital": 100000.0,
+  "rate": 0.0003,
+  "slippage": 0.0,
+  "size": 1.0,
+  "pricetick": 0.01,
+  "setting": {
+    "LIVE_SUBMIT": true
+  },
+  "interval_config": {
+    "base_interval": "Interval.DAILY",
+    "window": 1,
+    "annual_days": 240
+  }
+}

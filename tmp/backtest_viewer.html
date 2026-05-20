@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backtest Result Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }
+.container { max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 1.5rem; margin-bottom: 8px; color: #f1f5f9; }
+.subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+.card-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.card-value { font-size: 1.5rem; font-weight: 700; }
+.card-value.positive { color: #34d399; }
+.card-value.negative { color: #f87171; }
+.card-value.neutral { color: #60a5fa; }
+.section { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; margin-bottom: 24px; }
+.section-title { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: #f1f5f9; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.chart-box { position: relative; height: 320px; }
+.chart-box.full { grid-column: 1 / -1; height: 400px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #334155; }
+th { background: #0f172a; color: #94a3b8; font-weight: 500; position: sticky; top: 0; }
+tr:hover { background: #334155; }
+.buy { color: #34d399; }
+.sell { color: #f87171; }
+.config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.config-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b; }
+.config-key { color: #94a3b8; }
+.config-val { color: #f1f5f9; font-family: monospace; }
+.table-wrap { max-height: 480px; overflow-y: auto; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-buy { background: #064e3b; color: #6ee7b7; }
+.tag-sell { background: #7f1d1d; color: #fca5a5; }
+.upload-area { border: 2px dashed #475569; border-radius: 12px; padding: 48px; text-align: center; margin-bottom: 24px; cursor: pointer; transition: border-color 0.2s; }
+.upload-area:hover { border-color: #60a5fa; }
+.upload-area p { color: #94a3b8; font-size: 1rem; }
+.upload-area .icon { font-size: 2.5rem; margin-bottom: 12px; }
+#fileInput { display: none; }
+.hidden { display: none; }
+.result-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.result-card { background: #1e293b; border-radius: 12px; padding: 16px; border: 1px solid #334155; cursor: pointer; transition: border-color 0.2s; }
+.result-card:hover { border-color: #60a5fa; }
+.result-card h3 { font-size: 0.9rem; margin-bottom: 8px; color: #f1f5f9; }
+.result-card .meta { font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
+.result-card .stats-line { font-size: 0.8rem; color: #60a5fa; }
+@media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 Backtest Result Viewer</h1>
+  <p class="subtitle">Load and visualize backtest results from JSON files</p>
+
+  <!-- Upload area -->
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">📂</div>
+    <p>Click to select backtest result directory files</p>
+    <p style="font-size: 0.8rem; margin-top: 8px;">Select: statistics.json, trades.json, daily_results.json, config.json</p>
+    <input type="file" id="fileInput" multiple accept=".json">
+  </div>
+
+  <!-- Or select from demo -->
+  <div id="demoHint" style="margin-bottom:16px; color: #64748b; font-size: 0.85rem;">
+    💡 Tip: Run <code>python3 tmp/run_local_backtest.py ...</code> to generate result files, then load them here.
+  </div>
+
+  <!-- Report content (hidden until data loaded) -->
+  <div id="reportContent" class="hidden">
+    <h1 id="reportTitle"></h1>
+    <p class="subtitle" id="reportSubtitle"></p>
+
+    <div class="grid" id="statsCards"></div>
+
+    <div class="section">
+      <div class="section-title">Equity Curve & Drawdown</div>
+      <div class="chart-row">
+        <div class="chart-box full"><canvas id="equityChart"></canvas></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box full"><canvas id="drawdownChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Daily PnL Distribution</div>
+      <div class="chart-row">
+        <div class="chart-box"><canvas id="pnlBarChart"></canvas></div>
+        <div class="chart-box"><canvas id="pnlHistChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Trade Details</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Datetime</th><th>Side</th><th>Offset</th><th>Price</th><th>Volume</th></tr></thead>
+          <tbody id="tradesBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Configuration</div>
+      <div class="config-grid" id="configGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let STATS = null, TRADES = null, DAILY = null, CONFIG = null;
+let charts = {};
+
+function destroyCharts() {
+  Object.values(charts).forEach(c => { if (c) c.destroy(); });
+  charts = {};
+}
+
+function renderCards() {
+  const el = document.getElementById('statsCards');
+  el.innerHTML = '';
+  if (!STATS) return;
+  const cards = [
+    {label: 'Total Return', value: (STATS.total_return||0).toFixed(2) + '%', cls: (STATS.total_return||0) >= 0 ? 'positive' : 'negative'},
+    {label: 'Annual Return', value: (STATS.annual_return||0).toFixed(2) + '%', cls: (STATS.annual_return||0) >= 0 ? 'positive' : 'negative'},
+    {label: 'Max Drawdown', value: (STATS.max_ddpercent||0).toFixed(2) + '%', cls: 'negative'},
+    {label: 'Sharpe Ratio', value: (STATS.sharpe_ratio||0).toFixed(2), cls: 'neutral'},
+    {label: 'End Balance', value: Number(STATS.end_balance||0).toLocaleString('en', {minimumFractionDigits:2}), cls: 'neutral'},
+    {label: 'Total Trades', value: STATS.total_trade_count||0, cls: 'neutral'},
+    {label: 'Return/DD Ratio', value: (STATS.return_drawdown_ratio||0).toFixed(2), cls: (STATS.return_drawdown_ratio||0) >= 0 ? 'positive' : 'negative'},
+    {label: 'Profit Days / Loss Days', value: (STATS.profit_days||0) + ' / ' + (STATS.loss_days||0), cls: 'neutral'},
+  ];
+  cards.forEach(c => {
+    el.innerHTML += `<div class="card"><div class="card-label">${c.label}</div><div class="card-value ${c.cls}">${c.value}</div></div>`;
+  });
+}
+
+function makeChart(id, type, data, options) {
+  const ctx = document.getElementById(id).getContext('2d');
+  const c = new Chart(ctx, {type, data, options});
+  charts[id] = c;
+  return c;
+}
+
+function renderCharts() {
+  if (!DAILY || DAILY.length === 0) return;
+  const dates = DAILY.map(d => d.date);
+  const balance = DAILY.map(d => d.balance);
+  const drawdown = DAILY.map(d => d.ddpercent != null ? d.ddpercent : (d.drawdown && d.balance ? (d.drawdown / Math.abs(d.balance) * 100) : 0));
+  const netPnl = DAILY.map(d => d.net_pnl);
+
+  makeChart('equityChart', 'line', {
+    labels: dates,
+    datasets: [{label: 'Balance', data: balance, borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', fill: true, pointRadius: 0, tension: 0.3}]
+  }, {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x: {display: true, ticks: {maxTicksLimit: 10, color: '#64748b'}}, y: {ticks: {color: '#64748b'}}}}});
+
+  makeChart('drawdownChart', 'line', {
+    labels: dates,
+    datasets: [{label: 'Drawdown %', data: drawdown, borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.15)', fill: true, pointRadius: 0, tension: 0.3}]
+  }, {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x: {display: true, ticks: {maxTicksLimit: 10, color: '#64748b'}}, y: {ticks: {color: '#64748b'}}}}});
+
+  makeChart('pnlBarChart', 'bar', {
+    labels: dates,
+    datasets: [{label: 'Daily PnL', data: netPnl, backgroundColor: netPnl.map(v => v >= 0 ? '#34d399' : '#f87171'), pointRadius: 0}]
+  }, {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x: {display: true, ticks: {maxTicksLimit: 10, color: '#64748b'}}, y: {ticks: {color: '#64748b'}}}}});
+
+  // Histogram
+  const bins = 40;
+  const min = Math.min(...netPnl), max = Math.max(...netPnl);
+  const step = (max - min) / bins || 1;
+  const histLabels = [], histData = [];
+  for (let i = 0; i < bins; i++) {
+    histLabels.push((min + step * i).toFixed(0));
+    histData.push(0);
+  }
+  netPnl.forEach(v => {
+    let idx = Math.floor((v - min) / step);
+    if (idx >= bins) idx = bins - 1;
+    if (idx < 0) idx = 0;
+    histData[idx]++;
+  });
+  makeChart('pnlHistChart', 'bar', {
+    labels: histLabels,
+    datasets: [{label: 'Days', data: histData, backgroundColor: histLabels.map((_, i) => (min + step * i) >= 0 ? '#34d399' : '#f87171')}]
+  }, {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x: {display: true, ticks: {maxTicksLimit: 8, color: '#64748b'}}, y: {ticks: {color: '#64748b'}}}}});
+}
+
+function renderTrades() {
+  const tbody = document.getElementById('tradesBody');
+  tbody.innerHTML = '';
+  if (!TRADES) return;
+  TRADES.forEach((t, i) => {
+    const isBuy = t.direction === 'LONG' || t.direction === '\u591a';
+    const cls = isBuy ? 'buy' : 'sell';
+    const tagCls = isBuy ? 'tag-buy' : 'tag-sell';
+    const label = isBuy ? 'BUY' : 'SELL';
+    tbody.innerHTML += `<tr><td>${i+1}</td><td>${t.datetime}</td><td><span class="tag ${tagCls}">${label}</span></td><td>${t.offset}</td><td class="${cls}">${t.price}</td><td>${t.volume}</td></tr>`;
+  });
+}
+
+function renderConfig() {
+  const el = document.getElementById('configGrid');
+  el.innerHTML = '';
+  if (!CONFIG) return;
+  function flat(obj, prefix) {
+    const items = [];
+    for (const [k, v] of Object.entries(obj)) {
+      const key = prefix ? prefix + '.' + k : k;
+      if (v && typeof v === 'object' && !Array.isArray(v)) {
+        items.push(...flat(v, key));
+      } else {
+        items.push([key, v]);
+      }
+    }
+    return items;
+  }
+  flat(CONFIG, '').forEach(([k, v]) => {
+    el.innerHTML += `<div class="config-item"><span class="config-key">${k}</span><span class="config-val">${v}</span></div>`;
+  });
+}
+
+function showReport() {
+  document.getElementById('uploadArea').style.display = 'none';
+  document.getElementById('demoHint').style.display = 'none';
+  document.getElementById('reportContent').classList.remove('hidden');
+
+  const title = CONFIG
+    ? `${CONFIG.strategy || ''} | ${CONFIG.symbol || ''} | ${CONFIG.interval || ''}`
+    : 'Backtest Report';
+  document.getElementById('reportTitle').textContent = title;
+  document.getElementById('reportSubtitle').textContent = 'Loaded from JSON files at ' + new Date().toLocaleString();
+
+  destroyCharts();
+  renderCards();
+  renderCharts();
+  renderTrades();
+  renderConfig();
+}
+
+// File loading
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const files = e.target.files;
+  let loaded = 0;
+  const expected = 4;
+
+  function checkDone() {
+    loaded++;
+    if (loaded >= Math.min(files.length, expected) || (STATS && TRADES && DAILY && CONFIG)) {
+      showReport();
+    }
+  }
+
+  for (const file of files) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (file.name === 'statistics.json') { STATS = data; }
+        else if (file.name === 'trades.json') { TRADES = data; }
+        else if (file.name === 'daily_results.json') { DAILY = data; }
+        else if (file.name === 'config.json') { CONFIG = data; }
+        else {
+          // Try to auto-detect format by checking keys
+          if (data.total_return !== undefined || data.sharpe_ratio !== undefined) { STATS = data; }
+          else if (Array.isArray(data) && data.length > 0 && data[0].direction) { TRADES = data; }
+          else if (Array.isArray(data) && data.length > 0 && data[0].net_pnl !== undefined) { DAILY = data; }
+          else if (data.strategy || data.symbol || data.capital !== undefined) { CONFIG = data; }
+        }
+      } catch (err) {
+        console.error('Failed to parse', file.name, err);
+      }
+      checkDone();
+    };
+    reader.readAsText(file);
+  }
+});
+
+// Also support loading report.html directly (which has inline data)
+// Check if URL has ?dir= parameter for auto-loading
+const urlParams = new URLSearchParams(window.location.search);
+const dirParam = urlParams.get('dir');
+if (dirParam) {
+  // Try fetching JSON files from the specified directory
+  const base = dirParam;
+  Promise.all([
+    fetch(base + '/statistics.json').then(r => r.json()).catch(() => null),
+    fetch(base + '/trades.json').then(r => r.json()).catch(() => null),
+    fetch(base + '/daily_results.json').then(r => r.json()).catch(() => null),
+    fetch(base + '/config.json').then(r => r.json()).catch(() => null),
+  ]).then(([s, t, d, c]) => {
+    if (s) STATS = s;
+    if (t) TRADES = t;
+    if (d) DAILY = d;
+    if (c) CONFIG = c;
+    if (STATS || TRADES || DAILY || CONFIG) showReport();
+  });
+}
+</script>
+</body>
+</html>
