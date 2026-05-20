@@ -1,0 +1,72 @@
+# 美股多标的量化策略 阶段 ② 标的池配置
+# ---------------------------------------------------------------------------
+# 维护说明：
+# 1) 池规模硬上限 = 20，加载阶段 (pool_loader.py) 会做 schema 校验。
+# 2) 每条 symbol 必须包含：market / market_cap_bucket / sector 三个字段。
+# 3) 仅允许币种 USD；OTC、IPO < 1 年的 symbol 禁止入池。
+# 4) 池变更（增删 symbol）必须在 docs/project_operation_log.md 同步追加一条记录。
+# 5) 本文件不直接参与下单；过滤层（流动性 / 价格 / ATR% / 财报冻结）会在策略中
+#    每根 K 线动态剔除当日不合格 symbol，但不会反写本文件。
+# ---------------------------------------------------------------------------
+
+version: 1
+currency: USD
+max_pool_size: 20
+
+defaults:
+  market: US
+  liquidity_min_adv60_usd: 50000000   # 单标的 60 日 ADV 不低于 5000 万美元
+  price_min: 5.0
+  price_max: 800.0
+  atr_pct_max: 0.08                    # ATR% 上限（门控）
+  earnings_freeze_days: 2              # 财报前后冻结 ±2 个交易日
+
+symbols:
+  - symbol: AAPL
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: MSFT
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: NVDA
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: GOOGL
+    market: US
+    market_cap_bucket: mega
+    sector: Communication
+  - symbol: META
+    market: US
+    market_cap_bucket: mega
+    sector: Communication
+  - symbol: AMZN
+    market: US
+    market_cap_bucket: mega
+    sector: ConsumerDiscretionary
+  - symbol: TSLA
+    market: US
+    market_cap_bucket: large
+    sector: ConsumerDiscretionary
+  - symbol: AVGO
+    market: US
+    market_cap_bucket: large
+    sector: Technology
+  - symbol: AMD
+    market: US
+    market_cap_bucket: large
+    sector: Technology
+  - symbol: JPM
+    market: US
+    market_cap_bucket: large
+    sector: Financials
+  - symbol: XOM
+    market: US
+    market_cap_bucket: large
+    sector: Energy
+  - symbol: UNH
+    market: US
+    market_cap_bucket: large
+    sector: Healthcare

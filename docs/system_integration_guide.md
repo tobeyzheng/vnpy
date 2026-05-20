@@ -293,3 +293,53 @@ python scripts/run_portfolio_brief.py
 ```
 
 这些命令适合用来快速理解当前项目工件和阶段状态；其中 `run.sh` 默认只打印预览，不会直接执行底层脚本；真正的 SIM/live 入口应继续遵守显式确认和安全门禁。
+
+## 阶段② — 美股多标的量化（Phase 2，dry-run only）
+
+阶段② 计划名 `us_multi_symbol_quant_phase2`，是阶段① NVDA 单标的策略向 50 标的多标的量化的扩展骨架。**当前仓库分支严格 dry-run，不连接 OpenD、不下任何 SIM/REAL 单。**
+
+### 入口与核心文件
+
+- 策略骨架：[`phase2/strategy/us_multi_symbol_phase2_strategy.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy.py) — `LIVE_SUBMIT=False` 硬开关，4 因子 + 入场 5 项 + 出场优先级链 + N 日冷却
+- 池配置：[`phase2/strategy/config/pool_config.yaml`](/projects/vnpy/phase2/strategy/config/pool_config.yaml) + 加载器 [`phase2/strategy/pool_loader.py`](/projects/vnpy/phase2/strategy/pool_loader.py)（含 4 类过滤）
+- 组合风控 & 熔断：[`phase2/strategy/portfolio_risk.py`](/projects/vnpy/phase2/strategy/portfolio_risk.py) — 单标 4 条 + 组合 5 条；熔断状态 JSON 落盘到 `state/runs/<plan>/<run_id>/portfolio_state.json`，重启可恢复
+- 回测 runner：[`phase2/runners/run_phase2_backtest.py`](/projects/vnpy/phase2/runners/run_phase2_backtest.py)（默认 `--dry-run`）
+- 对账 runner：[`phase2/runners/run_phase2_reconcile.py`](/projects/vnpy/phase2/runners/run_phase2_reconcile.py)（5 项指标，`>20%` 失败退出码 5）
+- 性能基线 runner：[`phase2/runners/run_futu_perf_baseline.py`](/projects/vnpy/phase2/runners/run_futu_perf_baseline.py)（1/10/30 标的三档骨架）
+
+### 测试
+
+```bash
+python3 -m unittest \
+  phase2.strategy.tests.test_pool_loader \
+  phase2.strategy.tests.test_pool_filters \
+  phase2.strategy.tests.test_budget_allocator \
+  phase2.strategy.tests.test_risk_rules
+```
+
+阶段② 当前自动化测试 39/39 通过。
+
+### Dry-run 命令
+
+```bash
+# 回测 dry-run（产物：state/runs/us_multi_symbol_quant_phase2/<run_id>/run_report.json）
+python3 phase2/runners/run_phase2_backtest.py --run-id smoke_001 \
+  --mock-nav 1000000 --mock-cash 1000000
+
+# 对账 dry-run（产物：reconcile_report.json + robustness.png 占位）
+python3 phase2/runners/run_phase2_reconcile.py \
+  --actual <actual.json> --expected <expected.json> --run-id smoke_pass
+```
+
+两个 runner 默认 `--dry-run=True`；显式传 `--no-dry-run` 在本仓库分支会直接退出码 3，提示需新开独立 plan。
+
+### SIM/REAL 升级红线
+
+- **本计划禁止启动 SIM**：从 dry-run 升级到 Futu SIM 必须新开独立 plan（建议命名 `us_multi_symbol_quant_phase3_sim`）。
+- 升级需逐项打勾：[阶段② SIM 准入清单](/projects/vnpy/docs/research/us_multi_symbol_quant/05_sim_gate_checklist.md)（5 项打勾）。
+- REAL/live 受全局 `--live-submit` + `VNPY_LIVE_*` 环境变量 + 硬开关 + 人工审批 + 对账 + 风控 + 订单幂等共同约束，与阶段①一致。
+
+### 研究文档
+
+- 入口：[`docs/research/us_multi_symbol_quant/00_index.md`](/projects/vnpy/docs/research/us_multi_symbol_quant/00_index.md)
+- 01 指标调研 / 02 Futu 多标能力 / 03 策略方案 / 04 平台性能基线 / 05 SIM 准入清单

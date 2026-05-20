@@ -9,6 +9,8 @@
 1. [01 美股有效指标调研](./01_indicator_research.md) — 在多标的策略中可用的指标集合与短名单
 2. [02 Futu 多标的能力评估](./02_futu_multi_symbol_capability.md) — 基于 [futu_quant.md](/projects/vnpy/tmp/futu_quant.md) 的平台能力矩阵
 3. [03 多标的策略方案](./03_strategy_design.md) — 综合 01/02 的结论，给出可在 Futu 平台落地的策略设计
+4. [04 Futu 平台性能基线（阶段 ② 前置验证骨架）](./04_platform_performance_baseline.md) — 1/10/30 标的三档性能验证矩阵与降级判定规则
+5. [05 阶段② SIM 准入清单（5 项打勾）](./05_sim_gate_checklist.md) — 由 Dry-Run 升级到 Futu SIM 的红线与验收门槛；本仓库当前 plan 禁止直接启动 SIM
 
 ## 范围
 

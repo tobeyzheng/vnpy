@@ -217,3 +217,15 @@
 - **变更范围**: 策略移动止盈逻辑修正
 - **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
 - **影响摘要**: 修正了移动止盈的计算逻辑。1. 激活条件由“当前收益率”改为“最高收益率”，防止价格回落导致止盈条件失效；2. 回撤比例的计算基准由“最高价格”改为“最高收益率”，即 `(最高收益率 - 当前收益率) / 最高收益率`。
+
+## 2026-05-20
+- **变更范围**: 阶段② 美股多标的量化策略骨架（`us_multi_symbol_quant_phase2`，dry-run only）
+- **关键文件**:
+  - `phase2/strategy/us_multi_symbol_phase2_strategy.py`（4 因子 + 入场 5 项 + 出场链 + N 日冷却，`LIVE_SUBMIT=False` 硬开关）
+  - `phase2/strategy/pool_loader.py` + `phase2/strategy/config/pool_config.yaml`（schema 校验 + 4 类过滤）
+  - `phase2/strategy/portfolio_risk.py`（单标 4 条 + 组合 5 条；熔断状态 JSON 落盘可重启恢复）
+  - `phase2/runners/run_phase2_backtest.py` / `phase2/runners/run_phase2_reconcile.py` / `phase2/runners/run_futu_perf_baseline.py`（默认 `--dry-run`）
+  - `phase2/strategy/tests/`（39 unit tests，全部通过）
+  - `docs/research/us_multi_symbol_quant/04_platform_performance_baseline.md` / `05_sim_gate_checklist.md`
+  - `docs/system_integration_guide.md` 阶段② 入口章节
+- **影响摘要**: 新增阶段② 多标的量化骨架与配套 dry-run / 对账 / 性能基线 runner；不连接 OpenD、不下任何 SIM/REAL 单。从 dry-run 升级到 SIM 必须新开独立 plan 并按 `05_sim_gate_checklist.md` 5 项打勾。

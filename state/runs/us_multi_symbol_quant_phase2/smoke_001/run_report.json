@@ -1,0 +1,105 @@
+{
+  "plan": "us_multi_symbol_quant_phase2",
+  "run_id": "smoke_001",
+  "live_submit": false,
+  "dry_run": true,
+  "generated_at": "2026-05-20T14:55:27+00:00",
+  "pool": {
+    "size": 12,
+    "currency": "USD",
+    "symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "GOOGL",
+      "META",
+      "AMZN",
+      "TSLA",
+      "AVGO",
+      "AMD",
+      "JPM",
+      "XOM",
+      "UNH"
+    ]
+  },
+  "params": {
+    "pool_budget_pct": 0.8,
+    "max_concurrent_holdings": 5,
+    "position_pct": 0.1,
+    "cash_buffer_pct": 0.05,
+    "max_orders_per_day": 10,
+    "stop_loss_pct": 0.05,
+    "take_profit_pct": 0.1,
+    "trailing_drawdown_pct": 0.05,
+    "portfolio_dd_limit": 0.08,
+    "sector_cap": 0.4,
+    "daily_loss_limit_pct": 0.03,
+    "max_consecutive_loss_days": 5
+  },
+  "allocator_smoke": {
+    "mock_nav": 1000000.0,
+    "mock_cash": 1000000.0,
+    "candidates": [
+      {
+        "symbol": "AAPL",
+        "price": 100.0
+      },
+      {
+        "symbol": "MSFT",
+        "price": 125.0
+      },
+      {
+        "symbol": "NVDA",
+        "price": 150.0
+      },
+      {
+        "symbol": "GOOGL",
+        "price": 175.0
+      },
+      {
+        "symbol": "META",
+        "price": 200.0
+      }
+    ],
+    "orders_planned": [
+      {
+        "symbol": "AAPL",
+        "qty": 160,
+        "price": 100.0,
+        "notional": 16000.0
+      },
+      {
+        "symbol": "MSFT",
+        "qty": 128,
+        "price": 125.0,
+        "notional": 16000.0
+      },
+      {
+        "symbol": "NVDA",
+        "qty": 106,
+        "price": 150.0,
+        "notional": 15900.0
+      },
+      {
+        "symbol": "GOOGL",
+        "qty": 91,
+        "price": 175.0,
+        "notional": 15925.0
+      },
+      {
+        "symbol": "META",
+        "qty": 80,
+        "price": 200.0,
+        "notional": 16000.0
+      }
+    ],
+    "skipped": [],
+    "remaining_cash": 920175.0,
+    "slice_value": 16000.0
+  },
+  "breaker_state": {
+    "triggered": false,
+    "reason": "",
+    "triggered_at": ""
+  }
+}

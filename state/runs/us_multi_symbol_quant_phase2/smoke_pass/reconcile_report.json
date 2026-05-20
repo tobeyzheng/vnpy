@@ -1,0 +1,60 @@
+{
+  "plan": "us_multi_symbol_quant_phase2",
+  "run_id": "smoke_pass",
+  "dry_run": true,
+  "generated_at": "2026-05-20T14:55:41+00:00",
+  "actual_report": "/tmp/phase2_smoke/actual_pass.json",
+  "expected_report": "/tmp/phase2_smoke/expected.json",
+  "rows": [
+    {
+      "metric": "total_return",
+      "actual": 0.121,
+      "expected": 0.12,
+      "tolerance": {
+        "abs": 0.005
+      },
+      "passed": true
+    },
+    {
+      "metric": "max_drawdown",
+      "actual": 0.078,
+      "expected": 0.08,
+      "tolerance": {
+        "abs": 0.005
+      },
+      "passed": true
+    },
+    {
+      "metric": "sharpe",
+      "actual": 1.22,
+      "expected": 1.2,
+      "tolerance": {
+        "abs": 0.1
+      },
+      "passed": true
+    },
+    {
+      "metric": "annual_volatility",
+      "actual": 0.181,
+      "expected": 0.18,
+      "tolerance": {
+        "abs": 0.005
+      },
+      "passed": true
+    },
+    {
+      "metric": "win_rate",
+      "actual": 0.553,
+      "expected": 0.55,
+      "tolerance": {
+        "abs": 0.01
+      },
+      "passed": true
+    }
+  ],
+  "failed": 0,
+  "total": 5,
+  "fail_pct": 0.0,
+  "max_fail_pct": 0.2,
+  "verdict": "PASS"
+}
