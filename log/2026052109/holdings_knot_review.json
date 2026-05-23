@@ -1,0 +1,216 @@
+{
+  "generated_at": "2026-05-21T01:03:10Z",
+  "env": "REAL",
+  "position_count": 10,
+  "rows": [
+    {
+      "symbol": "NVDA.US",
+      "name": "英伟达",
+      "market": "us",
+      "weight_bucket": "small",
+      "pl_direction": "down",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "hold",
+      "knot_confidence": 0.72,
+      "knot_reason": "AI demand strong, but event risk is near",
+      "knot_risk_flags": [
+        "earnings_risk",
+        "high_valuation",
+        "crowded_ai_trade"
+      ]
+    },
+    {
+      "symbol": "MSFT.US",
+      "name": "微软",
+      "market": "us",
+      "weight_bucket": "small",
+      "pl_direction": "up",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "hold",
+      "knot_confidence": 0.7,
+      "knot_reason": "Quality intact, but AI capex weighs",
+      "knot_risk_flags": [
+        "capex_pressure",
+        "cloud_growth_watch"
+      ]
+    },
+    {
+      "symbol": "CRWV.US",
+      "name": "CoreWeave",
+      "market": "us",
+      "weight_bucket": "small",
+      "pl_direction": "up",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "trim",
+      "knot_confidence": 0.74,
+      "knot_reason": "Momentum weak and valuation still fragile",
+      "knot_risk_flags": [
+        "high_volatility",
+        "negative_earnings",
+        "ai_trade_crowding"
+      ]
+    },
+    {
+      "symbol": "09868.HK",
+      "name": "小鹏集团-W",
+      "market": "hong_kong",
+      "weight_bucket": "large",
+      "pl_direction": "up",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "hold",
+      "knot_confidence": 0.66,
+      "knot_reason": "Product catalyst helps, trend still mixed",
+      "knot_risk_flags": [
+        "ev_competition",
+        "loss_making",
+        "execution_risk"
+      ]
+    },
+    {
+      "symbol": "09618.HK",
+      "name": "京东集团-SW",
+      "market": "hong_kong",
+      "weight_bucket": "large",
+      "pl_direction": "up",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "hold",
+      "knot_confidence": 0.8,
+      "knot_reason": "Trend firm and fundamentals look stable",
+      "knot_risk_flags": [
+        "china_consumption",
+        "competition"
+      ]
+    },
+    {
+      "symbol": "02432.HK",
+      "name": "越疆",
+      "market": "hong_kong",
+      "weight_bucket": "small",
+      "pl_direction": "down",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "exit",
+      "knot_confidence": 0.77,
+      "knot_reason": "Downtrend persists with weak technicals",
+      "knot_risk_flags": [
+        "high_volatility",
+        "small_cap",
+        "execution_risk"
+      ]
+    },
+    {
+      "symbol": "01810.HK",
+      "name": "小米集团-W",
+      "market": "hong_kong",
+      "weight_bucket": "small",
+      "pl_direction": "down",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "hold",
+      "knot_confidence": 0.64,
+      "knot_reason": "Range-bound trend, catalysts offset pressure",
+      "knot_risk_flags": [
+        "ev_execution",
+        "valuation_risk",
+        "china_demand"
+      ]
+    },
+    {
+      "symbol": "01093.HK",
+      "name": "石药集团",
+      "market": "hong_kong",
+      "weight_bucket": "large",
+      "pl_direction": "down",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "trim",
+      "knot_confidence": 0.78,
+      "knot_reason": "Trend weak and sentiment remains soft",
+      "knot_risk_flags": [
+        "sector_weakness",
+        "southbound_outflow",
+        "short_selling"
+      ]
+    },
+    {
+      "symbol": "00772.HK",
+      "name": "阅文集团",
+      "market": "hong_kong",
+      "weight_bucket": "medium",
+      "pl_direction": "down",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "trim",
+      "knot_confidence": 0.76,
+      "knot_reason": "Trend weak despite selective dip buying",
+      "knot_risk_flags": [
+        "content_cycle",
+        "short_selling",
+        "consumer_softness"
+      ]
+    },
+    {
+      "symbol": "00700.HK",
+      "name": "腾讯控股",
+      "market": "hong_kong",
+      "weight_bucket": "large",
+      "pl_direction": "flat",
+      "raw_score": 0.5044,
+      "trend_score": 0.55,
+      "flow_score": 0.5075,
+      "event_score": 0.55,
+      "quality_score": 0.55,
+      "risk_level": "low",
+      "knot_action": "add",
+      "knot_confidence": 0.83,
+      "knot_reason": "Buybacks and AI narrative support rebound",
+      "knot_risk_flags": [
+        "china_tech_policy",
+        "market_volatility"
+      ]
+    }
+  ],
+  "knot_skipped": false,
+  "wrote_at": "2026-05-21T01:04:15Z"
+}

@@ -1,0 +1,32 @@
+{
+  "run_id": "smoke_2025_2026_v2",
+  "pool": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "META",
+    "AMZN",
+    "TSLA",
+    "AVGO",
+    "AMD",
+    "JPM",
+    "XOM",
+    "UNH"
+  ],
+  "start": "2025-05-21",
+  "end": "2026-05-20",
+  "trading_days": 251,
+  "init_cash": 1000000.0,
+  "final_nav": 1013361.6662,
+  "final_cash": 1013361.6662,
+  "total_return_pct": 1.3362,
+  "annualised_return_pct": 1.3415,
+  "max_drawdown_pct": 3.5868,
+  "trade_count": 23,
+  "win_count": 4,
+  "loss_count": 8,
+  "fee_rate": 0.0003,
+  "slippage": 0.0,
+  "annual_trading_days": 252
+}

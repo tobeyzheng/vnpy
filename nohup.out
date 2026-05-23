@@ -7445,3 +7445,450 @@ summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
 [knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 21:35:02 HKT us_now=2026-05-20 09:35:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
 [knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 21:40:02 HKT us_now=2026-05-20 09:40:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
 [knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 21:45:02 HKT us_now=2026-05-20 09:45:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 21:50:02 HKT us_now=2026-05-20 09:50:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 21:55:02 HKT us_now=2026-05-20 09:55:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:00:02 HKT us_now=2026-05-20 10:00:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:05:02 HKT us_now=2026-05-20 10:05:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:10:02 HKT us_now=2026-05-20 10:10:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:15:02 HKT us_now=2026-05-20 10:15:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:20:02 HKT us_now=2026-05-20 10:20:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:25:02 HKT us_now=2026-05-20 10:25:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:30:02 HKT us_now=2026-05-20 10:30:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:35:02 HKT us_now=2026-05-20 10:35:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:40:02 HKT us_now=2026-05-20 10:40:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:45:02 HKT us_now=2026-05-20 10:45:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:50:02 HKT us_now=2026-05-20 10:50:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 22:55:02 HKT us_now=2026-05-20 10:55:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:00:02 HKT us_now=2026-05-20 11:00:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:05:02 HKT us_now=2026-05-20 11:05:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:10:02 HKT us_now=2026-05-20 11:10:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:15:02 HKT us_now=2026-05-20 11:15:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:20:02 HKT us_now=2026-05-20 11:20:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:25:02 HKT us_now=2026-05-20 11:25:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:30:02 HKT us_now=2026-05-20 11:30:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:35:02 HKT us_now=2026-05-20 11:35:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:40:02 HKT us_now=2026-05-20 11:40:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:45:02 HKT us_now=2026-05-20 11:45:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:50:02 HKT us_now=2026-05-20 11:50:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-20 23:55:02 HKT us_now=2026-05-20 11:55:02 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-19, us_picks:2026-05-20
+[knot_research_bundle] due task=holdings_us_noon local_time=2026-05-20 12:00:02 EDT
+[knot_research_bundle] running Holdings review at US midday (run_holdings_knot_review.py) -> /projects/vnpy/log/2026052100/holdings_knot_review.json
+2026-05-21 00:00:03,030 | 2611690 | 139949220132672 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7462894920918105649(1) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f4876b62d90>
+2026-05-21 00:00:03,345 | 2611690 | 139947097618112 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+[Holdings Review @ 2026-05-20T16:00:03Z] env=REAL position_count=10 (amounts/quantities masked)
+  1. TSLA260520P405000.US TSLA 260520 405.00 weight=unknown pl=flat score=0.50 action=exit  conf=0.95
+      reason: Derivative exposure not allowed here
+      risk_flags: derivative,expiry_risk,policy_block
+  2. NVDA.US    英伟达                weight=small  pl=down score=0.50 action=hold  conf=0.71
+      reason: Uptrend intact despite near-term event risk
+      risk_flags: earnings_risk,ai_crowding,valuation_risk
+  3. MSFT.US    微软                 weight=small  pl=up   score=0.50 action=hold  conf=0.68
+      reason: Quality trend stable but momentum is mixed
+      risk_flags: momentum_softening,mega_cap_crowding
+  4. CRWV.US    CoreWeave          weight=small  pl=up   score=0.50 action=trim  conf=0.79
+      reason: Loss-making name with fading momentum
+      risk_flags: high_valuation,negative_earnings,volatility
+  5. 09868.HK   小鹏集团-W             weight=large  pl=down score=0.50 action=hold  conf=0.58
+      reason: Downtrend persists but oversold pressure is high
+      risk_flags: china_ev_competition,downtrend,execution_risk
+  6. 09618.HK   京东集团-SW            weight=large  pl=up   score=0.50 action=hold  conf=0.78
+      reason: Trend and relative strength remain favorable
+      risk_flags: china_consumer_risk,platform_regulation
+  7. 02432.HK   越疆                 weight=small  pl=down score=0.50 action=trim  conf=0.73
+      reason: Weak trend and elevated single-name risk
+      risk_flags: small_cap,volatility,profitability_risk
+  8. 01810.HK   小米集团-W             weight=small  pl=down score=0.50 action=hold  conf=0.62
+      reason: Support zone nearby but trend is still weak
+      risk_flags: china_demand_risk,competitive_pressure,downtrend
+  9. 01093.HK   石药集团               weight=large  pl=down score=0.50 action=trim  conf=0.82
+      reason: Persistent downtrend with weak momentum
+      risk_flags: sector_weakness,downtrend,earnings_visibility
+  10. 00772.HK   阅文集团               weight=medium pl=down score=0.50 action=trim  conf=0.80
+      reason: Weak relative trend with limited catalysts
+      risk_flags: downtrend,china_consumer_risk,sentiment_weak
+[holdings_knot_review] wrote /projects/vnpy/log/2026052100/holdings_knot_review.json
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:01:01 HKT us_now=2026-05-20 12:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:06:01 HKT us_now=2026-05-20 12:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:11:01 HKT us_now=2026-05-20 12:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:16:01 HKT us_now=2026-05-20 12:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:21:01 HKT us_now=2026-05-20 12:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:26:01 HKT us_now=2026-05-20 12:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:31:01 HKT us_now=2026-05-20 12:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:36:01 HKT us_now=2026-05-20 12:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:41:01 HKT us_now=2026-05-20 12:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:46:01 HKT us_now=2026-05-20 12:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:51:01 HKT us_now=2026-05-20 12:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 00:56:01 HKT us_now=2026-05-20 12:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:01:01 HKT us_now=2026-05-20 13:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:06:01 HKT us_now=2026-05-20 13:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:11:01 HKT us_now=2026-05-20 13:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:16:01 HKT us_now=2026-05-20 13:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:21:01 HKT us_now=2026-05-20 13:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:26:01 HKT us_now=2026-05-20 13:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:31:01 HKT us_now=2026-05-20 13:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:36:01 HKT us_now=2026-05-20 13:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:41:01 HKT us_now=2026-05-20 13:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:46:01 HKT us_now=2026-05-20 13:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:51:01 HKT us_now=2026-05-20 13:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 01:56:01 HKT us_now=2026-05-20 13:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:01:01 HKT us_now=2026-05-20 14:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:06:01 HKT us_now=2026-05-20 14:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:11:01 HKT us_now=2026-05-20 14:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:16:01 HKT us_now=2026-05-20 14:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:21:01 HKT us_now=2026-05-20 14:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:26:01 HKT us_now=2026-05-20 14:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:31:01 HKT us_now=2026-05-20 14:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:36:01 HKT us_now=2026-05-20 14:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:41:01 HKT us_now=2026-05-20 14:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:46:01 HKT us_now=2026-05-20 14:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:51:01 HKT us_now=2026-05-20 14:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 02:56:01 HKT us_now=2026-05-20 14:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:01:01 HKT us_now=2026-05-20 15:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:06:01 HKT us_now=2026-05-20 15:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:11:01 HKT us_now=2026-05-20 15:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:16:01 HKT us_now=2026-05-20 15:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:21:01 HKT us_now=2026-05-20 15:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:26:01 HKT us_now=2026-05-20 15:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:31:01 HKT us_now=2026-05-20 15:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:36:01 HKT us_now=2026-05-20 15:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:41:01 HKT us_now=2026-05-20 15:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:46:01 HKT us_now=2026-05-20 15:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:51:01 HKT us_now=2026-05-20 15:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 03:56:01 HKT us_now=2026-05-20 15:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:01:01 HKT us_now=2026-05-20 16:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:06:01 HKT us_now=2026-05-20 16:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:11:01 HKT us_now=2026-05-20 16:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:16:01 HKT us_now=2026-05-20 16:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:21:01 HKT us_now=2026-05-20 16:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:26:01 HKT us_now=2026-05-20 16:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:31:01 HKT us_now=2026-05-20 16:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:36:01 HKT us_now=2026-05-20 16:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:41:01 HKT us_now=2026-05-20 16:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:46:01 HKT us_now=2026-05-20 16:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:51:01 HKT us_now=2026-05-20 16:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 04:56:01 HKT us_now=2026-05-20 16:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:01:01 HKT us_now=2026-05-20 17:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:06:01 HKT us_now=2026-05-20 17:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:11:01 HKT us_now=2026-05-20 17:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:16:01 HKT us_now=2026-05-20 17:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:21:01 HKT us_now=2026-05-20 17:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:26:01 HKT us_now=2026-05-20 17:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:31:01 HKT us_now=2026-05-20 17:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:36:01 HKT us_now=2026-05-20 17:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:41:01 HKT us_now=2026-05-20 17:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:46:01 HKT us_now=2026-05-20 17:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:51:01 HKT us_now=2026-05-20 17:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 05:56:01 HKT us_now=2026-05-20 17:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:01:01 HKT us_now=2026-05-20 18:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:06:01 HKT us_now=2026-05-20 18:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:11:01 HKT us_now=2026-05-20 18:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:16:01 HKT us_now=2026-05-20 18:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:21:01 HKT us_now=2026-05-20 18:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:26:01 HKT us_now=2026-05-20 18:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:31:01 HKT us_now=2026-05-20 18:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:36:01 HKT us_now=2026-05-20 18:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:41:01 HKT us_now=2026-05-20 18:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:46:01 HKT us_now=2026-05-20 18:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:51:01 HKT us_now=2026-05-20 18:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 06:56:01 HKT us_now=2026-05-20 18:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:01:01 HKT us_now=2026-05-20 19:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:06:01 HKT us_now=2026-05-20 19:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:11:01 HKT us_now=2026-05-20 19:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:16:01 HKT us_now=2026-05-20 19:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:21:01 HKT us_now=2026-05-20 19:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:26:01 HKT us_now=2026-05-20 19:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:31:01 HKT us_now=2026-05-20 19:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:36:01 HKT us_now=2026-05-20 19:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:41:01 HKT us_now=2026-05-20 19:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:46:01 HKT us_now=2026-05-20 19:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:51:01 HKT us_now=2026-05-20 19:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 07:56:01 HKT us_now=2026-05-20 19:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:01:01 HKT us_now=2026-05-20 20:01:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:06:01 HKT us_now=2026-05-20 20:06:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:11:01 HKT us_now=2026-05-20 20:11:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:16:01 HKT us_now=2026-05-20 20:16:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:21:01 HKT us_now=2026-05-20 20:21:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:26:01 HKT us_now=2026-05-20 20:26:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:31:01 HKT us_now=2026-05-20 20:31:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:36:01 HKT us_now=2026-05-20 20:36:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:41:01 HKT us_now=2026-05-20 20:41:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:46:01 HKT us_now=2026-05-20 20:46:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:51:01 HKT us_now=2026-05-20 20:51:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 08:56:01 HKT us_now=2026-05-20 20:56:01 EDT executed=hk_picks:2026-05-20, holdings_hk:2026-05-20, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] due task=hk_picks local_time=2026-05-21 09:00:01 HKT
+[knot_research_bundle] running HK 4-dimension picks (run_knot_4dim_picks_hk.py) -> /projects/vnpy/log/2026052109/knot_4dim_hk.json
+[HK 4-Dim Picks @ 2026-05-21T01:03:09Z]
+-- Technical -------------------------------
+  1. 00981.HK   Semiconductor Manu score=0.74  trend=0.84 flow=0.55 event=0.84 quality=0.84  risk=low
+      rationale: The stock is trading well above its 5/10/20-day averages and is pressing the upp
+      risk:      A failed breakout after a sharp run could trigger fast profit-taking in the semi
+      action:    Monitor whether price can hold above the 20-day average and re-accelerate on vol
+  2. 09988.HK   Alibaba Group Hold score=0.77  trend=0.88 flow=0.56 event=0.88 quality=0.88  risk=low
+      rationale: Price is above key short- and medium-term averages with a positive MACD and a cl
+      risk:      Momentum could fade quickly if large-cap internet sentiment weakens after the re
+      action:    Track follow-through above the recent breakout zone and confirm with continued M
+  3. 09999.HK   NetEase            score=0.72  trend=0.82 flow=0.55 event=0.82 quality=0.82  risk=low
+      rationale: The stock is above its 5/10/20/30/60-day averages and has a positive MACD, showi
+      risk:      RSI is elevated, so an overbought pullback is a realistic near-term risk.
+      action:    Watch for a shallow consolidation rather than a deep reversal before adding conv
+-- Fundamental -----------------------------
+  1. 00388.HK   Hong Kong Exchange score=0.79  trend=0.91 flow=0.56 event=0.91 quality=0.91  risk=low
+      rationale: Recent results show strong revenue and profit growth with very high ROE, making 
+      risk:      A slowdown in market turnover or weaker listing activity would quickly pressure 
+      action:    Follow cash-market turnover, derivatives activity and estimate revisions after e
+  2. 00941.HK   China Mobile       score=0.75  trend=0.86 flow=0.55 event=0.86 quality=0.86  risk=low
+      rationale: The company combines resilient revenue growth, stable profitability and relative
+      risk:      Sector rerating can stall if enterprise and data-related growth fails to offset 
+      action:    Track ARPU, cloud and enterprise revenue mix, and any change in capital return e
+  3. 02318.HK   Ping An Insurance  score=0.69  trend=0.78 flow=0.54 event=0.78 quality=0.78  risk=low
+      rationale: The group still offers scale, diversified earnings streams and double-digit full
+      risk:      Insurance and financial holdings remain sensitive to rate moves, credit conditio
+      action:    Focus next on embedded value trends, life new business metrics and asset-side ri
+-- Capital Flow ----------------------------
+  1. 00700.HK   Tencent Holdings   score=0.78  trend=0.90 flow=0.56 event=0.90 quality=0.90  risk=low
+      rationale: Southbound holdings increased on both the day and the quarter, signaling persist
+      risk:      Crowded ownership can reverse if tech risk appetite cools or policy headlines re
+      action:    Keep tracking daily southbound share changes to see if accumulation persists thr
+  2. 01211.HK   BYD Company        score=0.73  trend=0.83 flow=0.55 event=0.83 quality=0.83  risk=low
+      rationale: Southbound shareholding rose daily and materially over the quarter, pointing to 
+      risk:      Auto price competition and margin pressure could offset the positive flow signal
+      action:    Compare future southbound inflows with monthly sales data and margin expectation
+  3. 01810.HK   Xiaomi Corporation score=0.66  trend=0.74 flow=0.54 event=0.74 quality=0.74  risk=low
+      rationale: Despite a negative daily southbound swing, the quarterly holding increase is ver
+      risk:      The latest daily outflow may signal short-term exhaustion after an extended accu
+      action:    Watch whether southbound selling extends for several sessions or quickly reverse
+-- Event Driven ----------------------------
+  1. 09888.HK   Baidu, Inc.        score=0.70  trend=0.82 flow=0.55 event=0.82 quality=0.82  risk=medium
+      rationale: Recent earnings commentary highlighted faster cloud growth and a potential secon
+      risk:      AI monetization may take longer than expected and sentiment can stay skeptical a
+      action:    Follow management commentary on cloud growth quality, AI product traction and ma
+  2. 03690.HK   Meituan            score=0.70  trend=0.85 flow=0.55 event=0.85 quality=0.85  risk=high
+      rationale: An upcoming quarterly result and fresh expansion news in grocery and AI make the
+      risk:      High short interest and any earnings miss could amplify downside volatility arou
+      action:    Prepare around the results date and focus on core local commerce margins, instan
+  3. 09999.HK   NetEase            score=0.68  trend=0.77 flow=0.54 event=0.77 quality=0.77  risk=low
+      rationale: Recent product announcements and game pipeline headlines create an event-driven 
+      risk:      The market may interpret a lighter product slate as weaker medium-term growth vi
+      action:    Track player reception, launch timing and whether new title momentum offsets con
+summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
+[knot_4dim_hk] wrote /projects/vnpy/log/2026052109/knot_4dim_hk.json
+[knot_research_bundle] due task=holdings_hk local_time=2026-05-21 09:00:01 HKT
+[knot_research_bundle] running Holdings review before HK open (run_holdings_knot_review.py) -> /projects/vnpy/log/2026052109/holdings_knot_review.json
+2026-05-21 09:03:10,309 | 2996189 | 139936327284544 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7463031601872855427(1) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f45763ced90>
+2026-05-21 09:03:10,525 | 2996189 | 139934204769984 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+[Holdings Review @ 2026-05-21T01:03:10Z] env=REAL position_count=10 (amounts/quantities masked)
+  1. NVDA.US    英伟达                weight=small  pl=down score=0.50 action=hold  conf=0.72
+      reason: AI demand strong, but event risk is near
+      risk_flags: earnings_risk,high_valuation,crowded_ai_trade
+  2. MSFT.US    微软                 weight=small  pl=up   score=0.50 action=hold  conf=0.70
+      reason: Quality intact, but AI capex weighs
+      risk_flags: capex_pressure,cloud_growth_watch
+  3. CRWV.US    CoreWeave          weight=small  pl=up   score=0.50 action=trim  conf=0.74
+      reason: Momentum weak and valuation still fragile
+      risk_flags: high_volatility,negative_earnings,ai_trade_crowding
+  4. 09868.HK   小鹏集团-W             weight=large  pl=up   score=0.50 action=hold  conf=0.66
+      reason: Product catalyst helps, trend still mixed
+      risk_flags: ev_competition,loss_making,execution_risk
+  5. 09618.HK   京东集团-SW            weight=large  pl=up   score=0.50 action=hold  conf=0.80
+      reason: Trend firm and fundamentals look stable
+      risk_flags: china_consumption,competition
+  6. 02432.HK   越疆                 weight=small  pl=down score=0.50 action=exit  conf=0.77
+      reason: Downtrend persists with weak technicals
+      risk_flags: high_volatility,small_cap,execution_risk
+  7. 01810.HK   小米集团-W             weight=small  pl=down score=0.50 action=hold  conf=0.64
+      reason: Range-bound trend, catalysts offset pressure
+      risk_flags: ev_execution,valuation_risk,china_demand
+  8. 01093.HK   石药集团               weight=large  pl=down score=0.50 action=trim  conf=0.78
+      reason: Trend weak and sentiment remains soft
+      risk_flags: sector_weakness,southbound_outflow,short_selling
+  9. 00772.HK   阅文集团               weight=medium pl=down score=0.50 action=trim  conf=0.76
+      reason: Trend weak despite selective dip buying
+      risk_flags: content_cycle,short_selling,consumer_softness
+  10. 00700.HK   腾讯控股               weight=large  pl=flat score=0.50 action=add   conf=0.83
+      reason: Buybacks and AI narrative support rebound
+      risk_flags: china_tech_policy,market_volatility
+[holdings_knot_review] wrote /projects/vnpy/log/2026052109/holdings_knot_review.json
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:04:16 HKT us_now=2026-05-20 21:04:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:09:16 HKT us_now=2026-05-20 21:09:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:14:16 HKT us_now=2026-05-20 21:14:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:19:16 HKT us_now=2026-05-20 21:19:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:24:16 HKT us_now=2026-05-20 21:24:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:29:16 HKT us_now=2026-05-20 21:29:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:34:16 HKT us_now=2026-05-20 21:34:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:39:16 HKT us_now=2026-05-20 21:39:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:44:16 HKT us_now=2026-05-20 21:44:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:49:16 HKT us_now=2026-05-20 21:49:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:54:16 HKT us_now=2026-05-20 21:54:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 09:59:16 HKT us_now=2026-05-20 21:59:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:04:16 HKT us_now=2026-05-20 22:04:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:09:16 HKT us_now=2026-05-20 22:09:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:14:16 HKT us_now=2026-05-20 22:14:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:19:16 HKT us_now=2026-05-20 22:19:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:24:16 HKT us_now=2026-05-20 22:24:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:29:16 HKT us_now=2026-05-20 22:29:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:34:16 HKT us_now=2026-05-20 22:34:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:39:16 HKT us_now=2026-05-20 22:39:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:44:16 HKT us_now=2026-05-20 22:44:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:49:16 HKT us_now=2026-05-20 22:49:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:54:16 HKT us_now=2026-05-20 22:54:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 10:59:16 HKT us_now=2026-05-20 22:59:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:04:16 HKT us_now=2026-05-20 23:04:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:09:16 HKT us_now=2026-05-20 23:09:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:14:16 HKT us_now=2026-05-20 23:14:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:19:16 HKT us_now=2026-05-20 23:19:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:24:16 HKT us_now=2026-05-20 23:24:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:29:16 HKT us_now=2026-05-20 23:29:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:34:16 HKT us_now=2026-05-20 23:34:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:39:16 HKT us_now=2026-05-20 23:39:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:44:16 HKT us_now=2026-05-20 23:44:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:49:16 HKT us_now=2026-05-20 23:49:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:54:16 HKT us_now=2026-05-20 23:54:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 11:59:16 HKT us_now=2026-05-20 23:59:16 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-20, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] due task=holdings_hk_noon local_time=2026-05-21 12:00:16 HKT
+[knot_research_bundle] running Holdings review at HK midday (run_holdings_knot_review.py) -> /projects/vnpy/log/2026052112/holdings_knot_review.json
+2026-05-21 12:00:16,626 | 3130724 | 139639019661120 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7463076171877381935(1) context=<futu.trade.open_trade_context.OpenSecTradeContext object at 0x7f003d51b150>
+2026-05-21 12:00:16,862 | 3130724 | 139636897150656 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+[Holdings Review @ 2026-05-21T04:00:16Z] env=REAL position_count=10 (amounts/quantities masked)
+  1. NVDA.US    英伟达                weight=small  pl=down score=0.50 action=add   conf=0.72
+      reason: AI leader with positive medium-term trend.
+      risk_flags: ai_cycle,rich_valuation,us_megacap
+  2. MSFT.US    微软                 weight=small  pl=up   score=0.50 action=hold  conf=0.68
+      reason: Quality trend is stable; no urgent rebalance.
+      risk_flags: us_megacap,ai_spend
+  3. CRWV.US    CoreWeave          weight=small  pl=up   score=0.50 action=trim  conf=0.79
+      reason: Momentum broke and volatility remains extreme.
+      risk_flags: unprofitable,high_beta,valuation_risk
+  4. 09868.HK   小鹏集团-W             weight=large  pl=up   score=0.50 action=trim  conf=0.72
+      reason: Large weight with weak medium-term trend.
+      risk_flags: large_weight,ev_competition,unprofitable
+  5. 09618.HK   京东集团-SW            weight=small  pl=up   score=0.50 action=add   conf=0.66
+      reason: Trend and valuation support incremental adds.
+      risk_flags: china_consumer
+  6. 02432.HK   越疆                 weight=small  pl=up   score=0.50 action=hold  conf=0.57
+      reason: Short-term bounce, but base is still fragile.
+      risk_flags: unprofitable,high_beta,small_cap
+  7. 01810.HK   小米集团-W             weight=small  pl=down score=0.50 action=hold  conf=0.55
+      reason: Oversold quality name; avoid chasing weakness.
+      risk_flags: china_hardware,price_momentum_weak
+  8. 01093.HK   石药集团               weight=large  pl=down score=0.50 action=trim  conf=0.82
+      reason: Persistent downtrend argues for de-risking.
+      risk_flags: large_weight,price_momentum_weak,pharma_policy
+  9. 00772.HK   阅文集团               weight=medium pl=down score=0.50 action=exit  conf=0.83
+      reason: Trend remains broken near the lows.
+      risk_flags: near_52w_low,china_content,price_momentum_weak
+  10. 00700.HK   腾讯控股               weight=large  pl=flat score=0.50 action=hold  conf=0.64
+      reason: Core asset, but trend is still soft.
+      risk_flags: large_weight,china_tech,price_momentum_weak
+[holdings_knot_review] wrote /projects/vnpy/log/2026052112/holdings_knot_review.json
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:04:27 HKT us_now=2026-05-21 00:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:09:27 HKT us_now=2026-05-21 00:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:14:27 HKT us_now=2026-05-21 00:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:19:27 HKT us_now=2026-05-21 00:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:24:27 HKT us_now=2026-05-21 00:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:29:27 HKT us_now=2026-05-21 00:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:34:27 HKT us_now=2026-05-21 00:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:39:27 HKT us_now=2026-05-21 00:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:44:27 HKT us_now=2026-05-21 00:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:49:27 HKT us_now=2026-05-21 00:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:54:27 HKT us_now=2026-05-21 00:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 12:59:27 HKT us_now=2026-05-21 00:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:04:27 HKT us_now=2026-05-21 01:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:09:27 HKT us_now=2026-05-21 01:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:14:27 HKT us_now=2026-05-21 01:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:19:27 HKT us_now=2026-05-21 01:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:24:27 HKT us_now=2026-05-21 01:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:29:27 HKT us_now=2026-05-21 01:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:34:27 HKT us_now=2026-05-21 01:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:39:27 HKT us_now=2026-05-21 01:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:44:27 HKT us_now=2026-05-21 01:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:49:27 HKT us_now=2026-05-21 01:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:54:27 HKT us_now=2026-05-21 01:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 13:59:27 HKT us_now=2026-05-21 01:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:04:27 HKT us_now=2026-05-21 02:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:09:27 HKT us_now=2026-05-21 02:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:14:27 HKT us_now=2026-05-21 02:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:19:27 HKT us_now=2026-05-21 02:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:24:27 HKT us_now=2026-05-21 02:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:29:27 HKT us_now=2026-05-21 02:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:34:27 HKT us_now=2026-05-21 02:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:39:27 HKT us_now=2026-05-21 02:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:44:27 HKT us_now=2026-05-21 02:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:49:27 HKT us_now=2026-05-21 02:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:54:27 HKT us_now=2026-05-21 02:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 14:59:27 HKT us_now=2026-05-21 02:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:04:27 HKT us_now=2026-05-21 03:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:09:27 HKT us_now=2026-05-21 03:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:14:27 HKT us_now=2026-05-21 03:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:19:27 HKT us_now=2026-05-21 03:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:24:27 HKT us_now=2026-05-21 03:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:29:27 HKT us_now=2026-05-21 03:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:34:27 HKT us_now=2026-05-21 03:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:39:27 HKT us_now=2026-05-21 03:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:44:27 HKT us_now=2026-05-21 03:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:49:27 HKT us_now=2026-05-21 03:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:54:27 HKT us_now=2026-05-21 03:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 15:59:27 HKT us_now=2026-05-21 03:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:04:27 HKT us_now=2026-05-21 04:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:09:27 HKT us_now=2026-05-21 04:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:14:27 HKT us_now=2026-05-21 04:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:19:27 HKT us_now=2026-05-21 04:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:24:27 HKT us_now=2026-05-21 04:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:29:27 HKT us_now=2026-05-21 04:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:34:27 HKT us_now=2026-05-21 04:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:39:27 HKT us_now=2026-05-21 04:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:44:27 HKT us_now=2026-05-21 04:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:49:27 HKT us_now=2026-05-21 04:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:54:27 HKT us_now=2026-05-21 04:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 16:59:27 HKT us_now=2026-05-21 04:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:04:27 HKT us_now=2026-05-21 05:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:09:27 HKT us_now=2026-05-21 05:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:14:27 HKT us_now=2026-05-21 05:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:19:27 HKT us_now=2026-05-21 05:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:24:27 HKT us_now=2026-05-21 05:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:29:27 HKT us_now=2026-05-21 05:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:34:27 HKT us_now=2026-05-21 05:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:39:27 HKT us_now=2026-05-21 05:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:44:27 HKT us_now=2026-05-21 05:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:49:27 HKT us_now=2026-05-21 05:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:54:27 HKT us_now=2026-05-21 05:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 17:59:27 HKT us_now=2026-05-21 05:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:04:27 HKT us_now=2026-05-21 06:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:09:27 HKT us_now=2026-05-21 06:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:14:27 HKT us_now=2026-05-21 06:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:19:27 HKT us_now=2026-05-21 06:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:24:27 HKT us_now=2026-05-21 06:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:29:27 HKT us_now=2026-05-21 06:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:34:27 HKT us_now=2026-05-21 06:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:39:27 HKT us_now=2026-05-21 06:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:44:27 HKT us_now=2026-05-21 06:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:49:27 HKT us_now=2026-05-21 06:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:54:27 HKT us_now=2026-05-21 06:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 18:59:27 HKT us_now=2026-05-21 06:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:04:27 HKT us_now=2026-05-21 07:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:09:27 HKT us_now=2026-05-21 07:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:14:27 HKT us_now=2026-05-21 07:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] stopped because run_knot_4dim_picks_us.py exited with 2
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:19:27 HKT us_now=2026-05-21 07:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:24:27 HKT us_now=2026-05-21 07:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:29:27 HKT us_now=2026-05-21 07:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:34:27 HKT us_now=2026-05-21 07:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:39:27 HKT us_now=2026-05-21 07:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:44:27 HKT us_now=2026-05-21 07:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:49:27 HKT us_now=2026-05-21 07:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:54:27 HKT us_now=2026-05-21 07:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 19:59:27 HKT us_now=2026-05-21 07:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:04:27 HKT us_now=2026-05-21 08:04:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:09:27 HKT us_now=2026-05-21 08:09:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:14:27 HKT us_now=2026-05-21 08:14:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:19:27 HKT us_now=2026-05-21 08:19:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:24:27 HKT us_now=2026-05-21 08:24:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:29:27 HKT us_now=2026-05-21 08:29:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:34:27 HKT us_now=2026-05-21 08:34:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:39:27 HKT us_now=2026-05-21 08:39:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:44:27 HKT us_now=2026-05-21 08:44:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:49:27 HKT us_now=2026-05-21 08:49:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:54:27 HKT us_now=2026-05-21 08:54:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] scheduler heartbeat hk_now=2026-05-21 20:59:27 HKT us_now=2026-05-21 08:59:27 EDT executed=hk_picks:2026-05-21, holdings_hk:2026-05-21, holdings_hk_noon:2026-05-21, holdings_us:2026-05-20, holdings_us_noon:2026-05-20, us_picks:2026-05-20
+[knot_research_bundle] due task=us_picks local_time=2026-05-21 09:00:27 EDT
+[knot_research_bundle] running US 4-dimension picks (run_knot_4dim_picks_us.py) -> /projects/vnpy/log/2026052121/knot_4dim_us.json
+[knot_4dim_us] error: Knot call failed: LLM request failed: HTTP 400: {"code":400,"msg":"GenerateAguiClientRequest error: 当前工作区出现异常, 请检查是否可用"}

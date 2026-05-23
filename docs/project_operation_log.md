@@ -9,6 +9,14 @@
 
 ### 历史记录
 
+- **2026-05-21**：阶段② 多标本地回测引擎引入 `force_live_submit` 开关 + 12 标 1 年 smoke 完成（plan `phase2_multi_backtest`，T12/T13）
+  - **代码文件**：[phase2/backtest/portfolio_backtest_engine.py](/projects/vnpy/phase2/backtest/portfolio_backtest_engine.py)、[phase2/runners/run_phase2_multi_backtest.py](/projects/vnpy/phase2/runners/run_phase2_multi_backtest.py)
+  - **测试文件**：[phase2/strategy/tests/test_portfolio_backtest_engine.py](/projects/vnpy/phase2/strategy/tests/test_portfolio_backtest_engine.py)（新增 `LiveSubmitOverrideTests` 2 项，对照默认翻转能下单 vs `--respect-live-submit` 零下单）
+  - **流程文件**：[.codebuddy/task_list/phase2_multi_backtest.md](/projects/vnpy/.codebuddy/task_list/phase2_multi_backtest.md)（T12/T13 状态更新 + smoke 摘要落地）
+  - **文档文件**：[docs/system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md) 阶段② 多标本地回测小节同步 `force_live_submit` 行为与 `--respect-live-submit` 用法
+  - **运行产物**：[state/runs/phase2_multi_backtest/smoke_2025_2026_v2/](/projects/vnpy/state/runs/phase2_multi_backtest/smoke_2025_2026_v2/) — 12 标 / 251 个交易日 / trade_count=23 / total_return +1.34% / max_drawdown 3.59% / 末日全部 0 仓
+  - **影响摘要**：futumd 策略 `phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py` 零改动；引擎在 `strategy.initialize()` 之后默认翻转 `strategy.LIVE_SUBMIT=True`，使本地回测能观测到 `place_limit` intent。该翻转**仅作用于本地回测语境**：adapter 的 `place_limit` 永远只入内存队列、不连 OpenD/Futu/任何远端服务、不发任何 SIM/REAL 订单；策略源码上传 Futu 平台后 `LIVE_SUBMIT` 仍以平台拿到的源码（False）为准。CLI 新增 `--respect-live-submit` 开关用于回放 dry-run alert 分支。phase2 自动化测试 73 → 75 全过。
+
 - **2026-05-20**：阶段② 多标本地回测落地（plan `phase2_multi_backtest`）
   - **代码文件**：[phase2/backtest/__init__.py](/projects/vnpy/phase2/backtest/__init__.py)、[phase2/backtest/futumd_strategy_adapter.py](/projects/vnpy/phase2/backtest/futumd_strategy_adapter.py)、[phase2/backtest/portfolio_backtest_engine.py](/projects/vnpy/phase2/backtest/portfolio_backtest_engine.py)、[phase2/runners/run_phase2_multi_backtest.py](/projects/vnpy/phase2/runners/run_phase2_multi_backtest.py)
   - **测试文件**：[phase2/strategy/tests/test_futumd_strategy_adapter.py](/projects/vnpy/phase2/strategy/tests/test_futumd_strategy_adapter.py)（17 项）、[phase2/strategy/tests/test_portfolio_backtest_engine.py](/projects/vnpy/phase2/strategy/tests/test_portfolio_backtest_engine.py)（6 项）
@@ -34,7 +42,7 @@
 - **2026-05-12**：Knot research bundle 新增按工作日 + 市场时区调度，并将持仓 review 默认锁定到 `REAL` 只读环境
   - **代码文件**：[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[run_holdings_knot_review.py](/projects/vnpy/scripts/quant_workflow/run_holdings_knot_review.py)、[test_knot_research_bundle.py](/projects/vnpy/tests/test_knot_research_bundle.py)、[test_run_holdings_knot_review.py](/projects/vnpy/tests/test_run_holdings_knot_review.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：`run_knot_research_bundle.py` 在保留原先顺序立即执行模式的同时，新增 `--schedule-workdays` 常驻调度能力，按 `Asia/Hong_Kong` 与 `America/New_York` 的工作日 `09:00` 分别触发 HK / US 四维选股，并各执行 1 次持仓 review；新增轮询、心跳和补跑窗口参数以降低“静默等待像假死”的排障成本。`run_holdings_knot_review.py` 新增 `--trd-env REAL|SIMULATE` 与 `--live-strict` 参数，bundle 默认把持仓审阅锁定到 `REAL` 环境的只读账户查询，但仍不提交任何订单或改写交易状态。
+  - **影响摘要**：`run_knot_research_bundle.py` 在保留原先顺序立即执行模式的同时，新增 `--schedule-workdays` 常驻调度能力，按 `Asia/Hong_Kong` 与 `America/New_York` 的工作日 `09:00` 分别触发 HK / US 四维选股，并各执行 1 次持仓 review；新增轮询、心跳和补跑窗口参数以降低"静默等待像假死"的排障成本。`run_holdings_knot_review.py` 新增 `--trd-env REAL|SIMULATE` 与 `--live-strict` 参数，bundle 默认把持仓审阅锁定到 `REAL` 环境的只读账户查询，但仍不提交任何订单或改写交易状态。
 
 - **2026-05-12**：Knot 研究类入口改为按小时写入 `log/`，并新增顺序批量执行入口
   - **代码文件**：[knot_pick_helpers.py](/projects/vnpy/services/strategy/knot_pick_helpers.py)、[run_knot_4dim_picks_hk.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_hk.py)、[run_knot_4dim_picks_us.py](/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py)、[run_holdings_knot_review.py](/projects/vnpy/scripts/quant_workflow/run_holdings_knot_review.py)、[run_knot_research_bundle.py](/projects/vnpy/scripts/quant_workflow/run_knot_research_bundle.py)、[test_knot_pick_helpers.py](/projects/vnpy/tests/test_knot_pick_helpers.py)
@@ -73,7 +81,7 @@
 - **2026-05-11**：为 classic intraday runner 增加分钟任务关键点排障日志
   - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：分钟级 runner 现在会在 live `on_bar` 的入口/出口输出 `intraday debug checkpoint`，并在主循环内每 60 秒输出 `intraday runtime heartbeat`，补充 `bars_seen`、`last_bar_time`、`seconds_since_last_bar`、`bars_cached`、审批/拦截累计值等关键上下文；这样当任务重启后再次出现“进程存活但日志静默”时，可以更快区分是行情 bar 根本没进策略，还是策略内部某个早退/决策阶段没有继续推进。
+  - **影响摘要**：分钟级 runner 现在会在 live `on_bar` 的入口/出口输出 `intraday debug checkpoint`，并在主循环内每 60 秒输出 `intraday runtime heartbeat`，补充 `bars_seen`、`last_bar_time`、`seconds_since_last_bar`、`bars_cached`、审批/拦截累计值等关键上下文；这样当任务重启后再次出现"进程存活但日志静默"时，可以更快区分是行情 bar 根本没进策略，还是策略内部某个早退/决策阶段没有继续推进。
 
 - **2026-05-11**：修复 classic intraday runner 的分钟决策点日志边界判断
   - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[test_intraday_loop_pipeline.py](/projects/vnpy/tests/test_intraday_loop_pipeline.py)
@@ -93,7 +101,7 @@
 - **2026-05-11**：增强 classic intraday/daily runner 的运行可观测性
   - **代码文件**：[run_intraday_loop.py](/projects/vnpy/scripts/classic_multifactor/run_intraday_loop.py)、[run_daily_rebalance.py](/projects/vnpy/scripts/classic_multifactor/run_daily_rebalance.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：分钟级 runner 现在会为每根进入策略的 bar 输出 `intraday bar result` 摘要日志，覆盖 `approved_dry_run`、`approved_or_submitted`、`blocked`、`no_action` 等本轮结果，即使没有实际下单也可追踪策略动作；日级 runner 在等待 `rebalance_time` 期间会先输出启动等待日志，并每 10 分钟输出一次心跳日志，降低“进程活着但日志空白”带来的排障歧义。
+  - **影响摘要**：分钟级 runner 现在会为每根进入策略的 bar 输出 `intraday bar result` 摘要日志，覆盖 `approved_dry_run`、`approved_or_submitted`、`blocked`、`no_action` 等本轮结果，即使没有实际下单也可追踪策略动作；日级 runner 在等待 `rebalance_time` 期间会先输出启动等待日志，并每 10 分钟输出一次心跳日志，降低"进程活着但日志空白"带来的排障歧义。
 
 - **2026-05-11**：补齐 dual-run / preflight 工具对新执行环境目录布局的兼容，并同步修正文档说明
   - **代码文件**：[diff_dual_run.py](/projects/vnpy/scripts/diff_dual_run.py)、[dual_run_preflight.py](/projects/vnpy/scripts/dual_run_preflight.py)、[execution_pipeline.py](/projects/vnpy/scripts/classic_multifactor/execution_pipeline.py)、[oms_recorder.py](/projects/vnpy/services/trade_state/oms_recorder.py)、[test_dual_run_layout_compat.py](/projects/vnpy/tests/test_dual_run_layout_compat.py)
@@ -113,7 +121,7 @@
 - **2026-05-11**：为 `quant_workflow` 的 `backtest` 阶段补齐显式可执行的真实回测与自动扫参模式
   - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[run_quant_workflow.py](/projects/vnpy/scripts/quant_workflow/run_quant_workflow.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)、[quant-workflow-refactor.md](/projects/vnpy/.codebuddy/task_list/quant-workflow-refactor.md)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：`quant_workflow` 的 `backtest` 阶段默认仍支持复用本地 `vnpy_cta_backtest_report.json` / `*sweep*.json`，但在显式开启 `auto_execute_backtests` 时，会改为为 observation target 自动拉取或复用历史 bars、执行真实 vn.py CTA backtest、执行 `bf|ga` 参数搜索，并把 per-symbol 报告写回 `state/runs/classic_multifactor/`；同时 `healthcheck` 会在该模式下允许“缺本地 backtest 报告先继续，由 backtest 阶段补生成”，artifact 也会记录 `execution_mode`、执行区间、参数搜索模式与新产物路径，便于后续 readiness 和人工复核。
+  - **影响摘要**：`quant_workflow` 的 `backtest` 阶段默认仍支持复用本地 `vnpy_cta_backtest_report.json` / `*sweep*.json`，但在显式开启 `auto_execute_backtests` 时，会改为为 observation target 自动拉取或复用历史 bars、执行真实 vn.py CTA backtest、执行 `bf|ga` 参数搜索，并把 per-symbol 报告写回 `state/runs/classic_multifactor/`；同时 `healthcheck` 会在该模式下允许"缺本地 backtest 报告先继续，由 backtest 阶段补生成"，artifact 也会记录 `execution_mode`、执行区间、参数搜索模式与新产物路径，便于后续 readiness 和人工复核。
 
 - **2026-05-11**：修复 `quant_workflow` 的港股市场别名过滤与 HK backtest target 规则
   - **代码文件**：[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
@@ -128,17 +136,17 @@
 - **2026-05-11**：补齐 HK 顶层包装入口的 `futu-market` 默认值
   - **代码文件**：[run_hk_sim_task.py](/projects/vnpy/scripts/run_hk_sim_task.py)、[run_hk_futu_sim_session.py](/projects/vnpy/scripts/run_hk_futu_sim_session.py)、[run_hk_live_task.py](/projects/vnpy/scripts/run_hk_live_task.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：3 个 HK 顶层包装入口现在都会在转发到 `scripts/classic_multifactor/run_intraday_loop.py` 时默认注入 `--futu-market HK`（除非调用方显式覆盖），从而让港股 SIM / Futu SIM / live 会话在正确市场上下文里做合约查询与订阅，避免“连接成功、策略已启动，但港股合约找不到”的错误市场默认值问题。
+  - **影响摘要**：3 个 HK 顶层包装入口现在都会在转发到 `scripts/classic_multifactor/run_intraday_loop.py` 时默认注入 `--futu-market HK`（除非调用方显式覆盖），从而让港股 SIM / Futu SIM / live 会话在正确市场上下文里做合约查询与订阅，避免"连接成功、策略已启动，但港股合约找不到"的错误市场默认值问题。
 
 - **2026-05-11**：修复 HK Futu SIM 会话的港股交易所后缀规范化
   - **代码文件**：[ _base_runner.py ](/projects/vnpy/scripts/classic_multifactor/_base_runner.py)、[test_daily_rebalance_runner.py](/projects/vnpy/tests/test_daily_rebalance_runner.py)
   - **文档文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：共享 classic runner 的 `map_vt_symbol()` 现在会把港股 classic config 中研究侧常用的 `*.HK` 自动规范化为 vn.py 会话创建所需的 `*.SEHK`，从而让 [run_hk_futu_sim_session.py](/projects/vnpy/scripts/run_hk_futu_sim_session.py) 这类 HK SIM/live 包装入口在沿用 `00700.HK` 配置时也能正确创建策略实例；同时补充了回归测试与系统集成说明，减少“回测可跑但会话启动失败”的符号后缀偏差。
+  - **影响摘要**：共享 classic runner 的 `map_vt_symbol()` 现在会把港股 classic config 中研究侧常用的 `*.HK` 自动规范化为 vn.py 会话创建所需的 `*.SEHK`，从而让 [run_hk_futu_sim_session.py](/projects/vnpy/scripts/run_hk_futu_sim_session.py) 这类 HK SIM/live 包装入口在沿用 `00700.HK` 配置时也能正确创建策略实例；同时补充了回归测试与系统集成说明，减少"回测可跑但会话启动失败"的符号后缀偏差。
 
 - **2026-05-10**：补齐 HK 顶层入口、readiness 证据链与候选池可追溯性
   - **代码文件**：[run_hk_sim_task.py](/projects/vnpy/scripts/run_hk_sim_task.py)、[run_hk_futu_sim_session.py](/projects/vnpy/scripts/run_hk_futu_sim_session.py)、[run_hk_live_task.py](/projects/vnpy/scripts/run_hk_live_task.py)、[tencent_hk_g01.json](/projects/vnpy/configs/classic_multifactor/tencent_hk_g01.json)、[capability_registry.py](/projects/vnpy/services/evaluation_hub/capability_registry.py)、[readiness_gate.py](/projects/vnpy/services/evaluation_hub/readiness_gate.py)、[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[candidate_provider.py](/projects/vnpy/services/strategy/candidate_provider.py)、[candidate_preparation.py](/projects/vnpy/services/strategy/candidate_preparation.py)、[candidate_generation.py](/projects/vnpy/services/strategy/candidate_generation.py)、[candidate_enrichment.py](/projects/vnpy/services/strategy/candidate_enrichment.py)、[test_candidate_provider.py](/projects/vnpy/tests/test_candidate_provider.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
   - **文档/进度文件**：[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：新增 HK `SIM` / `Futu SIM session` / `live` 顶层包装入口，并把 capability registry 中的 HK `gap.*` 能力替换为正式 capability；`ReadinessGateService` 与 workflow 现会消费本地 `preflight` / `dual_run_diff` / `live report` / `reconciliation` 产物形成 evidence-first 的 simulation/live 门禁；候选池读取规则由“按 market 覆盖”改为“按 `(market, symbol)` merge，dynamic 同 symbol 覆盖 static”，同时 prepare/enrichment 报告新增 `provider_merge_policy`、`requested_runtime_mode`、`runtimes_used`、`single_runtime_effective` 等追溯字段，便于多日验收与复现实验回看
+  - **影响摘要**：新增 HK `SIM` / `Futu SIM session` / `live` 顶层包装入口，并把 capability registry 中的 HK `gap.*` 能力替换为正式 capability；`ReadinessGateService` 与 workflow 现会消费本地 `preflight` / `dual_run_diff` / `live report` / `reconciliation` 产物形成 evidence-first 的 simulation/live 门禁；候选池读取规则由"按 market 覆盖"改为"按 `(market, symbol)` merge，dynamic 同 symbol 覆盖 static"，同时 prepare/enrichment 报告新增 `provider_merge_policy`、`requested_runtime_mode`、`runtimes_used`、`single_runtime_effective` 等追溯字段，便于多日验收与复现实验回看
 
 - **2026-05-10**：候选准备产物新增非有限数值清洗，避免输出非法 JSON
   - **代码文件**：[quote_client.py](/projects/vnpy/services/futu_account/quote_client.py)、[candidate_preparation.py](/projects/vnpy/services/strategy/candidate_preparation.py)、[test_candidate_scoring.py](/projects/vnpy/tests/test_candidate_scoring.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
@@ -158,7 +166,7 @@
 - **2026-05-10**：引入模块化候选评分接口与 hybrid dynamic/static 生成链路
   - **代码文件**：[candidate_scoring.py](/projects/vnpy/services/strategy/candidate_scoring.py)、[candidate_generation.py](/projects/vnpy/services/strategy/candidate_generation.py)、[candidate_preparation.py](/projects/vnpy/services/strategy/candidate_preparation.py)、[engine.py](/projects/vnpy/services/strategy/engine.py)、[test_candidate_scoring.py](/projects/vnpy/tests/test_candidate_scoring.py)、[test_strategy_engine.py](/projects/vnpy/tests/test_strategy_engine.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
   - **文档文件**：[adaptive_quant_engine_design.md](/projects/vnpy/docs/adaptive_quant_engine_design.md)、[system_integration_guide.md](/projects/vnpy/docs/system_integration_guide.md)、[project_operation_log.md](/projects/vnpy/docs/project_operation_log.md)
-  - **影响摘要**：新增可复用 `CandidateScoringService` 与 `HybridCandidateGenerationService`，把 dynamic/static 候选从“仅清洗旧 JSON”升级为“混合评分生成 + schema 收敛”；`StrategyEngine` 现在会复用同一套 candidate scoring 接口评估单标，准备后的候选输入升级为带 `scoring_model`、`strategy_tags`、`source_breakdown`、`risk_flags` 等字段的 `candidate_inputs_v3`
+  - **影响摘要**：新增可复用 `CandidateScoringService` 与 `HybridCandidateGenerationService`，把 dynamic/static 候选从"仅清洗旧 JSON"升级为"混合评分生成 + schema 收敛"；`StrategyEngine` 现在会复用同一套 candidate scoring 接口评估单标，准备后的候选输入升级为带 `scoring_model`、`strategy_tags`、`source_breakdown`、`risk_flags` 等字段的 `candidate_inputs_v3`
 
 - **2026-05-10**：新增候选输入前置准备链路与 workflow 可选 prepare 阶段
   - **代码文件**：[candidate_preparation.py](/projects/vnpy/services/strategy/candidate_preparation.py)、[workflow_service.py](/projects/vnpy/scripts/quant_workflow/workflow_service.py)、[run_quant_workflow.py](/projects/vnpy/scripts/quant_workflow/run_quant_workflow.py)、[run_prepare_candidate_inputs.py](/projects/vnpy/scripts/quant_workflow/run_prepare_candidate_inputs.py)、[test_beginner_quant_workflow.py](/projects/vnpy/tests/test_beginner_quant_workflow.py)
@@ -223,7 +231,7 @@
 ## 2026-05-16
 - **变更范围**: 策略移动止盈逻辑修正
 - **关键文件**: `/projects/vnpy/tmp/strategy/us_strategy_simple_multifactor2.py`
-- **影响摘要**: 修正了移动止盈的计算逻辑。1. 激活条件由“当前收益率”改为“最高收益率”，防止价格回落导致止盈条件失效；2. 回撤比例的计算基准由“最高价格”改为“最高收益率”，即 `(最高收益率 - 当前收益率) / 最高收益率`。
+- **影响摘要**: 修正了移动止盈的计算逻辑。1. 激活条件由"当前收益率"改为"最高收益率"，防止价格回落导致止盈条件失效；2. 回撤比例的计算基准由"最高价格"改为"最高收益率"，即 `(最高收益率 - 当前收益率) / 最高收益率`。
 
 ## 2026-05-20
 - **变更范围**: 阶段② 美股多标的量化策略骨架（`us_multi_symbol_quant_phase2`，dry-run only）
@@ -247,3 +255,21 @@
   - 新增 11 个单元测试（接口契约 6 + 池更新 5），phase2 测试集 39 → 50 全过。
   - 同步：`docs/system_integration_guide.md` 新增"阶段② v2"章节；`.codebuddy/plan/us_multi_symbol_quant_phase2_v2/`；`.codebuddy/task_list/us_multi_symbol_quant_phase2_v2.md`。
 - **影响摘要**: 新增 futumd 平台投放路径、池周度更新通道与真实回测双轨流程；不动现有 `us_multi_symbol_phase2_strategy.py` 与 39 个旧测试。仍然不允许翻 `LIVE_SUBMIT=True`；SIM 升级需要新开 phase3 plan。
+
+## 2026-05-21 — 阶段② live：多标美股天级别 live 交易（phase2/live/）
+
+- **变更范围**: 阶段② live（plan `phase2_live_trading`）落地 `dry_run / futu_sim / futu_real` 三态天级别 live 交易能力，零侵入 phase2 回测；仍硬保 dry_run 默认值，需要 6 开关全部置位 + CLI `--futu-env` + CLI `--live-submit` 才能离开 dry 模式。
+- **关键文件**:
+  - `phase2/live/order_state.py`（OrderIntent/OrderState 复用 services；新增 `build_request_id` / `transition` / `OrderStateStoreExt`）
+  - `phase2/live/risk.py`（从 `scripts/classic_multifactor/risk.py` 物理 copy 后改 phase2 命名空间，去掉 classic_multifactor 依赖；幂等性交给 IdempotencyGate）
+  - `phase2/live/safety.py`（6 开关：VNPY_LIVE_CONFIG / VNPY_LIVE_SUBMIT / VNPY_LIVE_APPROVED / FUTU_TRADE_PASSWORD / `--futu-env` / `--live-submit`）
+  - `phase2/live/broker.py` + `phase2/live/futu_broker.py`（LiveBroker 协议 + `OpenSecTradeContext` + `OpenQuoteContext` 实现）
+  - `phase2/live/live_adapter.py`（与 `phase2/backtest/futumd_strategy_adapter.py` 同接口的 live runtime）
+  - `phase2/live/guards.py`（4 级 pre-trade gate：幂等 → 对账 → 单标风控 → 组合风控；events.jsonl + 状态机推进）
+  - `phase2/live/runner.py`（`DailyLiveRebalanceRunner`，clock/sleep 全注入；REAL 强制 auto_cancel_on_eod；RunnerConfig 新增 `strategy_live_submit_override` 选项供 dry_run smoke 走通全链路）
+  - `phase2/runners/run_phase2_live_daily.py`（CLI 入口，所有重 import lazy 化；产物三态分目录；与 phase2 其他 runner 对齐的 `_REPO_ROOT` 自注入 `sys.path`）
+  - `phase2/live/tests/`（132 项新增单测，全部通过；含 InMemoryBroker + FakeClock + 临时 strategy 文件，不依赖外部网络）
+  - `docs/system_integration_guide.md`（新增"阶段② live"章节）
+  - `.codebuddy/plan/phase2_live_trading/`（背景与需求；进度以同名 `task_list` 为权威）
+  - `.codebuddy/task_list/phase2_live_trading.md`（10 项任务进度表）
+- **影响摘要**: 在 phase2 回测之上补齐了真实 OpenD 连接 + SIM/REAL 天级别 live 交易闭环；4 级 gate + 6 开关 + 状态机 + 三态分目录产物全部可单测。phase2 现有 75 个回测单测全数复跑通过；新增 132 项 live 单测（phase2/ 全集 215/215，1.06s）；dry_run smoke 已跑通产物落盘于 `state/runs/phase2_live/dry_run/smoke_dry_run_t10/`（`daily_report.json` + `positions_snapshot.csv` + 空 `orders/`）；既有 `phase2/strategy/*` 与 `phase2/backtest/*` 源码零改动；`tmp/` 与 `scripts/classic_multifactor/` 零改动。仍**不允许**直接连真实账户下单——必须 6 开关全置 + 人工审批后再动手。

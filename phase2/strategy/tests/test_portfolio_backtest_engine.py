@@ -230,5 +230,103 @@ class PortfolioBacktestEngineTests(unittest.TestCase):
         self.assertEqual(summary["pool"], ["AAA", "BBB"])
 
 
+# A second tiny strategy that mirrors the futumd production guard:
+# place_limit is *only* called when ``self.LIVE_SUBMIT`` is True.
+# This lets us verify the engine's ``force_live_submit`` switch end-to-end.
+_LIVE_SUBMIT_GATED_STRATEGY_SOURCE = '''
+class Strategy(StrategyBase):
+    def initialize(self):
+        declare_strategy_type(AlgoStrategyType.SECURITY)
+        self._pool = ["AAA", "BBB"]
+        self._tick = 0
+        # Mirror the futumd source: ``LIVE_SUBMIT`` defaults to False
+        # exactly like the production strategy.
+        self.LIVE_SUBMIT = show_variable(False, GlobalType.BOOL)
+        for _ in self._pool:
+            declare_trig_symbol()
+
+    def handle_data(self):
+        self._tick += 1
+        if self._tick == 5:
+            if self.LIVE_SUBMIT:
+                place_limit(symbol="AAA",
+                            price=bar_close(symbol="AAA", select=1),
+                            qty=10, side=OrderSide.BUY,
+                            time_in_force=TimeInForce.DAY)
+            else:
+                alert(title="dry-run", content="would BUY AAA")
+'''
+
+
+class LiveSubmitOverrideTests(unittest.TestCase):
+    """Cover the engine's force_live_submit switch end-to-end."""
+
+    def setUp(self) -> None:
+        self.start = date(2025, 1, 6)
+        self.aaa_bars = _make_bars("AAA", self.start, 30, base_price=100.0)
+        self.bbb_bars = _make_bars("BBB", self.start, 30, base_price=200.0)
+        self.fake_db = _FakeDatabase({
+            "AAA": self.aaa_bars,
+            "BBB": self.bbb_bars,
+        })
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.strategy_path = Path(self.tmpdir.name) / "live_gated.py"
+        self.strategy_path.write_text(
+            _LIVE_SUBMIT_GATED_STRATEGY_SOURCE, encoding="utf-8")
+        self.output_root = Path(self.tmpdir.name) / "runs"
+
+    def tearDown(self) -> None:
+        self.tmpdir.cleanup()
+
+    def _run(self, *, force_live_submit: bool, run_id: str):
+        with mock.patch.object(engine_mod, "get_database",
+                                return_value=self.fake_db):
+            engine = PortfolioBacktestEngine(
+                pool_symbols=["AAA", "BBB"],
+                start=self.start,
+                end=self.start + timedelta(days=30),
+                init_cash=100_000.0,
+                exchange=Exchange.SMART,
+                interval=Interval.DAILY,
+                fee_rate=0.001,
+                slippage=0.0,
+                force_live_submit=force_live_submit,
+            )
+            return engine.run(
+                strategy_path=self.strategy_path,
+                run_id=run_id,
+                output_root=self.output_root,
+            )
+
+    def test_default_force_live_submit_emits_trades(self) -> None:
+        """With force_live_submit=True (default) the gated strategy must
+        actually issue a BUY because LIVE_SUBMIT was flipped to True."""
+
+        result = self._run(force_live_submit=True, run_id="lso_on")
+        self.assertGreater(
+            result.trade_count, 0,
+            "force_live_submit=True must let the strategy reach place_limit; "
+            "got 0 trades.",
+        )
+        ledger_path = self.output_root / "lso_on" / "trade_ledger.csv"
+        with ledger_path.open(encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+        self.assertTrue(any(r["side"] == "BUY" and r["symbol"] == "AAA"
+                            for r in rows))
+
+    def test_respect_live_submit_yields_zero_trades(self) -> None:
+        """With force_live_submit=False the engine must respect the
+        strategy's own LIVE_SUBMIT=False, so place_limit is never called
+        and trade_count is 0."""
+
+        result = self._run(force_live_submit=False, run_id="lso_off")
+        self.assertEqual(
+            result.trade_count, 0,
+            "force_live_submit=False must honour the strategy's "
+            "LIVE_SUBMIT=False; expected 0 trades, got "
+            f"{result.trade_count}.",
+        )
+
+
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

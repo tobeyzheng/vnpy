@@ -387,16 +387,23 @@ python3 phase2/runners/run_phase2_reconcile.py \
 - 引擎：[`phase2/backtest/portfolio_backtest_engine.py`](/projects/vnpy/phase2/backtest/portfolio_backtest_engine.py)
   - 通过 `vnpy.trader.database.get_database()` 拉本地多标日线，按交易日 union 排序驱动；每日：写入桶 → `strategy.handle_data()` → 用 `all_dates[i+1]` 开盘价撮合 → mark-to-close 写入 equity 曲线。
   - 输出 4 份产物到 `state/runs/phase2_multi_backtest/<run_id>/`：`equity_curve.csv` / `positions_daily.csv` / `trade_ledger.csv` / `summary.json`。
-  - **不连 OpenD / Futu / 任何远端服务**；不开 `LIVE_SUBMIT`。
+  - **不连 OpenD / Futu / 任何远端服务**；`place_limit` 被 adapter 拦截只入内存队列。
+  - **回测专用覆盖**：引擎默认 `force_live_submit=True`，在 `strategy.initialize()` 之后把 `strategy.LIVE_SUBMIT` 翻转为 `True`。原因是 futumd 策略同文件中 `LIVE_SUBMIT=False` 分支会跳过 `place_limit` 只发 `alert`——这是发布到 Futu 平台后防止误下单的硬门，但也导致本地回测拿不到交易。adapter 的 `place_limit` 本身**只写内存**，不可能发出真实订单，所以该覆盖只在本地回测语境内生效。CLI 可用 `--respect-live-submit` 返回“dry-run alert”语义。该设计使 futumd 策略源码零修改即可迁移到 Futu 平台（平台拿到的 `LIVE_SUBMIT` 仍为 `False`）。
 - CLI 入口：[`phase2/runners/run_phase2_multi_backtest.py`](/projects/vnpy/phase2/runners/run_phase2_multi_backtest.py)
 
 ```bash
-# 12 标 1 年 smoke 回测（最近一年覆盖 11/12 标，NVDA 4 年、AAPL 1.5 年）
+# 12 标 1 年 smoke 回测（默认 force_live_submit=True，交易可见）
 python3 phase2/runners/run_phase2_multi_backtest.py \
     --start 2025-05-21 --end 2026-05-20 \
     --init-cash 1000000 \
     --rate 0.0003 --slippage 0.0 \
     --run-id smoke_2025_2026
+
+# 需要验证 futumd 策略出厂默认 LIVE_SUBMIT=False 分支时，追加 --respect-live-submit
+python3 phase2/runners/run_phase2_multi_backtest.py \
+    --start 2025-05-21 --end 2026-05-20 \
+    --respect-live-submit \
+    --run-id smoke_2025_2026_dryrun
 
 # 自定义池 / 自定义策略路径 / 自定义产物根
 python3 phase2/runners/run_phase2_multi_backtest.py \
@@ -407,12 +414,79 @@ python3 phase2/runners/run_phase2_multi_backtest.py \
 
 测试覆盖：
 
-- [`phase2/strategy/tests/test_futumd_strategy_adapter.py`](/projects/vnpy/phase2/strategy/tests/test_futumd_strategy_adapter.py) 17 项：分桶取数、cash 不串户、`place_limit` 路由、`settle_pending` 撮合规则、`load_futumd_strategy` 启动真实策略。
-- [`phase2/strategy/tests/test_portfolio_backtest_engine.py`](/projects/vnpy/phase2/strategy/tests/test_portfolio_backtest_engine.py) 6 项：mock 数据库 + 微型 2 标策略，端到端验证次日开盘成交、trade ledger 含两 symbol、4 份报告字段齐备。
-- 全套 phase2 回归 73/73 通过。
+- [`phase2/strategy/tests/test_futumd_strategy_adapter.py`](/projects/vnpy/phase2/strategy/tests/test_futumd_strategy_adapter.py) 17 项：分桶取数、cash 不串户、`place_limit` 路由、`settle_pending` 撚e合规则、`load_futumd_strategy` 启动真实策略。
+- [`phase2/strategy/tests/test_portfolio_backtest_engine.py`](/projects/vnpy/phase2/strategy/tests/test_portfolio_backtest_engine.py) 8 项：mock 数据库 + 微型 2 标策略，端到端验证次日开盘成交、trade ledger 含两 symbol、4 份报告字段齐备；另含 `force_live_submit` 对照组（默认翻转能产生交易 vs `--respect-live-submit` 零交易）。
+- 全套 phase2 回归 75/75 通过（原 73 + force_live_submit 对照 2）。
 
+12 标 1 年 smoke 走实数据（`state/runs/phase2_multi_backtest/smoke_2025_2026_v2/`）：251 个交易日、trade_count=23、7 只标有交易、total_return +1.34%、max_drawdown 3.59%、末日全部 0 仓平仓。
 边界与限制：
 
 - 与 `tmp/` 完全解耦——本子包不 import `tmp/*` 任何模块，便于将来跟 futumd 策略整体搬走。
 - 与 `phase2/runners/run_phase2_backtest.py`（合成 dry-run smoke）互补：本 runner 跑真实历史 K 线、生成真实组合权益曲线；前者只校验 allocator 与池配置加载。
 - 当前实现仅支持日线（`Interval.DAILY`）；分钟级支持需要新开 plan 适配 `BarType.K_1M / K_5M / K_15M` 与会话内多 bar/天 的撮合规则。
+
+## 阶段② live：多标美股天级别量化交易（dry_run / futu_sim / futu_real）
+
+> 计划：[`.codebuddy/plan/phase2_live_trading/`](/projects/vnpy/.codebuddy/plan/phase2_live_trading/)
+> 进度：[`.codebuddy/task_list/phase2_live_trading.md`](/projects/vnpy/.codebuddy/task_list/phase2_live_trading.md)
+
+阶段② live 在 phase2 多标回测之上新增**真实 OpenD 连接 + SIM/REAL 双账户的天级别 live 交易能力**，复用 phase2 现有的 futumd 策略文件（零改动）、池配置、风控阈值，并补齐：
+
+- 4 级 pre-trade gate（幂等 → 对账 → 单标风控 → 组合风控），任一级被拒立即写入 `events.jsonl` 的 `order_blocked` 事件并把状态机推进到 `rejected`。
+- 6 道安全开关（环境变量 `VNPY_LIVE_CONFIG/VNPY_LIVE_SUBMIT/VNPY_LIVE_APPROVED/FUTU_TRADE_PASSWORD`、CLI `--futu-env`、CLI `--live-submit`），任一缺失即直接退出非 0 码。
+- 状态机 `OrderState` 全程持久化到 `state/runs/phase2_live/<env>/<run_id>/orders/<request_id>.json`，进程重启可恢复在途订单并继续幂等性判定。
+- 三态分目录产物：`state/runs/phase2_live/{dry_run|futu_sim|futu_real}/<run_id>/`，每态自带独立的 `daily_report.json` / `events.jsonl` / `orders/` / `reconcile/` / `positions_snapshot.csv`，互不串扰。
+
+模块边界：
+
+- [`phase2/live/order_state.py`](/projects/vnpy/phase2/live/order_state.py)：复用 `services.common.trading_models.OrderIntent/OrderState` 与 `services.trade_state.storage.OrderStateStore`，新增 `build_request_id`（确定性哈希）、`transition`（状态机合法性）、`OrderStateStoreExt`（`save_intent_as_state` / `list_open_request_ids`）。
+- [`phase2/live/risk.py`](/projects/vnpy/phase2/live/risk.py)：从 `scripts/classic_multifactor/risk.py` 物理 copy 后改写为 phase2 命名空间，去掉对 `scripts.classic_multifactor.model` 的依赖；每次 `size_and_check` 内新建 `LiveRiskGuard` 实例，**幂等性交由 `IdempotencyGate` 处理**，不再依赖 `LiveRiskGuard._seen`。
+- [`phase2/live/safety.py`](/projects/vnpy/phase2/live/safety.py)：6 开关验证，`validate_safety()` 输出 `SafetyDecision(allowed, execution_env, missing_switches)`。
+- [`phase2/live/broker.py`](/projects/vnpy/phase2/live/broker.py) + [`phase2/live/futu_broker.py`](/projects/vnpy/phase2/live/futu_broker.py)：定义 `LiveBroker` 协议（connect/disconnect/unlock_trade/query_account/query_positions/place_order/cancel_order/subscribe_quote/register_order_handler）与 `FutuBroker` 实现（`OpenSecTradeContext` + `OpenQuoteContext`，REAL 强制 `unlock_trade(password)` 不通过则拒绝下单）。
+- [`phase2/live/live_adapter.py`](/projects/vnpy/phase2/live/live_adapter.py)：与 `phase2/backtest/futumd_strategy_adapter.py` **完全同接口**的 live 版本，`LivePortfolioRuntime` 把 `place_limit` 的 OrderIntent 通过 `intent_callback` 转出。
+- [`phase2/live/guards.py`](/projects/vnpy/phase2/live/guards.py)：4 级 gate 与 `GatePipeline`，`PortfolioRiskGate` 严格检查 BUY 后单标 / 当日新仓 / 总敞口 / 回撤；SELL 不受单标 cap 约束（用于减仓 / 平仓）。
+- [`phase2/live/runner.py`](/projects/vnpy/phase2/live/runner.py)：`DailyLiveRebalanceRunner` 单触发 / 单 rebalance；clock 与 sleep 全注入；REAL 模式即使 `--no-auto-cancel-on-eod` 也会强制收盘前撤掉所有在途订单。
+- [`phase2/runners/run_phase2_live_daily.py`](/projects/vnpy/phase2/runners/run_phase2_live_daily.py)：CLI 入口，所有重 import（vnpy/futu）lazy 化，`--help` 即时返回；6 开关失败时 stderr 输出 `BLOCKED` + 缺失开关清单并退出码 2。
+
+入口示例：
+
+```
+# dry_run（默认；不连 OpenD、不下任何 SIM/REAL 单；用本地 vnpy 数据库取行情）
+python3 phase2/runners/run_phase2_live_daily.py \
+    --pool-config phase2/strategy/config/pool_config.yaml \
+    --rebalance-now
+
+# futu_sim（连接 OpenD 模拟账户；--live-submit 真正调 broker.place_order）
+export VNPY_LIVE_CONFIG=/path/to/live_config.yaml
+export VNPY_LIVE_SUBMIT=1
+export VNPY_LIVE_APPROVED=2026-05-21
+export FUTU_HOST=127.0.0.1 FUTU_PORT=11111
+python3 phase2/runners/run_phase2_live_daily.py \
+    --futu-env 模拟 --live-submit \
+    --rebalance-time 15:55 --session-tz America/New_York \
+    --max-single-position-pct 0.20 --max-order-value 20000
+
+# futu_real（额外要求 FUTU_TRADE_PASSWORD；REAL 模式强制 auto_cancel_on_eod）
+export FUTU_TRADE_PASSWORD=***
+python3 phase2/runners/run_phase2_live_daily.py \
+    --futu-env 真实 --live-submit \
+    --auto-cancel-on-eod
+```
+
+测试覆盖（132/132 项新增 + 75/75 既有 = 207 全绿）：
+
+- `phase2/live/tests/test_order_state.py` 22 项
+- `phase2/live/tests/test_risk.py` 18 项
+- `phase2/live/tests/test_safety.py` 28 项
+- `phase2/live/tests/test_broker.py` 15 项
+- `phase2/live/tests/test_live_adapter.py` 18 项
+- `phase2/live/tests/test_guards.py` 23 项
+- `phase2/live/tests/test_runner.py` 12 项
+- `phase2/live/tests/test_run_phase2_live_daily.py` 8 项
+
+边界与限制：
+
+- 不修改 `phase2/backtest/*` 与 `phase2/strategy/*` 任何源码；futumd 策略文件（`LIVE_SUBMIT=False`）保持出厂状态，runner 内部对加载到的 strategy 模块单边赋值 `LIVE_SUBMIT = bool(--live-submit)`，原文件不动。
+- 仅天级别（每个 rebalance_date 触发一次 handle_data）；分钟级 / Tick 级需要新开 plan，并补充 `MinuteTradeGuard` 限频 gate。
+- dry_run 不连 OpenD；行情来自本地 vnpy 数据库（与 phase2 多标回测同源）。
+- REAL 模式真实下单的实际权限由 OpenD 与券商账户决定；本仓库的硬开关与人工审批仅是**最低**门槛，不构成对真实资金的足额保障。

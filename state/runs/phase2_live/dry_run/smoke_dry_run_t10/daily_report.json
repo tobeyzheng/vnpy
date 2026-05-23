@@ -1,0 +1,31 @@
+{
+  "pool": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "META",
+    "AMZN",
+    "TSLA",
+    "AVGO",
+    "AMD",
+    "JPM",
+    "XOM",
+    "UNH"
+  ],
+  "rebalance_date": "2026-05-21",
+  "rebalance_time": "2026-05-21T03:20:56Z",
+  "execution_env": "dry_run",
+  "trade_count": 0,
+  "fill_count": 0,
+  "cancel_count": 0,
+  "blocked_by_gate": {},
+  "final_nav": 100000.0,
+  "final_cash": 100000.0,
+  "total_return_pct": 0.0,
+  "connection_drops": 0,
+  "reconcile_breaches": 0,
+  "alerts": [],
+  "intents_emitted": 0,
+  "intents_approved": 0
+}

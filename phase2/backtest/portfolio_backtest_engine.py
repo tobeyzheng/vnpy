@@ -93,6 +93,19 @@ class PortfolioBacktestEngine:
     slippage: float = 0.0
     annual_trading_days: int = 252
 
+    # Backtest-only override: futumd strategies ship `LIVE_SUBMIT=False`
+    # as a hard production guard so that running them as scripts on the
+    # Futu sandbox cannot accidentally place real orders.  In a *local*
+    # backtest, however, `place_limit` is intercepted by
+    # ``futumd_strategy_adapter.place_limit`` and only ever appended to
+    # ``runtime.pending`` — it cannot reach OpenD or any broker.  To make
+    # the local backtest actually *see* the strategy's intended trades,
+    # we flip ``strategy.LIVE_SUBMIT`` to True right after
+    # ``strategy.initialize()``.  Set this to False to honour whatever
+    # value the strategy itself produced (useful when you want to verify
+    # the "alert-only" branch.)
+    force_live_submit: bool = True
+
     # Internals (populated by run()).
     _runtime: Optional[PortfolioRuntime] = field(default=None, init=False, repr=False)
     _trades: List[TradeRecord] = field(default_factory=list, init=False, repr=False)
@@ -154,6 +167,18 @@ class PortfolioBacktestEngine:
         )
         strategy = strategy_cls()
         strategy.initialize()
+
+        # 3.1 Backtest-only override of the production hard-gate.
+        # See the docstring on ``force_live_submit`` for the full
+        # rationale.  The adapter's ``place_limit`` cannot place real
+        # orders, so flipping this flag here is purely a dev-loop affordance.
+        if self.force_live_submit and hasattr(strategy, "LIVE_SUBMIT"):
+            logger.info(
+                "force_live_submit=True: setting strategy.LIVE_SUBMIT=True "
+                "so the backtest can observe place_limit intents (no real "
+                "orders are issued — the adapter only writes to memory)."
+            )
+            strategy.LIVE_SUBMIT = True
 
         # 4. Date-union driver.
         n_days = len(all_dates)

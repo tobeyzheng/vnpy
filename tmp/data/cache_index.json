@@ -29,12 +29,75 @@
     },
     "US.AAPL|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2024-12-31",
+      "end": "2026-05-20",
       "futu_code": "US.AAPL",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-13T12:42:07",
+      "last_updated_at": "2026-05-20T23:36:21",
       "source": "futu_opend",
       "start": "2024-12-01"
+    },
+    "US.AMD|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.AMD",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.AMZN|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.AMZN",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.AVGO|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.AVGO",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.GOOGL|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.GOOGL",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.JPM|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.JPM",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.META|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.META",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.MSFT|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.MSFT",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:21",
+      "source": "futu_opend",
+      "start": "2025-05-20"
     },
     "US.NVDA|K_5M|qfq": {
       "autype": "qfq",
@@ -56,12 +119,39 @@
     },
     "US.NVDA|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-17",
+      "end": "2026-05-20",
       "futu_code": "US.NVDA",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-17T15:49:53",
+      "last_updated_at": "2026-05-20T23:36:21",
       "source": "futu_opend",
       "start": "2020-01-01"
+    },
+    "US.TSLA|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.TSLA",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.UNH|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.UNH",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
+    },
+    "US.XOM|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-20",
+      "futu_code": "US.XOM",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-20T23:36:22",
+      "source": "futu_opend",
+      "start": "2025-05-20"
     }
   },
   "version": 1

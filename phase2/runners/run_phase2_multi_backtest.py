@@ -9,7 +9,13 @@ account.
 
 Boundaries:
 - NEVER connects to OpenD or any remote service.
-- NEVER flips ``LIVE_SUBMIT``.
+- NEVER places real orders. ``place_limit`` is intercepted by the
+  per-symbol adapter; intents only ever land in an in-memory queue.
+- By default the engine flips ``strategy.LIVE_SUBMIT=True`` *after*
+  ``initialize()`` so the futumd strategy actually emits BUY/SELL
+  intents during the backtest.  Pass ``--respect-live-submit`` to
+  honour the strategy-level value (which ships False, i.e. the
+  alert-only branch — useful for end-to-end "production-shape" smoke).
 - Reads pool_config.yaml only; never writes back.
 - Output goes under ``state/runs/phase2_multi_backtest/<run_id>/``.
 
@@ -92,6 +98,15 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
                    choices=["d", "1h", "1m"],
                    help="vnpy Interval value (default: d)")
     p.add_argument("--annual-trading-days", type=int, default=252)
+    p.add_argument(
+        "--respect-live-submit",
+        action="store_true",
+        help=(
+            "Do NOT flip strategy.LIVE_SUBMIT to True. Default is to flip it "
+            "so the backtest can observe place_limit intents — the adapter "
+            "only writes to an in-memory queue and never issues real orders."
+        ),
+    )
     p.add_argument("--run-id", default=None)
     p.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
     p.add_argument("--verbose", action="store_true")
@@ -137,13 +152,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         fee_rate=float(args.rate),
         slippage=float(args.slippage),
         annual_trading_days=int(args.annual_trading_days),
+        force_live_submit=not bool(args.respect_live_submit),
     )
 
     logger.info(
         "running multi-symbol backtest: pool=%d, %s -> %s, init_cash=%.0f, "
-        "fee_rate=%.4f, slippage=%.4f, run_id=%s",
+        "fee_rate=%.4f, slippage=%.4f, force_live_submit=%s, run_id=%s",
         len(pool_symbols), start_dt, end_dt, args.init_cash,
-        args.rate, args.slippage, run_id,
+        args.rate, args.slippage,
+        not bool(args.respect_live_submit), run_id,
     )
 
     result = engine.run(
