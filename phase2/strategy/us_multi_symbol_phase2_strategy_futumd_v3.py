@@ -195,7 +195,9 @@ class Strategy(StrategyBase):
         self.slow_window = show_variable(0, GlobalType.INT)
         self.rsi_window = show_variable(0, GlobalType.INT)
         self.position_pct = show_variable(0.0, GlobalType.FLOAT)
-        self.max_slices = show_variable(1, GlobalType.INT)
+        # NOTE: removed shim 'self.max_slices = 1' which silently
+        # overrode the real max_slices=3 from the pyramid block above.
+        # Pyramid add-on now actually fires up to 3 slices as designed.
         self.stop_loss_pct = show_variable(0.0, GlobalType.FLOAT)
         self.take_profit_pct = show_variable(0.0, GlobalType.FLOAT)
         self.trailing_drawdown_pct = show_variable(0.0, GlobalType.FLOAT)

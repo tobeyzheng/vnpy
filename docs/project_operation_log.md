@@ -367,3 +367,17 @@
   - **v3 final: +320.49% / 年化 33.40% / MDD 23.92% / 82 trades** ✅ 超 200% 目标 120 pp
 - **失败试验记录**: iter6 引入 portfolio-level 15% 高水线 dd_cut 导致初期触发后无法恢复，最终只 +12.76% — 全局 dd_cut 在高 beta mega-cap 池上不可用，应坚持单仓位级硬止损 + regime 翻负清仓。
 - **影响摘要**: phase2 测试套件 119/119 仍全绿；v1 / v2 文件未改动以保留 A/B 基线；LIVE_SUBMIT 仍硬开关 False；本轮 7 次回测均为本地数据库读取，无任何远端连接、无任何真实订单。
+
+## 2026-05-24（凌晨）phase2 v3 — iter7：删除 max_slices shim，金字塔真正生效
+- **变更范围**: 单文件 1 行级修复——删除 `phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py` `global_variables()` 末尾兼容 shim 段中 `self.max_slices = show_variable(1, GlobalType.INT)` 这一行；该行本是为旧 optimizer / report writer 兼容而设，但**默默把顶部金字塔块定义的 `max_slices=3` 覆盖回 1**，导致此前所有 v3 / iter5 回测中金字塔加仓**从未真正发生**。
+- **修改文件**:
+  - `phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py`（删除 shim，改为说明性注释）
+- **新增产物**:
+  - `state/runs/phase2_strategy_redesign_v2/20260523T161713Z/v3_baseline_slices1/`（修复前对照，max_slices=1）
+  - `state/runs/phase2_strategy_redesign_v2/20260523T161713Z/v3_max_slices_3/`（修复后，max_slices=3）
+  - `state/runs/phase2_strategy_redesign_v2/20260523T161713Z/REPORT_iter7_pyramid_unlock.md`
+- **5 年回测对照**（pool_config_fixed.yaml 6 只 / 100k / fee=0.0003，同区间同池同费率）:
+  - v3 baseline (shim, max_slices=1, = 历史 iter5)：+320.49% / 年化 33.40% / MDD 23.92% / 82 trades / 17W 22L
+  - **v3 unlocked (max_slices=3)：+456.77% / 年化 41.13% / MDD 27.57% / 93 trades / 28W 26L** ✅
+  - Δ Total Return **+136.29 pp**、Δ Annualised **+7.73 pp**、Δ MDD **+3.65 pp**
+- **影响摘要**: 收益从超目标 1.6× 提升到 2.28×；金字塔加仓单（NVDA/AVGO/TSM 等强趋势 +1·ATR 加 0.5·base）按 Turtle 风格在强势区段叠加曝光；MDD 仅小幅扩张（+3.65 pp），仍由 regime_flat + disaster_stop 控制在 30% 以内。phase2 测试套件未受影响；LIVE_SUBMIT 仍硬开关 False；本轮 2 次回测均为本地 vnpy 数据库读取，无任何远端连接、无任何真实订单。
