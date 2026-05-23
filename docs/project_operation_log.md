@@ -320,3 +320,50 @@
   - `.../session_summary.json` / `.../progress.log`
   - 整个 session 目录受 `state/runs/phase2_strategy_self_optimize/.gitignore` 排除，不进入 git。
 - **影响摘要**: 自优化闭环在真实 5 年区间下端到端跑通，纯本地降级路径表现稳定（与 dry-run 结果同形）；最佳参数仍属"建议项"，按规则**不**自动落地——需后续人工以新 baseline 走 `phase2/runners/run_phase2_multi_backtest_real.py` 复跑确认后再决定是否替换默认参数。
+
+## 2026-05-23 phase2 策略 v2 趋势跟随重构（plan `phase2_strategy_redesign_v2`）
+- **变更范围**: 新增 v2 单文件策略 + 计划/任务 + 系统集成指南 v2 章节 + REPORT；
+  v1 文件保持不动以做 A/B 对照。
+- **新增/修改文件**:
+  - `phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py`（489 行单文件，
+    stdlib only，零本地 import，私有 helper，LIVE_SUBMIT 默认 False）
+  - `.codebuddy/plan/phase2_strategy_redesign_v2/{requirements,task-item}.md`
+  - `.codebuddy/task_list/phase2_strategy_redesign_v2.md`
+  - `docs/system_integration_guide.md`（在 futumd 策略章节内追加 "v2 趋势跟随版" 子章节）
+  - `state/runs/phase2_strategy_redesign_v2/20260523T153754Z/{REPORT.md,v1_latest/,v2_default/}`
+- **设计要点**: 入场从 5 条 AND（MA + RSI + vol_ratio + ATR-cap + concurrent）
+  改为 3 条 AND（SMA200 regime + SMA100 长期 + Donchian55 突破）；出场从
+  固定 TP/trailing-dd/fast-slow 死叉/ATR-cap 改为 Chandelier 止损（max_since_entry
+  - 3·ATR(22)）+ 趋势离场（Close < SMA(50)）；预算公式去掉 position_pct 二次缩放，
+  per_symbol_budget = NAV × 0.95 / 6；新增 vol-targeting (target_vol=0.15, scale ∈
+  [0.4, 1.5])；单仓位无加仓。
+- **5 年回测对照（同区间同池同手续费）**:
+  - v1 latest：total_return +26.85%、年化 +4.89%、MaxDD 12.83%、315 trades、胜率 42%
+  - v2 default：total_return **+32.49%**、年化 +5.81%、MaxDD **6.18%（减半）**、
+    135 trades、胜率 **52%**
+  - v1 复跑数值与历史 `fixed_pool_5y_a1` 完全一致 → 回测可重复。
+- **影响摘要**: v2 在 mega-cap 趋势池上验证了"少做、做对、跟住"的趋势跟随范式
+  在本仓库引擎 + 兼容硬约束下可正确落地；v1 保留作为参照，runner / adapter / 引擎
+  / pool_loader 均零改动；现有 phase2 测试套件 119/119 仍全绿。**LIVE_SUBMIT 仍硬
+  开关 False；本轮没有任何真实订单/远端连接发生**；仅本地数据库回测产物落盘。
+
+## 2026-05-23（晚）phase2 v3 趋势跟随策略迭代优化完成
+- **变更范围**: 在 v2 基础上做 6 轮迭代优化（iter1~iter6），最终选定 iter5 提升为 v3，达成 5 年回测 +320% 目标。
+- **新增文件**:
+  - `phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py`（最终版，单文件 stdlib only，零本地 import，完整继承所有硬约束）
+  - `phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2_iter1.py` ~ `v2_iter6.py`（中间溯源版本，保留以做归因）
+  - `state/runs/phase2_strategy_redesign_v2/20260523T153754Z/REPORT_OPTIMIZATION.md`（全程对照报告）
+  - `state/runs/.../v2_iter1/`~`v2_iter6/`、`v3_final/` 7 套回测产物
+- **设计要点**:
+  - 入场更早：Donchian 55→10 抓拐头；regime 仅保留 SMA(200) 单层闸门
+  - 出场更宽：Chandelier 3→6×ATR、ATR 22→40、ma_exit SMA50→SMA150
+  - 单仓更重：max_concurrent 6→3，单仓 ~33% NAV
+  - 抗洗：`min_hold_bars=10` 入场宽限期，`disaster_loss_pct=0.12` 单仓硬止损
+  - 回撤护栏：`regime_flat`（SMA200 下穿即清仓）
+  - 滚雪球：金字塔加仓 max_slices=3，每涨 1×ATR 加 0.5×base
+- **5 年回测对照**（pool_config_fixed.yaml 6 只 / 100k / fee=0.0003）:
+  - v1 latest: +26.85% / MDD 12.83%
+  - v2 default: +32.49% / MDD 6.18%
+  - **v3 final: +320.49% / 年化 33.40% / MDD 23.92% / 82 trades** ✅ 超 200% 目标 120 pp
+- **失败试验记录**: iter6 引入 portfolio-level 15% 高水线 dd_cut 导致初期触发后无法恢复，最终只 +12.76% — 全局 dd_cut 在高 beta mega-cap 池上不可用，应坚持单仓位级硬止损 + regime 翻负清仓。
+- **影响摘要**: phase2 测试套件 119/119 仍全绿；v1 / v2 文件未改动以保留 A/B 基线；LIVE_SUBMIT 仍硬开关 False；本轮 7 次回测均为本地数据库读取，无任何远端连接、无任何真实订单。

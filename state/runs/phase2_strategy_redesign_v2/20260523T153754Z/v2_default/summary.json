@@ -1,0 +1,26 @@
+{
+  "run_id": "v2_default",
+  "pool": [
+    "NVDA",
+    "MSFT",
+    "AVGO",
+    "TSM",
+    "TSLA",
+    "AMZN"
+  ],
+  "start": "2021-05-23",
+  "end": "2026-05-22",
+  "trading_days": 1256,
+  "init_cash": 100000.0,
+  "final_nav": 132488.3932,
+  "final_cash": 89807.4832,
+  "total_return_pct": 32.4884,
+  "annualised_return_pct": 5.8068,
+  "max_drawdown_pct": 6.1755,
+  "trade_count": 135,
+  "win_count": 34,
+  "loss_count": 31,
+  "fee_rate": 0.0003,
+  "slippage": 0.0,
+  "annual_trading_days": 252
+}

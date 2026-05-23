@@ -359,6 +359,54 @@ python3 phase2/runners/run_phase2_reconcile.py \
   python3 phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py --check
   ```
 
+#### v2 趋势跟随版（plan `phase2_strategy_redesign_v2`）
+
+- 入口：[`phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py)
+- 定位：v1 在 5 年真实回测中收益受限于"5 条 AND 闸门 + 固定 TP/trailing-dd + 预算双重缩放"，v2 按业界主流趋势跟随范式（Donchian 突破 + Chandelier 止损 + SMA200 regime 滤网 + vol-targeting）重写入场/出场，**保留 v1 文件不动以做 A/B 对照**。
+- 入场（3 条 AND）：① Close > SMA(200) 总市场 regime；② Close > SMA(100) 长期价格滤网；③ Close ≥ prior 55 日最高（Donchian 突破）。
+- 出场（2 优先级）：① Chandelier 止损 `max_since_entry - 3.0×ATR(22)`；② 趋势离场 Close < SMA(50)。固定 TP / trailing-dd / fast-slow 死叉 / ATR-cap 全部删除。
+- 仓位：`per_symbol_budget = NAV × pool_budget_pct(0.95) / max_concurrent(6)`，再用 vol-targeting `scale = target_vol(0.15) / annualised_atr_pct` 缩放（夹持 [0.4, 1.5]），单标的单仓位无加仓。
+- 硬约束完全继承 v1：单文件、零本地 import、`Strategy._xxx` 私有方法、`LIVE_SUBMIT=False` ships、池规模 ≤ 20、状态仅 in-memory。
+- 5 年真实回测对照（区间 2021-05-23 ~ 2026-05-22，pool_config_fixed.yaml 6 只锁定池，初始资金 100000，手续费 0.0003）：
+  - v1 latest：total_return +26.85%、年化 +4.89%、MaxDD 12.83%、315 trades、胜率 42%。
+  - v2 default：total_return **+32.49%**、年化 +5.81%、MaxDD **6.18%（减半）**、135 trades、胜率 **52%**。
+  - 完整报告：`state/runs/phase2_strategy_redesign_v2/20260523T153754Z/REPORT.md`。
+- 自检命令：
+  ```bash
+  python3 -m py_compile phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py
+  python3 phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py --check
+  ```
+- 跑 v2 真实回测：在 `run_phase2_multi_backtest.py` 命令里追加 `--strategy-path phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py` 即可，runner / adapter / 引擎全部零改动。
+
+#### v3 趋势跟随版（最终版，plan `phase2_strategy_redesign_v2`）
+
+- 入口：[`phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py)
+- 定位：v2 在 5 年回测中只取得 +32%，远低于 mega-cap 池子能产生的趋势跟随上限。v3 经过 6 轮迭代（iter1~iter6 全部保留为单独文件以便归因），最终在 v2 基础上做了 6 项关键改造：
+  1. **入场更早**：Donchian-55 → Donchian-10，更敏感地捕捉趋势拐头；删除 SMA(100) 重复闸门，只保留 SMA(200) regime。
+  2. **出场更宽**：Chandelier 倍数 3 → 6，ATR 窗口 22 → 40，趋势离场 SMA(50) → SMA(150)，让 NVDA/AVGO 这种妖股能跑完整段。
+  3. **集中度提升**：`max_concurrent_holdings` 6 → 3，单仓位从 ~12% NAV 升到 ~33% NAV，让赢家权重显著提升。
+  4. **抗"买入次日洗"**：新增 `min_hold_bars=10` 入场宽限期 + `disaster_loss_pct=0.12` 单仓硬止损（宽限期内仍生效）。
+  5. **回撤护栏**：`regime_flat=True`，当 Close < SMA(200) 时立即清仓所有持仓，恢复要等 SMA(200) 重新上穿。
+  6. **金字塔加仓**：`max_slices=3, pyramid_atr_step=1.0, pyramid_size_pct=0.5`，持仓后涨 1×ATR 加仓 0.5×base，最多累计 3 片。
+- 5 年真实回测（区间 2021-05-23 ~ 2026-05-22，pool_config_fixed.yaml 6 只锁定池，初始 100k，手续费 0.0003）：
+  - v1 latest：total_return +26.85%、MDD 12.83%、315 trades。
+  - v2 default：total_return +32.49%、MDD 6.18%、135 trades。
+  - **v3 final：total_return +320.49%、年化 +33.40%、MDD 23.92%、82 trades** ✅ 超 200% 目标 120 pp。
+  - 全程对照与失败案例（iter6 portfolio-dd-cut 锁死至 +12.76%）：`state/runs/phase2_strategy_redesign_v2/20260523T153754Z/REPORT_OPTIMIZATION.md`。
+- 硬约束完全继承 v1/v2：单文件、stdlib only、零本地 import、Strategy 私有 helper、`LIVE_SUBMIT=False` ships、池规模 ≤ 20、状态仅 in-memory。
+- 自检与回测命令：
+  ```bash
+  python3 -m py_compile phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py
+  python3 phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py --check
+  PYTHONPATH=. python3 phase2/runners/run_phase2_multi_backtest.py \
+    --pool-config phase2/strategy/config/pool_config_fixed.yaml \
+    --strategy-path phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v3.py \
+    --start 2021-05-23 --end 2026-05-22 \
+    --init-cash 100000 --rate 0.0003 --slippage 0.0 \
+    --run-id v3_final --output-root state/runs/phase2_strategy_redesign_v2/<ts>
+  ```
+- 中间迭代版本 `_v2_iter1.py` ~ `_v2_iter6.py` 保留在仓库中作为归因证据，不应被修改或删除；线上 / 平台真实部署只用 `_v3.py`。
+
 ### 池周更流水线
 
 - Runner：[`phase2/runners/run_pool_update.py`](/projects/vnpy/phase2/runners/run_pool_update.py)

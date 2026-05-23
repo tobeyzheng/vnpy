@@ -408,9 +408,22 @@ classic intraday / daily runner、legacy `LiveTradingTask`、以及部分 Futu �
 
 ### 结论
 
-当前“自适应量化引擎”已经有**可运行的评分、择时、策略选择骨架**，并且已经和上层 workflow / candidate input 体系接上。
+当前"自适应量化引擎"已经有**可运行的评分、择时、策略选择骨架**，并且已经和上层 workflow / candidate input 体系接上。
 但它仍然应该被描述为：
 
 - 一个**确定性、可解释、可继续扩展**的策略内核；
 - 一个适合被 `candidate_framework` / `backtest` / `readiness` 复用的中间层；
 - 而不是一个已经完成全自动 candidate discovery、全自动对账、全自动实盘执行的闭环系统。
+
+### 相关阅读：phase-② futumd 单文件策略
+
+`services/strategy/` 是**仓库内核**层，面向 vnpy 多 market 候选评分；
+而 [`phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py)
+和 v2 [`phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py`](/projects/vnpy/phase2/strategy/us_multi_symbol_phase2_strategy_futumd_v2.py)
+是**面向 Futu 平台手工上传**的单文件策略（zero local imports，stdlib only，
+state in-memory only）。两条线互不替换：
+- 内核层用于 candidate evaluation / readiness / 仿真链路；
+- futumd 单文件用于 Futu 平台真实部署 + 本仓库 5 年真实回测。
+v2 用 Donchian/Chandelier 趋势跟随重写入场出场，5 年回测优于 v1（详见
+[`docs/system_integration_guide.md`](/projects/vnpy/docs/system_integration_guide.md)
+"v2 趋势跟随版" 子章节）。
