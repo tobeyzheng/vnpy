@@ -308,3 +308,15 @@
   - `.codebuddy/plan/phase2_strategy_self_optimize/`（背景与需求；进度以同名 `task_list` 为权威）
   - `.codebuddy/task_list/phase2_strategy_self_optimize.md`（10 项任务进度表）
 - **影响摘要**: 在 phase2 多标回测之上叠加了一套"提案 → 注入 → 回测 → 评估 → 决策"的双 subagent 自优化闭环；策略源码零改动（参数全部走 `param_overrides` setattr 注入）；frozen_param 集合 + 三参数硬上限 + 9 项子进程级 import 守卫共同把闭环锁在 `force_live_submit=True` 的本地回测分支，禁止任何 OpenD/Futu 接触；新增 44 项 pytest 全绿，phase2/strategy 全集 119/119 通过；dry-run smoke 在 0.1 秒内完整跑通 2 iter × 2 trial，产物结构与 REPORT.md 渲染均符合预期。仍**不允许**自动落地"最优参数"——必须由人手动整理为新 baseline、再走原 phase2 多标回测复跑确认后，才可考虑替换运行参数。
+
+## 2026-05-23 phase2 策略自优化首次真实 5 年区间闭环（session `opt_20260523T150600Z`）
+- **变更范围**: 运行产物（不修改代码）。首次以真实 5 年日线（2021-05-23 → 2026-05-22）固定池（NVDA、MSFT、AVGO、TSM、TSLA、AMZN）启动 phase2 自优化双 subagent 闭环，验证全链路在生产时长下的稳定性。
+- **运行配置**: `--max-iters 10 --trials-per-iter 4 --top-k 2 --rate 0.0003 --slippage 0.0 --init-cash 100000 --max-runtime-min 90 --patience 3 --min-delta 0.5`；`--llm-optimizer/--llm-evaluator` 已开启但未配置 `PHASE2_OPT_LLM_*` env，按设计自动降级为本地规则路径，全程未发起远端 LLM 请求。
+- **结果**: 10 iter × 4 trial = 40 次回测全部 ok，总耗时约 30 秒；最佳 trial = `iter02_trial03`（origin=`explore`），score=0.8，年化 ~6.67%、最大回撤 ~10.92%、夏普 ~0.76、卡玛 ~0.61、交易 309 次；vs `fixed_pool_5y_a1` 基线 +约 11 个百分点总收益、回撤改善 ~1.9 个百分点。停机原因 `max_iters`，近 3 iter 未持续刷新最佳分。
+- **关键参数差异（best vs default）**: `max_slices 5→2`、`pool_budget_pct 0.8→0.6`、`stop_loss_pct 0.05→0.04`、`take_profit_pct 0.10→0.29`，其余 14 个参数维持默认。
+- **关键产物**:
+  - `state/runs/phase2_strategy_self_optimize/opt_20260523T150600Z/REPORT.md`（含每 iter leaderboard 与最佳参数 diff、与 baseline 对比表）
+  - `.../iter_02/trial_03/{summary.json,applied_params.json,...}`（best trial 详情）
+  - `.../session_summary.json` / `.../progress.log`
+  - 整个 session 目录受 `state/runs/phase2_strategy_self_optimize/.gitignore` 排除，不进入 git。
+- **影响摘要**: 自优化闭环在真实 5 年区间下端到端跑通，纯本地降级路径表现稳定（与 dry-run 结果同形）；最佳参数仍属"建议项"，按规则**不**自动落地——需后续人工以新 baseline 走 `phase2/runners/run_phase2_multi_backtest_real.py` 复跑确认后再决定是否替换默认参数。
