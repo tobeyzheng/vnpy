@@ -368,7 +368,22 @@ class Strategy(StrategyBase):
             cond_trend = False
             if slow_ma > 0:
                 cond_trend = (slow_ma - fast_ma) / slow_ma > 0.005 or fast_ma > slow_ma
-            cond_momentum = rsi_value < float(self.rsi_oversold) + 5 and rsi_value >= st["last_rsi"]
+            # A1 fix: split momentum into two OR'd regimes so the strategy
+            # can take both "oversold-bounce" (RSI<35 & rising) AND
+            # "trend-follow" (RSI in mid-strong zone & rising) entries.
+            # The original single-clause version effectively required a
+            # freshly-bouncing RSI alongside an up-trend, which is
+            # empirically near-impossible on mega-caps outside of brief
+            # 2022-Q1-style windows.
+            cond_momentum_bounce = (
+                rsi_value < float(self.rsi_oversold) + 5
+                and rsi_value >= st["last_rsi"]
+            )
+            cond_momentum_trend = (
+                float(self.rsi_oversold) + 20 <= rsi_value <= float(self.rsi_overbought)
+                and rsi_value >= st["last_rsi"]
+            )
+            cond_momentum = cond_momentum_bounce or cond_momentum_trend
             cond_volume = vol_ratio > float(self.volume_ratio_threshold)
             cond_volatility = atrp <= float(self.atr_pct_max)
             cond_concurrent = held_count < int(self.max_concurrent_holdings)

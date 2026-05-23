@@ -47,21 +47,21 @@
     },
     "US.AMZN|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.AMZN",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:22",
+      "last_updated_at": "2026-05-23T20:39:46",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
     },
     "US.AVGO|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.AVGO",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:22",
+      "last_updated_at": "2026-05-23T20:39:43",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
     },
     "US.GOOGL|K_DAY|qfq": {
       "autype": "qfq",
@@ -92,12 +92,12 @@
     },
     "US.MSFT|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.MSFT",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:21",
+      "last_updated_at": "2026-05-23T20:39:42",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
     },
     "US.NVDA|K_5M|qfq": {
       "autype": "qfq",
@@ -119,21 +119,30 @@
     },
     "US.NVDA|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.NVDA",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:21",
+      "last_updated_at": "2026-05-23T20:39:41",
       "source": "futu_opend",
       "start": "2020-01-01"
     },
     "US.TSLA|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.TSLA",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:22",
+      "last_updated_at": "2026-05-23T20:39:45",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
+    },
+    "US.TSM|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-22",
+      "futu_code": "US.TSM",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-23T20:39:44",
+      "source": "futu_opend",
+      "start": "2021-05-23"
     },
     "US.UNH|K_DAY|qfq": {
       "autype": "qfq",

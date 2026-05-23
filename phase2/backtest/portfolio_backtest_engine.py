@@ -180,6 +180,37 @@ class PortfolioBacktestEngine:
             )
             strategy.LIVE_SUBMIT = True
 
+        # 3.2 Backtest-only override of the strategy's hard-coded pool.
+        # The futumd strategy ships a hard-coded ``self._pool`` (12 mega-caps)
+        # to keep the file zero-dependency on the Futu sandbox.  In a *local*
+        # backtest, the engine owns the authoritative pool list (loaded from
+        # ``pool_config*.yaml``).  We override ``strategy._pool`` and rebuild
+        # ``strategy._state`` so the strategy iterates exactly the symbols the
+        # engine has bar data for.  This block has NO effect on the futu
+        # platform path because the engine never runs there.
+        if hasattr(strategy, "_pool") and hasattr(strategy, "_state"):
+            strategy._pool = list(self.pool_symbols)
+            strategy._state = {
+                sym: {
+                    "entry_price": 0.0,
+                    "used_slices": 0,
+                    "bars_since_last_entry": 0,
+                    "bars_since_last_exit": 1000000,
+                    "last_entry_price": 0.0,
+                    "highest_price": 0.0,
+                    "base_capital": 0.0,
+                    "last_signal": "",
+                    "last_fast_ma": 0.0,
+                    "last_slow_ma": 0.0,
+                    "last_rsi": 50.0,
+                }
+                for sym in self.pool_symbols
+            }
+            logger.info(
+                "A1 pool-injection: strategy._pool overridden to %d symbols (%s)",
+                len(strategy._pool), ", ".join(strategy._pool),
+            )
+
         # 4. Date-union driver.
         n_days = len(all_dates)
         for i, today in enumerate(all_dates):

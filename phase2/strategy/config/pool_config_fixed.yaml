@@ -1,0 +1,52 @@
+# 美股多标的量化策略 阶段 ② —— 固定标的池（人工锁定，禁止自动更新）
+# ---------------------------------------------------------------------------
+# Locked pool. Hand-picked by the user; MUST NOT be modified by
+# run_pool_update.py or any automated process.
+#
+# 维护说明：
+# 1) 本文件仅 6 个标的，全部为美股大盘高流动性龙头。
+# 2) `locked: true` 是显式标记，告知所有自动化流程：禁止增删 / 重排该池。
+# 3) run_phase2_multi_backtest.py 通过 --pool-config 参数显式指向本文件来回测。
+# 4) 池规模上限 = 20（pool_loader 强约束），当前 6 < 20，合规。
+# 5) 任何变更必须由用户手工编辑，并同步追加 docs/project_operation_log.md 记录。
+# ---------------------------------------------------------------------------
+
+version: 1
+currency: USD
+max_pool_size: 20
+locked: true                          # 人工锁定，禁止自动化流程改写
+locked_reason: "user-pinned 6-symbol pool for fixed-pool multi-factor backtest"
+
+defaults:
+  market: US
+  liquidity_min_adv60_usd: 50000000   # 单标的 60 日 ADV 不低于 5000 万美元
+  price_min: 5.0
+  price_max: 2000.0                   # 上调以覆盖 AVGO 拆股前/高价区间
+  atr_pct_max: 0.08
+  earnings_freeze_days: 2
+
+symbols:
+  - symbol: NVDA
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: MSFT
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: AVGO
+    market: US
+    market_cap_bucket: large
+    sector: Technology
+  - symbol: TSM
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: TSLA
+    market: US
+    market_cap_bucket: large
+    sector: ConsumerDiscretionary
+  - symbol: AMZN
+    market: US
+    market_cap_bucket: mega
+    sector: ConsumerDiscretionary

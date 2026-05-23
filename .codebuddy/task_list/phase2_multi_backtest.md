@@ -4,7 +4,7 @@
 
 ## 当前阶段
 
-T12 完成；引擎默认 force_live_submit=True 已上线（futumd 源码零改动）。等待用户确认第二次提交推送。
+A1 修复完成（引擎注入回测真实池 + 策略 cond_momentum 拆分为 bounce/trend OR），固定池 5 年回测 NAV 全程波动正常，6 标全员成交。等待用户确认 A1 提交推送。
 
 ## 任务表
 
@@ -24,7 +24,12 @@ T12 完成；引擎默认 force_live_submit=True 已上线（futumd 源码零改
 | -- | -- | 第一次提交推送（已完成 commit 0678fa2） | git commit / push |
 | T12 | 已完成 | 12 标 1 年真回测 smoke（trade_count=23, total_return=+1.34%, max_dd=3.59%） | state/runs/phase2_multi_backtest/smoke_2025_2026_v2/ |
 | T13 | 已完成 | 引擎引入 force_live_submit 开关（默认 True，回测才能看到 place_limit intent；可通过 --respect-live-submit 关闭） | phase2/backtest/portfolio_backtest_engine.py + phase2/runners/run_phase2_multi_backtest.py |
-| -- | -- | 第二次提交推送（需用户「确认提交推送」） | git commit / push |
+| -- | -- | 第二次提交推送（已完成） | git commit / push |
+| T14 | 已完成 | 固定池 6 标 5 年 baseline 回测（trade_count=18, total_return=-1.02%, 4 年 NAV 卡死） | state/runs/phase2_multi_backtest/fixed_pool_5y_baseline/ |
+| T15 | 已完成 | A1 修复 BUG#1：引擎在 initialize() 后注入 `strategy._pool=pool_symbols` 并重建 `_state`（仅本地回测路径，futumd 源码硬编码池保持 12，futu 沙箱契约不变） | phase2/backtest/portfolio_backtest_engine.py |
+| T16 | 已完成 | A1 修复 BUG#2：`cond_momentum` 拆分为 `cond_momentum_bounce`(RSI<35 且上升) **或** `cond_momentum_trend`(RSI∈[50,65] 且上升)，解决"超卖反弹+趋势向上"几乎不可能同时成立的逻辑卡死 | phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py |
+| T17 | 已完成 | A1 全套验证：futumd `--check` smoke + `phase2/strategy/tests/` 75 passed + 重跑固定池 5 年（trade_count=315，total_return=+26.85%，annualised=+4.89%，max_dd=12.83%，6 标全员成交） | state/runs/phase2_multi_backtest/fixed_pool_5y_a1/ |
+| -- | -- | 第三次提交推送（A1，需用户「确认提交推送」） | git commit / push |
 
 ## 单测结果
 
