@@ -10,7 +10,7 @@
 - 当项目结构、主入口脚本、默认参数、状态产物路径、阶段定义发生变化时，必须同步更新本文档和 `docs/adaptive_quant_engine_design.md`。
 - 新增、删除、重命名入口脚本时，文档更新应与代码变更在同一轮提交中完成。
 - 如果代码与文档不一致，以代码为准；发现偏差后，下一次相关修改必须补齐文档。
-- 对其他协作者来说，这两份文档是理解项目的第一入口，不要让它们长期停留在“设计草稿”状态。
+- 对其他协作者来说，这两份文档是理解项目的第一入口，不要让它们长期停留在"设计草稿"状态。
 - 框架、需求、入口等改动完成后，还应同步检查 [project_operation_log.md](/projects/vnpy/docs/project_operation_log.md) 是否需要补历史记录。
 
 ### 协作治理补充
@@ -21,7 +21,7 @@
 
 ### 一句话理解当前项目主线
 
-当前项目不是单一策略脚本，而是一条“**候选准备 → 健康检查 → 观察标筛选 → 回测证据 → readiness 门禁 → 仿真/实盘入口隔离**”的多层结构。
+当前项目不是单一策略脚本，而是一条"**候选准备 → 健康检查 → 观察标筛选 → 回测证据 → readiness 门禁 → 仿真/实盘入口隔离**"的多层结构。
 其中，推荐的第一阅读入口是：
 
 1. `scripts/quant_workflow/run_quant_workflow.py`
@@ -53,7 +53,7 @@
   - 仅在显式传入 `--confirm` 时才真正执行目标入口
   - 当前封装的子命令包括 `check`、`plan`、`research`、`sim-gate`、`live-gate`、`backtest`、`us-sim`
   - 会在执行前打印解析后的命令、是否触达 OpenD / 账户 / SIM 状态、预期输出文件和交易影响说明
-  - 当前**不暴露** `us-live` 直通命令，避免把真实 live 入口误包装成“一键执行”
+  - 当前**不暴露** `us-live` 直通命令，避免把真实 live 入口误包装成"一键执行"
 - **`scripts/quant_workflow/run_quant_workflow.py`**：当前推荐的总入口。
   - 默认 `--preset trading_full`
   - 默认 `--mode plan`
@@ -97,9 +97,9 @@
   - classic strategy 的 `on_init() -> load_bar()` warmup 历史 bar 当前只用于指标/模型预热，不再通过 execution hook 写入正式 `OrderStateStore`；初始化阶段出现的历史信号不会污染正式 dry-run / Futu 模拟 / Futu 实盘订单目录。
   - warmup 载入现在会按策略 `data_interval` 显式换算 `load_bar(days=...)` 所需的自然日天数：`1m` 分钟策略会把模型所需 warmup bar 数折算成一个保守的交易日窗口（并附带周末/节假日缓冲），然后用 `Interval.MINUTE` 预热；`1d` 日级策略则继续按所需 bar 数直接加载日线天数。这样可避免把 `480` 根 `1m` 预热 bar 误当成 `480` 个自然日去回放，导致启动长时间停留在 `warmup`。
   - runner 现仅在**真实决策点**或**有意义状态变化**时输出 `intraday bar result` 日志：`warmup` bar 不打印，普通非决策 `1m` bar 不打印；仅当当前 `bar.datetime` 命中策略信号评估边界（例如 `signal_interval_minutes=15` 时的 `:00/:15/:30/:45` 分钟边界），或本轮出现审批通过、风控拦截、异常、活跃订单变化时，才记录 `result`、`last_signal`、`approved_delta`、`blocked_delta`、`blocked_by_gate`、`pos` 与 `active_orders`。这样既能保留排障所需的关键轨迹，又避免启动 warmup 和日常非决策 bar 刷屏，同时不会再因策略内部 `bars` 缓冲区截断而错过后续决策点日志。
-  - 为了继续排查“进程活着但分钟日志静默”的场景，intraday runner 还会在非 warmup 的 live `on_bar` 入口/出口输出 `intraday debug checkpoint`，记录 `phase`、`bar_time`、`decision_bar`、`bars_seen`、`bars_cached`、`last_signal`、`pos`、`active_orders` 与 `raw_score`；同时主循环每 60 秒输出一次 `intraday runtime heartbeat`，汇总 `bars_seen`、`last_bar_time`、`seconds_since_last_bar`、审批/拦截累计值等，用来区分“根本没收到新 bar”与“已经收到 bar 但卡在策略内部某一步”。
+  - 为了继续排查"进程活着但分钟日志静默"的场景，intraday runner 还会在非 warmup 的 live `on_bar` 入口/出口输出 `intraday debug checkpoint`，记录 `phase`、`bar_time`、`decision_bar`、`bars_seen`、`bars_cached`、`last_signal`、`pos`、`active_orders` 与 `raw_score`；同时主循环每 60 秒输出一次 `intraday runtime heartbeat`，汇总 `bars_seen`、`last_bar_time`、`seconds_since_last_bar`、审批/拦截累计值等，用来区分"根本没收到新 bar"与"已经收到 bar 但卡在策略内部某一步"。
   - `state/runs/<execution_env>/events.jsonl` 记录 execution hook 的正式事件轨迹，例如 `order_approved`、`order_blocked`、`order_submitted`；这些事件由 `ExecutionGuardPipeline` 在订单审批链路中逐条追加，用于事后审计、排查某次信号为什么被拒绝/批准，以及供 dual-run / preflight / reconciliation 等只读工具统计最近运行痕迹。
-  - `state/runs/<execution_env>/orders/*.json` 保存每个被正式审批过的 `OrderState` 快照；其主要用途是跨重启幂等、防止重复请求、以及把后续 OMS / broker 回报与项目内 `request_id` 重新关联。它不会直接触发下单，但会影响后续同一请求是否被视为重复、以及恢复阶段如何识别“哪些订单已经进入正式生命周期”。
+  - `state/runs/<execution_env>/orders/*.json` 保存每个被正式审批过的 `OrderState` 快照；其主要用途是跨重启幂等、防止重复请求、以及把后续 OMS / broker 回报与项目内 `request_id` 重新关联。它不会直接触发下单，但会影响后续同一请求是否被视为重复、以及恢复阶段如何识别"哪些订单已经进入正式生命周期"。
 - **`scripts/classic_multifactor/run_daily_rebalance.py`**：日频再平衡 runner，带执行保护，属于 simulation/live 邻近入口。
   - 当 CLI 与 config 都未提供 `rebalance_time` 时，runner 现在会从 `services/strategy/market_rules.py` 按 market 自动回退到默认日频调仓时间（当前 HK / US 默认均为 `15:55`），减少日频配置重复写死时间参数。
   - 当当前时间尚未到 `rebalance_time` 时，runner 会先输出一条 `daily runner waiting` 启动等待日志，并在等待期间每 10 分钟输出一条 `daily runner heartbeat`，记录当前本地时间、目标调仓时间和剩余分钟数，便于确认任务仍在静默等待而非假死。
@@ -218,7 +218,7 @@
 - `CandidateScoringService` 当前的 `liquidity_score` / `flow_score` 已升级为多因子启发式口径：优先看绝对成交额，再结合换手率、点差/深度代理和文本低流动性惩罚，避免仅凭 `turnover_ratio / 2` 把大票误判为 `thin_liquidity`。
 - `services/evaluation_hub/candidate_framework.py` 当前直接复用 `CandidateScoringService` 暴露的共享流动性 helper，因此候选评分层与 workflow 观察层对 `thin_liquidity` 的判断口径已保持一致。
 - 候选准备、workflow summary、artifact store、renderer、Knot `decision_time` 等对外时间戳当前统一按北京时间（`Asia/Shanghai`，`+08:00`）写入，便于直接与本机时间对齐。
-- `state/runs/candidate_inputs.prepare.report.json` 会记录本轮写入目标、market 覆盖、`provider_merge_policy=symbol_merge_dynamic_preferred`、缺失字段统计、评分模型信息、是否请求 `include_market_data` / `knot_runtime`、以及各目标的 enrich 元数据与 warning，便于追溯“这次 workflow 看到了什么候选池”。
+- `state/runs/candidate_inputs.prepare.report.json` 会记录本轮写入目标、market 覆盖、`provider_merge_policy=symbol_merge_dynamic_preferred`、缺失字段统计、评分模型信息、是否请求 `include_market_data` / `knot_runtime`、以及各目标的 enrich 元数据与 warning，便于追溯"这次 workflow 看到了什么候选池"。
 - `enrichment.knot` 当前会额外记录 `requested_runtime_mode`、`runtimes_used`、`single_runtime_effective` 与 `fallback_used`，用于审计这次 prepare 是否保持单一 runtime、是否发生 runtime fallback。
 - prepare 写回阶段会把候选 payload / report 中的 `NaN`、`Infinity` 等非有限数值统一清洗为 `null`；这类值通常来自 Futu snapshot 中对当前标的不适用的扩展字段。
 - `ArtifactStore` 会自动为 workflow artifact 追加 `next_step_suggestions`、`confirmation_requirements`、`artifact_summary`、`traceability`、`rendered_formats` 和 `risk_labels`。
@@ -264,7 +264,7 @@
 这意味着：
 
 - 当前仓库已经具备 HK 顶层入口与 workflow/readiness 可识别能力；
-- 但**HK live 仍不能被表述为“可直接放行执行”**，因为是否可升级取决于本地 `SIM` 验收、`reconciliation`、审批硬开关和 risk audit 证据链；
+- 但**HK live 仍不能被表述为"可直接放行执行"**，因为是否可升级取决于本地 `SIM` 验收、`reconciliation`、审批硬开关和 risk audit 证据链；
 - quant workflow 对 HK execution 仍应保持 **preview-first / evidence-first** 口径，只有在本地 readiness 证据完整时才可进入人工确认环节。
 
 ### 给协作者的最短上手建议
@@ -388,7 +388,7 @@ python3 phase2/runners/run_phase2_reconcile.py \
   - 通过 `vnpy.trader.database.get_database()` 拉本地多标日线，按交易日 union 排序驱动；每日：写入桶 → `strategy.handle_data()` → 用 `all_dates[i+1]` 开盘价撮合 → mark-to-close 写入 equity 曲线。
   - 输出 4 份产物到 `state/runs/phase2_multi_backtest/<run_id>/`：`equity_curve.csv` / `positions_daily.csv` / `trade_ledger.csv` / `summary.json`。
   - **不连 OpenD / Futu / 任何远端服务**；`place_limit` 被 adapter 拦截只入内存队列。
-  - **回测专用覆盖**：引擎默认 `force_live_submit=True`，在 `strategy.initialize()` 之后把 `strategy.LIVE_SUBMIT` 翻转为 `True`。原因是 futumd 策略同文件中 `LIVE_SUBMIT=False` 分支会跳过 `place_limit` 只发 `alert`——这是发布到 Futu 平台后防止误下单的硬门，但也导致本地回测拿不到交易。adapter 的 `place_limit` 本身**只写内存**，不可能发出真实订单，所以该覆盖只在本地回测语境内生效。CLI 可用 `--respect-live-submit` 返回“dry-run alert”语义。该设计使 futumd 策略源码零修改即可迁移到 Futu 平台（平台拿到的 `LIVE_SUBMIT` 仍为 `False`）。
+  - **回测专用覆盖**：引擎默认 `force_live_submit=True`，在 `strategy.initialize()` 之后把 `strategy.LIVE_SUBMIT` 翻转为 `True`。原因是 futumd 策略同文件中 `LIVE_SUBMIT=False` 分支会跳过 `place_limit` 只发 `alert`——这是发布到 Futu 平台后防止误下单的硬门，但也导致本地回测拿不到交易。adapter 的 `place_limit` 本身**只写内存**，不可能发出真实订单，所以该覆盖只在本地回测语境内生效。CLI 可用 `--respect-live-submit` 返回"dry-run alert"语义。该设计使 futumd 策略源码零修改即可迁移到 Futu 平台（平台拿到的 `LIVE_SUBMIT` 仍为 `False`）。
 - CLI 入口：[`phase2/runners/run_phase2_multi_backtest.py`](/projects/vnpy/phase2/runners/run_phase2_multi_backtest.py)
 
 ```bash
@@ -490,3 +490,69 @@ python3 phase2/runners/run_phase2_live_daily.py \
 - 仅天级别（每个 rebalance_date 触发一次 handle_data）；分钟级 / Tick 级需要新开 plan，并补充 `MinuteTradeGuard` 限频 gate。
 - dry_run 不连 OpenD；行情来自本地 vnpy 数据库（与 phase2 多标回测同源）。
 - REAL 模式真实下单的实际权限由 OpenD 与券商账户决定；本仓库的硬开关与人工审批仅是**最低**门槛，不构成对真实资金的足额保障。
+
+## 阶段③ phase2 策略自我优化闭环（双 subagent）
+
+`phase2.optimize` 子包在 phase2 回测引擎之上叠加一个 **Optimizer/Evaluator 双 subagent** 闭环：每轮提案 N 个候选参数 → 通过 `param_overrides` 注入 `phase2/backtest/portfolio_backtest_engine.py` 的本地回测分支 → 评估器多维打分 + ranking → 决定 continue / stop。**纯本地回测路径，永不连 OpenD/Futu。**
+
+入口与默认配置：
+
+- 入口脚本：`phase2/runners/run_phase2_strategy_self_optimize.py`
+- 搜索空间：`phase2/strategy/config/optimize_search_space.yaml`（18 个安全可调参数 + frozen 列表）
+- 池：默认沿用 `phase2/strategy/config/pool_config_fixed.yaml`（固定池：NVDA / MSFT / AVGO / TSM / TSLA / AMZN）
+- 产物根目录：`state/runs/phase2_strategy_self_optimize/<session_id>/`
+  - `iter_<k>/proposals.json` + `evaluations.json` + `leaderboard.csv`
+  - `iter_<k>/trial_<m>/{proposal,params.yaml,applied_params.json,trial_result,error.log,equity_curve.csv,trade_ledger.csv,positions_daily.csv,summary.json}`
+  - 顶层：`session_summary.json` + `progress.log` + `REPORT.md`
+
+常用命令：
+
+```bash
+# dry-run（不跑回测，仅产出提案与骨架）
+python3 phase2/runners/run_phase2_strategy_self_optimize.py \
+    --dry-run --max-iters 2 --trials-per-iter 2 \
+    --start 2025-01-02 --end 2025-01-10
+
+# 完整 5 年闭环（建议先用户确认）
+python3 phase2/runners/run_phase2_strategy_self_optimize.py \
+    --max-iters 10 --trials-per-iter 4 \
+    --start 2021-05-23 --end 2026-05-22 \
+    --init-cash 100000 --rate 0.0003
+
+# 打印某个会话的累计 leaderboard
+python3 phase2/runners/run_phase2_strategy_self_optimize.py \
+    --print-leaderboard <session_id>
+```
+
+硬隔离与安全约束：
+
+- 包级守卫 `phase2.optimize.assert_no_live_imports()`：CLI 启动 + 每次 `run_session` 前调用，禁止 `futu`、`phase2.live.*` 出现在 `sys.modules`。
+- 9 个子进程级 pytest（`test_no_live_imports.py`）证明任意子模块导入路径都不会拉入禁止包。
+- frozen_param 集合 `{LIVE_SUBMIT, _pool, max_orders_per_day}` 由 search_space loader + Optimizer + 引擎 `param_overrides` 三重拒绝。
+- 三个高风险参数硬上限固化在 `HARD_CEILINGS`：`pool_budget_pct ≤ 0.95`、`max_concurrent_holdings ≤ 8`、`stop_loss_pct ∈ [0.02, 0.10]`，超限的 YAML 直接拒绝加载。
+- 引擎参数注入在 `strategy.initialize()` 之后立刻完成，注入完成后引擎做 `getattr == value` 的一致性断言；任何不一致由 trial_runner 标 `injection_mismatch` 并继续下一 trial。
+- `--respect-live-submit` 不暴露给 CLI，trial_runner 同样会拒绝该参数；闭环始终在 `force_live_submit=True` 的本地回测分支。
+
+可选 LLM 通道：
+
+- 通过 `--llm-optimizer` / `--llm-evaluator` 启用；两者都失败/未配置即降级为本地规则。
+- 走 `vnpy_llm.OpenAICompatibleClient.complete_json`，需配置环境变量：
+  - `PHASE2_OPT_LLM_BASE_URL`、`PHASE2_OPT_LLM_API_KEY`、`PHASE2_OPT_LLM_MODEL`
+  - 可选：`PHASE2_OPT_LLM_API_TYPE`（`openai` | `knot_agui`）、`PHASE2_OPT_LLM_API_USER`、`PHASE2_OPT_LLM_TIMEOUT`、`PHASE2_OPT_LLM_TEMPERATURE`
+- LLM 仅产出 JSON，由本地 schema 校验后才注入；任何字段越界即丢弃单条提案，绝不写入交易侧。
+
+测试覆盖（44 项新增 + 既有 75 项 = 119 全绿）：
+
+- `phase2/strategy/tests/test_optimize_search_space.py` 10 项
+- `phase2/strategy/tests/test_optimizer_subagent.py` 8 项
+- `phase2/strategy/tests/test_evaluator_subagent.py` 8 项
+- `phase2/strategy/tests/test_optimize_trial_runner.py` 5 项
+- `phase2/strategy/tests/test_optimize_coordinator_dryrun.py` 3 项
+- `phase2/strategy/tests/test_no_live_imports.py` 9 项（子进程隔离断言）
+
+边界与限制：
+
+- 闭环目前 **串行** 执行 trial；引入并行后必须在 trial_runner 内补 `multiprocessing.Lock` 写产物，并在 SessionPaths 增加每 worker 子目录约定。
+- Coordinator 不会回写策略源码；任何由优化得到的"最优参数"都需要由人手动整理为新的 baseline、再走原 phase2 多标回测流程复跑确认。
+- 默认 stop_rules：`max_iters=10`、`patience=3`、`min_delta=0.5`、`max_runtime_min=90`；磁盘剩余 < 1 GB 触发 `stop_reason=disk_low`。
+- 评估器使用 stdlib min-max 归一化（pure Python，零 numpy/pandas 依赖），样本量在 phase2 当前规模（≤ 数千 trial）下足够；若后续要做 walk-forward 多窗口对比，需要在 evaluator 内补 fold 维度。

@@ -1,0 +1,10 @@
+# Self-optimization sessions are intentionally excluded from version
+# control: they contain large CSVs (equity_curve / positions_daily /
+# trade_ledger), per-iter JSON proposals & evaluations, and a final
+# REPORT.md. They are reproducible from the source code + search-space
+# YAML and must not be diffed in PRs.
+#
+# Keep this file (and the directory) tracked, but ignore everything
+# below it.
+*
+!.gitignore

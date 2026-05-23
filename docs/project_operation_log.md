@@ -279,3 +279,32 @@
   - `.codebuddy/plan/phase2_live_trading/`（背景与需求；进度以同名 `task_list` 为权威）
   - `.codebuddy/task_list/phase2_live_trading.md`（10 项任务进度表）
 - **影响摘要**: 在 phase2 回测之上补齐了真实 OpenD 连接 + SIM/REAL 天级别 live 交易闭环；4 级 gate + 6 开关 + 状态机 + 三态分目录产物全部可单测。phase2 现有 75 个回测单测全数复跑通过；新增 132 项 live 单测（phase2/ 全集 215/215，1.06s）；dry_run smoke 已跑通产物落盘于 `state/runs/phase2_live/dry_run/smoke_dry_run_t10/`（`daily_report.json` + `positions_snapshot.csv` + 空 `orders/`）；既有 `phase2/strategy/*` 与 `phase2/backtest/*` 源码零改动；`tmp/` 与 `scripts/classic_multifactor/` 零改动。仍**不允许**直接连真实账户下单——必须 6 开关全置 + 人工审批后再动手。
+
+## 2026-05-23 phase2 策略自我优化闭环（双 subagent，纯本地回测）
+
+- **变更范围**: 在 phase2 之上新增 `phase2.optimize` 子包与 `phase2/runners/run_phase2_strategy_self_optimize.py` CLI；引擎补一个安全的 `param_overrides` 注入钩子；新增搜索空间 YAML 与 6 个 pytest 文件；同步 `docs/system_integration_guide.md`、`.codebuddy/task_list/phase2_strategy_self_optimize.md`。
+- **关键文件**:
+  - `phase2/optimize/__init__.py`（包级 `assert_no_live_imports` 守卫）
+  - `phase2/optimize/session.py`（`SessionPaths`、session_id 校验、与 `phase2_multi_backtest` 的命名空间冲突保护）
+  - `phase2/optimize/io_schemas.py`（`Proposal` / `TrialResult` / `Evaluation` / `IterEvaluations` / `LeaderboardRow` / `SessionSummary` + JSON/CSV 原子写）
+  - `phase2/optimize/search_space.py`（YAML 加载、frozen 拒绝、`HARD_CEILINGS` 防御）
+  - `phase2/optimize/trial_runner.py`（构建 `PortfolioBacktestEngine(force_live_submit=True, param_overrides=...)`，捕获异常 → `injection_mismatch` / `failed`）
+  - `phase2/optimize/optimizer.py`（grid / random / local-perturb / explore + LLM 钩子失败降级）
+  - `phase2/optimize/evaluator.py`（多维归一化打分 + ranking + continue/stop 决策 + 5 项诊断）
+  - `phase2/optimize/coordinator.py`（主循环；progress.log；resume 支持；磁盘下限 1 GB）
+  - `phase2/optimize/llm_bridge.py`（`OpenAICompatibleClient` 包装；`PHASE2_OPT_LLM_*` env vars；任何失败返回空降级）
+  - `phase2/optimize/reporter.py`（`REPORT.md` + 与 `fixed_pool_5y_a1` 基线对比表）
+  - `phase2/runners/run_phase2_strategy_self_optimize.py`（CLI，含 `--dry-run` / `--resume` / `--print-leaderboard` / `--llm-*`）
+  - `phase2/backtest/portfolio_backtest_engine.py`（新增 `param_overrides: Optional[Dict[str, Any]]`，在 `initialize()` 之后做 `setattr` + `getattr==value` 一致性断言）
+  - `phase2/strategy/config/optimize_search_space.yaml`（18 个安全可调参数 + frozen + 硬上限）
+  - `phase2/strategy/tests/test_optimize_search_space.py`（10 项）
+  - `phase2/strategy/tests/test_optimizer_subagent.py`（8 项）
+  - `phase2/strategy/tests/test_evaluator_subagent.py`（8 项）
+  - `phase2/strategy/tests/test_optimize_trial_runner.py`（5 项）
+  - `phase2/strategy/tests/test_optimize_coordinator_dryrun.py`（3 项）
+  - `phase2/strategy/tests/test_no_live_imports.py`（9 项子进程隔离断言）
+  - `state/runs/phase2_strategy_self_optimize/.gitignore`（产物目录占位 + 排除）
+  - `docs/system_integration_guide.md`（新增"阶段③ phase2 策略自我优化闭环"章节）
+  - `.codebuddy/plan/phase2_strategy_self_optimize/`（背景与需求；进度以同名 `task_list` 为权威）
+  - `.codebuddy/task_list/phase2_strategy_self_optimize.md`（10 项任务进度表）
+- **影响摘要**: 在 phase2 多标回测之上叠加了一套"提案 → 注入 → 回测 → 评估 → 决策"的双 subagent 自优化闭环；策略源码零改动（参数全部走 `param_overrides` setattr 注入）；frozen_param 集合 + 三参数硬上限 + 9 项子进程级 import 守卫共同把闭环锁在 `force_live_submit=True` 的本地回测分支，禁止任何 OpenD/Futu 接触；新增 44 项 pytest 全绿，phase2/strategy 全集 119/119 通过；dry-run smoke 在 0.1 秒内完整跑通 2 iter × 2 trial，产物结构与 REPORT.md 渲染均符合预期。仍**不允许**自动落地"最优参数"——必须由人手动整理为新 baseline、再走原 phase2 多标回测复跑确认后，才可考虑替换运行参数。

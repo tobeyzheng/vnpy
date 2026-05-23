@@ -106,6 +106,16 @@ class PortfolioBacktestEngine:
     # the "alert-only" branch.)
     force_live_submit: bool = True
 
+    # Optional per-trial parameter overrides applied via setattr() right
+    # after ``strategy.initialize()`` (and after the LIVE_SUBMIT / _pool
+    # injections). The phase2 self-optimization loop uses this hook to
+    # inject Optimizer-proposed safe_param values without touching the
+    # strategy source file. The engine asserts post-injection that
+    # ``getattr(strategy, k) == v`` for every key/value pair; mismatches
+    # raise ``RuntimeError`` so the trial_runner can mark the trial
+    # ``injection_mismatch``.
+    param_overrides: Optional[Dict[str, Any]] = None
+
     # Internals (populated by run()).
     _runtime: Optional[PortfolioRuntime] = field(default=None, init=False, repr=False)
     _trades: List[TradeRecord] = field(default_factory=list, init=False, repr=False)
@@ -209,6 +219,33 @@ class PortfolioBacktestEngine:
             logger.info(
                 "A1 pool-injection: strategy._pool overridden to %d symbols (%s)",
                 len(strategy._pool), ", ".join(strategy._pool),
+            )
+
+        # 3.3 Per-trial param_overrides (phase2 strategy self-optimization).
+        # Applied last so optimizer proposals always win over defaults
+        # written by ``initialize()``. Frozen attributes (``LIVE_SUBMIT``,
+        # ``_pool``, ``max_orders_per_day``) MUST be filtered out by the
+        # trial_runner *before* we get here; the engine itself does not
+        # re-validate against the search space — it is intentionally
+        # search-space-agnostic.
+        if self.param_overrides:
+            for key, value in self.param_overrides.items():
+                if not hasattr(strategy, key):
+                    raise RuntimeError(
+                        f"param_overrides references unknown strategy attribute "
+                        f"{key!r}; refusing to setattr to avoid silent typos."
+                    )
+                setattr(strategy, key, value)
+                got = getattr(strategy, key)
+                if got != value:
+                    raise RuntimeError(
+                        f"param injection mismatch on {key!r}: "
+                        f"expected {value!r}, got {got!r}"
+                    )
+            logger.info(
+                "param_overrides applied: %d keys (%s)",
+                len(self.param_overrides),
+                ", ".join(sorted(self.param_overrides.keys())),
             )
 
         # 4. Date-union driver.

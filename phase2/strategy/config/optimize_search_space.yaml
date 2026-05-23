@@ -1,0 +1,155 @@
+# Search space for phase2 strategy self-optimization
+#
+# Hard rules (enforced by phase2/optimize/search_space.py):
+# - The keys at the top level under `params:` MUST match the
+#   show_variable() attribute names on the Strategy instance in
+#   phase2/strategy/us_multi_symbol_phase2_strategy_futumd.py.
+# - The names listed in `frozen:` cannot appear under `params:`. The
+#   loader rejects the file if they do.
+# - For numeric params, `min` and `max` are *inclusive* and the loader
+#   asserts default >= min and default <= max.
+# - `step` (if present) is only used by the grid sampler; random and
+#   local-perturb samplers ignore it.
+#
+# Hard ceilings inherited from requirement 2.2 (cannot be exceeded by
+# any proposal, even if a wider yaml accidentally ships):
+#   pool_budget_pct        <= 0.95
+#   max_concurrent_holdings <= 8
+#   stop_loss_pct          in [0.02, 0.10]
+
+version: 1
+
+# Frozen attributes: optimizer must NEVER touch these.
+frozen:
+  - LIVE_SUBMIT
+  - _pool                  # populated by the runner from pool_config_fixed.yaml
+  - max_orders_per_day     # daily order cap is a safety guard, not a tunable
+
+# Tunable safe_params. Defaults reflect the strategy file as of the
+# fixed-pool 5y A1 baseline.
+params:
+  fast_window:
+    type: int
+    default: 5
+    min: 3
+    max: 12
+    step: 1
+
+  slow_window:
+    type: int
+    default: 20
+    min: 10
+    max: 60
+    step: 5
+
+  rsi_window:
+    type: int
+    default: 14
+    min: 7
+    max: 28
+    step: 1
+
+  rsi_oversold:
+    type: float
+    default: 30.0
+    min: 20.0
+    max: 40.0
+    step: 5.0
+
+  rsi_overbought:
+    type: float
+    default: 65.0
+    min: 55.0
+    max: 80.0
+    step: 5.0
+
+  volume_ratio_threshold:
+    type: float
+    default: 1.2
+    min: 0.8
+    max: 2.5
+    step: 0.1
+
+  atr_pct_max:
+    type: float
+    default: 0.08
+    min: 0.04
+    max: 0.20
+    step: 0.01
+
+  stop_loss_pct:
+    type: float
+    default: 0.05
+    min: 0.02
+    max: 0.10        # hard ceiling per requirement 2.2
+    step: 0.005
+
+  take_profit_pct:
+    type: float
+    default: 0.10
+    min: 0.05
+    max: 0.30
+    step: 0.01
+
+  trailing_drawdown_pct:
+    type: float
+    default: 0.05
+    min: 0.02
+    max: 0.15
+    step: 0.005
+
+  position_pct:
+    type: float
+    default: 0.10
+    min: 0.05
+    max: 0.30
+    step: 0.01
+
+  max_slices:
+    type: int
+    default: 5
+    min: 1
+    max: 8
+    step: 1
+
+  min_add_interval:
+    type: int
+    default: 10
+    min: 3
+    max: 30
+    step: 1
+
+  min_add_loss_pct:
+    type: float
+    default: 0.02
+    min: 0.0
+    max: 0.10
+    step: 0.005
+
+  pool_budget_pct:
+    type: float
+    default: 0.80
+    min: 0.40
+    max: 0.95        # hard ceiling per requirement 2.2
+    step: 0.05
+
+  max_concurrent_holdings:
+    type: int
+    default: 5
+    min: 1
+    max: 8           # hard ceiling per requirement 2.2
+    step: 1
+
+  cash_buffer_pct:
+    type: float
+    default: 0.05
+    min: 0.0
+    max: 0.20
+    step: 0.01
+
+  cooldown_bars_after_exit:
+    type: int
+    default: 5
+    min: 0
+    max: 20
+    step: 1
