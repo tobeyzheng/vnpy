@@ -1,0 +1,30 @@
+{
+  "run_id": "v3_pool_v2_5y",
+  "pool": [
+    "NVDA",
+    "TSM",
+    "MSFT",
+    "GOOGL",
+    "META",
+    "AMZN",
+    "LLY",
+    "UNH",
+    "V",
+    "COST"
+  ],
+  "start": "2021-05-23",
+  "end": "2026-05-22",
+  "trading_days": 1256,
+  "init_cash": 100000.0,
+  "final_nav": 221835.0868,
+  "final_cash": 2327.2968,
+  "total_return_pct": 121.8351,
+  "annualised_return_pct": 17.3347,
+  "max_drawdown_pct": 31.0016,
+  "trade_count": 151,
+  "win_count": 33,
+  "loss_count": 56,
+  "fee_rate": 0.0003,
+  "slippage": 0.0,
+  "annual_trading_days": 252
+}

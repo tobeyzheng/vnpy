@@ -1,0 +1,93 @@
+# 美股多标的量化策略 阶段 ② —— 固定标的池 v2（人工锁定，禁止自动更新）
+# ---------------------------------------------------------------------------
+# Locked pool. Hand-picked by the user; MUST NOT be modified by
+# run_pool_update.py or any automated process.
+#
+# 维护说明：
+# 1) 本文件 10 个标的，全部为美股大市值高流动性龙头。
+# 2) `locked: true` 是显式标记，告知所有自动化流程：禁止增删 / 重排该池。
+# 3) run_phase2_multi_backtest.py 通过 --pool-config 参数显式指向本文件来回测。
+# 4) 池规模上限 = 20（pool_loader 强约束），当前 10 < 20，合规。
+# 5) 任何变更必须由用户手工编辑，并同步追加 docs/project_operation_log.md 记录。
+#
+# 选股原则（v2）：
+#   - 兼顾未来成长性（AI/云/医药创新/全球支付）与稳定性（订阅制/特许经营/防御）
+#   - 行业分散：科技半导体 / 软件云广告 / 医疗 / 支付 / 必需消费 至少 4 大行业
+#   - 流动性强约束：日均成交额远超 ADV 5000 万美元下限
+#   - 估值合理性：剔除 PE/PS 显著超出行业均值（如 AVGO/AMD）的泡沫风险标的
+#   - 排除高政治不确定性 / 高单一管理人风险标的（如 TSLA）
+#
+# 选股变更对比（vs pool_config_fixed.yaml 6 只池）：
+#   保留: NVDA, MSFT, AMZN, TSM
+#   剔除: AVGO（PE 80 估值透支）, TSLA（高波动+管理人风险）
+#   新增: GOOGL, META（广告云双引擎，估值更便宜）
+#         LLY（GLP-1 龙头，医疗成长）
+#         V（全球支付双寡头之一，轻资产高 ROE）
+#         UNH（健康保险龙头 + Optum 数据资产）
+#         COST（必选消费 + 会员制护城河，强防御）
+# ---------------------------------------------------------------------------
+
+version: 2
+currency: USD
+max_pool_size: 20
+locked: true                          # 人工锁定，禁止自动化流程改写
+locked_reason: "user-pinned 10-symbol diversified pool (tech/medical/payment/consumer) for fixed-pool multi-factor backtest"
+
+defaults:
+  market: US
+  liquidity_min_adv60_usd: 50000000   # 单标的 60 日 ADV 不低于 5000 万美元
+  price_min: 5.0
+  price_max: 2000.0                   # 上限覆盖 LLY/COST 等高价股
+  atr_pct_max: 0.08
+  earnings_freeze_days: 2
+
+symbols:
+  # === 半导体 / AI 算力 ===
+  - symbol: NVDA
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: TSM
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+
+  # === 软件 / 云 / 广告 ===
+  - symbol: MSFT
+    market: US
+    market_cap_bucket: mega
+    sector: Technology
+  - symbol: GOOGL
+    market: US
+    market_cap_bucket: mega
+    sector: CommunicationServices
+  - symbol: META
+    market: US
+    market_cap_bucket: mega
+    sector: CommunicationServices
+  - symbol: AMZN
+    market: US
+    market_cap_bucket: mega
+    sector: ConsumerDiscretionary
+
+  # === 医疗 / 创新药 ===
+  - symbol: LLY
+    market: US
+    market_cap_bucket: mega
+    sector: Healthcare
+  - symbol: UNH
+    market: US
+    market_cap_bucket: mega
+    sector: Healthcare
+
+  # === 支付 / 金融科技 ===
+  - symbol: V
+    market: US
+    market_cap_bucket: mega
+    sector: Financials
+
+  # === 必需消费 / 防御 ===
+  - symbol: COST
+    market: US
+    market_cap_bucket: mega
+    sector: ConsumerStaples

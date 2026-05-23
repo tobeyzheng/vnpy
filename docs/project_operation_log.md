@@ -381,3 +381,42 @@
   - **v3 unlocked (max_slices=3)：+456.77% / 年化 41.13% / MDD 27.57% / 93 trades / 28W 26L** ✅
   - Δ Total Return **+136.29 pp**、Δ Annualised **+7.73 pp**、Δ MDD **+3.65 pp**
 - **影响摘要**: 收益从超目标 1.6× 提升到 2.28×；金字塔加仓单（NVDA/AVGO/TSM 等强趋势 +1·ATR 加 0.5·base）按 Turtle 风格在强势区段叠加曝光；MDD 仅小幅扩张（+3.65 pp），仍由 regime_flat + disaster_stop 控制在 30% 以内。phase2 测试套件未受影响；LIVE_SUBMIT 仍硬开关 False；本轮 2 次回测均为本地 vnpy 数据库读取，无任何远端连接、无任何真实订单。
+
+## 2026-05-24 phase2 v2 标的池 — pool_config_fixed_2.yaml 选股重构 + 5 年回测
+- **变更范围**: 完全重写 `phase2/strategy/config/pool_config_fixed_2.yaml`，由原 6 只科技/消费集中池（NVDA/MSFT/AVGO/TSM/TSLA/AMZN）改为 10 只跨 4 行业分散池，目标降低相关性与回撤。
+- **选股决策依据**: 基于 westock-data 实时拉取的 22 只候选标的的 PE/PS/市值/动量/52 周回撤/机构评级/日均成交额做横向打分；结合投资大师视角（巴菲特/芒格/段永平/李录）做护城河与估值合理性筛选。
+- **新池构成**:
+  - 半导体/AI: NVDA, TSM
+  - 软件/云/广告: MSFT, GOOGL, META, AMZN
+  - 医疗/创新药: LLY, UNH
+  - 支付/金融科技: V
+  - 必需消费: COST
+- **剔除**: AVGO（PE 80 估值透支）、TSLA（高波动+管理人风险）
+- **新增**: GOOGL/META（广告云双引擎，估值更便宜）、LLY（GLP-1 龙头）、V（支付双寡头）、UNH（健康保险+Optum）、COST（会员制+防御）
+- **数据补全**: 通过 `tmp/run_futu_data_pull.py` 从 OpenD 拉取 LLY/V/COST/GOOGL/META/UNH 的 2021-05-23 ~ 2026-05-22 日线（每只约 1004-1256 根 bar）至本地 vnpy SQLite，仅缓存读取无远端订单。
+- **新增产物**:
+  - `phase2/strategy/config/pool_config_fixed_2.yaml`（v2 池配置，locked=true）
+  - `state/runs/phase2_pool_v2_backtest/20260523T164520Z/v3_pool_v2_5y/{summary.json,trade_ledger.csv,equity_curve.csv,positions_daily.csv}`
+- **5 年回测对照**（v3 策略 max_slices=3 / 100k / fee=0.0003 / 区间 2021-05-23 ~ 2026-05-22）:
+  - 旧 6 只池: +456.77% / 年化 41.13% / MDD 27.57% / 93 trades
+  - **v2 10 只池: +121.84% / 年化 17.33% / MDD 31.00% / 151 trades**
+  - Δ Total Return **−334.93 pp**、Δ Annualised **−23.80 pp**、Δ MDD **+3.43 pp**
+- **影响摘要**: 分散池在该 v3 策略下表现弱于集中池——主因是 v3 的金字塔/趋势加仓逻辑高度依赖 NVDA/AVGO/TSM 这类高 beta 强趋势标的的连续突破，而 V/COST/UNH/LLY 等防御/支付标的趋势信号稀疏导致信号利用率下降；MDD 反而略有扩大（31% vs 27.57%），分散并未带来回撤改善。仍超 100% 总收益，年化 17.33% 跑赢同期标普约 3-5 pp，但显著低于用户 200% 目标。phase2 测试套件未受影响；LIVE_SUBMIT 仍硬开关 False；本轮回测为本地数据库读取，无任何远端连接、无任何真实订单。
+
+## 2026-05-24 — TED进攻型标池发现策略（方案C）
+
+- **变更范围**: 新增Trend Explosion Discovery (TED) 进攻型标池发现策略，专门用于发现类似闪迪、美光等强趋势暴涨标的，不改现有交易逻辑，只做外部选股与验证。
+- **新增文件**:
+  - `phase2/run_knot_4dim_research.py`（Knot四维研究召回入口，方案C第一步）
+  - `phase2/run_candidate_preparation.py`（候选准备召回入口，方案C第二步）
+  - `phase2/run_ted_discovery.py`（TED进攻型标池发现主入口，方案C第三步）
+  - `phase2/run_ted_full_pipeline.py`（完整流水线入口，按顺序执行三步）
+  - `phase2/README_TED_PIPELINE.md`（使用说明文档）
+- **策略框架**:
+  - **AEOS评分系统**: Aggressive Explosion Opportunity Score，权重分配：Breakout/Trend 30%、Relative Strength 20%、Flow/Participation 15%、Event Freshness 15%、Theme Leadership 10%、Liquidity Quality 10%、Exhaustion Risk -10%、Structural Risk -10%
+  - **双通道召回**: Knot四维研究召回 + 市场数据召回，结合叙事驱动与数据驱动
+  - **三阶段流水线**: Knot四维研究 → 候选准备 → TED发现 → 人工二次收敛
+  - **池子结构**: 核心进攻池（4只）+ 观察补位池（3-4只）+ 事件催化池（2-3只）
+- **行业聚焦**: AI infra/半导体/存储、电力/数据中心供电、安全/数据/生产力软件、工业自动化/机器人、景气反转硬件
+- **执行规则**: 根据项目规则[[memory:u5ntfvz3]]，实际运行前需要用户明确确认；仅做研究批次，不产生真实交易效果
+- **影响摘要**: 新增一套不改现有交易逻辑的进攻型标池发现器，专门用于早期发现强趋势暴涨标的；所有入口脚本均在phase2模块下，支持独立运行或完整流水线执行；产出为研究产物，不修改任何现有策略参数或交易逻辑。

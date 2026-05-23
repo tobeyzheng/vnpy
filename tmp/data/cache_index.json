@@ -63,14 +63,23 @@
       "source": "futu_opend",
       "start": "2021-05-23"
     },
+    "US.COST|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-22",
+      "futu_code": "US.COST",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-24T00:43:34",
+      "source": "futu_opend",
+      "start": "2021-05-23"
+    },
     "US.GOOGL|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.GOOGL",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:22",
+      "last_updated_at": "2026-05-24T00:43:35",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
     },
     "US.JPM|K_DAY|qfq": {
       "autype": "qfq",
@@ -81,14 +90,23 @@
       "source": "futu_opend",
       "start": "2025-05-20"
     },
+    "US.LLY|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-22",
+      "futu_code": "US.LLY",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-24T00:43:32",
+      "source": "futu_opend",
+      "start": "2021-05-23"
+    },
     "US.META|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.META",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:22",
+      "last_updated_at": "2026-05-24T00:43:36",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
     },
     "US.MSFT|K_DAY|qfq": {
       "autype": "qfq",
@@ -146,12 +164,21 @@
     },
     "US.UNH|K_DAY|qfq": {
       "autype": "qfq",
-      "end": "2026-05-20",
+      "end": "2026-05-22",
       "futu_code": "US.UNH",
       "kl_type": "K_DAY",
-      "last_updated_at": "2026-05-20T23:36:22",
+      "last_updated_at": "2026-05-24T00:43:37",
       "source": "futu_opend",
-      "start": "2025-05-20"
+      "start": "2021-05-23"
+    },
+    "US.V|K_DAY|qfq": {
+      "autype": "qfq",
+      "end": "2026-05-22",
+      "futu_code": "US.V",
+      "kl_type": "K_DAY",
+      "last_updated_at": "2026-05-24T00:43:33",
+      "source": "futu_opend",
+      "start": "2021-05-23"
     },
     "US.XOM|K_DAY|qfq": {
       "autype": "qfq",

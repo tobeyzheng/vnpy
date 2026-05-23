@@ -1,0 +1,146 @@
+# Trend Explosion Discovery (TED) 配置
+# 进攻型标池发现策略配置
+
+# 策略基本信息
+ted_strategy:
+  version: "1.0"
+  description: "进攻型标池发现策略 - 专门寻找类似闪迪、美光等强趋势暴涨标的"
+  author: "Quant Research Team"
+  created_date: "2026-05-24"
+
+# AEOS评分权重配置
+aeos_scoring:
+  # 进攻型权重分配
+  weights:
+    breakout_trend: 0.30      # 突破趋势权重
+    relative_strength: 0.20   # 相对强弱权重
+    flow_participation: 0.15  # 资金参与权重
+    event_freshness: 0.15     # 事件新鲜度权重
+    theme_leadership: 0.10    # 主题领导力权重
+    liquidity_quality: 0.10   # 流动性质量权重
+
+  # 风险调整因子
+  risk_adjustments:
+    exhaustion_risk: -0.10    # 衰竭风险调整
+    structural_risk: -0.10    # 结构性风险调整
+
+# 候选过滤条件
+candidate_filters:
+  # 市值过滤
+  market_cap_min: 5000000000    # 最小市值 50亿
+  market_cap_max: 5000000000000 # 最大市值 5万亿
+
+  # 成交额过滤
+  turnover_min: 10000000         # 最小成交额 1000万
+
+  # 涨幅过滤
+  change_pct_min: 2.0           # 最小涨幅 2%
+  change_pct_max: 100.0         # 最大涨幅 100%
+
+  # 换手率过滤
+  turnover_ratio_max: 50.0       # 最大换手率 50%
+
+# 标池分类配置
+pool_categorization:
+  # 核心进攻池配置
+  core_pool:
+    min_aeos_score: 0.70        # 最小AEOS评分
+    max_count: 6                # 最大数量
+    description: "高攻击性核心标的，趋势强劲，资金参与度高"
+
+  # 观察补位池配置
+  watch_pool:
+    min_aeos_score: 0.60        # 最小AEOS评分
+    max_count: 6                # 最大数量
+    description: "潜在进攻标的，需要进一步观察确认"
+
+  # 主题备用池配置
+  reserve_pool:
+    min_aeos_score: 0.50        # 最小AEOS评分
+    max_count: 4                # 最大数量
+    description: "主题相关标的，可作为备选或对冲"
+
+# 数据源配置
+data_sources:
+  # Knot四维研究
+  knot_4dim:
+    enabled: true
+    script_path: "/projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py"
+    dimensions: ["technical", "fundamental", "capital_flow", "event_driven"]
+    candidates_per_dimension: 6
+
+  # 动态候选准备
+  candidate_preparation:
+    enabled: true
+    script_path: "/projects/vnpy/scripts/quant_workflow/run_prepare_candidate_inputs.py"
+    universe_preset: "momentum_cta"
+    top_n: 24
+    knot_target_count: 36
+    include_market_data: true
+
+# 行业主题偏好
+theme_preferences:
+  # 高优先级主题（更容易出强趋势暴涨股）
+  high_priority:
+    - "AI基础设施"
+    - "半导体/存储"
+    - "数据中心/网络设备"
+    - "电力/能源"
+    - "网络安全"
+    - "工业自动化"
+
+  # 中等优先级主题
+  medium_priority:
+    - "云计算/软件"
+    - "电动汽车"
+    - "生物科技"
+    - "金融科技"
+    - "消费升级"
+
+  # 低优先级主题（暂时少碰）
+  low_priority:
+    - "超小盘股"
+    - "低流动性标的"
+    - "纯概念炒作"
+    - "单日脉冲标的"
+
+# 风险控制
+risk_control:
+  # 衰竭风险识别
+  exhaustion_indicators:
+    single_day_gain_threshold: 50.0    # 单日涨幅阈值 50%
+    turnover_ratio_threshold: 20.0     # 换手率阈值 20%
+    distance_from_ma_threshold: 0.15   # 距离均线阈值 15%
+
+  # 结构性风险识别
+  structural_risk_indicators:
+    market_cap_warning: 1000000000     # 市值警告阈值 10亿
+    volatility_warning: 0.40           # 波动率警告阈值 40%
+
+# 输出配置
+output:
+  # 报告文件
+  report_file: "/projects/vnpy/state/runs/ted_aggressive_pool_report.json"
+
+  # 日志配置
+  log_file: "/projects/vnpy/log/ted_discovery.log"
+  log_level: "INFO"
+
+  # 缓存文件
+  cache_dir: "/projects/vnpy/state/runs"
+
+  # 临时文件保留时间（小时）
+  temp_file_retention_hours: 24
+
+# 执行频率
+execution:
+  # 建议执行频率
+  recommended_frequency: "daily"
+
+  # 最佳执行时间
+  optimal_times:
+    - "09:00"  # 开盘前准备
+    - "16:00"  # 收盘后分析
+
+  # 最小执行间隔（小时）
+  min_interval_hours: 4
