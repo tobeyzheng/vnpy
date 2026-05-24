@@ -1,7 +1,7 @@
 {
   "schema_version": "candidate_prepare_report_v3",
-  "generated_at": "2026-05-11T23:03:49.116994+08:00",
-  "as_of_date": "2026-05-11",
+  "generated_at": "2026-05-24T08:21:49.512747+08:00",
+  "as_of_date": "2026-05-24",
   "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json",
   "mode": "dynamic_market_scoped",
   "market": "us",
@@ -12,77 +12,69 @@
   "market_run": {
     "market": "us",
     "strategy_requested": "knot_first",
-    "strategy_used": "score_first",
-    "knot_status": "unavailable_fallback_to_score_first:knot_client_unconfigured",
-    "knot_seed_count": 0,
-    "universe_size": 200,
-    "universe_preset": "large_cap",
-    "scored_count": 200,
-    "kept_count": 20,
+    "strategy_used": "knot_first",
+    "knot_status": "ok",
+    "knot_seed_count": 14,
+    "universe_size": 0,
+    "universe_preset": "momentum_cta",
+    "scored_count": 14,
+    "kept_count": 14,
     "source_files": [
       "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json"
     ],
-    "warnings": [
-      "Knot seed unavailable for us; downgraded to score_first (knot_client_unconfigured).",
-      "Skipped 177 symbols that the snapshot service rejected: US.2578256D, US.AABB, US.AACAY, US.AAGC, US.AAGH",
-      "Snapshot lookup missed 177 symbols: 2578256D.US, AABB.US, AACAY.US, AAGC.US, AAGH.US"
-    ],
+    "warnings": [],
     "written": true,
     "output_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json",
     "top_symbols": [
       {
-        "symbol": "AAOI.US",
-        "raw_score": 0.783
+        "symbol": "DELL.US",
+        "raw_score": 0.8369
       },
       {
-        "symbol": "AA.US",
-        "raw_score": 0.6136
+        "symbol": "WDAY.US",
+        "raw_score": 0.7825
       },
       {
-        "symbol": "AAON.US",
-        "raw_score": 0.5774
+        "symbol": "AMD.US",
+        "raw_score": 0.7813
       },
       {
-        "symbol": "AAPL.US",
-        "raw_score": 0.5463
+        "symbol": "ZM.US",
+        "raw_score": 0.7689
       },
       {
-        "symbol": "AAL.US",
-        "raw_score": 0.5426
+        "symbol": "ARM.US",
+        "raw_score": 0.7309
       },
       {
-        "symbol": "ADM.US",
-        "raw_score": 0.5444
+        "symbol": "NVDA.US",
+        "raw_score": 0.7269
       },
       {
-        "symbol": "ADIWW.US",
-        "raw_score": 0.5444
+        "symbol": "ALAB.US",
+        "raw_score": 0.7181
       },
       {
-        "symbol": "ADIL.US",
-        "raw_score": 0.5444
+        "symbol": "IONQ.US",
+        "raw_score": 0.7111
       },
       {
-        "symbol": "ADIA.US",
-        "raw_score": 0.5444
+        "symbol": "MU.US",
+        "raw_score": 0.6819
       },
       {
-        "symbol": "ADI.US",
-        "raw_score": 0.5444
+        "symbol": "IBM.US",
+        "raw_score": 0.6675
       }
     ]
   },
   "summary": {
-    "total_items": 20,
+    "total_items": 14,
     "market_counts": {
-      "us": 20
+      "us": 14
     },
     "include_market_data": true,
     "knot_runtime": "auto",
-    "warnings": [
-      "Knot seed unavailable for us; downgraded to score_first (knot_client_unconfigured).",
-      "Skipped 177 symbols that the snapshot service rejected: US.2578256D, US.AABB, US.AACAY, US.AAGC, US.AAGH",
-      "Snapshot lookup missed 177 symbols: 2578256D.US, AABB.US, AACAY.US, AAGC.US, AAGH.US"
-    ]
+    "warnings": []
   }
 }

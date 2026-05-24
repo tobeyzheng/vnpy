@@ -1,0 +1,2165 @@
+{
+  "market": "us",
+  "generated_at": "2026-05-24T00:21:49Z",
+  "per_dim": 3,
+  "dimensions": {
+    "technical": [
+      {
+        "symbol": "CRWD.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "CrowdStrike Holdings, Inc.",
+        "raw_score": 0.7286,
+        "rationale": "CRWD is breaking to fresh highs with strong recent relative strength and momentum confirmation.",
+        "risk": "A sharp pullback could follow if momentum traders lock in gains after the breakout.",
+        "action_hint": "Monitor post-breakout follow-through and near-term support holding above the recent breakout zone.",
+        "dimension": "technical",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "CRWD.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "technical",
+            "score": 0.83,
+            "summary": "CRWD is breaking to fresh highs with strong recent relative strength and momentum confirmation."
+          },
+          {
+            "symbol": "CRWD.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7286,
+            "summary": "CRWD is breaking to fresh highs with strong recent relative strength and momentum confirmation."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.83,
+        "trend_score": 0.83,
+        "relative_strength_score": 0.83,
+        "flow_score": 0.5495,
+        "event_score": 0.83,
+        "quality_score": 0.83,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.83,
+        "knot_overlay_score": 0.83,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.7283,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7365,
+          "event_driven": 0.7365,
+          "quality_growth": 0.72,
+          "knot_overlay": 0.8367
+        },
+        "source_breakdown": {
+          "classic": 0.2268,
+          "knot_agent": 0.7732
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "CRWD is breaking to fresh highs with strong recent relative strength and momentum confirmation.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: classic, knot_agent; consensus 0.73.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7286,
+          "input_scores": {
+            "trend_score": 0.83,
+            "relative_strength_score": 0.83,
+            "flow_score": 0.5495,
+            "event_score": 0.83,
+            "quality_score": 0.83,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.83,
+            "knot_overlay_score": 0.83,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.83,
+              "weight": 0.22,
+              "weighted_contribution": 0.1826,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.83,
+              "weight": 0.16,
+              "weighted_contribution": 0.1328,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5495,
+              "weight": 0.14,
+              "weighted_contribution": 0.0769,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.83,
+              "weight": 0.14,
+              "weighted_contribution": 0.1162,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.83,
+              "weight": 0.1,
+              "weighted_contribution": 0.083,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.83,
+              "weight": 0.06,
+              "weighted_contribution": 0.0498,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.83,
+              "weight": 0.1,
+              "weighted_contribution": 0.083,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7365,
+            "event_driven": 0.7365,
+            "quality_growth": 0.72,
+            "knot_overlay": 0.8367
+          },
+          "source_breakdown": {
+            "classic": 0.2268,
+            "knot_agent": 0.7732
+          },
+          "consensus_score": 0.7283,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "TSLA.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Tesla, Inc.",
+        "raw_score": 0.6886,
+        "rationale": "TSLA has re-accelerated on strong 20-day price performance and a clear short-term momentum upswing.",
+        "risk": "The name remains highly volatile and headline-sensitive, so trend reversals can be abrupt.",
+        "action_hint": "Track whether the move sustains on volume and whether price can hold above the latest swing breakout.",
+        "dimension": "technical",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "TSLA.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "technical",
+            "score": 0.78,
+            "summary": "TSLA has re-accelerated on strong 20-day price performance and a clear short-term momentum upswing."
+          },
+          {
+            "symbol": "TSLA.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6886,
+            "summary": "TSLA has re-accelerated on strong 20-day price performance and a clear short-term momentum upswing."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.78,
+        "trend_score": 0.78,
+        "relative_strength_score": 0.78,
+        "flow_score": 0.542,
+        "event_score": 0.78,
+        "quality_score": 0.78,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.78,
+        "knot_overlay_score": 0.78,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.6937,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7007,
+          "event_driven": 0.7007,
+          "quality_growth": 0.6867,
+          "knot_overlay": 0.8033
+        },
+        "source_breakdown": {
+          "classic": 0.2191,
+          "knot_agent": 0.7809
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "TSLA has re-accelerated on strong 20-day price performance and a clear short-term momentum upswing.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: classic, knot_agent; consensus 0.69.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6886,
+          "input_scores": {
+            "trend_score": 0.78,
+            "relative_strength_score": 0.78,
+            "flow_score": 0.542,
+            "event_score": 0.78,
+            "quality_score": 0.78,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.78,
+            "knot_overlay_score": 0.78,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.78,
+              "weight": 0.22,
+              "weighted_contribution": 0.1716,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.78,
+              "weight": 0.16,
+              "weighted_contribution": 0.1248,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.542,
+              "weight": 0.14,
+              "weighted_contribution": 0.0759,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.78,
+              "weight": 0.14,
+              "weighted_contribution": 0.1092,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.78,
+              "weight": 0.1,
+              "weighted_contribution": 0.078,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.78,
+              "weight": 0.06,
+              "weighted_contribution": 0.0468,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.78,
+              "weight": 0.1,
+              "weighted_contribution": 0.078,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7007,
+            "event_driven": 0.7007,
+            "quality_growth": 0.6867,
+            "knot_overlay": 0.8033
+          },
+          "source_breakdown": {
+            "classic": 0.2191,
+            "knot_agent": 0.7809
+          },
+          "consensus_score": 0.6937,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "GOOGL.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Alphabet Inc. Class A",
+        "raw_score": 0.6565,
+        "rationale": "GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day price strength.",
+        "risk": "AI competition or ad-demand concerns could interrupt the current trend.",
+        "action_hint": "Follow for confirmation that the stock stays above its rising medium-term trend structure.",
+        "dimension": "technical",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "GOOGL.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "technical",
+            "score": 0.74,
+            "summary": "GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day price strength."
+          },
+          {
+            "symbol": "GOOGL.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6565,
+            "summary": "GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day price strength."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.74,
+        "trend_score": 0.74,
+        "relative_strength_score": 0.74,
+        "flow_score": 0.536,
+        "event_score": 0.74,
+        "quality_score": 0.74,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.74,
+        "knot_overlay_score": 0.74,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.666,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.672,
+          "event_driven": 0.672,
+          "quality_growth": 0.66,
+          "knot_overlay": 0.7767
+        },
+        "source_breakdown": {
+          "classic": 0.2126,
+          "knot_agent": 0.7874
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day price strength.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: classic, knot_agent; consensus 0.67.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6565,
+          "input_scores": {
+            "trend_score": 0.74,
+            "relative_strength_score": 0.74,
+            "flow_score": 0.536,
+            "event_score": 0.74,
+            "quality_score": 0.74,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.74,
+            "knot_overlay_score": 0.74,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.74,
+              "weight": 0.22,
+              "weighted_contribution": 0.1628,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.74,
+              "weight": 0.16,
+              "weighted_contribution": 0.1184,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.536,
+              "weight": 0.14,
+              "weighted_contribution": 0.075,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.74,
+              "weight": 0.14,
+              "weighted_contribution": 0.1036,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.74,
+              "weight": 0.1,
+              "weighted_contribution": 0.074,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.74,
+              "weight": 0.06,
+              "weighted_contribution": 0.0444,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.74,
+              "weight": 0.1,
+              "weighted_contribution": 0.074,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.672,
+            "event_driven": 0.672,
+            "quality_growth": 0.66,
+            "knot_overlay": 0.7767
+          },
+          "source_breakdown": {
+            "classic": 0.2126,
+            "knot_agent": 0.7874
+          },
+          "consensus_score": 0.666,
+          "risk_flags": []
+        }
+      }
+    ],
+    "fundamental": [
+      {
+        "symbol": "JPM.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "JPMorgan Chase & Co.",
+        "raw_score": 0.7403,
+        "rationale": "JPM combines strong profitability, low-teens earnings multiples, and resilient recent quarterly earnings power.",
+        "risk": "A weaker macro backdrop or falling rates could pressure net interest income expectations.",
+        "action_hint": "Review the next quarterly update for credit quality, loan growth, and net interest income guidance.",
+        "dimension": "fundamental",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "JPM.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "fundamental",
+            "score": 0.87,
+            "summary": "JPM combines strong profitability, low-teens earnings multiples, and resilient recent quarterly earnings power."
+          },
+          {
+            "symbol": "JPM.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7403,
+            "summary": "JPM combines strong profitability, low-teens earnings multiples, and resilient recent quarterly earnings power."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.87,
+        "trend_score": 0.87,
+        "relative_strength_score": 0.87,
+        "flow_score": 0.5555,
+        "event_score": 0.87,
+        "quality_score": 0.87,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.58,
+        "regime_fit_score": 0.87,
+        "knot_overlay_score": 0.87,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.561,
+        "theme_bucket": "general",
+        "risk_level": "medium",
+        "consensus_score": 0.756,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7652,
+          "event_driven": 0.7652,
+          "quality_growth": 0.7467,
+          "knot_overlay": 0.8633
+        },
+        "source_breakdown": {
+          "event": 0.2326,
+          "knot_agent": 0.7674
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "JPM combines strong profitability, low-teens earnings multiples, and resilient recent quarterly earnings power.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.76.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7403,
+          "input_scores": {
+            "trend_score": 0.87,
+            "relative_strength_score": 0.87,
+            "flow_score": 0.5555,
+            "event_score": 0.87,
+            "quality_score": 0.87,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.58,
+            "regime_fit_score": 0.87,
+            "knot_overlay_score": 0.87,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.561
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.87,
+              "weight": 0.22,
+              "weighted_contribution": 0.1914,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.87,
+              "weight": 0.16,
+              "weighted_contribution": 0.1392,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5555,
+              "weight": 0.14,
+              "weighted_contribution": 0.0778,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.87,
+              "weight": 0.14,
+              "weighted_contribution": 0.1218,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.87,
+              "weight": 0.1,
+              "weighted_contribution": 0.087,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.87,
+              "weight": 0.06,
+              "weighted_contribution": 0.0522,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.87,
+              "weight": 0.1,
+              "weighted_contribution": 0.087,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.561,
+              "weight": 0.1,
+              "weighted_contribution": -0.0561,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7652,
+            "event_driven": 0.7652,
+            "quality_growth": 0.7467,
+            "knot_overlay": 0.8633
+          },
+          "source_breakdown": {
+            "event": 0.2326,
+            "knot_agent": 0.7674
+          },
+          "consensus_score": 0.756,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "GOOGL.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Alphabet Inc. Class A",
+        "raw_score": 0.7366,
+        "rationale": "GOOGL pairs large-scale earnings generation with strong margins and a still-reasonable valuation versus quality.",
+        "risk": "Antitrust pressure and heavier AI investment could compress margins or sentiment.",
+        "action_hint": "Follow capital spending discipline, cloud profitability, and ad-growth durability in the next report.",
+        "dimension": "fundamental",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "GOOGL.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "fundamental",
+            "score": 0.84,
+            "summary": "GOOGL pairs large-scale earnings generation with strong margins and a still-reasonable valuation versus quality."
+          },
+          {
+            "symbol": "GOOGL.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7366,
+            "summary": "GOOGL pairs large-scale earnings generation with strong margins and a still-reasonable valuation versus quality."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.84,
+        "trend_score": 0.84,
+        "relative_strength_score": 0.84,
+        "flow_score": 0.551,
+        "event_score": 0.84,
+        "quality_score": 0.84,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.84,
+        "knot_overlay_score": 0.84,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.7352,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7437,
+          "event_driven": 0.7437,
+          "quality_growth": 0.7267,
+          "knot_overlay": 0.8433
+        },
+        "source_breakdown": {
+          "classic": 0.1858,
+          "event": 0.1858,
+          "knot_agent": 0.6283
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "GOOGL pairs large-scale earnings generation with strong margins and a still-reasonable valuation versus quality.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.74.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7366,
+          "input_scores": {
+            "trend_score": 0.84,
+            "relative_strength_score": 0.84,
+            "flow_score": 0.551,
+            "event_score": 0.84,
+            "quality_score": 0.84,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.84,
+            "knot_overlay_score": 0.84,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.84,
+              "weight": 0.22,
+              "weighted_contribution": 0.1848,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.84,
+              "weight": 0.16,
+              "weighted_contribution": 0.1344,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.551,
+              "weight": 0.14,
+              "weighted_contribution": 0.0771,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.84,
+              "weight": 0.14,
+              "weighted_contribution": 0.1176,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.84,
+              "weight": 0.1,
+              "weighted_contribution": 0.084,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.84,
+              "weight": 0.06,
+              "weighted_contribution": 0.0504,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.84,
+              "weight": 0.1,
+              "weighted_contribution": 0.084,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7437,
+            "event_driven": 0.7437,
+            "quality_growth": 0.7267,
+            "knot_overlay": 0.8433
+          },
+          "source_breakdown": {
+            "classic": 0.1858,
+            "event": 0.1858,
+            "knot_agent": 0.6283
+          },
+          "consensus_score": 0.7352,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "UBER.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Uber Technologies, Inc.",
+        "raw_score": 0.6522,
+        "rationale": "UBER is showing improving profitability with positive net income and a scalable platform model.",
+        "risk": "Margin expansion could stall if incentives, regulation, or competition intensify.",
+        "action_hint": "Check whether EBITDA and free-cash-flow conversion continue to improve over the next two quarters.",
+        "dimension": "fundamental",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "UBER.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "fundamental",
+            "score": 0.76,
+            "summary": "UBER is showing improving profitability with positive net income and a scalable platform model."
+          },
+          {
+            "symbol": "UBER.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6522,
+            "summary": "UBER is showing improving profitability with positive net income and a scalable platform model."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.76,
+        "trend_score": 0.76,
+        "relative_strength_score": 0.76,
+        "flow_score": 0.539,
+        "event_score": 0.76,
+        "quality_score": 0.76,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.58,
+        "regime_fit_score": 0.76,
+        "knot_overlay_score": 0.76,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.561,
+        "theme_bucket": "platform_internet",
+        "risk_level": "medium",
+        "consensus_score": 0.6798,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6863,
+          "event_driven": 0.6863,
+          "quality_growth": 0.6733,
+          "knot_overlay": 0.79
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "UBER is showing improving profitability with positive net income and a scalable platform model.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.68.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6522,
+          "input_scores": {
+            "trend_score": 0.76,
+            "relative_strength_score": 0.76,
+            "flow_score": 0.539,
+            "event_score": 0.76,
+            "quality_score": 0.76,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.58,
+            "regime_fit_score": 0.76,
+            "knot_overlay_score": 0.76,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.561
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.76,
+              "weight": 0.22,
+              "weighted_contribution": 0.1672,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.76,
+              "weight": 0.16,
+              "weighted_contribution": 0.1216,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.539,
+              "weight": 0.14,
+              "weighted_contribution": 0.0755,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.76,
+              "weight": 0.14,
+              "weighted_contribution": 0.1064,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": 0.076,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.76,
+              "weight": 0.06,
+              "weighted_contribution": 0.0456,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": 0.076,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.561,
+              "weight": 0.1,
+              "weighted_contribution": -0.0561,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6863,
+            "event_driven": 0.6863,
+            "quality_growth": 0.6733,
+            "knot_overlay": 0.79
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.6798,
+          "risk_flags": []
+        }
+      }
+    ],
+    "capital_flow": [
+      {
+        "symbol": "NVDA.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "NVIDIA Corporation",
+        "raw_score": 0.7527,
+        "rationale": "NVDA continues to command exceptional trading turnover and institutional attention, keeping it at the center of capital concentration.",
+        "risk": "Any disappointment around AI demand or supply-chain assumptions could trigger a fast de-risking wave.",
+        "action_hint": "Track turnover intensity around earnings and whether large-volume dips are being bought quickly.",
+        "dimension": "capital_flow",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "NVDA.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "flow",
+            "score": 0.86,
+            "summary": "NVDA continues to command exceptional trading turnover and institutional attention, keeping it at the center of capital concentration."
+          },
+          {
+            "symbol": "NVDA.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7527,
+            "summary": "NVDA continues to command exceptional trading turnover and institutional attention, keeping it at the center of capital concentration."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.86,
+        "trend_score": 0.86,
+        "relative_strength_score": 0.86,
+        "flow_score": 0.554,
+        "event_score": 0.86,
+        "quality_score": 0.86,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.86,
+        "knot_overlay_score": 0.86,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.749,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.758,
+          "event_driven": 0.758,
+          "quality_growth": 0.74,
+          "knot_overlay": 0.8567
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "NVDA continues to command exceptional trading turnover and institutional attention, keeping it at the center of capital concentration.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.75.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7527,
+          "input_scores": {
+            "trend_score": 0.86,
+            "relative_strength_score": 0.86,
+            "flow_score": 0.554,
+            "event_score": 0.86,
+            "quality_score": 0.86,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.86,
+            "knot_overlay_score": 0.86,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.86,
+              "weight": 0.22,
+              "weighted_contribution": 0.1892,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.86,
+              "weight": 0.16,
+              "weighted_contribution": 0.1376,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.554,
+              "weight": 0.14,
+              "weighted_contribution": 0.0776,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.86,
+              "weight": 0.14,
+              "weighted_contribution": 0.1204,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.86,
+              "weight": 0.1,
+              "weighted_contribution": 0.086,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.86,
+              "weight": 0.06,
+              "weighted_contribution": 0.0516,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.86,
+              "weight": 0.1,
+              "weighted_contribution": 0.086,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.758,
+            "event_driven": 0.758,
+            "quality_growth": 0.74,
+            "knot_overlay": 0.8567
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.749,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "PLTR.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Palantir Technologies Inc.",
+        "raw_score": 0.6563,
+        "rationale": "PLTR is sustaining unusually high dollar volume and persistent speculative-institutional participation.",
+        "risk": "Its elevated valuation leaves the stock vulnerable to violent multiple compression.",
+        "action_hint": "Watch whether heavy turnover remains constructive or starts to accompany distribution days.",
+        "dimension": "capital_flow",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "PLTR.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "flow",
+            "score": 0.79,
+            "summary": "PLTR is sustaining unusually high dollar volume and persistent speculative-institutional participation."
+          },
+          {
+            "symbol": "PLTR.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6563,
+            "summary": "PLTR is sustaining unusually high dollar volume and persistent speculative-institutional participation."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.79,
+        "trend_score": 0.79,
+        "relative_strength_score": 0.79,
+        "flow_score": 0.5435,
+        "event_score": 0.79,
+        "quality_score": 0.79,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.8,
+        "regime_fit_score": 0.79,
+        "knot_overlay_score": 0.79,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.76,
+        "theme_bucket": "ai_compute",
+        "risk_level": "high",
+        "consensus_score": 0.7006,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7078,
+          "event_driven": 0.7078,
+          "quality_growth": 0.6933,
+          "knot_overlay": 0.81
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [
+          "high_risk_penalty",
+          "high_volatility"
+        ],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "PLTR is sustaining unusually high dollar volume and persistent speculative-institutional participation.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.70.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6563,
+          "input_scores": {
+            "trend_score": 0.79,
+            "relative_strength_score": 0.79,
+            "flow_score": 0.5435,
+            "event_score": 0.79,
+            "quality_score": 0.79,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.8,
+            "regime_fit_score": 0.79,
+            "knot_overlay_score": 0.79,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.76
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.79,
+              "weight": 0.22,
+              "weighted_contribution": 0.1738,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.79,
+              "weight": 0.16,
+              "weighted_contribution": 0.1264,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5435,
+              "weight": 0.14,
+              "weighted_contribution": 0.0761,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.79,
+              "weight": 0.14,
+              "weighted_contribution": 0.1106,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.79,
+              "weight": 0.1,
+              "weighted_contribution": 0.079,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.79,
+              "weight": 0.06,
+              "weighted_contribution": 0.0474,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.79,
+              "weight": 0.1,
+              "weighted_contribution": 0.079,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.76,
+              "weight": 0.1,
+              "weighted_contribution": -0.076,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7078,
+            "event_driven": 0.7078,
+            "quality_growth": 0.6933,
+            "knot_overlay": 0.81
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.7006,
+          "risk_flags": [
+            "high_risk_penalty",
+            "high_volatility"
+          ]
+        }
+      },
+      {
+        "symbol": "AVGO.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Broadcom Inc.",
+        "raw_score": 0.6485,
+        "rationale": "AVGO remains a major AI-linked capital magnet with deep liquidity and consistently high market attention.",
+        "risk": "Crowded AI positioning raises the downside if growth expectations are reset lower.",
+        "action_hint": "Follow options-implied sentiment, turnover, and reaction to AI demand updates from hyperscale customers.",
+        "dimension": "capital_flow",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "AVGO.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "flow",
+            "score": 0.73,
+            "summary": "AVGO remains a major AI-linked capital magnet with deep liquidity and consistently high market attention."
+          },
+          {
+            "symbol": "AVGO.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6485,
+            "summary": "AVGO remains a major AI-linked capital magnet with deep liquidity and consistently high market attention."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.73,
+        "trend_score": 0.73,
+        "relative_strength_score": 0.73,
+        "flow_score": 0.5345,
+        "event_score": 0.73,
+        "quality_score": 0.73,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.73,
+        "knot_overlay_score": 0.73,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.6591,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6648,
+          "event_driven": 0.6648,
+          "quality_growth": 0.6533,
+          "knot_overlay": 0.77
+        },
+        "source_breakdown": {
+          "knot_agent": 1.0
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "AVGO remains a major AI-linked capital magnet with deep liquidity and consistently high market attention.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: knot_agent; consensus 0.66.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6485,
+          "input_scores": {
+            "trend_score": 0.73,
+            "relative_strength_score": 0.73,
+            "flow_score": 0.5345,
+            "event_score": 0.73,
+            "quality_score": 0.73,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.73,
+            "knot_overlay_score": 0.73,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.73,
+              "weight": 0.22,
+              "weighted_contribution": 0.1606,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.73,
+              "weight": 0.16,
+              "weighted_contribution": 0.1168,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5345,
+              "weight": 0.14,
+              "weighted_contribution": 0.0748,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.73,
+              "weight": 0.14,
+              "weighted_contribution": 0.1022,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.73,
+              "weight": 0.1,
+              "weighted_contribution": 0.073,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.73,
+              "weight": 0.06,
+              "weighted_contribution": 0.0438,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.73,
+              "weight": 0.1,
+              "weighted_contribution": 0.073,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6648,
+            "event_driven": 0.6648,
+            "quality_growth": 0.6533,
+            "knot_overlay": 0.77
+          },
+          "source_breakdown": {
+            "knot_agent": 1.0
+          },
+          "consensus_score": 0.6591,
+          "risk_flags": []
+        }
+      }
+    ],
+    "event_driven": [
+      {
+        "symbol": "CRWD.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "CrowdStrike Holdings, Inc.",
+        "raw_score": 0.7126,
+        "rationale": "CRWD has an active catalyst setup with fresh all-time-high headlines, analyst attention, and AI-security demand narratives.",
+        "risk": "Insider selling headlines or a crowded setup could weaken the event-driven upside quickly.",
+        "action_hint": "Track follow-up analyst notes and whether the stock holds gains after the latest catalyst burst.",
+        "dimension": "event_driven",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "CRWD.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "event",
+            "score": 0.81,
+            "summary": "CRWD has an active catalyst setup with fresh all-time-high headlines, analyst attention, and AI-security demand narratives."
+          },
+          {
+            "symbol": "CRWD.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.7126,
+            "summary": "CRWD has an active catalyst setup with fresh all-time-high headlines, analyst attention, and AI-security demand narratives."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.81,
+        "trend_score": 0.81,
+        "relative_strength_score": 0.81,
+        "flow_score": 0.5465,
+        "event_score": 0.81,
+        "quality_score": 0.81,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.81,
+        "knot_overlay_score": 0.81,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.7145,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.7222,
+          "event_driven": 0.7222,
+          "quality_growth": 0.7067,
+          "knot_overlay": 0.8233
+        },
+        "source_breakdown": {
+          "event": 0.2238,
+          "knot_agent": 0.7762
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "CRWD has an active catalyst setup with fresh all-time-high headlines, analyst attention, and AI-security demand narratives.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.71.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.7126,
+          "input_scores": {
+            "trend_score": 0.81,
+            "relative_strength_score": 0.81,
+            "flow_score": 0.5465,
+            "event_score": 0.81,
+            "quality_score": 0.81,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.81,
+            "knot_overlay_score": 0.81,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.81,
+              "weight": 0.22,
+              "weighted_contribution": 0.1782,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.81,
+              "weight": 0.16,
+              "weighted_contribution": 0.1296,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5465,
+              "weight": 0.14,
+              "weighted_contribution": 0.0765,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.81,
+              "weight": 0.14,
+              "weighted_contribution": 0.1134,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.81,
+              "weight": 0.1,
+              "weighted_contribution": 0.081,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.81,
+              "weight": 0.06,
+              "weighted_contribution": 0.0486,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.81,
+              "weight": 0.1,
+              "weighted_contribution": 0.081,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.7222,
+            "event_driven": 0.7222,
+            "quality_growth": 0.7067,
+            "knot_overlay": 0.8233
+          },
+          "source_breakdown": {
+            "event": 0.2238,
+            "knot_agent": 0.7762
+          },
+          "consensus_score": 0.7145,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "AVGO.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Broadcom Inc.",
+        "raw_score": 0.6806,
+        "rationale": "AVGO is tied to active event flow around AI partnerships and semiconductor ecosystem developments.",
+        "risk": "Expectation risk is high because AI-related headlines are already heavily priced into the stock.",
+        "action_hint": "Monitor whether partnership news translates into revenue guidance support rather than only sentiment.",
+        "dimension": "event_driven",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "AVGO.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "event",
+            "score": 0.77,
+            "summary": "AVGO is tied to active event flow around AI partnerships and semiconductor ecosystem developments."
+          },
+          {
+            "symbol": "AVGO.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6806,
+            "summary": "AVGO is tied to active event flow around AI partnerships and semiconductor ecosystem developments."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.77,
+        "trend_score": 0.77,
+        "relative_strength_score": 0.77,
+        "flow_score": 0.5405,
+        "event_score": 0.77,
+        "quality_score": 0.77,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.35,
+        "regime_fit_score": 0.77,
+        "knot_overlay_score": 0.77,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.3575,
+        "theme_bucket": "ai_compute",
+        "risk_level": "low",
+        "consensus_score": 0.6868,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6935,
+          "event_driven": 0.6935,
+          "quality_growth": 0.68,
+          "knot_overlay": 0.7967
+        },
+        "source_breakdown": {
+          "event": 0.2175,
+          "knot_agent": 0.7825
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "AVGO is tied to active event flow around AI partnerships and semiconductor ecosystem developments.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.69.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6806,
+          "input_scores": {
+            "trend_score": 0.77,
+            "relative_strength_score": 0.77,
+            "flow_score": 0.5405,
+            "event_score": 0.77,
+            "quality_score": 0.77,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.35,
+            "regime_fit_score": 0.77,
+            "knot_overlay_score": 0.77,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.3575
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.77,
+              "weight": 0.22,
+              "weighted_contribution": 0.1694,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.77,
+              "weight": 0.16,
+              "weighted_contribution": 0.1232,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.5405,
+              "weight": 0.14,
+              "weighted_contribution": 0.0757,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.77,
+              "weight": 0.14,
+              "weighted_contribution": 0.1078,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.77,
+              "weight": 0.1,
+              "weighted_contribution": 0.077,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.77,
+              "weight": 0.06,
+              "weighted_contribution": 0.0462,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.77,
+              "weight": 0.1,
+              "weighted_contribution": 0.077,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.3575,
+              "weight": 0.1,
+              "weighted_contribution": -0.0357,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6935,
+            "event_driven": 0.6935,
+            "quality_growth": 0.68,
+            "knot_overlay": 0.7967
+          },
+          "source_breakdown": {
+            "event": 0.2175,
+            "knot_agent": 0.7825
+          },
+          "consensus_score": 0.6868,
+          "risk_flags": []
+        }
+      },
+      {
+        "symbol": "TSLA.US",
+        "market": "us",
+        "candidate_type": "dynamic",
+        "name": "Tesla, Inc.",
+        "raw_score": 0.6201,
+        "rationale": "TSLA remains an event-driven name due to ongoing FSD, product, and global competitive headlines that can reshape sentiment rapidly.",
+        "risk": "Execution gaps or regulatory setbacks could reverse headline-driven rallies just as quickly.",
+        "action_hint": "Follow official product, autonomy, and regulatory updates for confirmation beyond media noise.",
+        "dimension": "event_driven",
+        "confidence_source": "knot_4dim_pick",
+        "signals": [
+          {
+            "symbol": "TSLA.US",
+            "market": "us",
+            "source": "knot_4dim_pick",
+            "category": "event",
+            "score": 0.72,
+            "summary": "TSLA remains an event-driven name due to ongoing FSD, product, and global competitive headlines that can reshape sentiment rapidly."
+          },
+          {
+            "symbol": "TSLA.US",
+            "market": "us",
+            "source": "dynamic_hybrid_candidate_v3",
+            "category": "candidate_score",
+            "score": 0.6201,
+            "summary": "TSLA remains an event-driven name due to ongoing FSD, product, and global competitive headlines that can reshape sentiment rapidly."
+          }
+        ],
+        "selection_policy": "dynamic_hybrid_market_complete_v3",
+        "legacy_raw_score": 0.72,
+        "trend_score": 0.72,
+        "relative_strength_score": 0.72,
+        "flow_score": 0.533,
+        "event_score": 0.72,
+        "quality_score": 0.72,
+        "liquidity_score": 0.5,
+        "volatility_score": 0.58,
+        "regime_fit_score": 0.72,
+        "knot_overlay_score": 0.72,
+        "explanation_ready_score": 0.85,
+        "risk_penalty": 0.561,
+        "theme_bucket": "ai_compute",
+        "risk_level": "medium",
+        "consensus_score": 0.6522,
+        "strategy_tags": [
+          "knot_overlay",
+          "trend_following",
+          "event_driven",
+          "quality_growth"
+        ],
+        "strategy_votes": {
+          "trend_following": 0.6577,
+          "event_driven": 0.6577,
+          "quality_growth": 0.6467,
+          "knot_overlay": 0.7633
+        },
+        "source_breakdown": {
+          "event": 0.2093,
+          "knot_agent": 0.7907
+        },
+        "risk_flags": [],
+        "generated_at": "2026-05-24T00:21:49Z",
+        "as_of_date": "",
+        "explanation_summary": "TSLA remains an event-driven name due to ongoing FSD, product, and global competitive headlines that can reshape sentiment rapidly.",
+        "explanation_ready": true,
+        "research_note": "Primary evidence mix: event, knot_agent; consensus 0.65.",
+        "scoring": {
+          "mode": "dynamic",
+          "model_id": "dynamic_hybrid_candidate_v3",
+          "selection_policy": "dynamic_hybrid_market_complete_v3",
+          "score": 0.6201,
+          "input_scores": {
+            "trend_score": 0.72,
+            "relative_strength_score": 0.72,
+            "flow_score": 0.533,
+            "event_score": 0.72,
+            "quality_score": 0.72,
+            "liquidity_score": 0.5,
+            "volatility_score": 0.58,
+            "regime_fit_score": 0.72,
+            "knot_overlay_score": 0.72,
+            "explanation_ready_score": 0.85,
+            "risk_penalty": 0.561
+          },
+          "components": [
+            {
+              "key": "trend_score",
+              "label": "Trend",
+              "score": 0.72,
+              "weight": 0.22,
+              "weighted_contribution": 0.1584,
+              "role": "positive"
+            },
+            {
+              "key": "relative_strength_score",
+              "label": "Relative Strength",
+              "score": 0.72,
+              "weight": 0.16,
+              "weighted_contribution": 0.1152,
+              "role": "positive"
+            },
+            {
+              "key": "flow_score",
+              "label": "Flow",
+              "score": 0.533,
+              "weight": 0.14,
+              "weighted_contribution": 0.0746,
+              "role": "positive"
+            },
+            {
+              "key": "event_score",
+              "label": "Event",
+              "score": 0.72,
+              "weight": 0.14,
+              "weighted_contribution": 0.1008,
+              "role": "positive"
+            },
+            {
+              "key": "quality_score",
+              "label": "Quality",
+              "score": 0.72,
+              "weight": 0.1,
+              "weighted_contribution": 0.072,
+              "role": "positive"
+            },
+            {
+              "key": "liquidity_score",
+              "label": "Liquidity",
+              "score": 0.5,
+              "weight": 0.08,
+              "weighted_contribution": 0.04,
+              "role": "positive"
+            },
+            {
+              "key": "regime_fit_score",
+              "label": "Regime Fit",
+              "score": 0.72,
+              "weight": 0.06,
+              "weighted_contribution": 0.0432,
+              "role": "positive"
+            },
+            {
+              "key": "knot_overlay_score",
+              "label": "Knot Overlay",
+              "score": 0.72,
+              "weight": 0.1,
+              "weighted_contribution": 0.072,
+              "role": "positive"
+            },
+            {
+              "key": "risk_penalty",
+              "label": "Risk Penalty",
+              "score": 0.561,
+              "weight": 0.1,
+              "weighted_contribution": -0.0561,
+              "role": "penalty"
+            }
+          ],
+          "strategy_tags": [
+            "knot_overlay",
+            "trend_following",
+            "event_driven",
+            "quality_growth"
+          ],
+          "strategy_votes": {
+            "trend_following": 0.6577,
+            "event_driven": 0.6577,
+            "quality_growth": 0.6467,
+            "knot_overlay": 0.7633
+          },
+          "source_breakdown": {
+            "event": 0.2093,
+            "knot_agent": 0.7907
+          },
+          "consensus_score": 0.6522,
+          "risk_flags": []
+        }
+      }
+    ]
+  },
+  "knot_raw_response": "{\"technical\": [{\"symbol\": \"CRWD.US\", \"market\": \"us\", \"name\": \"CrowdStrike Holdings, Inc.\", \"raw_score\": 0.83, \"rationale\": \"CRWD is breaking to fresh highs with strong recent relative strength and momentum confirmation.\", \"risk\": \"A sharp pullback could follow if momentum traders lock in gains after the breakout.\", \"action_hint\": \"Monitor post-breakout follow-through and near-term support holding above the recent breakout zone.\"}, {\"symbol\": \"TSLA.US\", \"market\": \"us\", \"name\": \"Tesla, Inc.\", \"raw_score\": 0.78, \"rationale\": \"TSLA has re-accelerated on strong 20-day price performance and a clear short-term momentum upswing.\", \"risk\": \"The name remains highly volatile and headline-sensitive, so trend reversals can be abrupt.\", \"action_hint\": \"Track whether the move sustains on volume and whether price can hold above the latest swing breakout.\"}, {\"symbol\": \"GOOGL.US\", \"market\": \"us\", \"name\": \"Alphabet Inc. Class A\", \"raw_score\": 0.74, \"rationale\": \"GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day price strength.\", \"risk\": \"AI competition or ad-demand concerns could interrupt the current trend.\", \"action_hint\": \"Follow for confirmation that the stock stays above its rising medium-term trend structure.\"}], \"fundamental\": [{\"symbol\": \"JPM.US\", \"market\": \"us\", \"name\": \"JPMorgan Chase & Co.\", \"raw_score\": 0.87, \"rationale\": \"JPM combines strong profitability, low-teens earnings multiples, and resilient recent quarterly earnings power.\", \"risk\": \"A weaker macro backdrop or falling rates could pressure net interest income expectations.\", \"action_hint\": \"Review the next quarterly update for credit quality, loan growth, and net interest income guidance.\"}, {\"symbol\": \"GOOGL.US\", \"market\": \"us\", \"name\": \"Alphabet Inc. Class A\", \"raw_score\": 0.84, \"rationale\": \"GOOGL pairs large-scale earnings generation with strong margins and a still-reasonable valuation versus quality.\", \"risk\": \"Antitrust pressure and heavier AI investment could compress margins or sentiment.\", \"action_hint\": \"Follow capital spending discipline, cloud profitability, and ad-growth durability in the next report.\"}, {\"symbol\": \"UBER.US\", \"market\": \"us\", \"name\": \"Uber Technologies, Inc.\", \"raw_score\": 0.76, \"rationale\": \"UBER is showing improving profitability with positive net income and a scalable platform model.\", \"risk\": \"Margin expansion could stall if incentives, regulation, or competition intensify.\", \"action_hint\": \"Check whether EBITDA and free-cash-flow conversion continue to improve over the next two quarters.\"}], \"capital_flow\": [{\"symbol\": \"NVDA.US\", \"market\": \"us\", \"name\": \"NVIDIA Corporation\", \"raw_score\": 0.86, \"rationale\": \"NVDA continues to command exceptional trading turnover and institutional attention, keeping it at the center of capital concentration.\", \"risk\": \"Any disappointment around AI demand or supply-chain assumptions could trigger a fast de-risking wave.\", \"action_hint\": \"Track turnover intensity around earnings and whether large-volume dips are being bought quickly.\"}, {\"symbol\": \"PLTR.US\", \"market\": \"us\", \"name\": \"Palantir Technologies Inc.\", \"raw_score\": 0.79, \"rationale\": \"PLTR is sustaining unusually high dollar volume and persistent speculative-institutional participation.\", \"risk\": \"Its elevated valuation leaves the stock vulnerable to violent multiple compression.\", \"action_hint\": \"Watch whether heavy turnover remains constructive or starts to accompany distribution days.\"}, {\"symbol\": \"AVGO.US\", \"market\": \"us\", \"name\": \"Broadcom Inc.\", \"raw_score\": 0.73, \"rationale\": \"AVGO remains a major AI-linked capital magnet with deep liquidity and consistently high market attention.\", \"risk\": \"Crowded AI positioning raises the downside if growth expectations are reset lower.\", \"action_hint\": \"Follow options-implied sentiment, turnover, and reaction to AI demand updates from hyperscale customers.\"}], \"event_driven\": [{\"symbol\": \"CRWD.US\", \"market\": \"us\", \"name\": \"CrowdStrike Holdings, Inc.\", \"raw_score\": 0.81, \"rationale\": \"CRWD has an active catalyst setup with fresh all-time-high headlines, analyst attention, and AI-security demand narratives.\", \"risk\": \"Insider selling headlines or a crowded setup could weaken the event-driven upside quickly.\", \"action_hint\": \"Track follow-up analyst notes and whether the stock holds gains after the latest catalyst burst.\"}, {\"symbol\": \"AVGO.US\", \"market\": \"us\", \"name\": \"Broadcom Inc.\", \"raw_score\": 0.77, \"rationale\": \"AVGO is tied to active event flow around AI partnerships and semiconductor ecosystem developments.\", \"risk\": \"Expectation risk is high because AI-related headlines are already heavily priced into the stock.\", \"action_hint\": \"Monitor whether partnership news translates into revenue guidance support rather than only sentiment.\"}, {\"symbol\": \"TSLA.US\", \"market\": \"us\", \"name\": \"Tesla, Inc.\", \"raw_score\": 0.72, \"rationale\": \"TSLA remains an event-driven name due to ongoing FSD, product, and global competitive headlines that can reshape sentiment rapidly.\", \"risk\": \"Execution gaps or regulatory setbacks could reverse headline-driven rallies just as quickly.\", \"action_hint\": \"Follow official product, autonomy, and regulatory updates for confirmation beyond media noise.\"}]}",
+  "wrote_at": "2026-05-24T00:21:49Z"
+}

@@ -1,0 +1,229 @@
+2026-05-24 08:03:31,606 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:03:31,607 - knot_4dim - INFO - 开始Knot轻量校验（--help）
+2026-05-24 08:03:31,667 - knot_4dim - INFO - Knot轻量校验通过
+2026-05-24 08:03:31,667 - knot_4dim - INFO - usage: run_knot_4dim_picks_us.py [-h] [--per-dim PER_DIM] [--output OUTPUT]
+                                 [--dry-run]
+
+Knot 4-dim picks for the United States market.
+
+options:
+  -h, --help         show this help message and exit
+  --per-dim PER_DIM  Number of picks per dimension (default 3).
+  --output OUTPUT    Optional output path. Defaults to
+                     log/YYYYMMDDHH/knot_4dim_us.json under the repo root.
+  --dry-run          Print compact text only; do not write the JSON file.
+2026-05-24 08:05:41,980 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:05:41,980 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 08:05:41,980 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py
+2026-05-24 08:05:45,819 - knot_4dim - ERROR - Knot四维研究失败: [knot_4dim_us] error: Knot call failed: LLM request failed: HTTP 400: {"code":400,"msg":"GenerateAguiClientRequest error: 当前工作区出现异常, 请检查是否可用"}
+
+2026-05-24 08:05:45,819 - knot_4dim_main - ERROR - === Knot四维研究召回失败 ===
+2026-05-24 08:05:55,013 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:05:55,013 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 08:05:55,013 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py
+2026-05-24 08:05:58,824 - knot_4dim - ERROR - Knot四维研究失败: [knot_4dim_us] error: Knot call failed: LLM request failed: HTTP 400: {"code":400,"msg":"GenerateAguiClientRequest error: 当前工作区出现异常, 请检查是否可用"}
+
+2026-05-24 08:05:58,824 - knot_4dim_main - ERROR - === Knot四维研究召回失败 ===
+2026-05-24 08:06:33,809 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:06:33,809 - knot_4dim - INFO - 开始Knot轻量校验（--help）
+2026-05-24 08:06:33,874 - knot_4dim - INFO - Knot轻量校验通过
+2026-05-24 08:06:33,874 - knot_4dim - INFO - usage: run_knot_4dim_picks_us.py [-h] [--per-dim PER_DIM] [--output OUTPUT]
+                                 [--dry-run]
+
+Knot 4-dim picks for the United States market.
+
+options:
+  -h, --help         show this help message and exit
+  --per-dim PER_DIM  Number of picks per dimension (default 3).
+  --output OUTPUT    Optional output path. Defaults to
+                     log/YYYYMMDDHH/knot_4dim_us.json under the repo root.
+  --dry-run          Print compact text only; do not write the JSON file.
+2026-05-24 08:12:53,567 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:12:53,568 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 08:12:53,568 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py
+2026-05-24 08:15:06,174 - knot_4dim - INFO - Knot四维研究召回完成
+2026-05-24 08:15:06,174 - knot_4dim - INFO - 输出: [US 4-Dim Picks @ 2026-05-24T00:15:06Z]
+-- Technical -------------------------------
+  1. ARM.US     Arm Holdings plc   score=0.78  trend=0.89 flow=0.56 event=0.89 quality=0.89  risk=low
+      rationale: The stock is in a strong breakout with price far above key moving averages and m
+      risk:      Its valuation is stretched, so any AI demand wobble could trigger a sharp pullba
+      action:    Track whether price can hold above the recent breakout zone on the next few sess
+  2. ALAB.US    Astera Labs, Inc.  score=0.75  trend=0.91 flow=0.56 event=0.91 quality=0.91  risk=high
+      rationale: The chart shows a clean momentum continuation with fresh highs, bullish MACD, an
+      risk:      The setup is crowded after a fast run, raising the odds of profit-taking volatil
+      action:    Follow volume retention after the breakout and watch for a controlled consolidat
+  3. AAPL.US    Apple Inc.         score=0.73  trend=0.83 flow=0.55 event=0.83 quality=0.83  risk=low
+      rationale: The stock is trending above its short-, medium-, and long-term averages with imp
+      risk:      A failed breakout near 52-week highs could quickly turn into mean reversion.
+      action:    Monitor whether it can stay above the prior high and keep relative strength vers
+-- Fundamental -----------------------------
+  1. GOOGL.US   Alphabet Inc. Clas score=0.78  trend=0.90 flow=0.56 event=0.90 quality=0.90  risk=low
+      rationale: Alphabet combines very strong revenue scale, high gross margin, and robust net m
+      risk:      Regulatory pressure and heavy AI spending could compress sentiment despite stron
+      action:    Review the next quarter for ad growth durability and AI monetization conversion.
+  2. MSFT.US    Microsoft Corporat score=0.77  trend=0.88 flow=0.56 event=0.88 quality=0.88  risk=low
+      rationale: Microsoft continues to post elite gross and operating margins with resilient ear
+      risk:      Investors may penalize the stock if AI infrastructure costs rise faster than com
+      action:    Watch Azure and AI attach-rate trends to confirm margin resilience.
+  3. AMZN.US    Amazon.com, Inc.   score=0.75  trend=0.86 flow=0.55 event=0.86 quality=0.86  risk=low
+      rationale: Amazon is showing expanding profitability with strong quarterly net income and h
+      risk:      Retail margin normalization or cloud growth deceleration could challenge the rer
+      action:    Focus follow-up on AWS growth, retail margin durability, and free cash flow conv
+-- Capital Flow ----------------------------
+  1. AMD.US     Advanced Micro Dev score=0.78  trend=0.90 flow=0.56 event=0.90 quality=0.90  risk=low
+      rationale: AMD is attracting powerful trading interest with very high dollar turnover, elev
+      risk:      Fast money participation can reverse quickly if the semiconductor momentum trade
+      action:    Check whether follow-through volume stays above average after the surge.
+  2. IBM.US     International Busi score=0.74  trend=0.84 flow=0.55 event=0.84 quality=0.84  risk=low
+      rationale: IBM is seeing unusual participation with a strong volume ratio and active tape a
+      risk:      The move could fade if headline-driven buying proves temporary rather than insti
+      action:    Verify whether elevated turnover persists and whether the stock holds above its 
+  3. ZM.US      Zoom Communication score=0.71  trend=0.82 flow=0.55 event=0.82 quality=0.82  risk=low
+      rationale: Zoom has drawn fresh attention through a sharp post-results move and heavy tradi
+      risk:      Post-earnings gap names often retrace if guidance enthusiasm cools within days.
+      action:    Track whether the stock can absorb profit-taking while keeping volume above its 
+-- Event Driven ----------------------------
+  1. IBM.US     International Busi score=0.76  trend=0.87 flow=0.56 event=0.87 quality=0.87  risk=low
+      rationale: IBM has an active catalyst set after reports of U.S. government support tied to 
+      risk:      The market may have already priced in much of the policy-driven optimism.
+      action:    Follow official funding details, partner updates, and management commentary on c
+  2. ZM.US      Zoom Communication score=0.74  trend=0.85 flow=0.55 event=0.85 quality=0.85  risk=low
+      rationale: Zoom is event-driven after a solid quarterly print, raised outlook, and headline
+      risk:      If investors refocus on core growth rather than one-off investment gains, the st
+      action:    Separate recurring operating improvement from non-core investment benefits in th
+  3. AMD.US     Advanced Micro Dev score=0.69  trend=0.81 flow=0.55 event=0.81 quality=0.81  risk=medium
+      rationale: AMD has multiple near-term catalysts from management bullish commentary on CPU d
+      risk:      Geopolitical exposure and expectation risk are high after the recent narrative a
+      action:    Track customer announcements, roadmap execution, and any revisions to demand ass
+summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
+[knot_4dim_us] wrote /projects/vnpy/log/2026052408/knot_4dim_us.json
+
+2026-05-24 08:15:06,175 - knot_4dim - INFO - Knot研究结果: 3技术 + 3基本面 + 3资金流 + 3事件驱动
+2026-05-24 08:15:06,175 - knot_4dim_main - INFO - === Knot四维研究召回完成 ===
+2026-05-24 08:15:12,351 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:15:12,351 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 08:15:12,351 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py
+2026-05-24 08:16:58,037 - knot_4dim - INFO - Knot四维研究召回完成
+2026-05-24 08:16:58,037 - knot_4dim - INFO - 输出: [US 4-Dim Picks @ 2026-05-24T00:16:58Z]
+-- Technical -------------------------------
+  1. AMZN.US    Amazon.com, Inc.   score=0.74  trend=0.84 flow=0.55 event=0.84 quality=0.84  risk=low
+      rationale: Shares remain above the 20/30/60-day averages, keeping the medium-term uptrend i
+      risk:      A failed hold of the 20-day average could turn this into a momentum fade.
+      action:    Watch for a high-volume rebound or breakdown around the 20-day moving average.
+  2. GOOGL.US   Alphabet Inc. Clas score=0.71  trend=0.81 flow=0.55 event=0.81 quality=0.81  risk=low
+      rationale: Price is still above the 20/30/60-day averages, suggesting trend strength even a
+      risk:      Negative MACD momentum could deepen if buyers do not defend recent support.
+      action:    Monitor whether MACD stabilizes and whether price reclaims the 5/10-day averages
+  3. NFLX.US    Netflix, Inc.      score=0.67  trend=0.76 flow=0.54 event=0.76 quality=0.76  risk=low
+      rationale: A positive MACD histogram with price near the 10/20-day averages points to a pos
+      risk:      If price slips back below the 10-day average, the setup may lose momentum quickl
+      action:    Look for follow-through volume and confirmation above the recent short-term rang
+-- Fundamental -----------------------------
+  1. MSFT.US    Microsoft Corporat score=0.80  trend=0.92 flow=0.56 event=0.92 quality=0.92  risk=low
+      rationale: Cloud-scale earnings power and roughly 69% gross margin support a durable high-q
+      risk:      A rich valuation could compress if AI monetization or Azure growth disappoints.
+      action:    Refresh revenue and margin estimates around cloud and AI contribution trends.
+  2. LLY.US     Eli Lilly and Comp score=0.77  trend=0.91 flow=0.56 event=0.91 quality=0.91  risk=medium
+      rationale: Exceptional revenue growth and more than 80% gross margin reinforce the obesity 
+      risk:      Drug pricing pressure or pipeline execution setbacks could hit sentiment fast.
+      action:    Track prescription demand, supply expansion, and next obesity pipeline readouts.
+  3. V.US       Visa Inc.          score=0.76  trend=0.87 flow=0.56 event=0.87 quality=0.87  risk=low
+      rationale: Very high operating margins and steady payment-network economics make it a resil
+      risk:      Consumer spending softness or regulatory pressure on fees could trim growth expe
+      action:    Review cross-border volume trends and management guidance on payment activity.
+-- Capital Flow ----------------------------
+  1. NVDA.US    NVIDIA Corporation score=0.78  trend=0.90 flow=0.56 event=0.90 quality=0.90  risk=low
+      rationale: Low short interest and massive turnover point to persistent institutional sponso
+      risk:      Any slowdown in AI demand expectations could trigger fast profit-taking in a cro
+      action:    Track short-interest changes, turnover, and post-earnings positioning shifts.
+  2. AAPL.US    Apple Inc.         score=0.74  trend=0.85 flow=0.55 event=0.85 quality=0.85  risk=low
+      rationale: A very low short ratio with deep liquidity suggests stable institutional ownersh
+      risk:      Product-cycle disappointment could pressure flows even without heavy short posit
+      action:    Monitor volume trends into product catalysts and changes in short-cover days.
+  3. PLTR.US    Palantir Technolog score=0.70  trend=0.79 flow=0.54 event=0.79 quality=0.79  risk=low
+      rationale: Heavy trading activity alongside elevated short interest creates a high-informat
+      risk:      Crowded positioning can unwind sharply if valuation concerns dominate the tape.
+      action:    Follow daily turnover, short-interest direction, and any unusual block activity.
+-- Event Driven ----------------------------
+  1. META.US    Meta Platforms, In score=0.75  trend=0.88 flow=0.56 event=0.88 quality=0.88  risk=medium
+      rationale: Layoff and AI restructuring headlines create a fresh catalyst path around margin
+      risk:      Execution risk is high if cost cuts disrupt product velocity or AI spending stay
+      action:    Follow management commentary and estimate revisions tied to the AI reorganizatio
+  2. TSLA.US    Tesla, Inc.        score=0.73  trend=0.83 flow=0.55 event=0.83 quality=0.83  risk=low
+      rationale: China FSD availability headlines make Tesla a live event-driven name with potent
+      risk:      Regulatory friction or delayed rollout details could reverse the headline-driven
+      action:    Track official rollout specifics, regulator signals, and demand response in key 
+  3. AVGO.US    Broadcom Inc.      score=0.66  trend=0.80 flow=0.55 event=0.80 quality=0.80  risk=high
+      rationale: Recent AI ecosystem headlines and sharp volatility around AI dependence keep Bro
+      risk:      High expectations around AI revenue can magnify downside if incremental demand d
+      action:    Review next management updates on AI networking demand and customer concentratio
+summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
+[knot_4dim_us] wrote /projects/vnpy/log/2026052408/knot_4dim_us.json
+
+2026-05-24 08:16:58,038 - knot_4dim - INFO - Knot研究结果: 3技术 + 3基本面 + 3资金流 + 3事件驱动
+2026-05-24 08:16:58,038 - knot_4dim_main - INFO - === Knot四维研究召回完成 ===
+2026-05-24 08:20:43,093 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 08:20:43,094 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 08:20:43,094 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py
+2026-05-24 08:21:49,031 - knot_4dim - INFO - Knot四维研究召回完成
+2026-05-24 08:21:49,031 - knot_4dim - INFO - 输出: [US 4-Dim Picks @ 2026-05-24T00:21:49Z]
+-- Technical -------------------------------
+  1. CRWD.US    CrowdStrike Holdin score=0.73  trend=0.83 flow=0.55 event=0.83 quality=0.83  risk=low
+      rationale: CRWD is breaking to fresh highs with strong recent relative strength and momentu
+      risk:      A sharp pullback could follow if momentum traders lock in gains after the breako
+      action:    Monitor post-breakout follow-through and near-term support holding above the rec
+  2. TSLA.US    Tesla, Inc.        score=0.69  trend=0.78 flow=0.54 event=0.78 quality=0.78  risk=low
+      rationale: TSLA has re-accelerated on strong 20-day price performance and a clear short-ter
+      risk:      The name remains highly volatile and headline-sensitive, so trend reversals can 
+      action:    Track whether the move sustains on volume and whether price can hold above the l
+  3. GOOGL.US   Alphabet Inc. Clas score=0.66  trend=0.74 flow=0.54 event=0.74 quality=0.74  risk=low
+      rationale: GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day pric
+      risk:      AI competition or ad-demand concerns could interrupt the current trend.
+      action:    Follow for confirmation that the stock stays above its rising medium-term trend 
+-- Fundamental -----------------------------
+  1. JPM.US     JPMorgan Chase & C score=0.74  trend=0.87 flow=0.56 event=0.87 quality=0.87  risk=medium
+      rationale: JPM combines strong profitability, low-teens earnings multiples, and resilient r
+      risk:      A weaker macro backdrop or falling rates could pressure net interest income expe
+      action:    Review the next quarterly update for credit quality, loan growth, and net intere
+  2. GOOGL.US   Alphabet Inc. Clas score=0.74  trend=0.84 flow=0.55 event=0.84 quality=0.84  risk=low
+      rationale: GOOGL pairs large-scale earnings generation with strong margins and a still-reas
+      risk:      Antitrust pressure and heavier AI investment could compress margins or sentiment
+      action:    Follow capital spending discipline, cloud profitability, and ad-growth durabilit
+  3. UBER.US    Uber Technologies, score=0.65  trend=0.76 flow=0.54 event=0.76 quality=0.76  risk=medium
+      rationale: UBER is showing improving profitability with positive net income and a scalable 
+      risk:      Margin expansion could stall if incentives, regulation, or competition intensify
+      action:    Check whether EBITDA and free-cash-flow conversion continue to improve over the 
+-- Capital Flow ----------------------------
+  1. NVDA.US    NVIDIA Corporation score=0.75  trend=0.86 flow=0.55 event=0.86 quality=0.86  risk=low
+      rationale: NVDA continues to command exceptional trading turnover and institutional attenti
+      risk:      Any disappointment around AI demand or supply-chain assumptions could trigger a 
+      action:    Track turnover intensity around earnings and whether large-volume dips are being
+  2. PLTR.US    Palantir Technolog score=0.66  trend=0.79 flow=0.54 event=0.79 quality=0.79  risk=high
+      rationale: PLTR is sustaining unusually high dollar volume and persistent speculative-insti
+      risk:      Its elevated valuation leaves the stock vulnerable to violent multiple compressi
+      action:    Watch whether heavy turnover remains constructive or starts to accompany distrib
+  3. AVGO.US    Broadcom Inc.      score=0.65  trend=0.73 flow=0.53 event=0.73 quality=0.73  risk=low
+      rationale: AVGO remains a major AI-linked capital magnet with deep liquidity and consistent
+      risk:      Crowded AI positioning raises the downside if growth expectations are reset lowe
+      action:    Follow options-implied sentiment, turnover, and reaction to AI demand updates fr
+-- Event Driven ----------------------------
+  1. CRWD.US    CrowdStrike Holdin score=0.71  trend=0.81 flow=0.55 event=0.81 quality=0.81  risk=low
+      rationale: CRWD has an active catalyst setup with fresh all-time-high headlines, analyst at
+      risk:      Insider selling headlines or a crowded setup could weaken the event-driven upsid
+      action:    Track follow-up analyst notes and whether the stock holds gains after the latest
+  2. AVGO.US    Broadcom Inc.      score=0.68  trend=0.77 flow=0.54 event=0.77 quality=0.77  risk=low
+      rationale: AVGO is tied to active event flow around AI partnerships and semiconductor ecosy
+      risk:      Expectation risk is high because AI-related headlines are already heavily priced
+      action:    Monitor whether partnership news translates into revenue guidance support rather
+  3. TSLA.US    Tesla, Inc.        score=0.62  trend=0.72 flow=0.53 event=0.72 quality=0.72  risk=medium
+      rationale: TSLA remains an event-driven name due to ongoing FSD, product, and global compet
+      risk:      Execution gaps or regulatory setbacks could reverse headline-driven rallies just
+      action:    Follow official product, autonomy, and regulatory updates for confirmation beyon
+summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
+[knot_4dim_us] wrote /projects/vnpy/log/2026052408/knot_4dim_us.json
+
+2026-05-24 08:21:49,031 - knot_4dim - INFO - Knot研究结果: 3技术 + 3基本面 + 3资金流 + 3事件驱动
+2026-05-24 08:21:49,031 - knot_4dim_main - INFO - === Knot四维研究召回完成 ===
+2026-05-24 09:42:13,004 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+2026-05-24 09:42:13,004 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 09:42:13,004 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py --output /projects/vnpy/state/runs/ted/20260524T094212/stage1_knot_4dim/knot_4dim_us.json

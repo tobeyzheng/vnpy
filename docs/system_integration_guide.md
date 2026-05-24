@@ -45,6 +45,10 @@
     - `state/runs/futu_real/orders/*.json`
     - 对应事件日志分别落到 `state/runs/<execution_env>/events.jsonl`
   - `scripts/run_us_futu_sim_session.py` 这类 Futu SIM session 入口也会复用 `state/runs/futu_sim/orders/`，避免与 dry-run / real 混放
+- **`phase2/ted/`**：TED / Knot 研究流程独立目录。集中放置 `run_knot_4dim_research.py`、`run_candidate_preparation.py`、`run_ted_discovery.py`、`run_ted_full_pipeline.py`、`trend_explosion_discovery.py` 以及对应说明文档和测试；`phase2/` 根目录保留同名兼容包装入口，避免旧命令失效。
+  - `TED` 运行产物现在统一归档到 `state/runs/ted/YYYYMMDDTHHMMSS/`，单批次目录下固定拆分为：`stage1_knot_4dim/`、`stage2_candidate_preparation/`、`stage3_ted_discovery/`，并附带 `manifest.json` 方便后续遍历与批次追溯。
+  - `stage1_knot_4dim/` 存四维研究输出 `knot_4dim_us.json`；`stage2_candidate_preparation/` 存候选准备报告和动态候选快照；`stage3_ted_discovery/` 存最终 `ted_aggressive_pool_report.json` 与导出的 `pool_config.yaml`。
+  - 为兼容旧读取方，最终阶段仍会镜像写出 `state/runs/ted_aggressive_pool_report.json` 与 `state/runs/ted_pool_config.yaml`；但后续新的遍历、回看、批次分析应优先读取 `state/runs/ted/` 目录。
 
 ### 主要入口脚本
 

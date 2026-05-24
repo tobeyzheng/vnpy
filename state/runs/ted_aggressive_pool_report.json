@@ -1,0 +1,104 @@
+{
+  "schema_version": "ted_v1",
+  "generated_at": "2026-05-24T08:26:11.400258",
+  "strategy": "trend_explosion_discovery",
+  "pool_summary": {
+    "total_candidates": 8,
+    "core_pool_count": 6,
+    "watch_pool_count": 2,
+    "reserve_pool_count": 0
+  },
+  "core_pool": [
+    {
+      "symbol": "DELL.US",
+      "name": "Dell Technologies",
+      "aeos_score": 0.901625,
+      "price": 295.19,
+      "change_pct": 16.768,
+      "market_cap": 191746062639.53,
+      "turnover": 4436196805.0,
+      "rationale": "Dell surged on AI server momentum and now has a near-term earnings catalyst on May 28.",
+      "risk_level": "medium"
+    },
+    {
+      "symbol": "ZM.US",
+      "name": "Zoom Communications",
+      "aeos_score": 0.8546,
+      "price": 105.64,
+      "change_pct": 9.189,
+      "market_cap": 31136496708.16,
+      "turnover": 1039841254.0,
+      "rationale": "Zoom rallied on stronger profitability and a fresh boost from its Anthropic investment exposure.",
+      "risk_level": "medium"
+    },
+    {
+      "symbol": "IONQ.US",
+      "name": "IonQ",
+      "aeos_score": 0.83915,
+      "price": 63.64,
+      "change_pct": 8.066,
+      "market_cap": 23754899490.72,
+      "turnover": 3318332073.0,
+      "rationale": "IonQ is seeing strong volume and price action after funding-related quantum headlines.",
+      "risk_level": "high"
+    },
+    {
+      "symbol": "AMD.US",
+      "name": "Advanced Micro Devices",
+      "aeos_score": 0.821075,
+      "price": 467.51,
+      "change_pct": 3.986,
+      "market_cap": 762322104738.89,
+      "turnover": 16314863257.0,
+      "rationale": "AMD remains a leading AI compute catch-up trade with strong recent price strength and sector support.",
+      "risk_level": "medium"
+    },
+    {
+      "symbol": "WDAY.US",
+      "name": "Workday",
+      "aeos_score": 0.8206049999999998,
+      "price": 128.14,
+      "change_pct": 5.162,
+      "market_cap": 31994706505.14,
+      "turnover": 1388797241.0,
+      "rationale": "Workday jumped after earnings, margin expansion and raised profit guidance tied to AI demand.",
+      "risk_level": "medium"
+    },
+    {
+      "symbol": "ALAB.US",
+      "name": "Astera Labs",
+      "aeos_score": 0.8193500000000001,
+      "price": 306.88,
+      "change_pct": 3.035,
+      "market_cap": 52601668320.32,
+      "turnover": 2005545514.0,
+      "rationale": "Astera is making new highs after Q1 revenue growth near 93% and fresh AI fabric product excitement.",
+      "risk_level": "high"
+    }
+  ],
+  "watch_pool": [
+    {
+      "symbol": "ARM.US",
+      "name": "Arm Holdings",
+      "aeos_score": 0.8008749999999999,
+      "price": 306.51,
+      "change_pct": 2.776,
+      "market_cap": 326126640000.0,
+      "turnover": 4244949603.0,
+      "rationale": "Arm posted exceptional 5-day momentum as AI agent and high-efficiency CPU demand narratives accelerated.",
+      "risk_level": "high"
+    },
+    {
+      "symbol": "CRM.US",
+      "name": "Salesforce",
+      "aeos_score": 0.68947,
+      "price": 180.07,
+      "change_pct": 2.133,
+      "market_cap": 147306937682.08,
+      "turnover": 1834978549.0,
+      "rationale": "Salesforce has a near-term earnings setup and remains a focal point for enterprise AI credibility.",
+      "risk_level": "medium"
+    }
+  ],
+  "reserve_pool": []
+}

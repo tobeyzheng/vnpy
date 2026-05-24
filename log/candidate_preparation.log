@@ -1,0 +1,204 @@
+2026-05-24 08:16:58,067 - candidate_prep_main - INFO - === 候选准备召回启动 ===
+2026-05-24 08:16:58,067 - candidate_prep - INFO - 发现Knot四维研究结果: 2026052408, 总候选数: 12
+2026-05-24 08:16:58,067 - candidate_prep - INFO - 开始动态候选准备...
+2026-05-24 08:16:58,067 - candidate_prep - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_prepare_candidate_inputs.py --market us --strategy knot_first --top-n 24 --knot-target-count 36 --universe-preset momentum_cta --include-market-data
+2026-05-24 08:21:26,344 - candidate_prep - INFO - 动态候选准备完成
+2026-05-24 08:21:26,344 - candidate_prep - INFO - 输出: 2026-05-24 08:19:25,382 | 243757 | 140501996439360 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7464107755724599820(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7fc9285f5590>
+2026-05-24 08:19:25,488 | 243757 | 140499873916608 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+/projects/vnpy/state/runs/candidate_inputs.prepare.report.json
+{
+  "schema_version": "candidate_prepare_report_v3",
+  "generated_at": "2026-05-24T08:16:58.528727+08:00",
+  "as_of_date": "2026-05-24",
+  "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+  "per_market_report_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json"
+  },
+  "per_market_dynamic_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json"
+  },
+  "mode": "dynamic_market_scoped",
+  "strategy_requested": "knot_first",
+  "target_markets": [
+    "us"
+  ],
+  "dynamic_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+  "dry_run": false,
+  "written": true,
+  "market_runs": [
+    {
+      "market": "us",
+      "strategy_requested": "knot_first",
+      "strategy_used": "knot_first",
+      "knot_status": "ok",
+      "knot_seed_count": 14,
+      "universe_size": 0,
+      "universe_preset": "momentum_cta",
+      "scored_count": 14,
+      "kept_count": 14,
+      "source_files": [
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json"
+      ],
+      "warnings": [],
+      "written": true,
+      "output_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json",
+      "top_symbols": [
+        {
+          "symbol": "DELL.US",
+          "raw_score": 0.7896
+        },
+        {
+          "symbol": "ZM.US",
+          "raw_score": 0.7697
+        },
+        {
+          "symbol": "NVDA.US",
+          "raw_score": 0.7469
+        },
+        {
+          "symbol": "SNOW.US",
+          "raw_score": 0.7451
+        },
+        {
+          "symbol": "HPQ.US",
+          "raw_score": 0.7405
+        },
+        {
+          "symbol": "BURL.US",
+          "raw_score": 0.7365
+        },
+        {
+          "symbol": "MRVL.US",
+          "raw_score": 0.7322
+        },
+        {
+          "symbol": "CRM.US",
+          "raw_score": 0.7284
+        },
+        {
+          "symbol": "BBY.US",
+          "raw_score": 0.6741
+        },
+        {
+          "symbol": "ADSK.US",
+          "raw_score": 0.6674
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_items": 14,
+    "market_counts": {
+      "us": 14
+    },
+    "include_market_data": true,
+    "knot_runtime": "auto",
+    "warnings": []
+  }
+}
+
+2026-05-24 08:21:26,344 - candidate_prep - INFO - 候选准备报告状态: N/A
+2026-05-24 08:21:26,346 - candidate_prep - INFO - 动态候选数: 14
+2026-05-24 08:21:26,346 - candidate_prep_main - INFO - === 候选准备召回完成 ===
+2026-05-24 08:21:49,061 - candidate_prep_main - INFO - === 候选准备召回启动 ===
+2026-05-24 08:21:49,062 - candidate_prep - INFO - 发现Knot四维研究结果: 2026052408, 总候选数: 12
+2026-05-24 08:21:49,062 - candidate_prep - INFO - 开始动态候选准备...
+2026-05-24 08:21:49,062 - candidate_prep - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_prepare_candidate_inputs.py --market us --strategy knot_first --top-n 24 --knot-target-count 36 --universe-preset momentum_cta --include-market-data
+2026-05-24 08:26:11,386 - candidate_prep - INFO - 动态候选准备完成
+2026-05-24 08:26:11,386 - candidate_prep - INFO - 输出: 2026-05-24 08:24:17,024 | 249702 | 140439396104000 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7464108978964503800(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7fba1a574410>
+2026-05-24 08:24:17,129 | 249702 | 140437273593536 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+/projects/vnpy/state/runs/candidate_inputs.prepare.report.json
+{
+  "schema_version": "candidate_prepare_report_v3",
+  "generated_at": "2026-05-24T08:21:49.512747+08:00",
+  "as_of_date": "2026-05-24",
+  "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+  "per_market_report_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json"
+  },
+  "per_market_dynamic_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json"
+  },
+  "mode": "dynamic_market_scoped",
+  "strategy_requested": "knot_first",
+  "target_markets": [
+    "us"
+  ],
+  "dynamic_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+  "dry_run": false,
+  "written": true,
+  "market_runs": [
+    {
+      "market": "us",
+      "strategy_requested": "knot_first",
+      "strategy_used": "knot_first",
+      "knot_status": "ok",
+      "knot_seed_count": 14,
+      "universe_size": 0,
+      "universe_preset": "momentum_cta",
+      "scored_count": 14,
+      "kept_count": 14,
+      "source_files": [
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json"
+      ],
+      "warnings": [],
+      "written": true,
+      "output_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json",
+      "top_symbols": [
+        {
+          "symbol": "DELL.US",
+          "raw_score": 0.8369
+        },
+        {
+          "symbol": "WDAY.US",
+          "raw_score": 0.7825
+        },
+        {
+          "symbol": "AMD.US",
+          "raw_score": 0.7813
+        },
+        {
+          "symbol": "ZM.US",
+          "raw_score": 0.7689
+        },
+        {
+          "symbol": "ARM.US",
+          "raw_score": 0.7309
+        },
+        {
+          "symbol": "NVDA.US",
+          "raw_score": 0.7269
+        },
+        {
+          "symbol": "ALAB.US",
+          "raw_score": 0.7181
+        },
+        {
+          "symbol": "IONQ.US",
+          "raw_score": 0.7111
+        },
+        {
+          "symbol": "MU.US",
+          "raw_score": 0.6819
+        },
+        {
+          "symbol": "IBM.US",
+          "raw_score": 0.6675
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_items": 14,
+    "market_counts": {
+      "us": 14
+    },
+    "include_market_data": true,
+    "knot_runtime": "auto",
+    "warnings": []
+  }
+}
+
+2026-05-24 08:26:11,387 - candidate_prep - INFO - 候选准备报告状态: N/A
+2026-05-24 08:26:11,388 - candidate_prep - INFO - 动态候选数: 14
+2026-05-24 08:26:11,388 - candidate_prep_main - INFO - === 候选准备召回完成 ===

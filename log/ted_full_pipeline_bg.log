@@ -1,0 +1,274 @@
+2026-05-24 08:20:43,069 - ted_pipeline_main - INFO - === TED完整流水线启动 ===
+
+🚀 TED完整流水线启动 (方案C)
+==================================================
+📋 流程概览:
+1. Knot四维研究召回
+2. 候选准备召回
+3. TED进攻型标池发现
+==================================================
+2026-05-24 08:20:43,070 - ted_pipeline - INFO - 开始步骤: Knot四维研究召回
+
+🎯 步骤1/3: Knot四维研究召回 - 发现强趋势候选标的
+2026-05-24 08:20:43,070 - ted_pipeline - INFO - 执行命令: python3 /projects/vnpy/phase2/ted/run_knot_4dim_research.py
+2026-05-24 08:21:49,038 - ted_pipeline - INFO - 步骤完成: Knot四维研究召回
+2026-05-24 08:21:49,039 - ted_pipeline - INFO - 2026-05-24 08:20:43,093 - knot_4dim_main - INFO - === Knot四维研究召回启动 ===
+
+🎯 开始Knot四维研究召回 (方案C第一步)
+📊 维度: 技术面、基本面、资金流、事件驱动
+🎯 目标: 发现强趋势暴涨候选标的
+2026-05-24 08:20:43,094 - knot_4dim - INFO - 开始Knot四维研究召回...
+2026-05-24 08:20:43,094 - knot_4dim - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_knot_4dim_picks_us.py
+2026-05-24 08:21:49,031 - knot_4dim - INFO - Knot四维研究召回完成
+2026-05-24 08:21:49,031 - knot_4dim - INFO - 输出: [US 4-Dim Picks @ 2026-05-24T00:21:49Z]
+-- Technical -------------------------------
+  1. CRWD.US    CrowdStrike Holdin score=0.73  trend=0.83 flow=0.55 event=0.83 quality=0.83  risk=low
+      rationale: CRWD is breaking to fresh highs with strong recent relative strength and momentu
+      risk:      A sharp pullback could follow if momentum traders lock in gains after the breako
+      action:    Monitor post-breakout follow-through and near-term support holding above the rec
+  2. TSLA.US    Tesla, Inc.        score=0.69  trend=0.78 flow=0.54 event=0.78 quality=0.78  risk=low
+      rationale: TSLA has re-accelerated on strong 20-day price performance and a clear short-ter
+      risk:      The name remains highly volatile and headline-sensitive, so trend reversals can 
+      action:    Track whether the move sustains on volume and whether price can hold above the l
+  3. GOOGL.US   Alphabet Inc. Clas score=0.66  trend=0.74 flow=0.54 event=0.74 quality=0.74  risk=low
+      rationale: GOOGL shows a constructive medium-term uptrend with solid 20-day and 60-day pric
+      risk:      AI competition or ad-demand concerns could interrupt the current trend.
+      action:    Follow for confirmation that the stock stays above its rising medium-term trend 
+-- Fundamental -----------------------------
+  1. JPM.US     JPMorgan Chase & C score=0.74  trend=0.87 flow=0.56 event=0.87 quality=0.87  risk=medium
+      rationale: JPM combines strong profitability, low-teens earnings multiples, and resilient r
+      risk:      A weaker macro backdrop or falling rates could pressure net interest income expe
+      action:    Review the next quarterly update for credit quality, loan growth, and net intere
+  2. GOOGL.US   Alphabet Inc. Clas score=0.74  trend=0.84 flow=0.55 event=0.84 quality=0.84  risk=low
+      rationale: GOOGL pairs large-scale earnings generation with strong margins and a still-reas
+      risk:      Antitrust pressure and heavier AI investment could compress margins or sentiment
+      action:    Follow capital spending discipline, cloud profitability, and ad-growth durabilit
+  3. UBER.US    Uber Technologies, score=0.65  trend=0.76 flow=0.54 event=0.76 quality=0.76  risk=medium
+      rationale: UBER is showing improving profitability with positive net income and a scalable 
+      risk:      Margin expansion could stall if incentives, regulation, or competition intensify
+      action:    Check whether EBITDA and free-cash-flow conversion continue to improve over the 
+-- Capital Flow ----------------------------
+  1. NVDA.US    NVIDIA Corporation score=0.75  trend=0.86 flow=0.55 event=0.86 quality=0.86  risk=low
+      rationale: NVDA continues to command exceptional trading turnover and institutional attenti
+      risk:      Any disappointment around AI demand or supply-chain assumptions could trigger a 
+      action:    Track turnover intensity around earnings and whether large-volume dips are being
+  2. PLTR.US    Palantir Technolog score=0.66  trend=0.79 flow=0.54 event=0.79 quality=0.79  risk=high
+      rationale: PLTR is sustaining unusually high dollar volume and persistent speculative-insti
+      risk:      Its elevated valuation leaves the stock vulnerable to violent multiple compressi
+      action:    Watch whether heavy turnover remains constructive or starts to accompany distrib
+  3. AVGO.US    Broadcom Inc.      score=0.65  trend=0.73 flow=0.53 event=0.73 quality=0.73  risk=low
+      rationale: AVGO remains a major AI-linked capital magnet with deep liquidity and consistent
+      risk:      Crowded AI positioning raises the downside if growth expectations are reset lowe
+      action:    Follow options-implied sentiment, turnover, and reaction to AI demand updates fr
+-- Event Driven ----------------------------
+  1. CRWD.US    CrowdStrike Holdin score=0.71  trend=0.81 flow=0.55 event=0.81 quality=0.81  risk=low
+      rationale: CRWD has an active catalyst setup with fresh all-time-high headlines, analyst at
+      risk:      Insider selling headlines or a crowded setup could weaken the event-driven upsid
+      action:    Track follow-up analyst notes and whether the stock holds gains after the latest
+  2. AVGO.US    Broadcom Inc.      score=0.68  trend=0.77 flow=0.54 event=0.77 quality=0.77  risk=low
+      rationale: AVGO is tied to active event flow around AI partnerships and semiconductor ecosy
+      risk:      Expectation risk is high because AI-related headlines are already heavily priced
+      action:    Monitor whether partnership news translates into revenue guidance support rather
+  3. TSLA.US    Tesla, Inc.        score=0.62  trend=0.72 flow=0.53 event=0.72 quality=0.72  risk=medium
+      rationale: TSLA remains an event-driven name due to ongoing FSD, product, and global compet
+      risk:      Execution gaps or regulatory setbacks could reverse headline-driven rallies just
+      action:    Follow official product, autonomy, and regulatory updates for confirmation beyon
+summary: dims=4 picks=12 knot=ok scoring=dynamic_hybrid_v3
+[knot_4dim_us] wrote /projects/vnpy/log/2026052408/knot_4dim_us.json
+
+2026-05-24 08:21:49,031 - knot_4dim - INFO - Knot研究结果: 3技术 + 3基本面 + 3资金流 + 3事件驱动
+2026-05-24 08:21:49,031 - knot_4dim_main - INFO - === Knot四维研究召回完成 ===
+
+✅ Knot四维研究召回完成！
+📁 结果文件: /projects/vnpy/log/YYYYMMDDHH/knot_4dim_us.json
+📋 日志文件: /projects/vnpy/log/knot_4dim_research.log
+
+➡️ 下一步: 运行候选准备召回
+
+✅ Knot四维研究召回 完成
+2026-05-24 08:21:49,039 - ted_pipeline - INFO - 开始步骤: 候选准备召回
+
+🎯 步骤2/3: 候选准备召回 - 结合Knot种子和市场数据
+2026-05-24 08:21:49,039 - ted_pipeline - INFO - 执行命令: python3 /projects/vnpy/phase2/ted/run_candidate_preparation.py
+2026-05-24 08:26:11,394 - ted_pipeline - INFO - 步骤完成: 候选准备召回
+2026-05-24 08:26:11,394 - ted_pipeline - INFO - 2026-05-24 08:21:49,061 - candidate_prep_main - INFO - === 候选准备召回启动 ===
+
+🎯 开始候选准备召回 (方案C第二步)
+📊 策略: knot_first + momentum_cta
+🎯 目标: 结合Knot种子和市场数据生成动态候选
+2026-05-24 08:21:49,062 - candidate_prep - INFO - 发现Knot四维研究结果: 2026052408, 总候选数: 12
+📋 检测到Knot四维研究结果，将作为种子使用
+2026-05-24 08:21:49,062 - candidate_prep - INFO - 开始动态候选准备...
+2026-05-24 08:21:49,062 - candidate_prep - INFO - 执行命令: python3 /projects/vnpy/scripts/quant_workflow/run_prepare_candidate_inputs.py --market us --strategy knot_first --top-n 24 --knot-target-count 36 --universe-preset momentum_cta --include-market-data
+2026-05-24 08:26:11,386 - candidate_prep - INFO - 动态候选准备完成
+2026-05-24 08:26:11,386 - candidate_prep - INFO - 输出: 2026-05-24 08:24:17,024 | 249702 | 140439396104000 | [open_context_base.py:410] _init_connect_sync: New connect ready: conn=7464108978964503800(1) context=<futu.quote.open_quote_context.OpenQuoteContext object at 0x7fba1a574410>
+2026-05-24 08:24:17,129 | 249702 | 140437273593536 | [open_context_base.py:518] on_disconnect: Disconnected: conn=0(1) reason=CallClose
+/projects/vnpy/state/runs/candidate_inputs.prepare.report.json
+{
+  "schema_version": "candidate_prepare_report_v3",
+  "generated_at": "2026-05-24T08:21:49.512747+08:00",
+  "as_of_date": "2026-05-24",
+  "report_path": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.json",
+  "per_market_report_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json"
+  },
+  "per_market_dynamic_paths": {
+    "us": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json"
+  },
+  "mode": "dynamic_market_scoped",
+  "strategy_requested": "knot_first",
+  "target_markets": [
+    "us"
+  ],
+  "dynamic_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.json",
+  "dry_run": false,
+  "written": true,
+  "market_runs": [
+    {
+      "market": "us",
+      "strategy_requested": "knot_first",
+      "strategy_used": "knot_first",
+      "knot_status": "ok",
+      "knot_seed_count": 14,
+      "universe_size": 0,
+      "universe_preset": "momentum_cta",
+      "scored_count": 14,
+      "kept_count": 14,
+      "source_files": [
+        "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.seed.json"
+      ],
+      "warnings": [],
+      "written": true,
+      "output_path": "/projects/vnpy/state/runs/candidate_inputs.dynamic.us.json",
+      "top_symbols": [
+        {
+          "symbol": "DELL.US",
+          "raw_score": 0.8369
+        },
+        {
+          "symbol": "WDAY.US",
+          "raw_score": 0.7825
+        },
+        {
+          "symbol": "AMD.US",
+          "raw_score": 0.7813
+        },
+        {
+          "symbol": "ZM.US",
+          "raw_score": 0.7689
+        },
+        {
+          "symbol": "ARM.US",
+          "raw_score": 0.7309
+        },
+        {
+          "symbol": "NVDA.US",
+          "raw_score": 0.7269
+        },
+        {
+          "symbol": "ALAB.US",
+          "raw_score": 0.7181
+        },
+        {
+          "symbol": "IONQ.US",
+          "raw_score": 0.7111
+        },
+        {
+          "symbol": "MU.US",
+          "raw_score": 0.6819
+        },
+        {
+          "symbol": "IBM.US",
+          "raw_score": 0.6675
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_items": 14,
+    "market_counts": {
+      "us": 14
+    },
+    "include_market_data": true,
+    "knot_runtime": "auto",
+    "warnings": []
+  }
+}
+
+2026-05-24 08:26:11,387 - candidate_prep - INFO - 候选准备报告状态: N/A
+2026-05-24 08:26:11,388 - candidate_prep - INFO - 动态候选数: 14
+2026-05-24 08:26:11,388 - candidate_prep_main - INFO - === 候选准备召回完成 ===
+
+✅ 候选准备召回完成！
+📁 报告文件: /projects/vnpy/state/runs/candidate_inputs.prepare.report.us.json
+📁 候选文件: /projects/vnpy/state/runs/candidate_inputs.dynamic.us.json
+📋 日志文件: /projects/vnpy/log/candidate_preparation.log
+
+➡️ 下一步: 运行TED进攻型标池发现
+
+✅ 候选准备召回 完成
+
+🎯 步骤3/3: TED进攻型标池发现 - 生成进攻型标池
+2026-05-24 08:26:11,394 - ted_pipeline - INFO - 开始TED进攻型标池发现...
+2026-05-24 08:26:11,397 - phase2.ted.trend_explosion_discovery - INFO - 开始进攻型标池发现流程...
+2026-05-24 08:26:11,398 - phase2.ted.trend_explosion_discovery - INFO - 加载Knot四维结果: 4个维度
+2026-05-24 08:26:11,400 - phase2.ted.trend_explosion_discovery - INFO - 加载动态候选: 14个标的
+2026-05-24 08:26:11,400 - phase2.ted.trend_explosion_discovery - INFO - 筛选进攻型候选: 8个标的
+2026-05-24 08:26:11,400 - phase2.ted.trend_explosion_discovery - INFO - 进攻型标池发现完成
+2026-05-24 08:26:11,400 - ted_pipeline - INFO - TED发现完成，报告保存至: /projects/vnpy/state/runs/ted_aggressive_pool_report.json
+
+============================================================
+🎯 TED进攻型标池发现报告
+============================================================
+📅 生成时间: 2026-05-24T08:26:11.400258
+🎯 策略: trend_explosion_discovery
+📊 总候选数: 8
+🔥 核心进攻池: 6只
+👀 观察补位池: 2只
+💼 主题备用池: 0只
+
+🔥 核心进攻池详情:
+----------------------------------------
+1. DELL.US - Dell Technologies
+   📈 AEOS评分: 0.902
+   💹 涨幅: 16.8%
+   💰 市值: 191.7B
+   📊 成交额: 4436.2M
+
+2. ZM.US - Zoom Communications
+   📈 AEOS评分: 0.855
+   💹 涨幅: 9.2%
+   💰 市值: 31.1B
+   📊 成交额: 1039.8M
+
+3. IONQ.US - IonQ
+   📈 AEOS评分: 0.839
+   💹 涨幅: 8.1%
+   💰 市值: 23.8B
+   📊 成交额: 3318.3M
+
+4. AMD.US - Advanced Micro Devices
+   📈 AEOS评分: 0.821
+   💹 涨幅: 4.0%
+   💰 市值: 762.3B
+   📊 成交额: 16314.9M
+
+5. WDAY.US - Workday
+   📈 AEOS评分: 0.821
+   💹 涨幅: 5.2%
+   💰 市值: 32.0B
+   📊 成交额: 1388.8M
+
+6. ALAB.US - Astera Labs
+   📈 AEOS评分: 0.819
+   💹 涨幅: 3.0%
+   💰 市值: 52.6B
+   📊 成交额: 2005.5M
+
+============================================================
+2026-05-24 08:26:11,400 - ted_pipeline_main - INFO - === TED完整流水线完成 ===
+
+✅ TED完整流水线完成！
+⏱️  总耗时: 5.5 分钟
+📁 最终报告: /projects/vnpy/state/runs/ted_aggressive_pool_report.json
+📋 日志文件: /projects/vnpy/log/ted_full_pipeline.log
